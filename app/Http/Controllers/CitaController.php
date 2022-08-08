@@ -107,12 +107,12 @@ class CitaController extends Controller
         ];
         try {
             $resp = DB::table('persona_citas')
-                ->where('ci',$ci)
+                ->where('ci', $ci)
                 ->update($persona_nueva);
         } catch (\Throwable $th) {
             return $th;
         }
-           
+
         return 'OK';
     }
     /**
@@ -156,12 +156,26 @@ class CitaController extends Controller
         //if (Cache::has('usuario' . $ci)) {
         //$cita_fecha = Cache::get('citas' . $ci);
         //}else {
-        $cita_fecha = DB::table('persona_citas')
-            ->where('persona_citas.ci', $ci)
-            ->get();
+        $opcion = 1;
+
+        $datos = DB::table('persona_citas')->where('persona_citas.ci', $ci)->get();
+        $citas = [];
+        if (sizeof($datos) > 0) {
+            $opcion = 2;
+            $citas = DB::table('citas')
+                ->where('citas.ci', $ci)
+                ->get();
+        }
+
+        $data = [
+            'datos' => $datos,
+            'citas' => $citas,
+            'opcion' => $opcion,
+        ];
+
         //Cache::put('usuario' . $ci, $cita_fecha);
         //}
-        return $cita_fecha;
+        return $data;
     }
     public static function cita_usuario($ci)
     {
@@ -182,6 +196,7 @@ class CitaController extends Controller
         //if (Cache::has('usuario' . $ci)) {
         //$cita_fecha = Cache::get('citas' . $ci);
         //}else {
+        
         $cita_fecha = DB::table('citas')
             ->select(['hora_inicio', DB::raw('sum(case equipo WHEN 1 then 1 else 0 end) AS GRUPO1, 
                 sum(case equipo WHEN 2 then 1 else 0 end) AS GRUPO2, 
@@ -208,7 +223,7 @@ class CitaController extends Controller
                     array_push($prueba, $valor);
                 }
                 if ($k == 'grupo1' && $v == 1) {
-     
+
                     if (($key = array_search($valor, $citas[0])) !== false) {
                         unset($citas[0][$key]);
                     }
@@ -237,6 +252,7 @@ class CitaController extends Controller
     {
         $cita = request('cita');
         $date = $cita['fecha'];
+        //return $cita;
         try {
             $resp = DB::table('citas')
                 ->insert($cita);
@@ -250,7 +266,7 @@ class CitaController extends Controller
                 ->where('fecha', $date)
                 ->get();
             Cache::put('citas' . $date, $cita_fecha);
-        }
+        }   
         return 'ok';
     }
 
@@ -264,15 +280,17 @@ class CitaController extends Controller
     {
         //
     }
-    public static function eliminar_cita(Request $request){
-        
+    public static function eliminar_cita(Request $request)
+    {
+
 
         $cita = $request['cita'];
-        
+
         return $cita;
     }
-    public static function eliminar_cita2(Request $request){
-        
+    public static function eliminar_cita2(Request $request)
+    {
+
         /*$cita = $request['cita'];
         $cita_fecha = DB::table('citas')->select('*')
         ->where('fecha', $cita['fecha'])
@@ -280,7 +298,8 @@ class CitaController extends Controller
         ->where('hora_inicio', $cita['hora_inicio'])
         ->delete();
         Cache::forget('citas' . $cita['fecha']);
-        */return $request['cita'];
+        */
+        return $request['cita'];
     }
     /**
      * Update the specified resource in storage.

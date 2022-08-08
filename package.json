@@ -32,6 +32,9 @@
         "@inertiajs/progress": "^0.2.7",
         "moment": "^2.29.1",
         "nprogress": "^0.2.0",
-        "vuetify": "^2.6.4"
+        "vue-color": "^2.8.1",
+        "vue-color-sketch": "^2.6.2",
+        "vuetify": "^2.6.4",
+        "vuetify-dialog-promise": "^2.4.2"
     }
 }

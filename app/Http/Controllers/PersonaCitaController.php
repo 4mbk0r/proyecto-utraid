@@ -6,10 +6,13 @@ use App\Models\Persona_cita;
 use App\Http\Requests\StorePersona_citaRequest;
 use App\Http\Requests\UpdatePersona_citaRequest;
 use App\Models\Persona_atencion;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
+use Exception;
+
 class PersonaCitaController extends Controller
 {
     /**
@@ -17,13 +20,15 @@ class PersonaCitaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    const tabla = 'persona_citas';
+
     public function index()
     {
         //
         $users = DB::select('select * from persona_citas');
-        $mensaje ='';
+        $mensaje = '';
         //$pa = personas_antiguo::select('select * from users);
-        return Inertia::render('Administrador', ['pacientes'=>$users, 'mensaje'=>$mensaje]);
+        return Inertia::render('Administrador', ['pacientes' => $users, 'mensaje' => $mensaje]);
     }
 
     /**
@@ -55,7 +60,7 @@ class PersonaCitaController extends Controller
      */
     public function show(Persona_cita $persona_cita)
     {
-        
+
         /*$users = DB::table('citas')->where('fecha', '18/04/2022')->get();;
         return $users;*/
     }
@@ -69,7 +74,7 @@ class PersonaCitaController extends Controller
     public function edit(Persona_atencion $persona_cita)
     {
         //dd(request('persona_cita'));
-        $persona_cita =request('persona_cita');
+        $persona_cita = request('persona_cita');
         DB::table('persona_citas')->where('ci', $persona_cita['ci'])->update($persona_cita);
         $users = DB::select('select * from persona_citas');
         //$pa = personas_antiguo::select('select * from users);
@@ -87,7 +92,7 @@ class PersonaCitaController extends Controller
     {
         //
         $users = DB::select('select * from citas');
-        return "ciars ".$users;  
+        return "ciars " . $users;
     }
 
     /**
@@ -99,5 +104,44 @@ class PersonaCitaController extends Controller
     public function destroy(Persona_cita $persona_cita)
     {
         //
+    }
+    public static function buscar_persona(Request $request)
+    {
+        $dato = $request['dato'];
+        $data = DB::table('persona_citas')
+            ->select('*')
+            ->whereRaw("unaccent(nombres) ilike unaccent('%" . $dato . "%')")
+            ->orWhereRaw("unaccent(ap_materno) ilike unaccent('%" . $dato . "%')")  
+            ->orWhereRaw("unaccent(ap_paterno) ilike unaccent('%" . $dato . "%')")
+            ->get();
+        return $data;
+    }
+    public static function guardar_persona(Request $request)
+    {
+        $antiguo = $request['antiguo'];
+        $nuevo = $request['nuevo'];
+        $opcion = $request['opcion'];
+        if ($opcion == 1) {
+            try {
+                //write your codes here
+                DB::table('persona_citas')->insert($nuevo);
+            } catch (Exception $e) {
+                return explode(' ', $e->getMessage());
+            }
+            return 'ok';
+        }
+        if ($opcion == 2) {
+            try {
+                DB::table('persona_citas')->where('ci', $antiguo['ci'])->update($nuevo);
+                $citas = DB::table('citas')->where('ci', $nuevo['ci'])->get();
+                foreach( $citas as $date ) {
+                    Cache::forget('citas' . $date->fecha);
+                }
+            } catch (Exception $ex) {
+                return  explode(' ', $ex->getMessage())[0];
+            }
+            return 'ok update';
+        }
+        return 'iguales';
     }
 }

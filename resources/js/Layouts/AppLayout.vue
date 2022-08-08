@@ -9,6 +9,11 @@
 
             <v-toolbar-title>UTRAID
             </v-toolbar-title>
+            <v-btn class="mx-2"  @click="toggleTheme()">
+                <v-icon>
+                    mdi-pencil
+                </v-icon>
+            </v-btn>
 
         </v-app-bar>
 
@@ -22,9 +27,10 @@
                 <v-list-item link>
                     <v-list-item-content style="color: white;">
                         <v-list-item-title>
-                            {{$page.props.user.name }}
+                            {{ $page.props.user.name }}
                         </v-list-item-title>
-                        <v-list-item-subtitle style="color: white;">{{$page.props.user.email }}</v-list-item-subtitle>
+                        <v-list-item-subtitle style="color: white;">{{ $page.props.user.email }}
+                        </v-list-item-subtitle>
                     </v-list-item-content>
                 </v-list-item>
 
@@ -39,18 +45,18 @@
             <v-divider></v-divider>
 
             <v-list nav dense>
-                
-                    <jet-responsive-nav-link :href="route('inicio')" :active="route().current('inicio')">
 
-                        <v-icon >mdi-file-document-edit</v-icon>
-                        <a :href="route('inicio')">Agendar</a>
-                    </jet-responsive-nav-link>
+                <jet-responsive-nav-link :href="route('inicio')" :active="route().current('inicio')">
 
-                    <jet-responsive-nav-link :href="route('administrar.index')" :active="route().current('administrar.index')">
+                    <v-icon>mdi-file-document-edit</v-icon>
+                    <a :href="route('inicio')">Agendar</a>
+                </jet-responsive-nav-link>
 
-                        <v-icon >mdi-account-multiple</v-icon>
-                        <a :href="route('registro')">Usuario</a>
-                    </jet-responsive-nav-link>
+                <jet-responsive-nav-link :href="route('administrar.index')" :active="route().current('administrar.index')">
+
+                    <v-icon>mdi-account-multiple</v-icon>
+                    <a :href="route('registro')">Usuario</a>
+                </jet-responsive-nav-link>
 
             </v-list>
         </v-navigation-drawer>
@@ -75,13 +81,18 @@
 </template>
 
 <script>
+
 import JetApplicationMark from '@/Jetstream/ApplicationMark'
 import JetBanner from '@/Jetstream/Banner'
 import JetDropdown from '@/Jetstream/Dropdown'
 import JetDropdownLink from '@/Jetstream/DropdownLink'
 import JetNavLink from '@/Jetstream/NavLink'
 import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
+import { VueColor } from 'vue-color/dist/vue-color.min.js'
 
+
+const THEME_DARK = 'dark';
+const THEME_LIGHT = 'light';
 export default {
     components: {
         JetApplicationMark,
@@ -108,6 +119,7 @@ export default {
             v_carga: false,
             pendingRequests: 0,
             totalRequests: 0,
+            dark: false,
         }
     },
 
@@ -141,7 +153,16 @@ export default {
                 }
                 return response;
             });
-        }
+        },
+        toggleTheme() {
+            if (this.theme == THEME_DARK) {
+                this.theme = THEME_LIGHT;
+                this.$vuetify.theme.dark = false;
+            } else {
+                this.theme = THEME_DARK;
+                this.$vuetify.theme.dark = true;
+            }
+        },
     },
     mounted() {
         this.enableInterceptor()

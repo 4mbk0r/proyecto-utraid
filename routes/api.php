@@ -6,6 +6,7 @@ use App\Http\Controllers\PdfViewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PersonaAntiguoController;
+use App\Http\Controllers\PersonaCitaController;
 use App\Models\personas_antiguo;
 
 /*
@@ -81,3 +82,15 @@ Route::post('/eliminar_cita2', function (Request $request) {
 Route::post('/guardar_datos', function (Request $request) {
     return DoctorController::guardar($request);
 });
+
+
+Route::post('/buscar_persona', function (Request $request) {
+    return PersonaCitaController::buscar_persona($request);
+});
+
+
+Route::post('/guardar_persona', function (Request $request) {
+    return PersonaCitaController::guardar_persona($request);
+});
+
+

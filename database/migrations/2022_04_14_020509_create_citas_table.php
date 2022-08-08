@@ -28,8 +28,8 @@ class CreateCitasTable extends Migration
             $table->integer('equipo');
             $table->text('lugar',20)->nullable();;
             $table->primary(['fecha', 'hora_inicio', 'equipo']);
-            $table->foreign('ci')->references('ci')->on('persona_citas')->onDelete('cascade');
-            $table->foreign('ci_doctor')->references('ci')->on('doctores')->onDelete('cascade');
+            $table->foreign('ci')->references('ci')->on('persona_citas')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('ci_doctor')->references('ci')->on('doctores')->onDelete('cascade')->onUpdate('cascade');
         });
         /*$base  = array(
             0 => array(

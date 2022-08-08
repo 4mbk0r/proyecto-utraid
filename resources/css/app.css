@@ -1,6 +1,3 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
 
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
 
@@ -8,6 +5,11 @@
 
 
 @import "vuetify/dist/vuetify.min.css";
+
+.orange {
+  --color: #f49764;
+  background:#fbe8a6
+}
 
 .v-data-table-header th {
   white-space: nowrap;
@@ -232,4 +234,8 @@
 
 .v-select .v-text-field label {
   color: blue !important;
+}
+
+.no-entries input::placeholder {
+  color: #212121 !important;
 }
