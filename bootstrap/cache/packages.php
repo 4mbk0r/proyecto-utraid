@@ -81,6 +81,17 @@
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
     ),
   ),
+  'nascent-africa/jetstrap' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'NascentAfrica\\Jetstrap\\JetstrapServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Jetstrap' => 'NascentAfrica\\Jetstrap\\JetstrapFacade',
+    ),
+  ),
   'nesbot/carbon' => 
   array (
     'providers' => 

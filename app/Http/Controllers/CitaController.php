@@ -269,6 +269,43 @@ class CitaController extends Controller
         }   
         return 'ok';
     }
+    public static function update_cita(Request $resquest)
+    {
+        $cita_antigua = request('cita_anterior');
+        $cita = request('cita_nueva');
+        $date = $cita['fecha'];
+        unset($cita['nombres']);
+        unset($cita['ap_materno']);
+        unset($cita['ap_paterno']);
+        unset($cita['celular']);
+        unset($cita['expedido']);
+        unset($cita['fecha_nacimiento']);
+        unset($cita['sexo']);
+        unset($cita['nom_departamento']);
+        unset($cita['nom_municipio']);
+        unset($cita['correo']);
+        unset($cita['direccion']);
+        
+        //return $cita;
+        try {
+            $resp = DB::table('citas')
+                    ->where('fecha', '=', $cita_antigua['fecha'])
+                    ->where('hora_inicio', '=', $cita_antigua['hora_inicio'])
+                    ->where('equipo', '=',$cita_antigua['equipo'])
+                    ->update($cita);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+        if (Cache::has('citas' . $date)) {
+            Cache::forget('citas' . $date);
+            $cita_fecha = DB::table('citas')
+                ->join('persona_citas', 'citas.ci', '=', 'persona_citas.ci')
+                ->where('fecha', $date)
+                ->get();
+            Cache::put('citas' . $date, $cita_fecha);
+        }   
+        return 'ok';
+    }
 
     /**
      * Show the form for editing the specified resource.

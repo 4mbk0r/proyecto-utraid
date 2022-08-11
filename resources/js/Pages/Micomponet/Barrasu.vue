@@ -178,8 +178,9 @@
                     </v-card-actions>
                 </v-card>
             </v-menu>
-
+            
         </div>
+        <viewcita ref="viewcita" />
     </v-app>
 </template>
 
@@ -188,10 +189,13 @@ import moment from 'moment'
 const day1 = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + new Date().getDate()).slice(-2)
 import buscar from '@/Pages/Micomponet/Buscar';
 import datospersonales from '@/Pages/Micomponet/Datospersonales'
+import viewcita from '@/Pages/Micomponet/FormEditarCita'
+
 export default {
     components: {
         buscar,
         datospersonales,
+        viewcita,
     },
     props: {
         datos_cita: Array,
@@ -393,9 +397,11 @@ export default {
             this.v_editar_agendar = false
         },
         async editar_cita() {
-
-            
-             this.datos_informacion = a;
+            this.$refs.viewcita.cita_nueva = this.selectedEvent.cita
+            this.$refs.viewcita.cita_anterior = structuredClone(this.selectedEvent.cita)
+            this.$refs.viewcita.open()
+            this.$refs.viewcita.change_fecha2()
+            /*this.datos_informacion = a;
             var a = await axios.post('api/datos_usuario/' + this.selectedEvent.cita.ci).then();
             var datos = a['data'];
             console.log(datos['opcion']);
@@ -413,6 +419,7 @@ export default {
             this.$refs.datospersonales.paciente_edit = structuredClone(this.$refs.datospersonales.paciente);
             this.$refs.datospersonales.cita_nueva = structuredClone(this.selectedEvent.cita);
             this.$refs.datospersonales.change_fecha2()
+            */
 
         },
         cerrar_agendar() {

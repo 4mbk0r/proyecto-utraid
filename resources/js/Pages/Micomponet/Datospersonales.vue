@@ -216,8 +216,7 @@ import {
     objectExpression
 } from '@babel/types'
 import axios from 'axios'
-import moment from
-    'moment'
+import moment from 'moment'
 const day1 = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + new Date().getDate()).slice(-2)
 
 export default {
@@ -254,8 +253,9 @@ export default {
         t_equipo: null,
         sortBy: 'fecha',
         sortDesc: true,
-        tipo_cita: ['RECALIFICADO', 'NUEVO'],
         selectRules: [v => v != 'No se tiene registro' || 'Se requiere el dato'],
+        tipo_cita: ['RECALIFICADO', 'NUEVO'],
+        
         lugares: ["CALLE MUÑOZ CORNEJO NRO 2702 - ESQUINA MENDEZ ARCOS - SOPOCACHI",
             "TELEFERICO MORADO - FARO MURILLO",
             "TELEFERICO PLATEADO - CIUDAD SATELITE",
