@@ -204,8 +204,8 @@ class ComposerStaticInitdef721d625e8c42474d380657f2e37b0
         'phpDocumentor\\Reflection\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
         ),
         'Whoops\\' => 
         array (
@@ -361,8 +361,8 @@ class ComposerStaticInitdef721d625e8c42474d380657f2e37b0
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -1715,9 +1715,6 @@ class ComposerStaticInitdef721d625e8c42474d380657f2e37b0
         'Faker\\Provider\\zh_TW\\Payment' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/zh_TW/Payment.php',
         'Faker\\Provider\\zh_TW\\Person' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/zh_TW/Person.php',
         'Faker\\Provider\\zh_TW\\PhoneNumber' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/zh_TW/PhoneNumber.php',
-        'Faker\\Provider\\zh_TW\\Text' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/zh_TW/Text.php',
-        'Faker\\UniqueGenerator' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/UniqueGenerator.php',
-        'Faker\\ValidGenerator' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/ValidGenerator.php',
         'FontLib\\AdobeFontMetrics' => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib/AdobeFontMetrics.php',
         'FontLib\\Autoloader' => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib/Autoloader.php',
         'FontLib\\BinaryStream' => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib/BinaryStream.php',

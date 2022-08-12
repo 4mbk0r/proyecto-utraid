@@ -1,83 +1,95 @@
 <template>
-<v-app id="inspire" class="grey--text text--darken-2">
-    <div class="c_azul">
-        <!-- Page Heading -->
-        <v-app-bar color="#a2315a" class="white--text" app>
-            <v-app-bar-nav-icon style="color: white;" @click="drawer = !drawer">
+    <v-app id="inspire" class="grey--text text--darken-2">
+        <div class="c_azul">
 
-            </v-app-bar-nav-icon>
 
-            <v-toolbar-title>UTRAID
-            </v-toolbar-title>
-            <v-btn class="mx-2"  @click="toggleTheme()">
-                <v-icon>
-                    mdi-pencil
-                </v-icon>
-            </v-btn>
+            <!-- Page Heading -->
+            <v-app-bar color="#a2315a" class="white--text" app>
+                <v-app-bar-nav-icon style="color: white;" @click="drawer = !drawer">
 
-        </v-app-bar>
+                </v-app-bar-nav-icon>
 
-        <!-- Page Content -->
-        <v-navigation-drawer v-model="drawer" color="#a2315a" style="color: white;" app>
-            <v-list>
-                <v-list-item class="px-2">
-                    <v-img max-height="80" max-width="150" src="./assets/logo-sedes-lapaz.png"></v-img>
-                </v-list-item>
+                <v-toolbar-title>UTRAID
+                </v-toolbar-title>
+                <v-btn class="mx-2" @click="toggleTheme()">
+                    <v-icon>
+                        mdi-pencil
+                    </v-icon>
+                </v-btn>
 
-                <v-list-item link>
-                    <v-list-item-content style="color: white;">
-                        <v-list-item-title>
-                            {{ $page.props.user.name }}
-                        </v-list-item-title>
-                        <v-list-item-subtitle style="color: white;">{{ $page.props.user.email }}
-                        </v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>
+            </v-app-bar>
 
-                <form method="POST" @submit.prevent="logout">
-                    <jet-responsive-nav-link as="button">
+            <!--Page Content-->
+            <v-navigation-drawer v-model="drawer" color="#a2315a" style="color: white;" app>
+                <v-list>
+                    <v-list-item class="px-2">
+                        <v-img max-height="80" max-width="150" src="./assets/logo-sedes-lapaz.png"></v-img>
+                    </v-list-item>
 
-                        <v-list-item-title style="color: black;">Cerrar Secion</v-list-item-title>
-                    </jet-responsive-nav-link>
-                </form>
-            </v-list>
+                    <v-list-item link>
+                        <v-list-item-content style="color: white;">
+                            <v-list-item-title>
+                                {{ $page.props.user.name }}
+                            </v-list-item-title>
+                            <v-list-item-subtitle style="color: white;">{{ $page.props.user.email }}
+                            </v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
 
-            <v-divider></v-divider>
+                    <form method="POST" @submit.prevent="logout">
+                        <v-hover>
+                            <jet-responsive-nav-link as="button">
 
-            <v-list nav dense>
+                                <v-list-item-title style="color: black;">Cerrar Secion</v-list-item-title>
+                            </jet-responsive-nav-link>
+                        </v-hover>
+                    </form>
+                </v-list>
 
-                <jet-responsive-nav-link :href="route('inicio')" :active="route().current('inicio')">
+                <v-divider></v-divider>
+               <v-list nav dense>
+                    <v-list-item link  :href="route('inicio')">
+                        <v-list-item-content style="color: white;">
+                            <v-list-item-title >
+                                <v-icon>mdi-file-document-edit</v-icon>
+                                <span>Agendar</span>
+                            </v-list-item-title>                            
+                        </v-list-item-content>   
+                    </v-list-item>
+                     <v-list-item link  :href="route('registro')">
+                        <v-list-item-content style="color: white;">
+                            <v-list-item-title>
+                                <v-icon>mdi-file-document-edit</v-icon>
+                                <span>Agendar</span>
+                            </v-list-item-title>
 
-                    <v-icon>mdi-file-document-edit</v-icon>
-                    <a :href="route('inicio')">Agendar</a>
-                </jet-responsive-nav-link>
+                            
+                        </v-list-item-content>
 
-                <jet-responsive-nav-link :href="route('administrar.index')" :active="route().current('administrar.index')">
+                        
+                    </v-list-item>
 
-                    <v-icon>mdi-account-multiple</v-icon>
-                    <a :href="route('registro')">Usuario</a>
-                </jet-responsive-nav-link>
+                    
 
-            </v-list>
-        </v-navigation-drawer>
+                </v-list>
+            </v-navigation-drawer>
+            <v-main>
+                <slot></slot>
+            </v-main>
 
-        <v-main>
-            <slot></slot>
-        </v-main>
-
-        <!-- Modal Portal -->
-        <portal-target name="modal" multiple>
-        </portal-target>
-        <v-dialog v-model="v_carga" hide-overlay persistent width="300">
-            <v-card color="primary" dark>
-                <v-card-text>
-                    Espere por favor
-                    <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
-                </v-card-text>
-            </v-card>
-        </v-dialog>
-    </div>
-</v-app>
+            <!-- Modal Portal -->
+            <portal-target name="modal" multiple>
+            </portal-target>
+            <v-dialog v-model="v_carga" hide-overlay persistent width="300">
+                <v-card color="primary" dark>
+                    <v-card-text>
+                        Espere por favor
+                        <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+        </div>
+    </v-app>
 </template>
 
 <script>
@@ -105,16 +117,35 @@ export default {
 
     data() {
         return {
+            drawer: true,
+            itemsDrawer: [{
+                icon: 'mdi-security',
+                text: 'Menu 1',
+            },
+            {
+                icon: 'mdi-text-box-multiple-outline',
+                text: 'Menu 2',
+            },
+            {
+                icon: 'mdi-contacts',
+                text: 'Menu 3',
+                model: false,
+                children: [
+                    { icon: 'mdi-menu-right', text: 'Nested 1' },
+                    { icon: 'mdi-menu-right', text: 'Nested 2' }
+                ]
+            }
+            ],
             showingNavigationDropdown: false,
             drawer: null,
             items: [{
-                    title: 'Home',
-                    icon: 'mdi-view-dashboard'
-                },
-                {
-                    title: 'About',
-                    icon: 'mdi-forum'
-                },
+                title: 'Home',
+                icon: 'mdi-view-dashboard'
+            },
+            {
+                title: 'About',
+                icon: 'mdi-forum'
+            },
             ],
             v_carga: false,
             pendingRequests: 0,

@@ -37,17 +37,25 @@ Route::resource('/agendar', CitaController::class)->middleware(['auth:sanctum', 
 
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/registra', function () {
-    return Inertia::render('Registro');;
+    return Inertia::render('Auth/Register');;
 })->name('registro');
 
 Route::resource('/persona_antigua', PersonaAntiguoController::class)->middleware(['auth:sanctum', 'verified']);
-/*
+
 Route::middleware(['auth:sanctum', 'verified'])->get('/administrar', function () {
     return Inertia::render('Administrador');
 })->name('administrar');
-**/
 Route::resource('/administrar', PersonaCitaController::class)->middleware(['auth:sanctum', 'verified']);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/pdf', function () {
     return view('myPDF');
 })->name('pdf');
+
+//Route::middleware()
+Route::get('/admin', function () {
+    return Inertia::render('Auth/LoginAdmin');;
+})->name('admin');
+
+Route::post('/loginadmin', function () {
+    
+})->name('loginadmin');
