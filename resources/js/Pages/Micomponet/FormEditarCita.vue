@@ -14,114 +14,57 @@
             <v-container>
               <v-row no-gutters>
                 <v-col cols="12" sm="4" md="4">
-                  <v-menu
-                    v-model="menu2"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
+                  <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <!--<v-text-field v-model="date" label="Picker without buttons"
                                                         prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
                                                     </v-text-field>-->
-                      <v-text-field
-                        v-model="cita_nueva.fecha"
-                        :rules="nombreRules"
-                        placeholder="Selecione fecha de cita"
-                        required
-                        prepend-icon="mdi-calendar"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                      >
+                      <v-text-field v-model="cita_nueva.fecha" :rules="nombreRules"
+                        placeholder="Selecione fecha de cita" required prepend-icon="mdi-calendar" readonly
+                        v-bind="attrs" v-on="on">
                       </v-text-field>
                     </template>
-                    <v-date-picker
-                      v-model="cita_nueva.fecha"
-                      :allowed-dates="allowedDates"
-                      @input="menu2 = false"
-                      @change="change_fecha2"
-                      :min="fechacitaMin"
-                      locale="es-ES"
-                    >
+                    <v-date-picker v-model="cita_nueva.fecha" :allowed-dates="allowedDates" @input="menu2 = false"
+                      @change="change_fecha2" :min="fechacitaMin" locale="es-ES">
                     </v-date-picker>
                   </v-menu>
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
-                  <v-select
-                    v-model="cita_nueva.equipo"
-                    :items="equipos_actuales"
-                    :rules="nombreRules"
-                    persistent-placeholder
-                    placeholder="Selecione el equipo"
-                    @input="cambioequipo"
-                    color="purple darken-3"
-                    label="Equipo"
-                    required
-                  >
+                  <v-select v-model="cita_nueva.equipo" :items="equipos_actuales" :rules="nombreRules"
+                    persistent-placeholder placeholder="Selecione el equipo" @input="cambioequipo"
+                    color="purple darken-3" label="Equipo" required>
                   </v-select>
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
-                  <v-select
-                    v-model="cita_nueva.hora_inicio"
-                    :items="tiempos_actuales"
-                    :rules="nombreRules"
-                    persistent-placeholder
-                    placeholder="Selecione hora de cita"
-                    color="purple darken-3"
-                    label="Hora de inicio"
-                    required
-                  >
+                  <v-select v-model="cita_nueva.hora_inicio" :items="tiempos_actuales" :rules="nombreRules"
+                    persistent-placeholder placeholder="Selecione hora de cita" color="purple darken-3"
+                    label="Hora de inicio" required>
                   </v-select>
                 </v-col>
               </v-row>
               <v-row no-gutters>
                 <v-col cols="12" sm="4" md="4">
-                  <v-select
-                    v-model="cita_nueva.tipo_cita"
-                    :items="tipo_cita"
-                    color="purple darken-3"
-                    persistent-placeholder
-                    :rules="nombreRules"
-                    placeholder="Selecione tipo de cita"
-                    label="Tipo de cita"
-                  >
+                  <v-select v-model="cita_nueva.tipo_cita" :items="tipo_cita" color="purple darken-3"
+                    persistent-placeholder :rules="nombreRules" placeholder="Selecione tipo de cita"
+                    label="Tipo de cita">
                   </v-select>
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
-                  <v-select
-                    v-model="cita_nueva.lugar"
-                    :items="lugares"
-                    color="purple darken-3"
-                    :rules="nombreRules"
-                    persistent-placeholder
-                    placeholder="Selecione lugar de cita"
-                    label="Lugar"
-                    required
-                  >
+                  <v-select v-model="cita_nueva.lugar" :items="lugares" color="purple darken-3" :rules="nombreRules"
+                    persistent-placeholder placeholder="Selecione lugar de cita" label="Lugar" required>
                   </v-select>
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
-                  <v-text-field
-                    v-model="cita_nueva.observacion"
-                    type="text"
-                    persistent-placeholder
-                    placeholder="Agregar observaciones"
-                    label="Observacion"
-                  >
+                  <v-text-field v-model="cita_nueva.observacion" type="text" persistent-placeholder
+                    placeholder="Agregar observaciones" label="Observacion">
                   </v-text-field>
                 </v-col>
               </v-row>
               <v-btn color="primary" class="mr-4" @click="guardar_cita">
                 Guardar Cita
               </v-btn>
-              <v-btn
-                color="primary"
-                class="mr-4"
-                @click.stop="v_agendar = false"
-              >
+              <v-btn color="primary" class="mr-4" @click.stop="v_agendar = false">
                 Boleta
               </v-btn>
             </v-container>
@@ -281,17 +224,22 @@ export default {
           }
           this.lista_tiempos["" + (i + 1)] = aux;
         }
-        
+
       }
-      if( ! this.lista_tiempos.hasOwnProperty(''+this.cita_nueva.equipo) ){
-        var aux = [this.cita_nueva.hora_inicio]
-        this.lista_tiempos[this.cita_nueva.equipo] = aux
-      }else{
-         this.lista_tiempos[this.cita_nueva.equipo].push(this.cita_nueva.hora_inicio)
-         this.lista_tiempos[this.cita_nueva.equipo].sort()
+      console.log(this.cita_anterior)
+      if (this.cita_nueva.fecha == this.cita_anterior.fecha) {
+        if (!this.lista_tiempos.hasOwnProperty('' + this.cita_nueva.equipo)) {
+          var aux = [this.cita_nueva.hora_inicio]
+          this.lista_tiempos[this.cita_nueva.equipo] = aux
+        } else {
+
+          this.lista_tiempos[this.cita_nueva.equipo].push(this.cita_nueva.hora_inicio)
+          this.lista_tiempos[this.cita_nueva.equipo].sort()
+
+        }
       }
-      this.tiempos_actuales=this.lista_tiempos[this.cita_nueva.equipo]
-      
+      this.tiempos_actuales = this.lista_tiempos[this.cita_nueva.equipo]
+
     },
     cambioequipo() {
       this.tiempos_actuales = this.lista_tiempos["" + this.cita_nueva.equipo];
@@ -313,14 +261,14 @@ export default {
           this.cita_nueva.fecha + "T" + this.cita_nueva.hora_inicio
         ).add(1, "h").format("HH:mm:ss")
         console.log(hof)
-        this.cita_nueva.hora_final=hof
+        this.cita_nueva.hora_final = hof
         var res = await axios({
           method: "post",
           url: "api/update_cita",
           data: {
             cita_nueva: this.cita_nueva,
             cita_anterior: this.cita_anterior
-            },
+          },
         }).then();
         console.log(res);
       }

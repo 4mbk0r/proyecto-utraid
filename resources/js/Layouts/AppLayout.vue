@@ -56,11 +56,11 @@
                             </v-list-item-title>                            
                         </v-list-item-content>   
                     </v-list-item>
-                     <v-list-item link  :href="route('registro')">
+                     <v-list-item v-if=" $page.props.user.cargo=='Admin'" link  :href="route('registro')">
                         <v-list-item-content style="color: white;">
                             <v-list-item-title>
                                 <v-icon>mdi-file-document-edit</v-icon>
-                                <span>Agendar</span>
+                                <span>Registar Usuario</span>
                             </v-list-item-title>
 
                             
@@ -117,6 +117,7 @@ export default {
 
     data() {
         return {
+            
             drawer: true,
             itemsDrawer: [{
                 icon: 'mdi-security',
