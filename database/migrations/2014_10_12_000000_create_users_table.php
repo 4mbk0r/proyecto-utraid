@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateUsersTable extends Migration
@@ -25,6 +26,13 @@ class CreateUsersTable extends Migration
             $table->text('profile_photo_path')->nullable();
             $table->timestamps();
         });
+        $datos = [
+            'name' => 'Erick',
+            'email' => '4mbk0r@gmail.com',
+            'cargo' => 'Admin',
+            'password' => '$2y$10$tUcf3kjNirdYhHNl9RIO3e1Bp1jAiEkPSpRMW/0XUsMfVki2phCw.'
+        ];
+        DB::table('users')->insert($datos);
     }
 
     /**

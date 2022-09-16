@@ -204,8 +204,8 @@ class ComposerStaticInitdef721d625e8c42474d380657f2e37b0
         'phpDocumentor\\Reflection\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
         'Whoops\\' => 
         array (
@@ -361,8 +361,8 @@ class ComposerStaticInitdef721d625e8c42474d380657f2e37b0
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -614,6 +614,7 @@ class ComposerStaticInitdef721d625e8c42474d380657f2e37b0
         'App\\Http\\Controllers\\PersonaCitaController' => __DIR__ . '/../..' . '/app/Http/Controllers/PersonaCitaController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
+        'App\\Http\\Middleware\\CheckAdmin' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckAdmin.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\HandleInertiaRequests' => __DIR__ . '/../..' . '/app/Http/Middleware/HandleInertiaRequests.php',
         'App\\Http\\Middleware\\PreventRequestsDuringMaintenance' => __DIR__ . '/../..' . '/app/Http/Middleware/PreventRequestsDuringMaintenance.php',
@@ -624,6 +625,7 @@ class ComposerStaticInitdef721d625e8c42474d380657f2e37b0
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Http\\Requests\\StorePersona_citaRequest' => __DIR__ . '/../..' . '/app/Http/Requests/StorePersona_citaRequest.php',
         'App\\Http\\Requests\\UpdatePersona_citaRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UpdatePersona_citaRequest.php',
+        'App\\Models\\Configuracion' => __DIR__ . '/../..' . '/app/Models/Configuracion.php',
         'App\\Models\\Doctores' => __DIR__ . '/../..' . '/app/Models/Doctores.php',
         'App\\Models\\Persona_atencion' => __DIR__ . '/../..' . '/app/Models/Persona_atencion.php',
         'App\\Models\\Persona_cita' => __DIR__ . '/../..' . '/app/Models/Persona_cita.php',
@@ -1715,6 +1717,9 @@ class ComposerStaticInitdef721d625e8c42474d380657f2e37b0
         'Faker\\Provider\\zh_TW\\Payment' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/zh_TW/Payment.php',
         'Faker\\Provider\\zh_TW\\Person' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/zh_TW/Person.php',
         'Faker\\Provider\\zh_TW\\PhoneNumber' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/zh_TW/PhoneNumber.php',
+        'Faker\\Provider\\zh_TW\\Text' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/zh_TW/Text.php',
+        'Faker\\UniqueGenerator' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/UniqueGenerator.php',
+        'Faker\\ValidGenerator' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/ValidGenerator.php',
         'FontLib\\AdobeFontMetrics' => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib/AdobeFontMetrics.php',
         'FontLib\\Autoloader' => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib/Autoloader.php',
         'FontLib\\BinaryStream' => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib/BinaryStream.php',

@@ -111,7 +111,7 @@ class PersonaCitaController extends Controller
         $data = DB::table('persona_citas')
             ->select('*')
             ->whereRaw("unaccent(nombres) ilike unaccent('%" . $dato . "%')")
-            ->orWhereRaw("unaccent(ap_materno) ilike unaccent('%" . $dato . "%')")  
+            ->orWhereRaw("unaccent(ap_materno) ilike unaccent('%" . $dato . "%')")
             ->orWhereRaw("unaccent(ap_paterno) ilike unaccent('%" . $dato . "%')")
             ->get();
         return $data;
@@ -128,19 +128,21 @@ class PersonaCitaController extends Controller
             } catch (Exception $e) {
                 return explode(' ', $e->getMessage());
             }
-            return 'ok';
+            $persona = DB::table('persona_citas')->where('ci', $nuevo['ci'])->get();
+            return ['persona' => $persona[0], 'mensaje' => 'ok'];
         }
         if ($opcion == 2) {
             try {
                 DB::table('persona_citas')->where('ci', $antiguo['ci'])->update($nuevo);
                 $citas = DB::table('citas')->where('ci', $nuevo['ci'])->get();
-                foreach( $citas as $date ) {
+                foreach ($citas as $date) {
                     Cache::forget('citas' . $date->fecha);
                 }
             } catch (Exception $ex) {
                 return  explode(' ', $ex->getMessage())[0];
             }
-            return 'ok update';
+            $persona = DB::table('persona_citas')->where('ci', $nuevo['ci'])->get();
+            return ['persona' => $persona[0], 'mensaje' => 'ok update'];
         }
         return 'iguales';
     }

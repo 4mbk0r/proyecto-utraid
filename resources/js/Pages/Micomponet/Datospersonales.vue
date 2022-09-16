@@ -11,8 +11,11 @@
 
             <v-card>
                 <v-tabs v-model="datos_informacion" centered>
-                    <v-tab v-for="n in 3" :key="n">
-                        Item {{ n }}
+                    <v-tab key="0">
+                        Datos Personales
+                    </v-tab>
+                    <v-tab v-if="paciente.register" key="1">
+                        Las Citas
                     </v-tab>
                 </v-tabs>
 
@@ -20,7 +23,7 @@
                     <v-tab-item>
                         <v-card flat>
 
-                            <v-form v-model="valid">
+                            <v-form v-model="valid" ref='formDatopersonales'>
                                 <v-container>
                                     <v-row no-gutters>
                                         <v-col cols="12" sm="6">
@@ -133,7 +136,7 @@
                 <v-spacer></v-spacer>
             </v-toolbar>
             <template>
-                <v-card>
+                <v-card id="section-to-print">
 
                     <v-form ref="form_cita" v-model="validacion">
 
@@ -255,7 +258,7 @@ export default {
         sortDesc: true,
         selectRules: [v => v != 'No se tiene registro' || 'Se requiere el dato'],
         tipo_cita: ['RECALIFICADO', 'NUEVO'],
-        
+
         lugares: ["CALLE MUÑOZ CORNEJO NRO 2702 - ESQUINA MENDEZ ARCOS - SOPOCACHI",
             "TELEFERICO MORADO - FARO MURILLO",
             "TELEFERICO PLATEADO - CIUDAD SATELITE",
@@ -416,8 +419,8 @@ export default {
             this.dialog = true
         },
         async tabselect(a) {
-           this.datos_informacion = a
-            
+            this.datos_informacion = a
+
         },
         close() {
             this.dialog = false
@@ -439,15 +442,17 @@ export default {
                 }
             }).then();
             console.log(res);
-            if (res['data'] == 'ok') {
+            if (res['data']['mensaje'] == 'ok') {
                 console.log('inserccion correcta')
                 this.alert('Inserccion Correcta')
+                this.paciente = res['data']['persona']
+                this.paciente_edit = structuredClone(this.paciente)
                 this.op1 = 2;
             }
-            if (res['data'] == 'ok update') {
+            if (res['data']['mensaje'] == 'ok update') {
                 console.log('update correcto')
                 this.alert('Actulizacion Correcta')
-
+                this.paciente = res['data']['persona']
                 this.paciente_edit = structuredClone(this.paciente)
                 this.op1 = 2;
             }
@@ -461,8 +466,18 @@ export default {
         },
         allowedDates(val) {
             var d = new Date(val).getDay()
-            if (d == 5) return false;
-            if (d == 6) return false;
+            var f = new Date(val).toISOString().slice(0, 10);
+            var datos = JSON.parse(this.$store.getters.getConfig.dias);
+            var dias_s = [
+                "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", 'Domingo']
+            if (datos.includes(dias_s[d])) return false;
+            var datos = JSON.parse(this.$store.getters.getConfig.feriados);
+            if (typeof datos == 'undefined') return false//console.log(datos)
+            for (const element of datos) { // You can use `let` instead of `const` if you like
+                if (f == element.fecha) {
+                    return false;
+                }
+            }
             return true;
         },
         async change_fecha2() {
@@ -523,7 +538,10 @@ export default {
                         cita: datos,
                     }
                 }).then();
-                console.log(res);
+                console.log(res['data']);
+                this.las_citas = res['data'];
+                this.v_agendar = false;
+
             }
 
         },

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\ConfiguracionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,7 +37,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/inicio', [CitaController:
 Route::resource('/agendar', CitaController::class)->middleware(['auth:sanctum', 'verified']);
 
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/registra', function () {
+Route::get('/registra', function () {
     return Inertia::render('Auth/Register');;
 })->name('registro');
 
@@ -57,5 +58,17 @@ Route::get('/admin', function () {
 })->name('admin');
 
 Route::post('/loginadmin', function () {
-    
 })->name('loginadmin');
+
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/configuracion', function () {
+    return Inertia::render('Config');
+})->name('configuracion');
+
+Route::resource('/configs', ConfiguracionController::class)->middleware(['auth:sanctum', 'verified']);
+
+
+
+Route::get('/imprimir', function () {
+    return Inertia::render('Micomponet/imprimir');;
+})->name('admin');

@@ -21,56 +21,67 @@
 
             <!--Page Content-->
             <v-navigation-drawer v-model="drawer" color="#a2315a" style="color: white;" app>
-                <v-list>
-                    <v-list-item class="px-2">
-                        <v-img max-height="80" max-width="150" src="./assets/logo-sedes-lapaz.png"></v-img>
-                    </v-list-item>
+                <v-list v-if="$page.props.user" dense>
+                    <v-list-item-group v-model="idlist">
 
-                    <v-list-item link>
-                        <v-list-item-content style="color: white;">
-                            <v-list-item-title>
-                                {{ $page.props.user.name }}
-                            </v-list-item-title>
-                            <v-list-item-subtitle style="color: white;">{{ $page.props.user.email }}
-                            </v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
+                        <v-list-item class="px-2" key="0">
+                            <v-img max-height="80" max-width="150" src="assets/logo-sedes-lapaz.png"></v-img>
+                        </v-list-item>
 
-                    <form method="POST" @submit.prevent="logout">
-                        <v-hover>
-                            <jet-responsive-nav-link as="button">
+                        <v-list-item link>
+                            <v-list-item-content style="color: white;" key="1">
+                                <v-list-item-title>
+                                    {{ $page.props.user.name }}
+                                </v-list-item-title>
+                                <v-list-item-subtitle style="color: white;">{{ $page.props.user.email }}
+                                </v-list-item-subtitle>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item link key="2">
+                            <form method="POST" @submit.prevent="logout">
+                                <v-hover>
+                                    <jet-responsive-nav-link as="button">
 
-                                <v-list-item-title style="color: black;">Cerrar Secion</v-list-item-title>
-                            </jet-responsive-nav-link>
-                        </v-hover>
-                    </form>
-                </v-list>
+                                        <v-list-item-title style="color: black;">Cerrar Secion</v-list-item-title>
+                                    </jet-responsive-nav-link>
+                                </v-hover>
+                            </form>
+                        </v-list-item>
 
-                <v-divider></v-divider>
-               <v-list nav dense>
-                    <v-list-item link  :href="route('inicio')">
-                        <v-list-item-content style="color: white;">
-                            <v-list-item-title >
-                                <v-icon>mdi-file-document-edit</v-icon>
-                                <span>Agendar</span>
-                            </v-list-item-title>                            
-                        </v-list-item-content>   
-                    </v-list-item>
-                     <v-list-item v-if=" $page.props.user.cargo=='Admin'" link  :href="route('registro')">
-                        <v-list-item-content style="color: white;">
-                            <v-list-item-title>
-                                <v-icon>mdi-file-document-edit</v-icon>
-                                <span>Registar Usuario</span>
-                            </v-list-item-title>
+                        <jet-nav-link :href="route('inicio')">
+                            <v-list-item link key="3">
+                                <v-list-item-content style="color: white;">
+                                    <v-list-item-title>
+                                        <v-icon>mdi-file-document-edit</v-icon>
+                                        <span>Agendar</span>
+                                    </v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </jet-nav-link>
+                        <jet-nav-link :href="route('registro')">
+                            <v-list-item v-if=" $page.props.user.cargo=='Admin'" key="4" link>
+                                <v-list-item-content style="color: white;">
+                                    <v-list-item-title>
+                                        <v-icon>mdi-file-document-edit</v-icon>
+                                        <span>Registar Usuario</span>
+                                    </v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </jet-nav-link>
+                        <jet-nav-link :href="route('configuracion')">
+                            <v-list-item v-if=" $page.props.user.cargo=='Admin'" key="5" link>
 
-                            
-                        </v-list-item-content>
+                                <v-list-item-content style="color: white;">
+                                    <v-list-item-title>
+                                        <v-icon>mdi-file-document-edit</v-icon>
+                                        <span>Configuracion</span>
+                                    </v-list-item-title>
 
-                        
-                    </v-list-item>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </jet-nav-link>
 
-                    
-
+                    </v-list-item-group>
                 </v-list>
             </v-navigation-drawer>
             <v-main>
@@ -117,7 +128,7 @@ export default {
 
     data() {
         return {
-            
+
             drawer: true,
             itemsDrawer: [{
                 icon: 'mdi-security',
@@ -152,6 +163,7 @@ export default {
             pendingRequests: 0,
             totalRequests: 0,
             dark: false,
+            idlist: 0,
         }
     },
 

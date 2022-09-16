@@ -248,12 +248,22 @@ export default {
     },
     allowedDates(val) {
       var d = new Date(val).getDay();
+      var f = new Date(val).toISOString().slice(0, 10);
       if (d == 5) return false;
       if (d == 6) return false;
+      var datos = this.$store.getters.getConfig.feriados;
+      for (const element of datos) { // You can use `let` instead of `const` if you like
+        if (f == element.fecha) {
+          return false;
+        }
+      }
       return true;
     },
     open() {
       this.v_agendar = true;
+      var datos = this.$store.getters.getConfig.feriados;
+      console.log('open')
+      console.log(datos)
     },
     async guardar_cita() {
       if (this.$refs.form_cita.validate()) {
@@ -270,7 +280,12 @@ export default {
             cita_anterior: this.cita_anterior
           },
         }).then();
-        console.log(res);
+
+        console.log(this.cita_anterior.equipo)
+        console.log(this.cita_nueva.equipo)
+        console.log(res['data'])
+        this.$store.state.listevent = res['data']
+        this.$store.dispatch('listEventsAction')
       }
     },
   },

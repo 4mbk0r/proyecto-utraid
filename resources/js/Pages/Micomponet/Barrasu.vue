@@ -22,10 +22,10 @@
 
                                 <v-menu ref="menu1" max-width="290px" v-model="menu1" :close-on-content-click="false">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field v-model="fecha_hoy" label="Date" prepend-icon="mdi-calendar"
-                                            filled v-bind="attrs" v-on="on"></v-text-field>
+                                        <v-text-field v-model="$store.state.fecha_actual" label="Date"
+                                            prepend-icon="mdi-calendar" filled v-bind="attrs" v-on="on"></v-text-field>
                                     </template>
-                                    <v-date-picker v-model="fecha_hoy" no-title @input="menu1 = false"
+                                    <v-date-picker v-model="$store.state.fecha_actual" no-title @input="menu1 = false"
                                         @change="formatDate" locale="es-ES">
                                     </v-date-picker>
                                 </v-menu>
@@ -41,12 +41,12 @@
                                 </v-btn>
                                 <v-toolbar-title v-if="$refs.calendar">
                                     <!--{{ $refs.calendar.title }}-->
-                                    {{ textoDate(fecha_hoy) }}
+                                    {{ textoDate($store.state.fecha_actual) }}
                                 </v-toolbar-title>
                                 <v-spacer></v-spacer>
 
                             </v-toolbar>
-                            
+
                         </v-sheet>
                     </v-col>
                 </v-row>
@@ -55,7 +55,7 @@
                         <v-sheet class="fill-height">
                             <!--@change=""-->
                             <v-calendar ref="calendar" v-model="focus" color="primary" type="category" category-show-all
-                                :categories="categories" :events="events" :event-color="getEventColor"
+                                :categories="categories" :events="$store.state.events" :event-color="getEventColor"
                                 @click:event="showEvent" :first-interval=7 :interval-minutes=60 :interval-count=12>
                                 <template v-slot:event="{ event }">
                                     {{ event.nombres }}
@@ -178,7 +178,7 @@
                     </v-card-actions>
                 </v-card>
             </v-menu>
-            
+
         </div>
         <viewcita ref="viewcita" />
     </v-app>
@@ -198,7 +198,7 @@ export default {
         viewcita,
     },
     props: {
-        datos_cita: Array,
+        //datos_cita: Array,
     },
     data: () => ({
         menu1: false,
@@ -207,10 +207,10 @@ export default {
         dark: false,
         actulizar_ci: {},
         msg: [],
-        fecha_hoy: day1,
+        //fecha_hoy: day1,
         //calendar
         focus: '',
-        events: [],
+
         colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
         names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party', 'Cita'],
         categories: ['Equipo 1', 'Equipo 2', 'Equipo 3', 'Equipo 4'],
@@ -397,6 +397,7 @@ export default {
             this.v_editar_agendar = false
         },
         async editar_cita() {
+            console.log(this.selectedEvent)
             this.$refs.viewcita.cita_nueva = this.selectedEvent.cita
             this.$refs.viewcita.cita_anterior = structuredClone(this.selectedEvent.cita)
             this.$refs.viewcita.open()
@@ -460,13 +461,15 @@ export default {
 
         },
         imprimir() {
-            this.v_imprimir = true;
+            //this.v_imprimir = true;
+            console.log(this.selectedEvent)
+            localStorage.setItem('cita', JSON.stringify(this.selectedEvent.cita));
+            let w = window.open('/main/imprimir').focus();
         },
         async imprimir_boleta() {
 
-            let printContents = document.getElementById('print').innerHTML;
-            let w = window.open();
-            w.document.write('<style>.titulo{font-family:Helvetica,Arial,sans-serif;font-weight:100%;font-size:14px}.titulo2{font-family:Arial,sans-serif;font-weight:700;font-size:12px}.titulo3{font-size:9px;font-weight:900}.aling{align-items:center;align-content:center;text-align:center;padding:5px}.center_columna{justify-content:center;align-content:center;display:flex;justify-content:center;align-items:center;border:3px solid gray}.aling{align-items:center;align-content:center;text-align:center;padding:0,0,0,0;font-size:10px}.alinear_elemento{justify-content:center;align-items:center;padding:5px;border-radius:5px;border:2px solid gray}.total_ancho{width:100%;background-color:#1ca698}.box{border-radius:10px;border:2px solid gray;justify-content:center;align-items:center;align-content:center;align-self:center;height:90px;align-items:center;align-content:center;text-align:center;align-content:center;padding:1px;justify-content:center;word-break:break-all}.wrapper{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(10px,90px);justify-content:center;text-align:center;padding:0,0,0,0;font-size:20px;border:0 solid gray;align-content:center;text-align:center;word-break:break-all}.one{grid-column:1/4;grid-row:1;align-content:center;height:30px}.two{grid-column:1;grid-row:2}.three{grid-column:2;grid-row:2}.four{grid-column:3;grid-row:2;font-size:14px}.five{grid-column:1/4;grid-row:3}.label{display:flex;flex-wrap:wrap;align-content:center;justify-content:center}.grid-container{display:grid;grid-template-columns:auto auto auto;padding:1px;font-size:20px}.grid-item{background-color:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.8);padding:1px;font-size:20px;text-align:center}.grid-nombre{background-color:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.8);font-size:20px;text-align:center}.texto_nombre{padding:0}.texto_mediano{font-size:16px}.observaciones{width:max-content}</STYLE>');
+            /*let printContents = document.getElementById('print').innerHTML;
+            /*w.document.write('<style>.titulo{font-family:Helvetica,Arial,sans-serif;font-weight:100%;font-size:14px}.titulo2{font-family:Arial,sans-serif;font-weight:700;font-size:12px}.titulo3{font-size:9px;font-weight:900}.aling{align-items:center;align-content:center;text-align:center;padding:5px}.center_columna{justify-content:center;align-content:center;display:flex;justify-content:center;align-items:center;border:3px solid gray}.aling{align-items:center;align-content:center;text-align:center;padding:0,0,0,0;font-size:10px}.alinear_elemento{justify-content:center;align-items:center;padding:5px;border-radius:5px;border:2px solid gray}.total_ancho{width:100%;background-color:#1ca698}.box{border-radius:10px;border:2px solid gray;justify-content:center;align-items:center;align-content:center;align-self:center;height:90px;align-items:center;align-content:center;text-align:center;align-content:center;padding:1px;justify-content:center;word-break:break-all}.wrapper{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(10px,90px);justify-content:center;text-align:center;padding:0,0,0,0;font-size:20px;border:0 solid gray;align-content:center;text-align:center;word-break:break-all}.one{grid-column:1/4;grid-row:1;align-content:center;height:30px}.two{grid-column:1;grid-row:2}.three{grid-column:2;grid-row:2}.four{grid-column:3;grid-row:2;font-size:14px}.five{grid-column:1/4;grid-row:3}.label{display:flex;flex-wrap:wrap;align-content:center;justify-content:center}.grid-container{display:grid;grid-template-columns:auto auto auto;padding:1px;font-size:20px}.grid-item{background-color:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.8);padding:1px;font-size:20px;text-align:center}.grid-nombre{background-color:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.8);font-size:20px;text-align:center}.texto_nombre{padding:0}.texto_mediano{font-size:16px}.observaciones{width:max-content}</STYLE>');
 
             w.document.write(printContents);
 
@@ -474,7 +477,7 @@ export default {
             w.focus(); // necessary for IE >= 10
             w.print();
             w.close();
-            return true;
+            return true;*/
 
             window.print();
 
@@ -562,8 +565,8 @@ export default {
 
         },
         ventana_modal() {
-            console.log("----" + this.fecha_hoy);
-            this.citas.fecha = this.fecha_hoy;
+            console.log("----" + this.$store.state.fecha_actual);
+            this.citas.fecha = this.$store.state.fecha_actual;
             this.dialog = true;
         },
         cambioequipo() {
@@ -684,7 +687,7 @@ export default {
             this.$refs.datospersonales.op1 = opcion;
 
             this.$refs.datospersonales.las_citas = datos['citas'];
-            this.$refs.datospersonales.cita_nueva.fecha = this.fecha_hoy;
+            this.$refs.datospersonales.cita_nueva.fecha = this.$store.state.fecha_actual;
             this.$refs.datospersonales.change_fecha2()
             if (opcion == 1) {
                 this.$refs.datospersonales.paciente = {};
@@ -710,10 +713,15 @@ export default {
             }
         },
         prueba_fecha() {
-            console.log(this.fecha_hoy);
+            console.log(this.$store.state.fecha_actual);
         },
         addelemento(array) {
-            this.events = []
+            console.log(array);
+
+            this.$store.state.listevent = array;
+            this.$store.dispatch('listEventsAction')
+            /*this.$store.dispatch('clearEventAction')
+
             for (var element of array) {
 
                 const first = new Date(element.fecha + 'T' + element.hora_inicio + '-04:00')
@@ -729,12 +737,14 @@ export default {
                     category: this.categories[element.equipo - 1],
                     cita: element
                 }
-                if (element.nom_municipio == '') {
-                    element.nom_municipio = 'No se tiene registro'
-                }
+                
                 datos = Object.assign(datos, element);
-                this.events.push(datos)
-            }
+                this.$store.state.event = datos
+                this.$store.dispatch('addEventAction')
+                this.datos = {}
+                //this.$store.events.push(datos)
+            }*¨/
+            */
         },
         initialize() {
             this.addelemento(this.datos_cita)
@@ -745,9 +755,11 @@ export default {
             this.doctores = a['data'];
         },
         async traerdatos() {
-            console.log(this.fecha_hoy);
-            var a = await axios.get('api/citas_fecha/' + this.fecha_hoy).then();
+            console.log(this.$store.state.fecha_actual);
+            var a = await axios.get('api/citas_fecha/' + this.$store.state.fecha_actual).then();
             this.addelemento(a['data']);
+            this.$store.state.fecha = this.fechas
+            this.$store.dispatch('addFechaAction')
 
         },
         getEventColor(event) {
@@ -766,10 +778,10 @@ export default {
             this.focus = ''
             var today = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + new Date().getDate()).slice(-2);
             this.anterior_dia = today;
-            this.fecha_hoy = today;
+            this.$store.state.fecha_actual = today;
 
             this.traerdatos();
-            //alert("anterios dia"+this.anterior_dia+"hoy"+this.fecha_hoy);
+            //alert("anterios dia"+this.anterior_dia+"hoy"+this.$store.state.fecha_actual);
 
         },
         diavalido(day) {
@@ -788,7 +800,7 @@ export default {
             return f.toISOString().substr(0, 10);
         },
         contarvalidos(valor) {
-            var dateStr = this.fecha_hoy + 'T00:00:00-04:00';
+            var dateStr = this.$store.state.fecha_actual + 'T00:00:00-04:00';
             var f = new Date(dateStr);
             var contador = 1;
             f.setDate(f.getDate() + valor);
@@ -796,8 +808,8 @@ export default {
                 f.setDate(f.getDate() + valor);
                 contador++;
             }
-            this.fecha_hoy = f.toISOString().substr(0, 10);
-            this.anterior_dia = this.fecha_hoy;
+            this.$store.state.fecha_actual = f.toISOString().substr(0, 10);
+            this.anterior_dia = this.$store.state.fecha_actual;
             return contador;
         },
         prev() {
@@ -823,35 +835,35 @@ export default {
             }
 
             var elDate = document.getElementById('txtDate');
-            var dateStr = this.fecha_hoy + 'T00:00:00-04:00';
+            var dateStr = this.$store.state.fecha_actual + 'T00:00:00-04:00';
             console.log(dateStr);
             var now = new Date(dateStr)
             var dayp = now.getUTCDay();
             this.msg['fecha_validacion'] = '';
             if (dayp == 0) {
                 this.msg['fecha_validacion'] = 'Domingos no disponibles, por favor seleccione otro día.';
-                this.fecha_hoy = this.anterior_dia;
+                this.$store.state.fecha_actual = this.anterior_dia;
                 return;
             }
             if (dayp == 6) {
                 this.msg['fecha_validacion'] = 'Sabados no disponibles, por favor seleccione otro día.';
-                this.fecha_hoy = this.anterior_dia;
+                this.$store.state.fecha_actual = this.anterior_dia;
                 return;
             }
             var feriados = {}
             feriados['2022-05-02'] = true;
             feriados['2022-04-15'] = true;
-            if (feriados[this.fecha_hoy]) {
-                this.msg['fecha_validacion'] = this.fecha_hoy + ' es feriado.';
-                this.fecha_hoy = this.anterior_dia;
+            if (feriados[this.$store.state.fecha_actual]) {
+                this.msg['fecha_validacion'] = this.$store.state.fecha_actual + ' es feriado.';
+                this.$store.state.fecha_actual = this.anterior_dia;
                 return;
             }
             const date1 = new Date(this.anterior_dia);
-            const date2 = new Date(this.fecha_hoy);
+            const date2 = new Date(this.$store.state.fecha_actual);
             const diffTime = date2 - date1;
             const nday = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             //alert(val + " " + this.anterior_dia + " " + nday);
-            this.anterior_dia = this.fecha_hoy
+            this.anterior_dia = this.$store.state.fecha_actual
             this.$refs.calendar.move(nday);
             //this.$emit('input', dateObj);
             this.traerdatos();
@@ -870,8 +882,8 @@ export default {
         /******/
         agendadesde() {
             console.log(day1)
-            if (this.fecha_hoy > day1) {
-                console.log(this.fecha_hoy + " " + day1)
+            if (this.$store.state.fecha_actual > day1) {
+                console.log(this.$store.state.fecha_actual + " " + day1)
                 return true
             }
             return false

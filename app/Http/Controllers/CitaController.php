@@ -38,11 +38,11 @@ class CitaController extends Controller
                     ->get();
                 Cache::put('citas' . $date, $cita_fecha);
             }
-            //$date = DB::table('citas')->where('fecha', $date)->get();
+            $config = DB::table('configuracions')->select('*')->get();
         }
         //  dd($date);
         //dd($users);
-        return Inertia::render('Comenzar', ['fechas' => $cita_fecha, 'valor' => $valor]);
+        return Inertia::render('Comenzar', ['fechas' => $cita_fecha, 'valor' => $valor, 'config' => $config]);
     }
 
     /**
@@ -196,7 +196,7 @@ class CitaController extends Controller
         //if (Cache::has('usuario' . $ci)) {
         //$cita_fecha = Cache::get('citas' . $ci);
         //}else {
-        
+
         $cita_fecha = DB::table('citas')
             ->select(['hora_inicio', DB::raw('sum(case equipo WHEN 1 then 1 else 0 end) AS GRUPO1, 
                 sum(case equipo WHEN 2 then 1 else 0 end) AS GRUPO2, 
@@ -266,8 +266,11 @@ class CitaController extends Controller
                 ->where('fecha', $date)
                 ->get();
             Cache::put('citas' . $date, $cita_fecha);
-        }   
-        return 'ok';
+        }
+        $las_citas = DB::table('citas')
+            ->join('persona_citas', 'citas.ci', '=', 'persona_citas.ci')
+            ->get();
+        return $las_citas;
     }
     public static function update_cita(Request $resquest)
     {
@@ -285,14 +288,15 @@ class CitaController extends Controller
         unset($cita['nom_municipio']);
         unset($cita['correo']);
         unset($cita['direccion']);
-        
+        unset($cita['register']);
+
         //return $cita;
         try {
             $resp = DB::table('citas')
-                    ->where('fecha', '=', $cita_antigua['fecha'])
-                    ->where('hora_inicio', '=', $cita_antigua['hora_inicio'])
-                    ->where('equipo', '=',$cita_antigua['equipo'])
-                    ->update($cita);
+                ->where('fecha', '=', $cita_antigua['fecha'])
+                ->where('hora_inicio', '=', $cita_antigua['hora_inicio'])
+                ->where('equipo', '=', $cita_antigua['equipo'])
+                ->update($cita);
         } catch (\Throwable $th) {
             return $th;
         }
@@ -303,8 +307,14 @@ class CitaController extends Controller
                 ->where('fecha', $date)
                 ->get();
             Cache::put('citas' . $date, $cita_fecha);
-        }   
-        return 'ok';
+        }
+
+        $cita_fecha = DB::table('citas')
+            ->join('persona_citas', 'citas.ci', '=', 'persona_citas.ci')
+            ->where('fecha', $date)
+            ->get();
+
+        return $cita_fecha;
     }
 
     /**

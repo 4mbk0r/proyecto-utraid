@@ -16,7 +16,8 @@ class CheckAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        
+
+        return $next($request);
         if (auth()->user()->email == "4mbk0r@gmail.com") {
             return $next($request);
         }

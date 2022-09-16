@@ -2,7 +2,6 @@ require('./bootstrap');
 // Import modules...
 //import JQuery from 'jquery-ui/themes/base/all.css';
 import Vue from 'vue';
-import { VueColor } from 'vue-color/dist/vue-color.min.js'
 import { App as InertiaApp, plugin as InertiaPlugin } from '@inertiajs/inertia-vue';
 import { InertiaProgress } from '@inertiajs/progress'
 
@@ -11,8 +10,10 @@ import PortalVue from 'portal-vue';
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import VuetifyDialogPromise from "vuetify-dialog-promise";
-import { Sketch } from 'vue-color-sketch'
-import { Photoshop } from 'vue-color'
+
+import store from './store'
+
+
 //import  i18n from  '@/plugins/vue-i18n'
 /*import 'jquery-ui/external/jquery-3.6.0/jquery.js'
 import JQuery from "jquery/src/jquery.js"
@@ -24,7 +25,7 @@ InertiaProgress.init()
 Vue.mixin({ methods: { route } });
 Vue.use(InertiaPlugin);
 Vue.use(PortalVue);
-//also add this line
+//also add this line    
 Vue.use(Vuetify);
 Vue.use(VuetifyDialogPromise, {
     locale: "fi",
@@ -36,8 +37,6 @@ const app = document.getElementById('app');
 new Vue({
     vuetify: new Vuetify({
         treeShake: true,
-        'sketch-picker': Sketch,
-        'photoshop-picker': Photoshop,
         themes: {
             dark: {
                 primary: "#f44336",
@@ -56,6 +55,7 @@ new Vue({
             iconfont: "mdi",
         }
     }),
+    store,
     render: (h) =>
         h(InertiaApp, {
             props: {

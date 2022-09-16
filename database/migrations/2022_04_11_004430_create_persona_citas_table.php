@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use phpDocumentor\Reflection\PseudoTypes\True_;
 
 class CreatePersonaCitasTable extends Migration
 {
@@ -28,10 +29,8 @@ class CreatePersonaCitasTable extends Migration
             $table->text('sexo', 50)->nullable();
             $table->text('nom_municipio', 50)->nullable();
             $table->text('nom_departamento', 50)->nullable();
-            
-            
-        });        
-        
+            $table->boolean('register')->default(True);
+        });
     }
 
     /**

@@ -1,29 +1,31 @@
 <template>
     <app-layout>
+        <!--<welcome />-->
+        <v-card>
+            <v-tabs v-model="tab" align-with-title>
+                <v-tabs-slider color="yellow"></v-tabs-slider>
+                <v-tab v-for="item in items" :key="item">
+                    {{ item }}
 
+                </v-tab>
+            </v-tabs>
 
-                    <!--<welcome />-->
-
-                    <v-card   > 
-                        
-
-                        <v-tabs v-model="tab"  align-with-title>
-                            <v-tabs-slider color="yellow"></v-tabs-slider>
-
-                            <v-tab v-for="item in items" :key="item">
-                                {{ item }}
-                            </v-tab>
-                        </v-tabs>
-
-                        <v-tabs-items v-model="tab" touchless>
-                            <v-tab-item v-for="item in items" :key="item">
-                                <v-card flat>
-                                    <barrasu v-if="item == 'agendar'" :datos_cita="fechas" />
-                                </v-card>
-                            </v-tab-item>
-                        </v-tabs-items>
+            <v-tabs-items v-model="tab" touchless>
+                <v-tab-item>
+                    <v-card flat>
+                        <barrasu />
                     </v-card>
-                    <!--<barrasu :datos_cita="fechas" />-->
+                </v-tab-item>
+                <v-tab-item>
+                    {{ $store.getters.gethoy }}
+                    {{ $store.getters.getfechas }}
+                    {{ $store.getters.getfecha }}
+                    {{ $store.getters.getConfig}}
+                </v-tab-item>
+            </v-tabs-items>
+        </v-card>
+        <!--:datos_cita="fechas"-->
+        <!--<barrasu/>-->
     </app-layout>
 </template>
 
@@ -32,7 +34,6 @@ import AppLayout from '@/Layouts/AppLayout'
 import Welcome from '@/Jetstream/Welcome'
 import Barrasu from '@/Pages/Micomponet/Barrasu'
 import Agenda from '@/Pages/Micomponet/Agenda'
-
 
 export default {
     data() {
@@ -57,8 +58,22 @@ export default {
     methods: {
         menuItems() {
             return this.menu
+        },
+        async initialize() {
+            console.log('inicio')
+            console.log(this.fechas["data"])
+            this.$store.state.fecha = this.fechas["data"]
+            await this.$store.dispatch('pedirConfig')
         }
-    }
+    },
+    created() {
+        this.initialize()
+
+        console.log('--sss-')
+        console.log(this.$store.state.config_data)
+    },
+
+
 
 }
 </script>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PdfViewController;
 use Illuminate\Http\Request;
@@ -25,10 +26,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
- 
-Route::get('articles', function($id) {
+
+Route::get('articles', function ($id) {
     return PersonaAntiguoController::mostrar($id);
-});    
+});
 
 Route::get('/citas_fecha/{id}', function ($id) {
     return CitaController::mostrar($id);
@@ -94,5 +95,3 @@ Route::post('/buscar_persona', function (Request $request) {
 Route::post('/guardar_persona', function (Request $request) {
     return PersonaCitaController::guardar_persona($request);
 });
-
-

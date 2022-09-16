@@ -20,13 +20,13 @@ class CreateCitasTable extends Migration
             $table->date('fecha');
             $table->time('hora_inicio');
             $table->time('hora_final');
-            $table->text('ci',20);
-            $table->text('ci_doctor',20);
-            $table->text('tipo_cita',20)->nullable();;
-            $table->text('se_presento',20)->nullable();;
+            $table->text('ci', 20);
+            $table->text('ci_doctor', 20);
+            $table->text('tipo_cita', 20)->nullable();;
+            $table->text('se_presento', 20)->nullable();;
             $table->text('observacion')->nullable();;
             $table->integer('equipo');
-            $table->text('lugar',20)->nullable();;
+            $table->text('lugar', 20)->nullable();;
             $table->primary(['fecha', 'hora_inicio', 'equipo']);
             $table->foreign('ci')->references('ci')->on('persona_citas')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('ci_doctor')->references('ci')->on('doctores')->onDelete('cascade')->onUpdate('cascade');
@@ -2757,7 +2757,6 @@ class CreateCitasTable extends Migration
                 $value
             );
         }*/
-
     }
 
     /**
