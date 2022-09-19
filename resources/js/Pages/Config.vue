@@ -118,7 +118,7 @@ export default {
         return {
             datos: {
                 feriados: {},
-                dias: {}
+                dias: []
 
             },
             items: ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"],
@@ -173,8 +173,12 @@ export default {
         },
         async initialize() {
             await this.$store.dispatch('pedirConfig')
-            this.datos.dias = await JSON.parse(this.$store.getters.getConfig.dias);
-            this.desserts = await JSON.parse(this.$store.getters.getConfig.feriados);
+            var datos = await this.$store.getters.getConfig.dias
+            if( typeof datos == 'undefined') this.datos.dias = ['Domingo', 'Sabado']
+            else this.datos.dias = JSON.parse(datos)
+            var datos = await this.$store.getters.getConfig.feriados
+            if( typeof datos == 'undefined') this.des = {}
+            else this.desserts = await JSON.parse(this.$store.getters.getConfig.feriados);
         },
         async guardar_datos() {
             this.datos.feriados = this.desserts;

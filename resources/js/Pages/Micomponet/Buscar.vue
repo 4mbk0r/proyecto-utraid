@@ -31,9 +31,9 @@
             <v-data-table :headers="headers" :items="desserts" item-key="ci" hide-action :search="search">
 
                 <template v-slot:item.actions="{ item }">
-                    <v-icon small class="mr-2" @click="saludo(item)">
-                        mdi-pencil
-                    </v-icon>
+                    <v-btn small class="mr-2" @click="saludo(item)">
+                        Editar
+                    </v-btn>
                 </template>
             </v-data-table>
         </v-card>

@@ -66,7 +66,7 @@
                     <v-col class="pa-2" outlined tile align="center" justify="center"
                         style="font-size: 18px !important;">
                         <v-card>
-                            <span style="font-size: 16px !important;">
+                            <span style="font-size: 14px !important;">
                                 LA FALTA DE DOCUMENTACION Y EL RETRASO DE 10 MINUTOS DARA LUGAR A REPROGRAMAR<br>
                                 PRESENTARSE 10 MINUTOS ANTES DE LA HORA DE PROGRAMACION<br>
                                 DE NO ASISTIR INFORMAR CON 48 HORAS DE ANTICIPACION TELEFONO 2412391 UTRAID<br>

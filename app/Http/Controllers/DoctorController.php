@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Cache;
+use Throwable;
 
 class DoctorController extends Controller
 {
@@ -91,14 +92,17 @@ class DoctorController extends Controller
         return $doctores;
     }
     public static function guardar(Request $r){
-
-        $cita = $r['cita'];
-        $cita_fecha = DB::table('citas')->select('*')
-        ->where('fecha', $cita['fecha'])
-        ->where('equipo', $cita['sala'])
-        ->where('hora_inicio', $cita['hora'])
-        ->update([ 'se_presento' => $cita['se_presento'], 'ci_doctor' => $cita['ci_doctor']]);
-
+        try{
+            $cita = $r['cita'];
+            $cita_fecha = DB::table('citas')->select('*')
+            ->where('fecha', $cita['fecha'])
+            ->where('equipo', $cita['equipo'])
+            ->where('hora_inicio', $cita['hora_inicio'])
+            ->update([ 'se_presento' => $cita['se_presento'], 'ci_doctor' => $cita['ci_doctor']]);
+        }catch( Throwable $ex){
+            return $ex;
+        }
+        
         Cache::forget('citas' . $cita['fecha']);
         return 'ok';
     }

@@ -390,6 +390,7 @@ export default {
                     cita: this.selectedEvent,
                 }
             }).then();
+            console.log(res);
             this.traerdatos();
 
         },
@@ -715,10 +716,10 @@ export default {
         prueba_fecha() {
             console.log(this.$store.state.fecha_actual);
         },
-        addelemento(array) {
+        async addelemento(array) {
             console.log(array);
 
-            this.$store.state.listevent = array;
+            this.$store.state.listevent = await array;
             this.$store.dispatch('listEventsAction')
             /*this.$store.dispatch('clearEventAction')
 
@@ -870,7 +871,7 @@ export default {
         },
         textoDate(val) {
             var dia = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
-            var months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septimbr   e', 'Octobre', 'Novembre', 'Diciembre'];
+            var months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septimbre', 'Octobre', 'Novembre', 'Diciembre'];
             var dateStr = val + 'T00:00:00-04:00';
             var now = new Date(dateStr)
             return dia[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
