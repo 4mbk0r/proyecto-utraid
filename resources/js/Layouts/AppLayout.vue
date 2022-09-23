@@ -21,17 +21,19 @@
 
             <!--Page Content-->
             <v-navigation-drawer v-model="drawer" color="#a2315a" style="color: white;" app>
-                <v-list v-if="$page.props.user" dense>
-                    <v-list-item-group v-model="idlist">
-
+                <v-list v-if="$page.props.user" dense class="custom-tile">
+                    <v-list-item-group v-model="idlist" active-class="bg-active">
                         <v-list-item class="px-2" key="0">
                             <v-img max-height="80" max-width="150" src="assets/logo-sedes-lapaz.png"></v-img>
                         </v-list-item>
 
                         <v-list-item link>
-                            <v-list-item-content style="color: white;" key="1">
+                            <v-list-item-content style="color: white" key="1">
                                 <v-list-item-title>
-                                    {{ $page.props.user.name }}
+                                    {{$page.props.user.cargo}}
+                                </v-list-item-title>
+                                <v-list-item-title>
+                                    {{$page.props.user.name}}
                                 </v-list-item-title>
                                 <v-list-item-subtitle style="color: white;">{{ $page.props.user.email }}
                                 </v-list-item-subtitle>
@@ -42,22 +44,22 @@
                                 <v-hover>
                                     <jet-responsive-nav-link as="button">
 
-                                        <v-list-item-title style="color: black;">Cerrar Secion</v-list-item-title>
+                                        <v-list-item-title>Cerrar Secion</v-list-item-title>
                                     </jet-responsive-nav-link>
                                 </v-hover>
                             </form>
                         </v-list-item>
 
-                        <jet-nav-link :href="route('inicio')">
-                            <v-list-item link key="3">
-                                <v-list-item-content style="color: white;">
-                                    <v-list-item-title>
-                                        <v-icon>mdi-file-document-edit</v-icon>
-                                        <span>Agendar</span>
-                                    </v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item>
-                        </jet-nav-link>
+                        <Link :href="route('inicio')">
+                        <v-list-item key="3" @click="mostrar(3)">
+                            <v-list-item-content style="color: white;">
+                                <v-list-item-title>
+                                    <v-icon>mdi-file-document-edit</v-icon>
+                                    <span>Agendar</span>
+                                </v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        </Link>
                         <jet-nav-link :href="route('registro')">
                             <v-list-item v-if=" $page.props.user.cargo=='Admin'" key="4" link>
                                 <v-list-item-content style="color: white;">
@@ -80,9 +82,12 @@
                                 </v-list-item-content>
                             </v-list-item>
                         </jet-nav-link>
-
                     </v-list-item-group>
                 </v-list>
+
+
+
+
             </v-navigation-drawer>
             <v-main>
                 <slot></slot>
@@ -112,6 +117,8 @@ import JetDropdownLink from '@/Jetstream/DropdownLink'
 import JetNavLink from '@/Jetstream/NavLink'
 import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
 import { VueColor } from 'vue-color/dist/vue-color.min.js'
+import { Link } from '@inertiajs/inertia-vue'
+
 
 
 const THEME_DARK = 'dark';
@@ -124,10 +131,16 @@ export default {
         JetDropdownLink,
         JetNavLink,
         JetResponsiveNavLink,
+        Link,
     },
 
     data() {
         return {
+            items: [
+                { title: 'Home', icon: 'dashboard' },
+                { title: 'About', icon: 'question_answer' },
+                { title: 'Bookmark', icon: 'bookmark' }
+            ],
 
             drawer: true,
             itemsDrawer: [{
@@ -163,12 +176,17 @@ export default {
             pendingRequests: 0,
             totalRequests: 0,
             dark: false,
-            idlist: 0,
+            idlist: 1,
         }
     },
 
     methods: {
 
+        mostrar(val) {
+            console.log("....." + val)
+            this.idlist = val
+            console.log(this.idlist)
+        },
         switchToTeam(team) {
             this.$inertia.put(route('current-team.update'), {
                 'team_id': team.id

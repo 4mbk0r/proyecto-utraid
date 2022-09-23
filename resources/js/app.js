@@ -49,7 +49,7 @@ new Vue({
             }
         },
         methods: {
-            
+
         },
         icons: {
             iconfont: "mdi",

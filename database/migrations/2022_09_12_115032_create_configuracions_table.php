@@ -15,6 +15,7 @@ class CreateConfiguracionsTable extends Migration
     {
         Schema::create('configuracions', function (Blueprint $table) {
             $table->text('lugar');
+
             $table->jsonb('feriados')->nullable();
             $table->jsonb('dias')->nullable();
             $table->primary('lugar');

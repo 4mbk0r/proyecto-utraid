@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\Controllgeneral;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -71,4 +74,14 @@ Route::resource('/configs', ConfiguracionController::class)->middleware(['auth:s
 
 Route::get('/imprimir', function () {
     return Inertia::render('Micomponet/imprimir');;
-})->name('admin');
+})->name('imprimir');
+
+
+Route::resource('/configurar', ConfigController::class);
+
+
+Route::get('/configura', function () {
+    return Inertia::render('Micomponet/Configura');;
+})->name('configura');
+
+Route::resource('/configurageneral', Controllgeneral::class);
