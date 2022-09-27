@@ -18,7 +18,7 @@ class CheckAdmin
     {
 
         return $next($request);
-        if (auth()->user()->email == "4mbk0r@gmail.com") {
+        if (auth()->user()->cargo == "4mbk0r@gmail.com") {
             return $next($request);
         }
         return redirect('login');

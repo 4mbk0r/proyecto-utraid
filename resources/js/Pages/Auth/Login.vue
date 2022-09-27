@@ -1,6 +1,6 @@
 <template>
-    <WelcomeVue>
-       
+    <app-layout>
+
         <v-card class="pa-2 justify-center" outlined tile>
             <jet-validation-errors />
             <v-alert v-if="status" border="bottom" colored-border type="warning" elevation="2">
@@ -14,10 +14,9 @@
             </v-row>
             <v-form @submit.prevent="submit">
                 <v-container>
-                    <v-text-field label="Email" id="email" type="email" class="mt-1 block w-full" v-model="form.email"
-                        required autofocus />
-                    <v-text-field id="password" type="password" label="Contraseña" class="mt-1 block w-full"
-                        v-model="form.password" required autocomplete="current-password" />
+                    <v-text-field label="Nombre de usuario" id="email" type="text" v-model="form.username" required
+                        autofocus />
+                    <v-text-field id="password" type="password" label="Contraseña" v-model="form.password" required />
 
 
                     <v-row align="center" justify="space-around">
@@ -36,7 +35,7 @@
                 </v-container>
             </v-form>
         </v-card>
-    </WelcomeVue>
+    </app-layout>
 </template>
 
 <script>
@@ -48,6 +47,7 @@ import JetCheckbox from '@/Jetstream/Checkbox'
 import JetLabel from '@/Jetstream/Label'
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import WelcomeVue from '../Welcome.vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
 
 export default {
     components: {
@@ -58,7 +58,8 @@ export default {
         JetCheckbox,
         JetLabel,
         JetValidationErrors,
-        WelcomeVue
+        WelcomeVue,
+        AppLayout
     },
 
     props: {
@@ -69,7 +70,7 @@ export default {
     data() {
         return {
             form: this.$inertia.form({
-                email: '',
+                username: '',
                 password: '',
                 remember: false
             })

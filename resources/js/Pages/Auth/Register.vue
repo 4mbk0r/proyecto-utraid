@@ -2,48 +2,74 @@
     <app-layout>
         <v-card class="pa-2 justify-center">
 
-            <v-card-title class="justify-center">Registrar Usuarios</v-card-title>
-            <v-row align="center" class="pa-4" justify="space-around">
 
-                <v-img max-height="80" max-width="150" src="./assets/logo-sedes-lapaz.png"></v-img>
-
-            </v-row>
             <jet-validation-errors />
+            <v-form ref="form" @submit.prevent="submit" class="elevation-5 rounded-lg px-5 py-7">
+                <v-card-title class="justify-center">
+                    Registrar Usuarios
+                </v-card-title>
 
-            <v-form ref="form" @submit.prevent="submit">
-                <v-container align="center" class="pa-10">
-                    <v-row>
+                <v-row style="background-color: #00a5a0">
+                    <v-col cols="8">
+                        <div class="headline">Datos Personales</div>
+                    </v-col>
+                    <v-col cols="4" style="background-color: #a2315a">
 
-                        <v-text-field id="Nombres" label="Nombres" type="text" class="mt-1 block w-full"
-                            v-model="form.name" :rules="[v => !!v || 'Se requiere el Nombre']" required autofocus
-                            autocomplete="name" />
-                    </v-row>
-                    <v-row>
+                        <v-img contain max-height="40" max-width="100%" class="ml-auto"
+                            src="./assets/logo-sedes-lapaz.png">
+                        </v-img>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <v-text-field dense outlined id="nombre" label="Nombres" type="text" v-model="form.nombre"
+                            :rules="[v => !!v || ' Se requiere completar Nombre']" required autofocus
+                            prepend-inner-icon="mdi-account-arrow-right-outline" class="mb-n5 pa-0" />
+                    </v-col>
+                    <v-col>
+                        <v-text-field dense outlined id="paterno" label="Apellido Paterno" type="text"
+                            v-model="form.ap_paterno" :rules="[v => !!v || 'Se requiere Completar Apellido Paterno']"
+                            prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0" />
+                    </v-col>
+                    <v-col>
+                        <v-text-field dense outlined id="materno" label="Apellido Materno" type="text"
+                            v-model="form.ap_materno" :rules="[v => !!v || 'Se requiere Completar Apellido Materno']"
+                            prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0" />
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <v-text-field dense outlined id="CI" label="Cedula de Identidad" type="number" v-model="form.ci"
+                            :rules="[v => !!v || 'Se requiere completar Cedula de Identidad']" required
+                            class="mb-n4 pa-0" prepend-inner-icon="mdi-card-account-details-outline" />
+                    </v-col>
+                    <v-col>
+                        <v-text-field dense outlined id="item" label="Item" type="text" v-model="form.item"
+                            :rules="[v => !!v || 'Se requiere completar Item']" required class="mb-n4 pa-0"
+                            prepend-inner-icon="mdi-account-key" />
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-select dense outlined :items="roles" v-model="form.cargo"
+                        :rules="[v => !!v || 'Se requiere el Cargo']" filled label="Asigne un cargo" class="mb-n4 pa-0"
+                        required prepend-inner-icon="mdi-clipboard-account">
+                    </v-select>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <v-text-field dense outlined id="email" label="Email" type="email" v-model="form.email"
+                            class="mb-n4 pa-0" prepend-inner-icon="mdi-email">
+                        </v-text-field>
+                    </v-col>
+                    <v-col>
+                        <v-text-field dense outlined id="celular" label="Celular" type="number" class="mb-n4 pa-0"
+                            v-model="form.celular" prepend-inner-icon="mdi-cellphone" />
+                    </v-col>
+                </v-row>
 
-                        <v-select :items="roles" v-model="form.cargo" :rules="[v => !!v || 'Se requiere el Cargo']"
-                            filled label="Asigne un cargo"></v-select>
-                    </v-row>
 
 
-                    <v-row>
-
-                        <v-text-field id="email" label="Email" type="email" class="mt-1 block w-full"
-                            v-model="form.email" :rules="[v => !!v || 'Se requiere el Email']" required />
-                    </v-row>
-
-                    <v-row class="mt-4">
-
-                        <v-text-field id="password" label="Contraseña" type="password" class="mt-1 block w-full"
-                            v-model="form.password" :rules="[v => !!v || 'Se requiere el Contraseña']" required
-                            autocomplete="new-password" />
-                    </v-row>
-
-                    <v-row class="mt-4">
-                        <v-text-field id="password_confirmation" label="Repita Contraseña" type="password"
-                            class="mt-1 block w-full" :rules="[v => !!v || 'Se requiere el Contraseña']"
-                            v-model="form.password_confirmation" required autocomplete="new-password" />
-                    </v-row>
-                    <!--
+                <!--
                 <div class="mt-4" v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature">
                     <jet-label for="terms">
                         <div >
@@ -58,18 +84,18 @@
                     </jet-label>
                 </div>
                 -->
-                    <v-row class="flex items-center justify-center mt-4">
-                        <!--<inertia-link :href="route('login')"
+                <v-row class="flex items-center justify-center mt-4">
+                    <!--<inertia-link :href="route('login')"
                             class="underline text-sm text-gray-600 hover:text-gray-900">
                             Already registered?
                         </inertia-link>
                         -->
-                        <v-btn class="ml-4" color="primary" type="sumbit" :class="{ 'opacity-25': form.processing }"
-                            :disabled="form.processing">
-                            Register
-                        </v-btn>
-                    </v-row>
-                </v-container>
+                    <v-btn class="ml-4" color="primary" type="sumbit" :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing">
+                        Registrar
+                    </v-btn>
+                </v-row>
+
             </v-form>
         </v-card>
     </app-layout>
@@ -90,14 +116,21 @@ export default {
     data() {
         return {
             form: this.$inertia.form({
-                name: '',
+                nombre: '',
+                ap_paterno: '',
+                ap_materno: '',
+                ci: '',
+                item: '',
+                cargo: '',
                 email: '',
+                celular: '',
+                username: '',
                 password: '',
                 password_confirmation: '',
                 terms: false,
-                cargo: '',
+
             }),
-            roles: ['Admin', 'Medico General', 'Trabajo Social', 'Operador Terapético', 'Psicologo'],
+            roles: ['Admin', 'Medico General', 'Trabajo Social', 'Operador Terapético', 'Psicologo', 'Psicologo', 'Secretaria', 'recepcionista'],
         }
     },
     props: {
@@ -117,24 +150,42 @@ export default {
 
 
     methods: {
+        alert(text) {
+            this.$alert(text).then(res => this.$inform("Cambios guardados!"));
+        },
         submit() {
-
-            if (this.$refs.form.validate())
-
+            this.form.nombre = this.form.nombre.trimStart().toUpperCase()
+            this.form.ap_materno = this.form.ap_materno.trimStart().toUpperCase()
+            this.form.ap_paterno = this.form.ap_paterno.trimStart().toUpperCase()
+            if (this.$refs.form.validate()) {
+                this.form.username = this.form.ci
+                this.form.password = this.form.ci + this.form.nombre[0] + this.form.ap_paterno[0] + this.form.ap_materno[0]
+                this.form.password_confirmation = this.form.password
+                console.log(this.form.username)
                 this.form.post(this.route('register'), {
                     onFinish: () => this.form.reset('password', 'password_confirmation'),
                     onSuccess: () => {
                         this.form = this.$inertia.form({
-                            name: '',
+                            nombre: '',
+                            ap_paterno: '',
+                            ap_materno: '',
+                            ci: '',
+                            item: '',
+                            cargo: '',
                             email: '',
+                            celular: '',
+                            username: '',
                             password: '',
                             password_confirmation: '',
                             terms: false,
-                            cargo: '',
                         }),
-                            alert('ok add')
+                            this.alert('Se registro de forma correcta')
+                        this.$refs.form.resetValidation()
+                        this.$inertia.get(route('regitrar'))
+
                     },
                 })
+            }
         }
     }
 

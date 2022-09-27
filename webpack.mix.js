@@ -1,5 +1,6 @@
 const mix = require('laravel-mix');
 
+require('dotenv').config();
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -11,11 +12,13 @@ const mix = require('laravel-mix');
  |
  */
 
+mix.setResourceRoot('/main/public')
 mix.js('resources/js/app.js', 'public/js').vue()
     .postCss('resources/css/app.css', 'public/css', [
         require('postcss-import'),
         require('tailwindcss'),
         require('autoprefixer'),
+
     ])
     .webpackConfig(require('./webpack.config'));
 

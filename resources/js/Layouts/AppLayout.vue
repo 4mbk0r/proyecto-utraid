@@ -33,7 +33,8 @@
                                     {{$page.props.user.cargo}}
                                 </v-list-item-title>
                                 <v-list-item-title>
-                                    {{$page.props.user.name}}
+                                    {{$page.props.user.nombre }} {{$page.props.user.ap_paterno}}
+                                    {{$page.props.user.ap_materno}}
                                 </v-list-item-title>
                                 <v-list-item-subtitle style="color: white;">{{ $page.props.user.email }}
                                 </v-list-item-subtitle>
@@ -51,7 +52,7 @@
                         </v-list-item>
 
                         <Link :href="route('inicio')">
-                        <v-list-item key="3" @click="mostrar(3)">
+                        <v-list-item v-if="$page.props.user.cargo=='recepcionista'" key="3" @click="mostrar(3)">
                             <v-list-item-content style="color: white;">
                                 <v-list-item-title>
                                     <v-icon>mdi-file-document-edit</v-icon>
@@ -85,6 +86,20 @@
                     </v-list-item-group>
                 </v-list>
 
+                <v-list v-else dense>
+                    <v-subheader></v-subheader>
+                    <v-list-item-group v-model="selectedItem" color="primary">
+                        <inertia-link v-for="(item, i) in links" :href="route(item.name)" :key="i" as="v-list-item"
+                            preserve-state>
+                            <v-list-item-icon>
+                                <v-icon v-text="item.icon"></v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title v-text="item.title"></v-list-item-title>
+                            </v-list-item-content>
+                        </inertia-link>
+                    </v-list-item-group>
+                </v-list>
 
 
 
@@ -118,6 +133,7 @@ import JetNavLink from '@/Jetstream/NavLink'
 import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
 import { VueColor } from 'vue-color/dist/vue-color.min.js'
 import { Link } from '@inertiajs/inertia-vue'
+import { Inertia } from '@inertiajs/inertia'
 
 
 
@@ -177,6 +193,18 @@ export default {
             totalRequests: 0,
             dark: false,
             idlist: 1,
+            selectedItem: 0,
+            index: 0,
+            links: [
+
+                {
+                    name: 'login',
+                    icon: 'mdi-home',
+                    icon: 'mdi-view-dashboard',
+                    title: 'Login'
+                }],
+
+
         }
     },
 
@@ -228,6 +256,25 @@ export default {
     },
     mounted() {
         this.enableInterceptor()
+
+
+
     },
+    updated() {
+
+
+        for (const key in this.links) {
+            let v = this.links[key];
+            let link_actual = this.$page.url.split('/')[2]
+            //console.log(link_actual, ' ', v.url)
+            if (link_actual == v.url) {
+                //console.log(v)
+                this.selectedItem = parseInt(key)
+            }
+
+        }
+
+
+    }
 }
 </script>

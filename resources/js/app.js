@@ -1,4 +1,6 @@
 require('./bootstrap');
+import '@mdi/font/css/materialdesignicons.css'
+
 // Import modules...
 //import JQuery from 'jquery-ui/themes/base/all.css';
 import Vue from 'vue';
@@ -19,6 +21,8 @@ import store from './store'
 import JQuery from "jquery/src/jquery.js"
 global.$ = JQuery;
 */
+
+
 const THEME_DARK = 'dark';
 const THEME_LIGHT = 'light';
 InertiaProgress.init()
@@ -36,6 +40,7 @@ const app = document.getElementById('app');
 
 new Vue({
     vuetify: new Vuetify({
+
         treeShake: true,
         themes: {
             dark: {

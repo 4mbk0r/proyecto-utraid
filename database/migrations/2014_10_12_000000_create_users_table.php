@@ -16,18 +16,29 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('cargo');
-            $table->string('password');
+            $table->string('nombre');
+            $table->string('ap_materno');
+            $table->string('ap_paterno');
+            $table->string('ci')->unique();
+            $table->string('item');
+            $table->string('email')->nullable();
+            $table->string('celular')->nullable();
+            $table->string('cargo')->nullable();
             $table->rememberToken();
+            $table->timestamp('email_verified_at')->nullable();
             $table->foreignId('current_team_id')->nullable();
             $table->text('profile_photo_path')->nullable();
+            $table->string('username')->unique();;
+            $table->string('password');
             $table->timestamps();
         });
         $datos = [
-            'name' => 'Erick',
+            'username' => '8340024',
+            'nombre' => 'Erick',
+            'ap_materno' => 'Condori',
+            'ap_paterno' => 'Quispe',
+            'ci' => '8340024',
+            'item' => '1',
             'email' => '4mbk0r@gmail.com',
             'cargo' => 'Admin',
             'password' => '$2y$10$tUcf3kjNirdYhHNl9RIO3e1Bp1jAiEkPSpRMW/0XUsMfVki2phCw.'

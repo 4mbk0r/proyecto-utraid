@@ -1,33 +1,9 @@
 <template>
-    <v-app id="inspire">
-        <v-navigation-drawer v-model="drawer" app>
-            <v-list nav dense>
-                <jet-responsive-nav-link v-if="$page.props.user" :href="route('inicio')"
-                    :active="route().current('inicio')">
-                    <v-icon>mdi-file-document-edit</v-icon>
-                    <a :href="route('inicio')">Administrar</a>
-                </jet-responsive-nav-link>
+    <app-layout>
+        <v-parallax>
 
-                <jet-responsive-nav-link v-else :href="route('login')" :active="route().current('login')">
-                    <v-icon>mdi-file-document-edit</v-icon>
-                    <a :href="route('login')">Login</a>
-                </jet-responsive-nav-link>
-
-            </v-list>
-
-        </v-navigation-drawer>
-
-        <v-app-bar app>
-            <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-
-            <v-toolbar-title>UTRAID</v-toolbar-title>
-        </v-app-bar>
-
-        <v-main>
-            <!--  -->
-            <slot></slot>
-        </v-main>
-    </v-app>
+        </v-parallax>
+    </app-layout>
 </template>
 
 <style scoped>
@@ -101,6 +77,8 @@ import JetDropdown from '@/Jetstream/Dropdown'
 import JetDropdownLink from '@/Jetstream/DropdownLink'
 import JetNavLink from '@/Jetstream/NavLink'
 import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
+import AppLayout from '@/Layouts/AppLayout'
+import { Inertia } from '@inertiajs/inertia'
 
 export default {
 
@@ -119,6 +97,16 @@ export default {
         JetDropdownLink,
         JetNavLink,
         JetResponsiveNavLink,
+        AppLayout,
     },
+    created() {
+        console.log("fasfads")
+        console.log(this.$page.props.user)
+        if (this.$page.props.user == null) {
+            Inertia.post(route('logout'))
+        }
+
+
+    }
 }
 </script>

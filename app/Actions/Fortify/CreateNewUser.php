@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -20,19 +21,46 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input)
     {
-        Validator::make($input, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => $this->passwordRules(),
-            'cargo' => ['required', 'string', 'max:255'],
-            'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['required', 'accepted'] : '',
-        ])->validate();
+        Validator::make(
+            $input,
+            [
+                'nombre' => ['required', 'string', 'max:255'],
+                'ap_paterno' => ['required', 'string', 'max:255'],
+                'ap_materno' => ['required', 'string', 'max:255'],
+                'ci' => ['required', 'string', 'max:255', 'unique:users'],
+                'cargo' => ['required', 'string', 'max:255'],
+                'username' => ['required', 'string', 'max:255', 'unique:users'],
+                'password' => $this->passwordRules(),
+                'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['required', 'accepted'] : '',
+            ],
+            [
+                'username.unique' => 'Ya existe usuario con estos datos',
+                'ci.unique' => 'Ya existe usuario con esta cedula de identidad datos',
+                'nombre.required' => 'Se requiere nombre',
+                'email.unique' => 'Email ya existe use otro',
+                'email.required' => 'Se requiere email',
+                'cargo.required' => 'Se require cargo',
+                'password.required' => 'Se require contraseña'
+            ]
+        )->validate();
 
-        return User::create([
-            'name' => $input['name'],
-            'email' => $input['email'],
-            'password' => Hash::make($input['password']),
-            'cargo' => $input['cargo'],
-        ]);
+        try {
+            $reps = User::create([
+                'nombre' => $input['nombre'],
+                'ap_paterno' => $input['ap_paterno'],
+                'ap_materno' => $input['ap_materno'],
+                'ci' => $input['ci'],
+                'item' => $input['item'],
+                'cargo' => $input['cargo'],
+                'email' => $input['email'],
+                'celular' => $input['celular'],
+                'username' => $input['username'],
+                'password' => Hash::make($input['password']),
+            ]);
+            return $reps;
+        } catch (QueryExecuted $e) {
+
+            return $e;
+        }
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\PersonaAntiguoController;
 use App\Http\Controllers\PersonaCitaController;
-
+use App\Http\Controllers\PermisoController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,7 +35,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return 'ddd';
 })->name('Dashboard');
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/inicio', [CitaController::class, 'index'],)->name('inicio');
+Route::middleware(['auth:sanctum', 'verified', 'permiso'])->get('/inicio', [CitaController::class, 'index'],)->name('inicio');
 
 Route::resource('/agendar', CitaController::class)->middleware(['auth:sanctum', 'verified']);
 
@@ -85,3 +85,7 @@ Route::get('/configura', function () {
 })->name('configura');
 
 Route::resource('/configurageneral', Controllgeneral::class);
+
+
+/**Permisos */
+Route::resource('/permiso', PermisoController::class);
