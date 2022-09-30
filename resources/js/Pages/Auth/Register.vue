@@ -24,17 +24,20 @@
                     <v-col>
                         <v-text-field dense outlined id="nombre" label="Nombres" type="text" v-model="form.nombre"
                             :rules="[v => !!v || ' Se requiere completar Nombre']" required autofocus
-                            prepend-inner-icon="mdi-account-arrow-right-outline" class="mb-n5 pa-0" />
+                            prepend-inner-icon="mdi-account-arrow-right-outline" class="mb-n5 pa-0"
+                            pattern="[a-zA-Z]+" />
                     </v-col>
                     <v-col>
                         <v-text-field dense outlined id="paterno" label="Apellido Paterno" type="text"
                             v-model="form.ap_paterno" :rules="[v => !!v || 'Se requiere Completar Apellido Paterno']"
-                            prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0" />
+                            prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0"
+                            pattern="[a-zA-Z]+" />
                     </v-col>
                     <v-col>
                         <v-text-field dense outlined id="materno" label="Apellido Materno" type="text"
                             v-model="form.ap_materno" :rules="[v => !!v || 'Se requiere Completar Apellido Materno']"
-                            prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0" />
+                            prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0"
+                            pattern="[a-zA-Z]+" />
                     </v-col>
                 </v-row>
                 <v-row>

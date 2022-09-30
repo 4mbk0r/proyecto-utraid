@@ -45,7 +45,7 @@
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-btn color="primary" dark class="mb-2" v-bind="attrs"
                                                             v-on="on">
-                                                            Adicionar Fecha
+                                                            Adicionar Fecha {{attrs}}
                                                         </v-btn>
                                                     </template>
                                                     <v-card>
@@ -184,7 +184,7 @@
                                                 <v-toolbar-title>Horarios de atencion</v-toolbar-title>
                                                 <v-divider class="mx-4" inset vertical></v-divider>
                                                 <v-spacer></v-spacer>
-                                                <v-dialog v-model="dialog" max-width="500px">
+                                                <v-dialog v-model="d_hoarario" max-width="500px">
                                                     <v-card>
                                                         <v-card-title>
                                                             <span class="text-h5"></span>
@@ -266,7 +266,7 @@ export default {
     data() {
         return {
             menu2: false,
-
+            d_hoarario: false,
             fecha_config: '',
             n_sala: "",
             tiempo_atencion: "",
