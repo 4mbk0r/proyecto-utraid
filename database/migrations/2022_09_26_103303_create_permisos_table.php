@@ -17,18 +17,6 @@ class CreatePermisosTable extends Migration
     {
         Schema::create('permisos', function (Blueprint $table) {
         });
-
-        $permiso = [
-
-            ["id" => 1, "name" => "inicio", 'url' => 'inicio', 'icon' => 'newspaper-variant-outline'],
-
-            ["id" => 2, "name" => "registro", 'url' => 'registrar', 'icon' => 'newspaper-variant-outline'],
-
-
-        ];
-
-
-        DB::table('permisos')->insert($permiso);
     }
 
     /**

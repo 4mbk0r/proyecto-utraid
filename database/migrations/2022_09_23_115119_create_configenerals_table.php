@@ -16,9 +16,10 @@ class CreateConfigeneralsTable extends Migration
         Schema::create('configenerals', function (Blueprint $table) {
 
             $table->date('fecha_config');
-            $table->date('n_sala');
+            $table->integer('n_sala');
             $table->time('fin_atencion')->nullable();
             $table->time('inicio_atencion')->nullable();
+            $table->integer('tiempo_promedio');
             $table->primary(['fecha_config']);
         });
     }

@@ -157,6 +157,13 @@
                             </v-row>
                             <v-row>
                                 <v-col cols="12" md="4">
+                                    <v-text-field v-model="descanso" @change="Adicionarhoras" type="tiempo"
+                                        label="Descanso" suffix="Hora del descanso">
+                                    </v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12" md="4">
                                     <v-menu v-model="menu2" :close-on-content-click="false"
                                         transition="scale-transition" offset-y max-width="290px" min-width="auto">
                                         <template v-slot:activator="{ on, attrs }">
@@ -171,6 +178,7 @@
                                     </v-menu>
                                 </v-col>
                             </v-row>
+
                             <v-row>
                                 <v-col>
                                     <v-data-table :headers="headers_sala" :footer-props="{
@@ -279,6 +287,7 @@ export default {
             value: ["dom", "lun", "mar", "mie", "jue", "vie", "sab"],
             dialog: false,
             dialogDelete: false,
+            descanso: '',
             headers: [
                 {
                     text: 'Fecha',
@@ -424,21 +433,29 @@ export default {
             let tiempo_i = moment(this.inicio_atencion, 'hh:mm')
             let tiempo_f = moment(this.fin_atencion, 'hh:mm')
             console.log(tiempo_i, tiempo_f)
-
             this.horario = []
             let i = 0;
+            let tiempo_descanso = true
             if (!tiempo_i.isBefore(tiempo_f)) return
             if (this.tiempo_atencion > 0 && this.tiempo_atencion != '') {
                 while (tiempo_i.isBefore(tiempo_f)) {
                     let op = {}
                     op.hora_atencion = tiempo_i.format('hh:mm')
-                    this.horario.push(op);
+
                     let s = tiempo_i.add(this.tiempo_atencion, 'minutes')
-                    tiempo_i = s
-                    console.log(tiempo_i, tiempo_f)
+                    op.hora_atencion = op.hora_atencion + " - " + s.format('hh:mm')
+                    this.horario.push(op);
+                    if (tiempo_i.isSameOrAfter(moment(this.descanso, 'hh:mm')) && tiempo_descanso == true) {
+                        tiempo_i = tiempo_i.add(30, 'minutes')
+                        alert('tiempo de descanso >' + op.hora_atencion + tiempo_i.format('hh:mm'))
+                        tiempo_descanso = false
+                    } else {
+                        tiempo_i = s
+                        console.log(tiempo_i, tiempo_f)
+                    }
+
                 }
             }
-
         },
         async guardar_config() {
             this.$refs.configuracion.validate()
@@ -446,8 +463,8 @@ export default {
             if (this.$refs.configuracion.validate()) {
                 let datos = {}
                 datos.n_sala = this.n_sala
-                datos.inicio_atencion = this.inicio_atencion
-                datos.fin_atencion = this.fin_atencion
+                datos.inicio_atencion = this.inicio_atencion + ":00"
+                datos.fin_atencion = this.fin_atencion + ":00"
                 datos.fecha_config = this.fecha_config
                 var res = await axios({
                     method: 'post',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 class Controllgeneral extends Controller
 {
@@ -30,10 +31,14 @@ class Controllgeneral extends Controller
      */
     public function store(Request $request)
     {
-        //
-        return $request['datos'];
-        $datos = $request['datos'];
-        DB::table('configenerals')->insert($datos);
+        try {
+
+            $datos = $request['datos'];
+            DB::table('configenerals')->insert($datos);
+        } catch (Exception $ex) {
+            return  $ex;
+        }
+
 
         return $request['datos'];
     }
