@@ -16,6 +16,9 @@ class SalaController extends Controller
     public function index()
     {
         //
+        
+        return inertia('Micomponet/Sala');
+        
     }
 
     /**
@@ -45,9 +48,10 @@ class SalaController extends Controller
      * @param  \App\Models\sala  $sala
      * @return \Illuminate\Http\Response
      */
-    public function show(sala $sala)
+    public function show(int $sala)
     {
         //
+        return 'holaa';
     }
 
     /**

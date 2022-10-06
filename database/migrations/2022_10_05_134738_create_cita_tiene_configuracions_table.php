@@ -15,11 +15,12 @@ class CreateCitaTieneConfiguracionsTable extends Migration
     {
         Schema::create('cita_tiene_configuracions', function (Blueprint $table) {
             $table->date('fecha');
-            $table->string('id');
+            $table->integer('id');
             $table->jsonb('historial');
             $table->foreign('id')->references('id')->on('configuracions')->onDelete('cascade')->onUpdate('cascade');
             $table->primary(['fecha']);
         });
+        
     }
 
     /**

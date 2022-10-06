@@ -2,8 +2,12 @@
 
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\SalaController;
+
+
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\Controllgeneral;
+
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -89,3 +93,9 @@ Route::resource('/configurageneral', Controllgeneral::class);
 
 /**Permisos */
 Route::resource('/permiso', PermisoController::class);
+
+/*Configuraciones */
+Route::resource('/configuracion2', ConfiguracionController::class)->middleware(['auth:sanctum', 'verified']);;
+
+
+Route::resource('/sala', SalaController::class)->middleware(['auth:sanctum', 'verified']);;

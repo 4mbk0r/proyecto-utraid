@@ -19,8 +19,13 @@ class ConfiguracionController extends Controller
     public function index()
     {
         //
-        $users = DB::select('select * from configuracions');
-        return $users;
+        $list_config = DB::table('configuracions')
+        ->select('*')
+        ->where('activo','=',true)
+        ->get();
+        return inertia('Configuracions', [
+            'configuracion' => $list_config,
+        ]);
     }
 
     /**
@@ -49,9 +54,16 @@ class ConfiguracionController extends Controller
      * @param  \App\Models\Configuracion  $configuracion
      * @return \Illuminate\Http\Response
      */
-    public function show(Configuracion $configuracion)
+    public function show(int $configuracion)
     {
         //
+        $dato = DB::table('salas')->where('id', $configuracion)->get();
+        $n_salas =  count($dato);
+        $datos = [
+            'salas' => $dato,
+            'n_sala' => $n_salas
+        ];
+        return $datos;
     }
 
     /**

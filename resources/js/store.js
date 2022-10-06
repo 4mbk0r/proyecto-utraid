@@ -20,10 +20,14 @@ const store = new Vuex.Store({
         feriados: {},
         dias: {},
         lugar: '',
+        id_config: '',
 
 
     },
     mutations: {
+        updateid_config(state, dato){
+            state.id_config = dato
+        },
         addconfig(state) {
 
         },
@@ -87,6 +91,9 @@ const store = new Vuex.Store({
         }
     },
     actions: {
+        updateid_configAction(context) {
+            context.commit('updateid_config')
+        },
         addFechaAction(context) {
             context.commit('addfecha')
         },
@@ -126,6 +133,9 @@ const store = new Vuex.Store({
         },
         getConfig() {
             return store.state.config_data
+        },
+        getid_config(){
+            return store.state.id_config
         }
     }
 });
