@@ -15,11 +15,12 @@ class CreateConfiguracionsTable extends Migration
     {
         Schema::create('configuracions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->boolean('principal')->default(0)->change();
-            $table->boolean('atencion')->default(0)->change();
+            $table->boolean('principal')->default(0);
+            $table->boolean('atencion')->default(0);
             $table->String('descripcion');
             $table->string('lugar');
             $table->integer('n_sala');
+            $table->boolean('activo')->default(1);
         });
     }
 

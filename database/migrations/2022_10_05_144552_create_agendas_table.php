@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateAgendasTable extends Migration
@@ -18,11 +19,14 @@ class CreateAgendasTable extends Migration
             $table->time('hora_inicio');
             $table->time('hora_final');
             $table->integer('sala');
-           
+
             //$table->foreign('fecha')->references('fecha')->on('cita_tiene_configuracions')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('sala')->references('sala')->on('salas')->onDelete('cascade')->onUpdate('cascade');
-            $table->primary(['fecha', 'hora_inicio']);
+            $table->primary(['fecha', 'sala', 'hora_inicio']);
         });
+        DB::statement(
+            "ALTER TABLE agendas ADD FOREIGN KEY (fecha) REFERENCES cita_tiene_configuracions(fecha) ON DELETE CASCADE"
+        );
     }
 
     /**
