@@ -53,9 +53,9 @@ class CitaTieneConfiguracionController extends Controller
     {
         //
         $list_config = DB::table('cita_tiene_configuracions')
-        ->select('*')
-        ->where('fecha', '=', $fecha)
-        ->get();
+            ->select('*')
+            ->where('fecha', '=', $fecha)
+            ->get();
         return $list_config;
     }
 
@@ -92,19 +92,20 @@ class CitaTieneConfiguracionController extends Controller
     {
         //
     }
-    public static function verificar_fecha(String $fecha){
+    public static function verificar_fecha(String $fecha)
+    {
         $list_config = DB::table('cita_tiene_configuracions')
-        ->select('*')
-        ->where('fecha', '>=', date($fecha))
-        ->get();
+            ->select('*')
+            ->where('fecha', '>=', date($fecha))
+            ->get();
         $verificar = false;
-        if(count($list_config)==0){
-            $verificar=true;
+        if (count($list_config) == 0) {
+            $verificar = true;
         }
         $resp = [
             'lista_fechas' => $list_config,
-            'varificar'=> $verificar,
-            'n'=>count($list_config)
+            'verificar' => $verificar,
+            'n' => count($list_config)
         ];
         return $resp;
     }

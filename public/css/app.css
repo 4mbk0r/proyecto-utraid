@@ -6,24 +6,10 @@
 */
 
 /*!
-* Vuetify v2.6.10
+* Vuetify v2.6.11
 * Forged by John Leider
 * Released under the MIT License.
 */
-
-@-webkit-keyframes v-shake{
-  59%{
-    margin-left:0
-  }
-
-  60%,80%{
-    margin-left:2px
-  }
-
-  70%,90%{
-    margin-left:-2px
-  }
-}
 
 @keyframes v-shake{
   59%{
@@ -18651,14 +18637,12 @@ html.overflow-y-hidden{
 }
 
 .v-progress-circular--indeterminate>svg{
-  -webkit-animation:progress-circular-rotate 1.4s linear infinite;
   animation:progress-circular-rotate 1.4s linear infinite;
   transform-origin:center center;
   transition:all .2s ease-in-out
 }
 
 .v-progress-circular--indeterminate .v-progress-circular__overlay{
-  -webkit-animation:progress-circular-dash 1.4s ease-in-out infinite;
   animation:progress-circular-dash 1.4s ease-in-out infinite;
   stroke-linecap:round;
   stroke-dasharray:80,200;
@@ -18666,7 +18650,6 @@ html.overflow-y-hidden{
 }
 
 .v-progress-circular--indeterminate:not(.v-progress-circular--visible) .v-progress-circular__overlay,.v-progress-circular--indeterminate:not(.v-progress-circular--visible)>svg{
-  -webkit-animation-play-state:paused!important;
   animation-play-state:paused!important
 }
 
@@ -18687,23 +18670,6 @@ html.overflow-y-hidden{
   transition:all .6s ease-in-out
 }
 
-@-webkit-keyframes progress-circular-dash{
-  0%{
-    stroke-dasharray:1,200;
-    stroke-dashoffset:0px
-  }
-
-  50%{
-    stroke-dasharray:100,200;
-    stroke-dashoffset:-15px
-  }
-
-  to{
-    stroke-dasharray:100,200;
-    stroke-dashoffset:-124px
-  }
-}
-
 @keyframes progress-circular-dash{
   0%{
     stroke-dasharray:1,200;
@@ -18718,12 +18684,6 @@ html.overflow-y-hidden{
   to{
     stroke-dasharray:100,200;
     stroke-dashoffset:-124px
-  }
-}
-
-@-webkit-keyframes progress-circular-rotate{
-  to{
-    transform:rotate(1turn)
   }
 }
 
@@ -20015,7 +19975,6 @@ html.overflow-y-hidden{
 }
 
 .v-input--has-state.error--text .v-label{
-  -webkit-animation:v-shake .6s cubic-bezier(.25,.8,.5,1);
   animation:v-shake .6s cubic-bezier(.25,.8,.5,1)
 }
 
@@ -20156,7 +20115,6 @@ html.overflow-y-hidden{
 }
 
 .v-progress-linear .v-progress-linear__indeterminate .long,.v-progress-linear .v-progress-linear__indeterminate .short{
-  -webkit-animation-play-state:paused;
   animation-play-state:paused;
   background-color:inherit;
   bottom:0;
@@ -20170,20 +20128,14 @@ html.overflow-y-hidden{
 }
 
 .v-progress-linear .v-progress-linear__indeterminate--active .long{
-  -webkit-animation-name:indeterminate-ltr;
   animation-name:indeterminate-ltr;
-  -webkit-animation-duration:2.2s;
   animation-duration:2.2s;
-  -webkit-animation-iteration-count:infinite;
   animation-iteration-count:infinite
 }
 
 .v-progress-linear .v-progress-linear__indeterminate--active .short{
-  -webkit-animation-name:indeterminate-short-ltr;
   animation-name:indeterminate-short-ltr;
-  -webkit-animation-duration:2.2s;
   animation-duration:2.2s;
-  -webkit-animation-iteration-count:infinite;
   animation-iteration-count:infinite
 }
 
@@ -20193,19 +20145,15 @@ html.overflow-y-hidden{
 }
 
 .v-progress-linear--reverse .v-progress-linear__indeterminate--active .long{
-  -webkit-animation-name:indeterminate-rtl;
   animation-name:indeterminate-rtl
 }
 
 .v-progress-linear--reverse .v-progress-linear__indeterminate--active .short{
-  -webkit-animation-name:indeterminate-short-rtl;
   animation-name:indeterminate-short-rtl
 }
 
 .v-progress-linear__stream{
-  -webkit-animation:stream-ltr .25s linear infinite;
   animation:stream-ltr .25s linear infinite;
-  -webkit-animation-play-state:paused;
   animation-play-state:paused;
   border-color:currentColor;
   border-top:4px dotted;
@@ -20220,7 +20168,6 @@ html.overflow-y-hidden{
 }
 
 .v-progress-linear--reverse .v-progress-linear__stream{
-  -webkit-animation:stream-rtl .25s linear infinite;
   animation:stream-rtl .25s linear infinite;
   left:-8px;
   right:auto
@@ -20260,53 +20207,27 @@ html.overflow-y-hidden{
 }
 
 .v-progress-linear--query .v-progress-linear__indeterminate--active .long{
-  -webkit-animation-name:query-ltr;
   animation-name:query-ltr;
-  -webkit-animation-duration:2s;
   animation-duration:2s;
-  -webkit-animation-iteration-count:infinite;
   animation-iteration-count:infinite
 }
 
 .v-progress-linear--query .v-progress-linear__indeterminate--active .short{
-  -webkit-animation-name:query-short-ltr;
   animation-name:query-short-ltr;
-  -webkit-animation-duration:2s;
   animation-duration:2s;
-  -webkit-animation-iteration-count:infinite;
   animation-iteration-count:infinite
 }
 
 .v-progress-linear--query.v-progress-linear--reverse .v-progress-linear__indeterminate--active .long{
-  -webkit-animation-name:query-rtl;
   animation-name:query-rtl
 }
 
 .v-progress-linear--query.v-progress-linear--reverse .v-progress-linear__indeterminate--active .short{
-  -webkit-animation-name:query-short-rtl;
   animation-name:query-short-rtl
 }
 
 .v-progress-linear--visible .v-progress-linear__indeterminate--active .long,.v-progress-linear--visible .v-progress-linear__indeterminate--active .short,.v-progress-linear--visible .v-progress-linear__stream{
-  -webkit-animation-play-state:running;
   animation-play-state:running
-}
-
-@-webkit-keyframes indeterminate-ltr{
-  0%{
-    left:-90%;
-    right:100%
-  }
-
-  60%{
-    left:-90%;
-    right:100%
-  }
-
-  to{
-    left:100%;
-    right:-35%
-  }
 }
 
 @keyframes indeterminate-ltr{
@@ -20323,23 +20244,6 @@ html.overflow-y-hidden{
   to{
     left:100%;
     right:-35%
-  }
-}
-
-@-webkit-keyframes indeterminate-rtl{
-  0%{
-    left:100%;
-    right:-90%
-  }
-
-  60%{
-    left:100%;
-    right:-90%
-  }
-
-  to{
-    left:-35%;
-    right:100%
   }
 }
 
@@ -20360,23 +20264,6 @@ html.overflow-y-hidden{
   }
 }
 
-@-webkit-keyframes indeterminate-short-ltr{
-  0%{
-    left:-200%;
-    right:100%
-  }
-
-  60%{
-    left:107%;
-    right:-8%
-  }
-
-  to{
-    left:107%;
-    right:-8%
-  }
-}
-
 @keyframes indeterminate-short-ltr{
   0%{
     left:-200%;
@@ -20391,23 +20278,6 @@ html.overflow-y-hidden{
   to{
     left:107%;
     right:-8%
-  }
-}
-
-@-webkit-keyframes indeterminate-short-rtl{
-  0%{
-    left:100%;
-    right:-200%
-  }
-
-  60%{
-    left:-8%;
-    right:107%
-  }
-
-  to{
-    left:-8%;
-    right:107%
   }
 }
 
@@ -20428,23 +20298,6 @@ html.overflow-y-hidden{
   }
 }
 
-@-webkit-keyframes query-ltr{
-  0%{
-    right:-90%;
-    left:100%
-  }
-
-  60%{
-    right:-90%;
-    left:100%
-  }
-
-  to{
-    right:100%;
-    left:-35%
-  }
-}
-
 @keyframes query-ltr{
   0%{
     right:-90%;
@@ -20459,23 +20312,6 @@ html.overflow-y-hidden{
   to{
     right:100%;
     left:-35%
-  }
-}
-
-@-webkit-keyframes query-rtl{
-  0%{
-    right:100%;
-    left:-90%
-  }
-
-  60%{
-    right:100%;
-    left:-90%
-  }
-
-  to{
-    right:-35%;
-    left:100%
   }
 }
 
@@ -20496,23 +20332,6 @@ html.overflow-y-hidden{
   }
 }
 
-@-webkit-keyframes query-short-ltr{
-  0%{
-    right:-200%;
-    left:100%
-  }
-
-  60%{
-    right:107%;
-    left:-8%
-  }
-
-  to{
-    right:107%;
-    left:-8%
-  }
-}
-
 @keyframes query-short-ltr{
   0%{
     right:-200%;
@@ -20527,23 +20346,6 @@ html.overflow-y-hidden{
   to{
     right:107%;
     left:-8%
-  }
-}
-
-@-webkit-keyframes query-short-rtl{
-  0%{
-    right:100%;
-    left:-200%
-  }
-
-  60%{
-    right:-8%;
-    left:107%
-  }
-
-  to{
-    right:-8%;
-    left:107%
   }
 }
 
@@ -20564,21 +20366,9 @@ html.overflow-y-hidden{
   }
 }
 
-@-webkit-keyframes stream-ltr{
-  to{
-    transform:translateX(-8px)
-  }
-}
-
 @keyframes stream-ltr{
   to{
     transform:translateX(-8px)
-  }
-}
-
-@-webkit-keyframes stream-rtl{
-  to{
-    transform:translateX(8px)
   }
 }
 
@@ -22096,11 +21886,8 @@ html.overflow-y-hidden{
 }
 
 .v-dialog--animated{
-  -webkit-animation-duration:.15s;
   animation-duration:.15s;
-  -webkit-animation-name:animate-dialog;
   animation-name:animate-dialog;
-  -webkit-animation-timing-function:cubic-bezier(.25,.8,.25,1);
   animation-timing-function:cubic-bezier(.25,.8,.25,1)
 }
 
@@ -22142,20 +21929,6 @@ html.overflow-y-hidden{
   backface-visibility:hidden;
   flex:1 1 auto;
   overflow-y:auto
-}
-
-@-webkit-keyframes animate-dialog{
-  0%{
-    transform:scale(1)
-  }
-
-  50%{
-    transform:scale(1.03)
-  }
-
-  to{
-    transform:scale(1)
-  }
 }
 
 @keyframes animate-dialog{
@@ -22889,7 +22662,6 @@ html.overflow-y-hidden{
 }
 
 .v-calendar-category .v-calendar-daily__day-container{
-  width:-webkit-min-content;
   width:-moz-min-content;
   width:min-content
 }
@@ -22910,11 +22682,9 @@ html.overflow-y-hidden{
 
 .v-calendar-category .v-calendar-daily__head{
   flex-direction:row;
-  width:-webkit-min-content;
   width:-moz-min-content;
   width:min-content;
   min-width:100%;
-  position:-webkit-sticky;
   position:sticky;
   top:0;
   z-index:2
@@ -22926,7 +22696,6 @@ html.overflow-y-hidden{
 }
 
 .v-calendar-category .v-calendar-daily__intervals-head{
-  position:-webkit-sticky;
   position:sticky;
   left:0;
   top:0;
@@ -22934,7 +22703,6 @@ html.overflow-y-hidden{
 }
 
 .v-calendar-category .v-calendar-daily_head-weekday{
-  position:-webkit-sticky;
   position:sticky;
   left:50%;
   width:50px
@@ -22942,7 +22710,6 @@ html.overflow-y-hidden{
 
 .v-calendar-category .v-calendar-daily_head-day-label{
   width:56px;
-  position:-webkit-sticky;
   position:sticky;
   left:50%
 }
@@ -22952,7 +22719,6 @@ html.overflow-y-hidden{
 }
 
 .v-calendar-category .v-calendar-daily__intervals-body{
-  position:-webkit-sticky;
   position:sticky;
   left:0;
   z-index:1
@@ -22977,7 +22743,6 @@ html.overflow-y-hidden{
 
 .v-calendar-category .v-calendar-category__columns{
   display:flex;
-  width:-webkit-min-content;
   width:-moz-min-content;
   width:min-content;
   min-width:100%
@@ -24551,7 +24316,6 @@ html.overflow-y-hidden{
 
 .v-data-table--fixed-header>.v-data-table__wrapper>table>thead>tr>th{
   border-bottom:0!important;
-  position:-webkit-sticky;
   position:sticky;
   top:0;
   z-index:2
@@ -28303,7 +28067,6 @@ html.overflow-y-hidden{
 }
 
 .v-skeleton-loader__bone:after{
-  -webkit-animation:loading 1.5s infinite;
   animation:loading 1.5s infinite;
   content:"";
   height:100%;
@@ -28599,12 +28362,6 @@ html.overflow-y-hidden{
 
 .v-skeleton-loader--tile,.v-skeleton-loader--tile .v-skeleton-loader__bone{
   border-radius:0
-}
-
-@-webkit-keyframes loading{
-  to{
-    transform:translateX(100%)
-  }
 }
 
 @keyframes loading{
@@ -30556,7 +30313,6 @@ html.overflow-y-hidden{
 }
 
 .v-treeview-node__toggle--loading{
-  -webkit-animation:progress-circular-rotate 1s linear infinite;
   animation:progress-circular-rotate 1s linear infinite
 }
 

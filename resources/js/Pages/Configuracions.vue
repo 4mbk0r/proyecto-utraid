@@ -232,7 +232,6 @@ import AppLayout from '@/Layouts/AppLayout'
 import Welcome from '@/Jetstream/Welcome'
 import Sala from '@/Pages/Micomponet/Sala'
 import moment from 'moment'
-import { response } from 'express'
 export default {
     components: {
         Sala
@@ -259,17 +258,12 @@ export default {
         editedIndex: -1,
         editedItem: {
             id: '',
-            calories: 0,
-            fat: 0,
-            carbs: 0,
-            protein: 0,
+            descripcion: '',
         },
         defaultItem: {
             id: '',
-            calories: 0,
-            fat: 0,
-            carbs: 0,
-            protein: 0,
+            descripcion: '',
+
         },
         menu: false,
         date: '',
@@ -297,7 +291,6 @@ export default {
         initialize() {
             this.desserts = this.configuracion
             let date = new Date(this.fecha_server)
-            console.log(date)
         },
         editItem(item) {
             this.editedIndex = this.desserts.indexOf(item)
@@ -317,6 +310,8 @@ export default {
             this.dialog = false
             this.e1 = 1
             this.editedItem = {}
+            this.date = ''
+            this.date_temp = []
             this.$nextTick(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
                 this.editedIndex = -1
@@ -355,22 +350,33 @@ export default {
                     url: '/main/api/verificar_fecha/' + this.date,
 
                 }).then(
+                    (response) => {
+                        console.log(response);
+                        this.verificar_fecha(response.data)
+                    }, (error) => {
+                        console.log(error);
+                    }
                 );
 
 
             }
         },
-        verificar_fecha(resp){
-            if(resp['verificar']){
-                e1=2
+        verificar_fecha(resp) {
+            if (resp['verificar']) {
+                this.e1 = 2
+            } else {
+                let mensaje = "ya existe configuracion para fecha:"
+                for (const key in resp['lista_fechas']) {
+                    mensaje += "\n" + resp['lista_fechas'][key].fecha
+                }
+                alert(mensaje)
             }
-        }, 
+        },
         step3() {
             this.e1 = 3;
         },
         getMeses(m) {
             let fecha_final = moment(this.fecha_server).add(m, "M")
-            console.log(fecha_final)
             return fecha_final.format("YYYY-MM-DD")
 
         },
