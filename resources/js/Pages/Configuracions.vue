@@ -5,14 +5,15 @@
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title>Configuraciones</v-toolbar-title>
+
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="500px">
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                                Nueva configuarcion
-                            </v-btn>
-                        </template>
+                    <v-btn color="primary" dark class="mb-2" @click="dialog=true">
+                        Nueva configuarcion
+                    </v-btn>
+
+                    <v-dialog v-if="dialog" v-model="dialog" max-width="800px">
+
 
                         <v-stepper v-model="e1">
                             <v-stepper-header>
@@ -42,11 +43,12 @@
                                         </v-card-title>
 
                                         <v-card-text>
-                                            <v-container>
+                                            <v-form ref="paso1">
                                                 <v-row>
                                                     <v-col>
                                                         <v-text-field v-model="editedItem.descripcion"
-                                                            label="Descripcion">
+                                                            label="Descripcion" required
+                                                            :rules="[v => !!v || 'Se requiere completar']">
                                                         </v-text-field>
                                                     </v-col>
                                                 </v-row>
@@ -59,10 +61,15 @@
 
                                                 </v-row>
                                                 <v-row v-if="editedItem.atencion">
-                                                    <v-radio-group v-model="editedItem.tipo" row>
-                                                        <v-radio label="Temporal" value="temporal"></v-radio>
-                                                        <v-radio label="Permanente" value="permanente"></v-radio>
-                                                    </v-radio-group>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <v-radio-group v-model="editedItem.tipo" row>
+                                                                <v-radio label="Temporal" value="temporal"></v-radio>
+                                                                <v-radio label="Permanente" value="permanente">
+                                                                </v-radio>
+                                                            </v-radio-group>
+                                                        </v-col>
+                                                    </v-row>
                                                     <v-row v-if='editedItem.tipo=="permanente"'>
                                                         <v-menu ref="menu" v-model="menu"
                                                             :close-on-content-click="false" :return-value.sync="date"
@@ -70,10 +77,13 @@
                                                             <template v-slot:activator="{ on, attrs }">
                                                                 <v-text-field v-model="date" label="Fecha de Vigencia"
                                                                     prepend-icon="mdi-calendar" readonly v-bind="attrs"
-                                                                    v-on="on">
+                                                                    v-on="on"
+                                                                    :rules="[v => !!v || 'Se requiere completar']">
                                                                 </v-text-field>
                                                             </template>
-                                                            <v-date-picker v-model="date" no-title scrollable>
+                                                            <v-date-picker v-model="date" :min="fecha_server"
+                                                                :max="getMeses(3)" :allowed-dates="diasnoValidos"
+                                                                no-title scrollable>
                                                                 <v-spacer></v-spacer>
                                                                 <v-btn text color="primary" @click="menu = false">
                                                                     Cancel
@@ -114,7 +124,7 @@
                                                 <v-row>
 
                                                 </v-row>
-                                            </v-container>
+                                            </v-form>
                                         </v-card-text>
 
                                         <v-card-actions>
@@ -141,7 +151,7 @@
 
                                         <v-card-text>
                                             <v-container>
-                                                <sala ></sala>
+                                                <sala :id_configuracion="editedItem.id"></sala>
                                             </v-container>
                                         </v-card-text>
 
@@ -160,7 +170,7 @@
                                         </v-card-actions>
                                     </v-card>
 
-                                    
+
                                 </v-stepper-content>
 
                                 <v-stepper-content step="3">
@@ -221,13 +231,15 @@
 import AppLayout from '@/Layouts/AppLayout'
 import Welcome from '@/Jetstream/Welcome'
 import Sala from '@/Pages/Micomponet/Sala'
-
+import moment from 'moment'
+import { response } from 'express'
 export default {
     components: {
         Sala
     },
     props: {
         configuracion: Array,
+        fecha_server: '',
     },
     data: () => ({
         dialog: false,
@@ -284,6 +296,8 @@ export default {
     methods: {
         initialize() {
             this.desserts = this.configuracion
+            let date = new Date(this.fecha_server)
+            console.log(date)
         },
         editItem(item) {
             this.editedIndex = this.desserts.indexOf(item)
@@ -301,7 +315,7 @@ export default {
         },
         close() {
             this.dialog = false
-            this.e1=1
+            this.e1 = 1
             this.editedItem = {}
             this.$nextTick(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
@@ -323,25 +337,49 @@ export default {
             }
             this.close()
         },
-        async next_sala(){
-            if( this.editedIndex === -1)
+        async next_sala() {
+            if (this.editedIndex === -1)
                 return;
-            
-        },
-        step1(){
-            
-            this.e1=1  
-          },
-        step2(){
 
-          this.$store.id_config = this.editedItem.id
-          console.log(this.$store.id_config)
-          this.e1=2
         },
-        step3(){
+        step1() {
 
-this.e1=3
-}
+            this.e1 = 1
+        },
+        async step2() {
+
+
+            if (this.$refs.paso1.validate()) {
+                var res = await axios({
+                    method: 'get',
+                    url: '/main/api/verificar_fecha/' + this.date,
+
+                }).then(
+                );
+
+
+            }
+        },
+        verificar_fecha(resp){
+            if(resp['verificar']){
+                e1=2
+            }
+        }, 
+        step3() {
+            this.e1 = 3;
+        },
+        getMeses(m) {
+            let fecha_final = moment(this.fecha_server).add(m, "M")
+            console.log(fecha_final)
+            return fecha_final.format("YYYY-MM-DD")
+
+        },
+        diasnoValidos(val) {
+            var d = new Date(val).getDay();
+            if (d == 5) return false;
+            if (d == 6) return false;
+            return true;
+        },
     },
 
 }

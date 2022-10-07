@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 
 use Illuminate\Support\Facades\URL;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        
+        config(['app.locale' => 'es']);
+        Carbon::setLocale('es');
+        date_default_timezone_set('America/La_Paz');
         /*if(env('APP_ENV') !== 'local') {
             URL::forceScheme('https');
         }*/

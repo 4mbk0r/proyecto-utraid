@@ -3,6 +3,7 @@
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\SalaController;
+use App\Http\Controllers\CitaTieneConfiguracionController;
 
 
 use App\Http\Controllers\ConfigController;
@@ -99,3 +100,5 @@ Route::resource('/configuracion2', ConfiguracionController::class)->middleware([
 
 
 Route::resource('/sala', SalaController::class)->middleware(['auth:sanctum', 'verified']);;
+
+Route::resource('/lista_configuracion', CitaTieneConfiguracionController::class)->middleware(['auth:sanctum', 'verified']);;

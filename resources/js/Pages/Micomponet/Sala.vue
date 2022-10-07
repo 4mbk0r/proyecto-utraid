@@ -4,6 +4,7 @@
     :items="desserts"
     sort-by="calories"
     class="elevation-1"
+    item-key="sala"
   >
     <template v-slot:top>
       <v-toolbar
@@ -103,16 +104,22 @@ import Barrasu from '@/Pages/Micomponet/Barrasu'
 export default {
     props: {
         
+      id_configuracion: '',
     },
     data: () => ({
       dialog: false,
-      id_configuracion: this.$store.state.getid_config(),
       dialogDelete: false,
       headers: [
+        
+      {
+          text: 'sala',
+          align: 'start',
+          sortable: true,
+          value: 'sala',
+        },
         {
           text: 'Descrpcion',
           align: 'start',
-          sortable: true,
           value: 'descripcion',
         },
         { text: 'Opciones', value: 'actions', sortable: false },

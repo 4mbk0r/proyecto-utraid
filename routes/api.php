@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PersonaAntiguoController;
 use App\Http\Controllers\PersonaCitaController;
 use App\Models\personas_antiguo;
+use App\Http\Controllers\CitaTieneConfiguracionController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -94,4 +96,8 @@ Route::post('/buscar_persona', function (Request $request) {
 
 Route::post('/guardar_persona', function (Request $request) {
     return PersonaCitaController::guardar_persona($request);
+});
+
+Route::get('/verificar_fecha/{fecha}', function (String $fecha) {
+    return CitaTieneConfiguracionController::verificar_fecha($fecha);
 });

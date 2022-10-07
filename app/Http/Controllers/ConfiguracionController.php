@@ -20,11 +20,15 @@ class ConfiguracionController extends Controller
     {
         //
         $list_config = DB::table('configuracions')
-        ->select('*')
-        ->where('activo','=',true)
-        ->get();
+            ->select('*')
+            ->where('activo', '=', true)
+            ->get();
+        date_default_timezone_set("America/La_Paz");
+        $date = date_create();
+        $date = date_format($date, "Y-m-d H:i:s");
         return inertia('Configuracions', [
             'configuracion' => $list_config,
+            'fecha_server' => $date,
         ]);
     }
 
