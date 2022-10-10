@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateSalasTable extends Migration
@@ -15,7 +16,7 @@ class CreateSalasTable extends Migration
     {
         Schema::create('salas', function (Blueprint $table) {
             $table->integer('id');
-            $table->integer('sala')->unique();
+            $table->integer('sala');
             $table->string('descripcion');
             $table->time('tiempo_apertura');
             $table->time('tiempo_cierre');

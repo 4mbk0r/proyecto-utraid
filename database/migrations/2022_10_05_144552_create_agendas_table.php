@@ -21,7 +21,7 @@ class CreateAgendasTable extends Migration
             $table->integer('sala');
 
             //$table->foreign('fecha')->references('fecha')->on('cita_tiene_configuracions')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('sala')->references('sala')->on('salas')->onDelete('cascade')->onUpdate('cascade');
+            //$table->foreign('sala')->references('sala')->on('salas')->onDelete('cascade')->onUpdate('cascade');
             $table->primary(['fecha', 'sala', 'hora_inicio']);
         });
         DB::statement(

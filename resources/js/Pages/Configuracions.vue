@@ -140,7 +140,7 @@
 
                                         <v-card-text>
                                             <v-container>
-                                                <sala :id_configuracion="editedItem.id"></sala>
+                                                <sala ref="salas" :id_configuracion="editedItem.id"></sala>
                                             </v-container>
                                         </v-card-text>
 
@@ -223,6 +223,9 @@
                 <v-icon v-if="item.principal" small class="mr-2" @click="editItem(item)">
                     mdi-pencil
                 </v-icon>
+                <v-icon  small class="mr-2" @click="consultasItem(item)">
+                    mdi-phone
+                </v-icon>
                 <v-icon v-if="item.historial!=0" small @click="deleteItem(item)">
                     mdi-delete
                 </v-icon>
@@ -242,6 +245,20 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-dialog v-if="edit_consulta" v-model="edit_consulta" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h5">Consulta</v-card-title>
+                <v-card-text>
+                    <sala ref="solo_salas" :id_configuracion="editedItem.id"></sala>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="edit_consulta=false">Cancelar</v-btn>
+                    <v-btn color="blue darken-1" text @click="edit_consulta=false">Aceptar</v-btn>
+                    <v-spacer></v-spacer>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
 
 
     </v-app>
@@ -252,6 +269,7 @@ import AppLayout from '@/Layouts/AppLayout'
 import Welcome from '@/Jetstream/Welcome'
 import Sala from '@/Pages/Micomponet/Sala'
 import moment from 'moment'
+
 export default {
     components: {
         Sala
@@ -263,6 +281,7 @@ export default {
     data: () => ({
         permanente: false,
         dialog: false,
+        edit_consulta: false,
         dialogDelete: false,
         headers: [
             {
@@ -414,12 +433,13 @@ export default {
         },
         async step3() {
             console.log(`/${process.env.MIX_CARPETA}/configuracion2`,)
+            let salas = structuredClone(this.$refs.salas.desserts)
             var res = await this.axios({
                 method: 'post',
                 url: `/${process.env.MIX_CARPETA}/configuracion2`,
                 data: {
                     datos: this.editedItem,
-
+                    salas: salas
                 }
 
             }).then(
@@ -456,6 +476,13 @@ export default {
             if (d == 6) return false;
             return true;
         },
+        getSalas(value) {
+            Console.log(value)
+        },
+        consultasItem(item)
+        {
+            edit_consulta=true
+        }
     },
 
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\SalaController;
 use App\Http\Controllers\PdfViewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -100,4 +101,11 @@ Route::post('/guardar_persona', function (Request $request) {
 
 Route::get('/verificar_fecha/{fecha}', function (String $fecha) {
     return CitaTieneConfiguracionController::verificar_fecha($fecha);
+});
+
+
+
+
+Route::post('/delete_sala', function (Request $request) {
+    return SalaController::eliminar($request);
 });

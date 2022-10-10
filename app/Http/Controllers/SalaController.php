@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\sala;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SalaController extends Controller
 {
@@ -16,9 +17,8 @@ class SalaController extends Controller
     public function index()
     {
         //
-        
+
         return inertia('Micomponet/Sala');
-        
     }
 
     /**
@@ -48,10 +48,10 @@ class SalaController extends Controller
      * @param  \App\Models\sala  $sala
      * @return \Illuminate\Http\Response
      */
-    public function show(int $sala)
+    public function show(Request $sala)
     {
         //
-        return 'holaa';
+        return $sala;
     }
 
     /**
@@ -83,8 +83,25 @@ class SalaController extends Controller
      * @param  \App\Models\sala  $sala
      * @return \Illuminate\Http\Response
      */
-    public function destroy(sala $sala)
+    public function destroy(int $id, int $sala)
     {
         //
+        return $id;
+    }
+    public static function eliminar(Request $item)
+    {
+        //
+        $item = $item['dato'];
+        try {
+            DB::table('salas')
+                ->where('id', '=', $item['id'])
+                ->where('sala', '=', $item['sala'])
+                ->delete();
+        } catch (\Throwable $th) {
+            return $th;
+        }
+        $datos = DB::table('salas')
+            ->where('id', '=', $item['id'])->get();
+        return $datos;
     }
 }

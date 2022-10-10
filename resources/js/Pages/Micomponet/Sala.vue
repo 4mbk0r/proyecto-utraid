@@ -135,6 +135,9 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete()
     },
+    salas: function () {
+      this.$emit('salas', this.salas)
+    }
   },
   created() {
     this.initialize()
@@ -163,7 +166,24 @@ export default {
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
-    deleteItemConfirm() {
+    async deleteItemConfirm() {
+      /*var res = await this.axios({
+        method: 'post',
+        url: `/${process.env.MIX_CARPETA}/api/delete_sala`,
+        data: {
+          dato: this.editedItem
+        }
+
+      }).then(
+        (response) => {
+          //this.headers = response.data
+          console.log(response.data);
+          //this.desserts = response.data
+
+        }, (error) => {
+          console.log(error);
+        }
+      );*/
       this.desserts.splice(this.editedIndex, 1)
       this.closeDelete()
     },
@@ -196,6 +216,7 @@ export default {
       console.log('---' + this.id_configuracion)
     }
   },
+
 
 }
 </script>
