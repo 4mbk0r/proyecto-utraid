@@ -9,7 +9,7 @@
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
                     <v-btn color="primary" dark class="mb-2" @click="dialog=true">
-                        Nueva configuarcion
+                        Adicionar configuraciones temporales
                     </v-btn>
 
                     <v-dialog v-if="dialog" v-model="dialog" max-width="800px">
@@ -52,25 +52,9 @@
                                                         </v-text-field>
                                                     </v-col>
                                                 </v-row>
-                                                <v-row>
-                                                    <v-col>
-                                                        <v-checkbox v-model="editedItem.atencion"
-                                                            label="Se realiara la atencion">
-                                                        </v-checkbox>
-                                                    </v-col>
-
-                                                </v-row>
                                                 <v-row v-if="editedItem.atencion">
-                                                    <v-row>
-                                                        <v-col>
-                                                            <v-radio-group v-model="editedItem.tipo" row>
-                                                                <v-radio label="Temporal" value="temporal"></v-radio>
-                                                                <v-radio label="Permanente" value="permanente">
-                                                                </v-radio>
-                                                            </v-radio-group>
-                                                        </v-col>
-                                                    </v-row>
-                                                    <v-row v-if='editedItem.tipo=="permanente"'>
+
+                                                    <v-col cols="12" v-if='editedItem.tipo=="permanente"'>
                                                         <v-menu ref="menu" v-model="menu"
                                                             :close-on-content-click="false" :return-value.sync="date"
                                                             transition="scale-transition" offset-y min-width="auto">
@@ -81,7 +65,7 @@
                                                                     :rules="[v => !!v || 'Se requiere completar']">
                                                                 </v-text-field>
                                                             </template>
-                                                            <v-date-picker v-model="date" :min="fecha_server"
+                                                            <v-date-picker v-model="date" :min="inicioFecha()"
                                                                 :max="getMeses(3)" :allowed-dates="diasnoValidos"
                                                                 no-title scrollable>
                                                                 <v-spacer></v-spacer>
@@ -94,8 +78,13 @@
                                                                 </v-btn>
                                                             </v-date-picker>
                                                         </v-menu>
-                                                    </v-row>
-                                                    <v-row v-if='editedItem.tipo=="temporal"'>
+                                                    </v-col>
+                                                    <v-col v-if='editedItem.tipo=="temporal"'>
+                                                        <v-col cols="12">
+                                                            <v-checkbox v-model="editedItem.atencion"
+                                                                label="Se realiara la atencion">
+                                                            </v-checkbox>
+                                                        </v-col>
                                                         <v-menu ref="menu" v-model="menu"
                                                             :close-on-content-click="false"
                                                             :return-value.sync="date_temp" transition="scale-transition"
@@ -119,7 +108,7 @@
                                                                 </v-btn>
                                                             </v-date-picker>
                                                         </v-menu>
-                                                    </v-row>
+                                                    </v-col>
                                                 </v-row>
                                                 <v-row>
 
@@ -164,7 +153,7 @@
                                             <v-btn color="blue darken-1" text @click="close">
                                                 Cancelar
                                             </v-btn>
-                                            <v-btn color="primary" @click="e1 = 3">
+                                            <v-btn color="primary" @click="step3()">
                                                 Continue
                                             </v-btn>
                                         </v-card-actions>
@@ -191,8 +180,19 @@
                     <v-dialog v-model="dialogDelete" max-width="500px">
                         <v-card>
                             <v-card-title class="text-h5">Estas seguro que quieres eliminar</v-card-title>
+                            <v-card-text>
+                                <span>ID: {{editedItem.id}}</span>
+                                <v-divider></v-divider>
+                                <span>Descripcion {{editedItem.descripcion}}</span>
+                                <v-divider></v-divider>
+                                <span>Fechas: {{editedItem.fecha_inicio}}</span>
+                                <span v-if="!editedItem.principal"> - {{editedItem.fecha_final}}</span>
+
+
+                            </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
+
                                 <v-btn color="blue darken-1" text @click="closeDelete">Cancelar</v-btn>
                                 <v-btn color="blue darken-1" text @click="deleteItemConfirm">Aceptar</v-btn>
                                 <v-spacer></v-spacer>
@@ -205,16 +205,25 @@
             <template v-slot:item.atencion="{ item }">
                 <v-simple-checkbox v-model="item.atencion" disabled></v-simple-checkbox>
             </template>
+            <template v-slot:item.fecha_final="{ item }">
+                <span v-if="item.fecha_final=='9999-01-01'">
+                    Eterno
+                </span>
+                <span v-else>
+                    {{item.fecha_final}}
+                </span>
+
+            </template>
             <template v-slot:item.principal="{ item }">
                 <v-simple-checkbox v-model="item.principal" disabled></v-simple-checkbox>
             </template>
 
 
             <template v-slot:item.actions="{ item }">
-                <v-icon small class="mr-2" @click="editItem(item)">
+                <v-icon v-if="item.principal" small class="mr-2" @click="editItem(item)">
                     mdi-pencil
                 </v-icon>
-                <v-icon small @click="deleteItem(item)">
+                <v-icon v-if="item.historial!=0" small @click="deleteItem(item)">
                     mdi-delete
                 </v-icon>
             </template>
@@ -222,6 +231,17 @@
                 <span>No se tiene elementos </span>
             </template>
         </v-data-table>
+        <v-dialog v-model="permanente" max-width="500px">
+            <v-card>
+                <v-card-title class="text-h5">Estas seguro que quieres eliminar</v-card-title>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="permanente=false">Cancelar</v-btn>
+                    <v-btn color="blue darken-1" text @click="permanente=false">Aceptar</v-btn>
+                    <v-spacer></v-spacer>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
 
 
     </v-app>
@@ -241,6 +261,7 @@ export default {
         fecha_server: '',
     },
     data: () => ({
+        permanente: false,
         dialog: false,
         dialogDelete: false,
         headers: [
@@ -250,8 +271,11 @@ export default {
                 sortable: true,
                 value: 'id',
             },
+            { text: 'Fecha inicio', value: 'fecha_inicio' },
+            { text: 'Fecha final', value: 'fecha_final' },
+
             { text: 'Descripcion', value: 'descripcion' },
-            { text: 'Se atendera', value: 'atencion' },
+            { text: 'Principal', value: 'principal' },
             { text: '', value: 'actions', sortable: false },
         ],
         desserts: [],
@@ -268,7 +292,7 @@ export default {
         menu: false,
         date: '',
         date_temp: [],
-
+        minfecha: '',
         e1: 1,
     }),
     computed: {
@@ -296,14 +320,28 @@ export default {
             this.editedIndex = this.desserts.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
+
         },
         deleteItem(item) {
+
             this.editedIndex = this.desserts.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialogDelete = true
         },
-        deleteItemConfirm() {
-            this.desserts.splice(this.editedIndex, 1)
+        async deleteItemConfirm() {
+            var res = await axios({
+                method: 'delete',
+                url: '/main/configuracion2/' + this.editedItem.id,
+            }).then(
+                (response) => {
+                    console.log(response);
+                    this.desserts = response.data
+                    //this.verificar_fecha(response.data)
+                }, (error) => {
+                    console.log(error);
+                }
+            );
+            //this.desserts.splice(this.editedIndex, 1)
             this.closeDelete()
         },
         close() {
@@ -363,8 +401,10 @@ export default {
         },
         verificar_fecha(resp) {
             if (resp['verificar']) {
+                this.editedItem.fecha_inicio = this.date
                 this.e1 = 2
             } else {
+
                 let mensaje = "ya existe configuracion para fecha:"
                 for (const key in resp['lista_fechas']) {
                     mensaje += "\n" + resp['lista_fechas'][key].fecha
@@ -372,8 +412,38 @@ export default {
                 alert(mensaje)
             }
         },
-        step3() {
+        async step3() {
+            console.log(`/${process.env.MIX_CARPETA}/configuracion2`,)
+            var res = await this.axios({
+                method: 'post',
+                url: `/${process.env.MIX_CARPETA}/configuracion2`,
+                data: {
+                    datos: this.editedItem,
+
+                }
+
+            }).then(
+                (response) => {
+                    //this.headers = response.data
+                    console.log(response.data);
+                    this.desserts = response.data
+
+                }, (error) => {
+                    console.log(error);
+                }
+            );
             this.e1 = 3;
+        },
+        inicioFecha() {
+            let f1 = moment(this.fecha_server).add(1, "d")
+            let f2 = moment(this.editedItem.fecha_inicio).add(1, 'd')
+            if (f1.isBefore(f2)) { //<
+                this.minfecha = f2.format("YYYY-MM-DD")
+                return this.minfecha
+            }
+            this.minfecha = f1.format("YYYY-MM-DD")
+            return this.minfecha
+
         },
         getMeses(m) {
             let fecha_final = moment(this.fecha_server).add(m, "M")

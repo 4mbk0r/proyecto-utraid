@@ -29,7 +29,7 @@
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4">
-                    <v-text-field v-model="editedItem.tiempo_cierre" label="Hora de cierre"></v-text-field>
+                    <v-text-field v-model="editedItem.tiempo_cierre" type="time" label="Hora de cierre"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4">
                     <v-text-field v-model="editedItem.min_promedio_atencion" label="Minutos promedio de atencio">
@@ -142,7 +142,7 @@ export default {
   methods: {
     async initialize() {
       if (this.id_configuracion) {
-        var res = await axios({
+        var res = await this.axios({
           method: 'get',
           url: '/main/configuracion2/' + this.id_configuracion,
 

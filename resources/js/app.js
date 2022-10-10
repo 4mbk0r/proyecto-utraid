@@ -13,6 +13,8 @@ import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import VuetifyDialogPromise from "vuetify-dialog-promise";
 
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 import store from './store'
 
 
@@ -23,6 +25,7 @@ global.$ = JQuery;
 */
 
 
+
 const THEME_DARK = 'dark';
 const THEME_LIGHT = 'light';
 InertiaProgress.init()
@@ -31,6 +34,8 @@ Vue.use(InertiaPlugin);
 Vue.use(PortalVue);
 //also add this line    
 Vue.use(Vuetify);
+Vue.use(VueAxios, axios);
+
 Vue.use(VuetifyDialogPromise, {
     locale: "fi",
     snackbarX: "left",
