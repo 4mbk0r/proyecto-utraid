@@ -19,12 +19,14 @@ class ConfiguracionController extends Controller
     public function index()
     {
         //
+        date_default_timezone_set("America/La_Paz");
+        $date = date_create();
         $list_config = DB::table('configuracions')
             ->select('*')
             ->where('activo', '=', true)
+            ->where('fecha_final', '>', date_format($date, "Y-m-d"))
             ->get();
-        date_default_timezone_set("America/La_Paz");
-        $date = date_create();
+        
         $date = date_format($date, "Y-m-d H:i:s");
         return inertia('Configuracions', [
             'configuracion' => $list_config,
@@ -50,7 +52,8 @@ class ConfiguracionController extends Controller
     public function store(Request $request)
     {
         //
-        
+        date_default_timezone_set("America/La_Paz");
+        $date = date_create();
         $edit = $request['datos'];
         $n_fecha_final = date($edit['fecha_inicio']);
         $n_fecha_final = date("Y-m-d", strtotime($n_fecha_final . "- 1 days"));
@@ -64,16 +67,18 @@ class ConfiguracionController extends Controller
             unset($edit['id']);
             $default_actual =  DB::table('configuracions')->insertGetId($edit);
             $salas = $request['salas'];
-            $array = [];
+            $p = [];
             foreach ($salas as $id => $row) {
                 # code...
                 //$row->id;
                 $row['id']=$default_actual;
+                unset($row['sala']);
                 DB::table('salas')->insert($row);
             }
             $list_config = DB::table('configuracions')
                 ->select('*')
                 ->where('activo', '=', true)
+                ->where('fecha_final', '>', date_format($date, "Y-m-d"))
                 ->get();
             
         } catch (\Throwable $th) {
@@ -134,6 +139,8 @@ class ConfiguracionController extends Controller
     public function destroy(int $configuracion)
     {
         //
+        date_default_timezone_set("America/La_Paz");
+        $date = date_create();
         try {
             $list_item = DB::table('configuracions')->where('id', '=', $configuracion)->get();
             if (count($list_item) == 1) {
@@ -151,6 +158,7 @@ class ConfiguracionController extends Controller
         $list_config = DB::table('configuracions')
             ->select('*')
             ->where('activo', '=', true)
+            ->where('fecha_final', '>', date_format($date, "Y-m-d"))
             ->get();
         return $list_config;
     }

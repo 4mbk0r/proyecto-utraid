@@ -1,7 +1,11 @@
 <template>
     <v-app>
 
-        <v-data-table :headers="headers" :items="desserts" sort-by="calories" class="elevation-1">
+        <v-data-table :headers="headers" :items="desserts" :sort-by="['fecha_inicio']" :sort-desc="[false]" multi-sort
+            class="elevation-1" :header-props="{sortByText: 'Ordenar por'}" :items-per-page="20"
+            :footer-props="{
+                  'items-per-page-text':'Configuraciones por pagina',
+                'items-per-page-options':[20, 30, 50, 100, -1], 'items-per-page-all-text':'Todos'}">
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title>Configuraciones</v-toolbar-title>
@@ -12,9 +16,16 @@
                         Adicionar configuraciones temporales
                     </v-btn>
 
-                    <v-dialog v-if="dialog" v-model="dialog" max-width="800px">
+                    <v-dialog fullscreen hide-overlay transition="dialog-bottom-transition" v-if="dialog"
+                        v-model="dialog">
 
-
+                        <v-toolbar dark color="primary">
+                            <v-btn icon dark @click="close()">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                            <v-toolbar-title>{{formTitle}}</v-toolbar-title>
+                            <v-spacer></v-spacer>
+                        </v-toolbar>
                         <v-stepper v-model="e1">
                             <v-stepper-header>
                                 <v-stepper-step :complete="e1 > 1" step="1">
@@ -37,10 +48,6 @@
                             <v-stepper-items>
                                 <v-stepper-content step="1">
                                     <v-card>
-
-                                        <v-card-title>
-                                            <span class="text-h5"> {{ formTitle }}</span>
-                                        </v-card-title>
 
                                         <v-card-text>
                                             <v-form ref="paso1">
@@ -153,7 +160,7 @@
                                             <v-btn color="blue darken-1" text @click="close">
                                                 Cancelar
                                             </v-btn>
-                                            <v-btn color="primary" @click="step3()">
+                                            <v-btn color="primary" @click="e1=3">
                                                 Continue
                                             </v-btn>
                                         </v-card-actions>
@@ -163,15 +170,34 @@
                                 </v-stepper-content>
 
                                 <v-stepper-content step="3">
-                                    <v-card class="mb-12" color="grey lighten-1" height="200px"></v-card>
+                                    <v-card>
+                                        <v-card-title>
+                                            Se planificara la siguiente configuración:
+                                        </v-card-title>
+                                        <v-card-text>
+                                            <span>ID: {{editedItem.id}}</span>
+                                            <v-divider></v-divider>
+                                            <span>Descripcion {{editedItem.descripcion}}</span>
+                                            <v-divider></v-divider>
+                                            <span>Para la Fechas: {{editedItem.fecha_inicio}}</span>
+                                            <span v-if="!editedItem.principal"> - {{editedItem.fecha_final}}</span>
+                                        </v-card-text>
 
-                                    <v-btn color="primary" @click="e1 = 1">
-                                        Continue
-                                    </v-btn>
+                                    </v-card>
+                                    <v-card-actions>
+                                        <v-btn color="primary" @click="step3()">
+                                            Aceptar
+                                        </v-btn>
 
-                                    <v-btn text>
-                                        Cancel
-                                    </v-btn>
+                                        <v-btn text @click="close()">
+                                            Cancel
+                                        </v-btn>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="primary" @click="e1 = 2">
+                                            Atras
+                                        </v-btn>
+
+                                    </v-card-actions>
                                 </v-stepper-content>
                             </v-stepper-items>
                         </v-stepper>
@@ -207,7 +233,7 @@
             </template>
             <template v-slot:item.fecha_final="{ item }">
                 <span v-if="item.fecha_final=='9999-01-01'">
-                    Eterno
+                    Indefinido
                 </span>
                 <span v-else>
                     {{item.fecha_final}}
@@ -223,8 +249,8 @@
                 <v-icon v-if="item.principal" small class="mr-2" @click="editItem(item)">
                     mdi-pencil
                 </v-icon>
-                <v-icon  small class="mr-2" @click="consultasItem(item)">
-                    mdi-phone
+                <v-icon small class="mr-2" @click="consultasItem(item)">
+                    mdi-home-circle
                 </v-icon>
                 <v-icon v-if="item.historial!=0" small @click="deleteItem(item)">
                     mdi-delete
@@ -249,14 +275,9 @@
             <v-card>
                 <v-card-title class="text-h5">Consulta</v-card-title>
                 <v-card-text>
-                    <sala ref="solo_salas" :id_configuracion="editedItem.id"></sala>
+                    <sala ref="solo_salas" :editar_consulta="edit_consulta" :id_configuracion="editedItem.id"></sala>
                 </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="edit_consulta=false">Cancelar</v-btn>
-                    <v-btn color="blue darken-1" text @click="edit_consulta=false">Aceptar</v-btn>
-                    <v-spacer></v-spacer>
-                </v-card-actions>
+
             </v-card>
         </v-dialog>
 
@@ -287,8 +308,8 @@ export default {
             {
                 text: 'ID',
                 align: 'start',
-                sortable: true,
                 value: 'id',
+
             },
             { text: 'Fecha inicio', value: 'fecha_inicio' },
             { text: 'Fecha final', value: 'fecha_final' },
@@ -310,6 +331,7 @@ export default {
         },
         menu: false,
         date: '',
+        date_inicio: '',
         date_temp: [],
         minfecha: '',
         e1: 1,
@@ -336,6 +358,7 @@ export default {
             let date = new Date(this.fecha_server)
         },
         editItem(item) {
+            this.date_inicio = this.editedItem.fecha_inicio
             this.editedIndex = this.desserts.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
@@ -364,6 +387,7 @@ export default {
             this.closeDelete()
         },
         close() {
+            this.date_inicio=''
             this.dialog = false
             this.e1 = 1
             this.editedItem = {}
@@ -447,16 +471,17 @@ export default {
                     //this.headers = response.data
                     console.log(response.data);
                     this.desserts = response.data
+                    this.e1 = 1
+                    this.close()
 
                 }, (error) => {
                     console.log(error);
                 }
             );
-            this.e1 = 3;
         },
         inicioFecha() {
             let f1 = moment(this.fecha_server).add(1, "d")
-            let f2 = moment(this.editedItem.fecha_inicio).add(1, 'd')
+            let f2 = moment(this.date_inicio).add(1, 'd')
             if (f1.isBefore(f2)) { //<
                 this.minfecha = f2.format("YYYY-MM-DD")
                 return this.minfecha
@@ -479,9 +504,10 @@ export default {
         getSalas(value) {
             Console.log(value)
         },
-        consultasItem(item)
-        {
-            edit_consulta=true
+        consultasItem(item) {
+            this.editedItem = item
+            this.edit_consulta = true
+
         }
     },
 

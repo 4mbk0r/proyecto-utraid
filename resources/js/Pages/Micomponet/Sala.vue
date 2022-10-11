@@ -68,7 +68,10 @@
       <v-icon small class="mr-2" @click="editItem(item)">
         mdi-pencil
       </v-icon>
-      <v-icon small @click="deleteItem(item)">
+      <v-icon v-if="editar_consulta" small @click="deleteItem(item)">
+        mdi-delete
+      </v-icon>
+      <v-icon v-if="!editar_consulta" small @click="deleteItem(item)">
         mdi-delete
       </v-icon>
     </template>
@@ -82,11 +85,13 @@
 import AppLayout from '@/Layouts/AppLayout'
 import Welcome from '@/Jetstream/Welcome'
 import Barrasu from '@/Pages/Micomponet/Barrasu'
-
+import moment from 'moment'
 export default {
   props: {
 
     id_configuracion: '',
+    editar_consulta: false,
+
   },
   data: () => ({
     dialog: false,
@@ -110,17 +115,10 @@ export default {
     editedIndex: -1,
     editedItem: {
       id: '',
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0,
+      
     },
     defaultItem: {
       id: '',
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0,
     },
   }),
   computed: {
@@ -159,7 +157,13 @@ export default {
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
-      this.dialog = true
+      
+      this.dialog = true  
+      this.editedItem.tiempo_apertura = moment(this.editedItem.tiempo_apertura,'hh:mm:ss').format('HH:mm');
+      this.editedItem.tiempo_cierre = moment(this.editedItem.tiempo_cierre,'hh:mm:ss').format('HH:mm');
+      
+      
+      
     },
     deleteItem(item) {
       this.editedIndex = this.desserts.indexOf(item)
@@ -167,23 +171,28 @@ export default {
       this.dialogDelete = true
     },
     async deleteItemConfirm() {
-      /*var res = await this.axios({
-        method: 'post',
-        url: `/${process.env.MIX_CARPETA}/api/delete_sala`,
-        data: {
-          dato: this.editedItem
-        }
+      if (this.editar_consulta) {
+        var res = await this.axios({
+          method: 'post',
+          url: `/${process.env.MIX_CARPETA}/api/delete_sala`,
+          data: {
+            dato: this.editedItem
+          },
 
-      }).then(
-        (response) => {
-          //this.headers = response.data
-          console.log(response.data);
-          //this.desserts = response.data
+        }).then(
+          (response) => {
+            //this.headers = response.data
+            console.log(response.data);
+            this.desserts = response.data
 
-        }, (error) => {
-          console.log(error);
-        }
-      );*/
+          }, (error) => {
+            console.log(error);
+          });
+
+
+      }
+      /*
+      */
       this.desserts.splice(this.editedIndex, 1)
       this.closeDelete()
     },
@@ -202,10 +211,50 @@ export default {
         this.editedIndex = -1
       })
     },
-    save() {
+    async save() {
+      
       if (this.editedIndex > -1) {
+        if (this.editar_consulta) {
+          var res = await this.axios({
+          method: 'put',
+          url: `/${process.env.MIX_CARPETA}/sala/`+this.editedItem.id,
+          data: {
+            datos: this.editedItem
+          },
+
+        }).then(
+          (response) => {
+            //this.headers = response.data
+            console.log(response.data);
+            //this.desserts = response.data
+
+          }, (error) => {
+            console.log(error);
+          });
+        
+        }
+        
         Object.assign(this.desserts[this.editedIndex], this.editedItem)
+        
       } else {
+        if(this.editar_consulta){
+          var res = await this.axios({
+          method: 'post',
+          url: `/${process.env.MIX_CARPETA}/sala`,
+          data: {
+            datos: this.editedItem
+          },
+
+        }).then(
+          (response) => {
+            //this.headers = response.data
+            console.log(response.data);
+            //this.desserts = response.data
+
+          }, (error) => {
+            console.log(error);
+          });
+        }
         this.desserts.push(this.editedItem)
       }
       this.close()
@@ -214,6 +263,9 @@ export default {
       console.log('---' + e)
       this.id_configuracion = e
       console.log('---' + this.id_configuracion)
+    },
+    clear_time(val){
+      return moment(val,'hh:mm:ss').format('h:mm a');
     }
   },
 

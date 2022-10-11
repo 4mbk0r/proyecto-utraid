@@ -16,7 +16,7 @@ class CreateSalasTable extends Migration
     {
         Schema::create('salas', function (Blueprint $table) {
             $table->integer('id');
-            $table->integer('sala');
+            $table->increments('sala');
             $table->string('descripcion');
             $table->time('tiempo_apertura');
             $table->time('tiempo_cierre');
@@ -25,12 +25,11 @@ class CreateSalasTable extends Migration
             $table->boolean('estado')->default(1);
             $table->jsonb('horario')->nullable();
             $table->foreign('id')->references('id')->on('configuracions')->onDelete('cascade')->onUpdate('cascade');
-            $table->primary(['sala', 'id']);
+            $table->unique(['id', 'descripcion']);
         });
         $datos2 = [
            
             'id' => '1',
-            'sala'=>'1',
             'descripcion' => 'SALA 1',
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:00:00',
@@ -42,7 +41,6 @@ class CreateSalasTable extends Migration
         $datos2 = [
            
             'id' => '1',
-            'sala'=>'2',
             'descripcion' => 'SALA 2',
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:00:00',
@@ -54,7 +52,6 @@ class CreateSalasTable extends Migration
         $datos2 = [
            
             'id' => '1',
-            'sala'=>'3',
             'descripcion' => 'SALA 3',
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:00:00',
@@ -66,7 +63,6 @@ class CreateSalasTable extends Migration
         $datos2 = [
            
             'id' => '1',
-            'sala'=>'4',
             'descripcion' => 'SALA 4',
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:00:00',
@@ -75,6 +71,18 @@ class CreateSalasTable extends Migration
             'estado'=>'true',
         ];
         DB::table('salas')->insert($datos2);
+        $datos2 = [
+           
+            'id' => '1',
+            'descripcion' => 'SALA 5',
+            'tiempo_apertura' => '08:00:00',
+            'tiempo_cierre' => '15:00:00',
+            'tiempo_descanso' => '12:00:00',
+            'min_promedio_atencion'=>'60',
+            'estado'=>'true',
+        ];
+        DB::table('salas')->insert($datos2);
+        
     }
 
     /**

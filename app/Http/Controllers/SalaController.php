@@ -40,6 +40,7 @@ class SalaController extends Controller
     public function store(Request $request)
     {
         //
+        return $request['datos'];
     }
 
     /**
@@ -72,9 +73,10 @@ class SalaController extends Controller
      * @param  \App\Models\sala  $sala
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, sala $sala)
+    public function update(Request $request, int $sala)
     {
         //
+        return $sala;
     }
 
     /**
