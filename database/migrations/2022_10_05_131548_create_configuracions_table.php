@@ -23,9 +23,7 @@ class CreateConfiguracionsTable extends Migration
             $table->string('tipo')->default('temporal');
             $table->boolean('atencion')->default(0);
             $table->String('descripcion');
-            $table->string('lugar');
-            $table->integer('n_sala');
-            $table->boolean('activo')->default(1);
+            //$table->boolean('activo')->default(1);
             $table->integer('historial')->nullable();
             //$table->primary('id');
         });
@@ -35,9 +33,8 @@ class CreateConfiguracionsTable extends Migration
             'principal' => 'true',
             'atencion' => 'true',
             'descripcion' => 'Configuracion de inicio',
-            'lugar' => 'ultraid',
-            'n_sala' => '4',
-            'activo' => 'true',
+            
+            //'activo' => 'true',
             'tipo' => 'permanente',
             'historial' => '0',
         ];
@@ -47,7 +44,7 @@ class CreateConfiguracionsTable extends Migration
             'descripcion' => 'Dia de no atencion',
             'lugar' => 'ultraid',
             'n_sala' => '0',
-            'activo' => 'true',
+            //'activo' => 'true',
         ];
         DB::table('configuracions')->insert($datos);
     }

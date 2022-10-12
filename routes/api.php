@@ -103,6 +103,9 @@ Route::get('/verificar_fecha/{fecha}', function (String $fecha) {
     return CitaTieneConfiguracionController::verificar_fecha($fecha);
 });
 
+Route::post('/verificar_fecha', function (Request $request) {
+    return CitaTieneConfiguracionController::verificar_rangofecha($request);
+});
 
 
 

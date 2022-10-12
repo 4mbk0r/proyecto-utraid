@@ -53,7 +53,7 @@
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
-            <v-card-title class="text-h5">Deseas Eliminar la Sala</v-card-title>
+            <v-card-title class="text-h5">Deseas Eliminar la Consulta</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="closeDelete">Cancelar</v-btn>
@@ -98,12 +98,7 @@ export default {
     dialogDelete: false,
     headers: [
 
-      {
-        text: 'sala',
-        align: 'start',
-        sortable: true,
-        value: 'sala',
-      },
+    
       {
         text: 'Descrpcion',
         align: 'start',
@@ -123,7 +118,7 @@ export default {
   }),
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'Nueva Sala' : 'Editar Sala'
+      return this.editedIndex === -1 ? 'Nueva Cansulta' : 'Editar Consulta'
     },
   },
   watch: {

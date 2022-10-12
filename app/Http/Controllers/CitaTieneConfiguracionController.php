@@ -109,4 +109,44 @@ class CitaTieneConfiguracionController extends Controller
         ];
         return $resp;
     }
+    public static function verificar_rangofecha(Request $request)
+    {
+        $temp = [];
+        $fecha = $request['fecha'];
+        $conf_default = [];
+        foreach ($fecha as $key => $value) {
+            try {
+                $list_config = DB::table('cita_tiene_configuracions')
+                    ->select('*')
+                    ->where('fecha', '=', date($value))
+                    ->get();
+                $fecha_entre = DB::table('configuracions')
+                    ->select('*')
+                    ->where('fecha_inicio', '<=', date($value))
+                    ->where('fecha_final', '>=',date($value) )
+                    ->where('tipo', '=', 'permanente' )->get();
+            } catch (\Throwable $th) {
+                return $th;
+            }
+            if (count($list_config) > 0) {
+
+               
+                array_push($temp, $value);
+            }else{
+                array_push($conf_default,$fecha_entre[0]);
+            }
+        }
+        $verificar = false;
+        if (count($temp) == 0) {
+            $verificar = true;
+        }
+
+        $resp = [
+            'lista_fechas' => $temp,
+            'verificar' => $verificar,
+            'default'=> $conf_default,
+            'n' => count($temp)
+        ];
+        return $resp;
+    }
 }

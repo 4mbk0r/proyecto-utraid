@@ -2,17 +2,16 @@
     <v-app>
 
         <v-data-table :headers="headers" :items="desserts" :sort-by="['fecha_inicio']" :sort-desc="[false]" multi-sort
-            class="elevation-1" :header-props="{sortByText: 'Ordenar por'}" :items-per-page="20"
-            :footer-props="{
-                  'items-per-page-text':'Configuraciones por pagina',
-                'items-per-page-options':[20, 30, 50, 100, -1], 'items-per-page-all-text':'Todos'}">
+            class="elevation-1" :header-props="{sortByText: 'Ordenar por'}" :items-per-page="20" :footer-props="{
+              'items-per-page-text':'Configuraciones por pagina',
+            'items-per-page-options':[20, 30, 50, 100, -1], 'items-per-page-all-text':'Todos'}">
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title>Configuraciones</v-toolbar-title>
 
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" dark class="mb-2" @click="dialog=true">
+                    <v-btn color="primary" dark class="mb-2" @click="adicionar_temp()">
                         Adicionar configuraciones temporales
                     </v-btn>
 
@@ -59,7 +58,8 @@
                                                         </v-text-field>
                                                     </v-col>
                                                 </v-row>
-                                                <v-row v-if="editedItem.atencion">
+                                                <!--v-if="editedItem.atencion"-->
+                                                <v-row>
 
                                                     <v-col cols="12" v-if='editedItem.tipo=="permanente"'>
                                                         <v-menu ref="menu" v-model="menu"
@@ -73,7 +73,7 @@
                                                                 </v-text-field>
                                                             </template>
                                                             <v-date-picker v-model="date" :min="inicioFecha()"
-                                                                :max="getMeses(3)" :allowed-dates="diasnoValidos"
+                                                                :max="getMeses(12)" :allowed-dates="diasnoValidos"
                                                                 no-title scrollable>
                                                                 <v-spacer></v-spacer>
                                                                 <v-btn text color="primary" @click="menu = false">
@@ -92,29 +92,31 @@
                                                                 label="Se realiara la atencion">
                                                             </v-checkbox>
                                                         </v-col>
-                                                        <v-menu ref="menu" v-model="menu"
-                                                            :close-on-content-click="false"
-                                                            :return-value.sync="date_temp" transition="scale-transition"
-                                                            offset-y min-width="auto">
-                                                            <template v-slot:activator="{ on, attrs }">
-                                                                <v-text-field v-model="date_temp"
-                                                                    label="Fecha de Configuracion temporal"
-                                                                    prepend-icon="mdi-calendar" readonly v-bind="attrs"
-                                                                    v-on="on">
-                                                                </v-text-field>
-                                                            </template>
-                                                            <v-date-picker v-model="date_temp" multiple no-title
-                                                                scrollable>
-                                                                <v-spacer></v-spacer>
-                                                                <v-btn text color="primary" @click="menu = false">
-                                                                    Cancel
-                                                                </v-btn>
-                                                                <v-btn text color="primary"
-                                                                    @click="$refs.menu.save(date_temp)">
-                                                                    OK
-                                                                </v-btn>
-                                                            </v-date-picker>
-                                                        </v-menu>
+                                                        <v-col cols="12">
+                                                            <v-menu ref="menu" v-model="menu"
+                                                                :close-on-content-click="false"
+                                                                :return-value.sync="date_temp"
+                                                                transition="scale-transition" offset-y min-width="auto">
+                                                                <template v-slot:activator="{ on, attrs }">
+                                                                    <v-text-field v-model="date_temp"
+                                                                        label="Fecha de Configuracion temporal"
+                                                                        prepend-icon="mdi-calendar" readonly
+                                                                        v-bind="attrs" v-on="on">
+                                                                    </v-text-field>
+                                                                </template>
+                                                                <v-date-picker v-model="date_temp" multiple no-title
+                                                                    scrollable>
+                                                                    <v-spacer></v-spacer>
+                                                                    <v-btn text color="primary" @click="menu = false">
+                                                                        Cancel
+                                                                    </v-btn>
+                                                                    <v-btn text color="primary"
+                                                                        @click="$refs.menu.save(date_temp)">
+                                                                        OK
+                                                                    </v-btn>
+                                                                </v-date-picker>
+                                                            </v-menu>
+                                                        </v-col>
                                                     </v-col>
                                                 </v-row>
                                                 <v-row>
@@ -138,7 +140,7 @@
 
                                 </v-stepper-content>
 
-                                <v-stepper-content step="2">
+                                <v-stepper-content  step="2">
                                     <v-card>
 
                                         <v-card-title>
@@ -146,7 +148,7 @@
                                         </v-card-title>
 
                                         <v-card-text>
-                                            <v-container>
+                                            <v-container v-if="e1>=2">
                                                 <sala ref="salas" :id_configuracion="editedItem.id"></sala>
                                             </v-container>
                                         </v-card-text>
@@ -166,7 +168,6 @@
                                         </v-card-actions>
                                     </v-card>
 
-
                                 </v-stepper-content>
 
                                 <v-stepper-content step="3">
@@ -185,11 +186,11 @@
 
                                     </v-card>
                                     <v-card-actions>
-                                        <v-btn color="primary" @click="step3()">
+                                        <v-btn  color="primary" @click="step3()">
                                             Aceptar
                                         </v-btn>
 
-                                        <v-btn text @click="close()">
+                                        <v-btn color="primary" @click="close()">
                                             Cancel
                                         </v-btn>
                                         <v-spacer></v-spacer>
@@ -274,8 +275,9 @@
         <v-dialog v-if="edit_consulta" v-model="edit_consulta" max-width="500px">
             <v-card>
                 <v-card-title class="text-h5">Consulta</v-card-title>
-                <v-card-text>
-                    <sala ref="solo_salas" :editar_consulta="edit_consulta" :id_configuracion="editedItem.id"></sala>
+                <v-card-text >
+          
+                        <sala  ref="solo_salas" :editar_consulta="edit_consulta" :id_configuracion="editedItem.id"></sala>
                 </v-card-text>
 
             </v-card>
@@ -323,10 +325,12 @@ export default {
         editedItem: {
             id: '',
             descripcion: '',
+            tipo: '',
         },
         defaultItem: {
             id: '',
             descripcion: '',
+            tipo: '',
 
         },
         menu: false,
@@ -358,9 +362,12 @@ export default {
             let date = new Date(this.fecha_server)
         },
         editItem(item) {
-            this.date_inicio = this.editedItem.fecha_inicio
+            
+            console.log(item)
             this.editedIndex = this.desserts.indexOf(item)
             this.editedItem = Object.assign({}, item)
+            this.date_inicio = structuredClone(this.editedItem.fecha_inicio)
+            console.log(this.editedItem)
             this.dialog = true
 
         },
@@ -387,7 +394,7 @@ export default {
             this.closeDelete()
         },
         close() {
-            this.date_inicio=''
+            this.date_inicio = ''
             this.dialog = false
             this.e1 = 1
             this.editedItem = {}
@@ -424,38 +431,72 @@ export default {
         },
         async step2() {
 
+            if (this.editedItem.atencion) {
+                if (this.editedItem.tipo == 'permanente') {
+                    if (this.$refs.paso1.validate()) {
+                        var res = await axios({
+                            method: 'get',
+                            url: `/${process.env.MIX_CARPETA}/api/verificar_fecha/` + this.date,
 
-            if (this.$refs.paso1.validate()) {
-                var res = await axios({
-                    method: 'get',
-                    url: '/main/api/verificar_fecha/' + this.date,
-
-                }).then(
-                    (response) => {
-                        console.log(response);
-                        this.verificar_fecha(response.data)
-                    }, (error) => {
-                        console.log(error);
+                        }).then(
+                            (response) => {
+                                console.log(response);
+                                this.verificar_fecha(response.data)
+                            }, (error) => {
+                                console.log(error);
+                            }
+                        );
                     }
-                );
+                }
+                if (this.editedItem.tipo == 'temporal') {
+                    if (this.$refs.paso1.validate()) {
+                        console.log(this.editedItem)
+                        var res = await axios({
+                            method: 'post',
+                            url: `/${process.env.MIX_CARPETA}/api/verificar_fecha`,
+                            data: {
+                                datos: this.editedItem,
+                                fecha: this.date_temp,
 
+                            }
+                        }).then(
+                            (response) => {
+                                console.log(response);
+                                this.verificar_fecha(response.data)
+                            }, (error) => { 
+                                console.log(error);
+                            }
+                        );
+                    }
+                } else {
+
+                }
 
             }
         },
         verificar_fecha(resp) {
             if (resp['verificar']) {
-                this.editedItem.fecha_inicio = this.date
+                
+                if(this.editedItem.tipo=='temporal'){
+                    this.editedItem.fecha_inicio = this.date_temp[0]
+                    this.editedItem.fecha_final = this.date_temp[this.date_temp.length()-1]
+                    //console.log(resp['default'][0].id);
+                    this.editedItem.id = resp['default'][0].id
+                }else{
+                    this.editedItem.fecha_inicio = this.date
+                }
                 this.e1 = 2
             } else {
 
                 let mensaje = "ya existe configuracion para fecha:"
                 for (const key in resp['lista_fechas']) {
-                    mensaje += "\n" + resp['lista_fechas'][key].fecha
+                    mensaje += "\n" + resp['lista_fechas'][key]
                 }
                 alert(mensaje)
             }
         },
         async step3() {
+            
             console.log(`/${process.env.MIX_CARPETA}/configuracion2`,)
             let salas = structuredClone(this.$refs.salas.desserts)
             var res = await this.axios({
@@ -463,6 +504,7 @@ export default {
                 url: `/${process.env.MIX_CARPETA}/configuracion2`,
                 data: {
                     datos: this.editedItem,
+                    fecha_temporales: this.date_temp,
                     salas: salas
                 }
 
@@ -470,9 +512,9 @@ export default {
                 (response) => {
                     //this.headers = response.data
                     console.log(response.data);
-                    this.desserts = response.data
+                    /*this.desserts = response.data
                     this.e1 = 1
-                    this.close()
+                    this.close()*/
 
                 }, (error) => {
                     console.log(error);
@@ -489,6 +531,10 @@ export default {
             this.minfecha = f1.format("YYYY-MM-DD")
             return this.minfecha
 
+        },
+        adicionar_temp(){
+            this.dialog = true
+            this.editedItem.tipo = "temporal"
         },
         getMeses(m) {
             let fecha_final = moment(this.fecha_server).add(m, "M")
