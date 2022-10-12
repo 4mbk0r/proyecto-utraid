@@ -479,7 +479,7 @@ export default {
                 
                 if(this.editedItem.tipo=='temporal'){
                     this.editedItem.fecha_inicio = this.date_temp[0]
-                    this.editedItem.fecha_final = this.date_temp[this.date_temp.length()-1]
+                    this.editedItem.fecha_final = this.date_temp[this.date_temp.length-1]
                     //console.log(resp['default'][0].id);
                     this.editedItem.id = resp['default'][0].id
                 }else{

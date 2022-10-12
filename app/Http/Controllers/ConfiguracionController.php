@@ -84,8 +84,6 @@ class ConfiguracionController extends Controller
         if($edit['tipo']=='temporal'){
             try {
                 unset($edit['id']);
-                unset($edit['fecha_inicio']);
-                unset($edit['fecha_final']);
                 $default_actual =  DB::table('configuracions')->insertGetId($edit);
                 $temp = $request['fecha_temporales'];
                 foreach ($temp as $id => $row) {
