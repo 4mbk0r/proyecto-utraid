@@ -126,14 +126,15 @@
                                         </v-card-text>
 
                                         <v-card-actions>
+                                            <v-btn color="primary" @click="step2">
+                                                Continue
+                                            </v-btn>
                                             <v-spacer></v-spacer>
 
                                             <v-btn color="blue darken-1" text @click="close">
                                                 Cancelar
                                             </v-btn>
-                                            <v-btn color="primary" @click="step2">
-                                                Continue
-                                            </v-btn>
+                                            
                                         </v-card-actions>
                                     </v-card>
 
@@ -154,17 +155,18 @@
                                         </v-card-text>
 
                                         <v-card-actions>
-                                            <v-btn color="primary" @click="e1 = 1">
-                                                Atras
-                                            </v-btn>
-                                            <v-spacer></v-spacer>
-
+                                            
                                             <v-btn color="blue darken-1" text @click="close">
                                                 Cancelar
                                             </v-btn>
                                             <v-btn color="primary" @click="e1=3">
                                                 Continue
                                             </v-btn>
+                                            <v-spacer></v-spacer>
+                                            <v-btn color="primary" @click="e1 = 1">
+                                                Atras
+                                            </v-btn>
+                                            
                                         </v-card-actions>
                                     </v-card>
 
@@ -194,7 +196,7 @@
                                             Cancel
                                         </v-btn>
                                         <v-spacer></v-spacer>
-                                        <v-btn color="primary" @click="e1 = 2">
+                                        <v-btn color="primary" @click="atras3()">
                                             Atras
                                         </v-btn>
 
@@ -567,6 +569,13 @@ export default {
             this.editedItem = item
             this.edit_consulta = true
 
+        },
+        atras3(){
+            if (this.editedItem.atencion){
+                this.e1 = 2
+            }else{
+                this.e1 = 1
+            }
         }
     },
 

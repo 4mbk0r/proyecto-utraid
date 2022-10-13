@@ -56,7 +56,7 @@
                             <!--@change=""-->
                             <v-calendar ref="calendar" v-model="focus" color="primary" type="category" category-show-all
                                 :categories="categories" :events="$store.state.events" :event-color="getEventColor"
-                                @click:event="showEvent" :first-interval=7 :interval-minutes=60 :interval-count=12>
+                                @click:event="showEvent" :first-interval=12 :interval-minutes=30 :interval-count=24>
                                 <template v-slot:event="{ event }">
                                     {{ event.nombres }}
                                     {{ event.ap_paterno }}

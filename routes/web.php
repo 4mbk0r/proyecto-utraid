@@ -102,3 +102,8 @@ Route::resource('/configuracion2', ConfiguracionController::class)->middleware([
 Route::resource('/sala', SalaController::class)->middleware(['auth:sanctum', 'verified']);;
 
 Route::resource('/lista_configuracion', CitaTieneConfiguracionController::class)->middleware(['auth:sanctum', 'verified']);;
+
+
+Route::get('/agenda2', function () {
+    return Inertia::render('Micomponet/Agenda2');;
+})->name('agenda');
