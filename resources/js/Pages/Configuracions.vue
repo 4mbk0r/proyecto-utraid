@@ -140,7 +140,7 @@
 
                                 </v-stepper-content>
 
-                                <v-stepper-content  step="2">
+                                <v-stepper-content step="2">
                                     <v-card>
 
                                         <v-card-title>
@@ -186,7 +186,7 @@
 
                                     </v-card>
                                     <v-card-actions>
-                                        <v-btn  color="primary" @click="step3()">
+                                        <v-btn color="primary" @click="step3()">
                                             Aceptar
                                         </v-btn>
 
@@ -250,7 +250,7 @@
                 <v-icon v-if="item.principal" small class="mr-2" @click="editItem(item)">
                     mdi-pencil
                 </v-icon>
-                <v-icon small class="mr-2" @click="consultasItem(item)">
+                <v-icon v-if="item.atencion" small class="mr-2" @click="consultasItem(item)">
                     mdi-home-circle
                 </v-icon>
                 <v-icon v-if="item.historial!=0" small @click="deleteItem(item)">
@@ -275,9 +275,9 @@
         <v-dialog v-if="edit_consulta" v-model="edit_consulta" max-width="500px">
             <v-card>
                 <v-card-title class="text-h5">Consulta</v-card-title>
-                <v-card-text >
-          
-                        <sala  ref="solo_salas" :editar_consulta="edit_consulta" :id_configuracion="editedItem.id"></sala>
+                <v-card-text>
+
+                    <sala ref="solo_salas" :editar_consulta="edit_consulta" :id_configuracion="editedItem.id"></sala>
                 </v-card-text>
 
             </v-card>
@@ -326,11 +326,13 @@ export default {
             id: '',
             descripcion: '',
             tipo: '',
+            atencion: true,
         },
         defaultItem: {
             id: '',
             descripcion: '',
             tipo: '',
+            atencion: true,
 
         },
         menu: false,
@@ -362,7 +364,7 @@ export default {
             let date = new Date(this.fecha_server)
         },
         editItem(item) {
-            
+
             console.log(item)
             this.editedIndex = this.desserts.indexOf(item)
             this.editedItem = Object.assign({}, item)
@@ -431,61 +433,68 @@ export default {
         },
         async step2() {
 
-            if (this.editedItem.atencion) {
-                if (this.editedItem.tipo == 'permanente') {
-                    if (this.$refs.paso1.validate()) {
-                        var res = await axios({
-                            method: 'get',
-                            url: `/${process.env.MIX_CARPETA}/api/verificar_fecha/` + this.date,
+            if (this.editedItem.tipo == 'permanente') {
+                if (this.$refs.paso1.validate()) {
+                    var res = await axios({
+                        method: 'get',
+                        url: `/${process.env.MIX_CARPETA}/api/verificar_fecha/` + this.date,
 
-                        }).then(
-                            (response) => {
-                                console.log(response);
-                                this.verificar_fecha(response.data)
-                            }, (error) => {
-                                console.log(error);
-                            }
-                        );
-                    }
+                    }).then(
+                        (response) => {
+                            console.log(response);
+                            this.verificar_fecha(response.data)
+                        }, (error) => {
+                            console.log(error);
+                        }
+                    );
                 }
-                if (this.editedItem.tipo == 'temporal') {
-                    if (this.$refs.paso1.validate()) {
-                        console.log(this.editedItem)
-                        var res = await axios({
-                            method: 'post',
-                            url: `/${process.env.MIX_CARPETA}/api/verificar_fecha`,
-                            data: {
-                                datos: this.editedItem,
-                                fecha: this.date_temp,
+            }
+            if (this.editedItem.tipo == 'temporal') {
+                if (this.$refs.paso1.validate()) {
+                    console.log(this.editedItem.atencion)
+                    console.log(this.editedItem)
 
-                            }
-                        }).then(
-                            (response) => {
-                                console.log(response);
-                                this.verificar_fecha(response.data)
-                            }, (error) => { 
-                                console.log(error);
-                            }
-                        );
-                    }
-                } else {
+                    var res = await axios({
+                        method: 'post',
+                        url: `/${process.env.MIX_CARPETA}/api/verificar_fecha`,
+                        data: {
+                            datos: this.editedItem,
+                            fecha: this.date_temp,
+
+
+                        }
+                    }).then(
+                        (response) => {
+                            console.log(response);
+                            this.verificar_fecha(response.data)
+                        }, (error) => {
+                            console.log(error);
+                        }
+                    );
+
 
                 }
-
             }
         },
         verificar_fecha(resp) {
             if (resp['verificar']) {
-                
-                if(this.editedItem.tipo=='temporal'){
+
+                if (this.editedItem.tipo == 'temporal') {
+                    this.date_temp.sort()
                     this.editedItem.fecha_inicio = this.date_temp[0]
-                    this.editedItem.fecha_final = this.date_temp[this.date_temp.length-1]
+                    this.editedItem.fecha_final = this.date_temp[this.date_temp.length - 1]
                     //console.log(resp['default'][0].id);
                     this.editedItem.id = resp['default'][0].id
-                }else{
+
+                } else {
                     this.editedItem.fecha_inicio = this.date
                 }
-                this.e1 = 2
+                if (this.editedItem.atencion) {
+                    this.e1 = 2
+                } else {
+                    this.e1 = 3
+                }
+
             } else {
 
                 let mensaje = "ya existe configuracion para fecha:"
@@ -496,9 +505,13 @@ export default {
             }
         },
         async step3() {
-            
+
             console.log(`/${process.env.MIX_CARPETA}/configuracion2`,)
-            let salas = structuredClone(this.$refs.salas.desserts)
+            let salas = []
+            if (this.editedItem.atencion) {
+                let salas = structuredClone(this.$refs.salas.desserts)
+            }
+
             var res = await this.axios({
                 method: 'post',
                 url: `/${process.env.MIX_CARPETA}/configuracion2`,
@@ -512,9 +525,9 @@ export default {
                 (response) => {
                     //this.headers = response.data
                     console.log(response.data);
-                    /*this.desserts = response.data
+                    this.desserts = response.data
                     this.e1 = 1
-                    this.close()*/
+                    this.close()
 
                 }, (error) => {
                     console.log(error);
@@ -532,7 +545,7 @@ export default {
             return this.minfecha
 
         },
-        adicionar_temp(){
+        adicionar_temp() {
             this.dialog = true
             this.editedItem.tipo = "temporal"
         },

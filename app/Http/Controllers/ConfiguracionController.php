@@ -23,9 +23,9 @@ class ConfiguracionController extends Controller
         $date = date_create();
         $list_config = DB::table('configuracions')
             ->select('*')
-            ->where('fecha_final', '>', date_format($date, "Y-m-d"))
+            ->where('fecha_final', '>=', date_format($date, "Y-m-d"))
             ->get();
-        
+
         $date = date_format($date, "Y-m-d H:i:s");
         return inertia('Configuracions', [
             'configuracion' => $list_config,
@@ -51,18 +51,19 @@ class ConfiguracionController extends Controller
     public function store(Request $request)
     {
         //
-        
+
         date_default_timezone_set("America/La_Paz");
         $date = date_create();
         $edit = $request['datos'];
         $n_fecha_final = date($edit['fecha_inicio']);
         $n_fecha_final = date("Y-m-d", strtotime($n_fecha_final . "- 1 days"));
-        if($edit['tipo']=='permanente'){
+
+        if ($edit['tipo'] == 'permanente') {
             try {
                 $default_actual =  DB::table('configuracions')
                     ->where('principal', true)
                     ->update(['principal' => false, 'fecha_final' => $n_fecha_final]);
-    
+
                 $edit['historial'] = $edit['id'];
                 unset($edit['id']);
                 $default_actual =  DB::table('configuracions')->insertGetId($edit);
@@ -71,42 +72,42 @@ class ConfiguracionController extends Controller
                 foreach ($salas as $id => $row) {
                     # code...
                     //$row->id;
-                    $row['id']=$default_actual;
+                    $row['id'] = $default_actual;
                     unset($row['sala']);
                     DB::table('salas')->insert($row);
                 }
-               
-                
             } catch (\Throwable $th) {
                 return $th;
             }
         }
-        if($edit['tipo']=='temporal'){
+        if ($edit['tipo'] == 'temporal') {
             try {
                 unset($edit['id']);
                 $default_actual =  DB::table('configuracions')->insertGetId($edit);
                 $temp = $request['fecha_temporales'];
                 foreach ($temp as $id => $row) {
                     $p = [
-                        'id'=>$default_actual,
-                        'fecha'=>$row
+                        'id' => $default_actual,
+                        'fecha' => $row
                     ];
-                    DB::table('cita_tiene_configuracions')->insert($p);    
+                    DB::table('cita_tiene_configuracions')->insert($p);
                 }
-                $salas= $request['salas'];
-                foreach ($salas as $id => $row) {
-                    $row['id']=$default_actual;
-                    unset($row['sala']);
-                    DB::table('salas')->insert($row);    
+                if ($edit['atencion']) {
+                    $salas = $request['salas'];
+                    foreach ($salas as $id => $row) {
+                        $row['id'] = $default_actual;
+                        unset($row['sala']);
+                        DB::table('salas')->insert($row);
+                    }
                 }
             } catch (\Throwable $th) {
                 return $th;
             }
         }
         $list_config = DB::table('configuracions')
-                    ->select('*')
-                    ->where('fecha_final', '>', date_format($date, "Y-m-d"))
-                    ->get();
+            ->select('*')
+            ->where('fecha_final', '>', date_format($date, "Y-m-d"))
+            ->get();
         return $list_config;
     }
 
