@@ -47,9 +47,12 @@
                 <v-sheet height="600">
                     <v-calendar ref="calendar" v-model="fecha_calendario" color="primary" :events="events"
                         :categories="categories" :event-color="getEventColor" :type="type" @click:event="showEvent"
-                        @click:more="viewDay" @click:date="viewDay" @change="updateRange" :max-days=5
+                        event-category @click:more="viewDay" @click:date="viewDay" @change="updateRange" :max-days=5
                         weekdays="1, 2, 3, 4, 5" :weekday-format="getDay" :first-interval=7 :interval-minutes=60
-                        :interval-count=12></v-calendar>
+                        :interval-count=12>
+
+
+                    </v-calendar>
                     <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement"
                         offset-x>
                         <v-card color="grey lighten-4" min-width="350px" flat>
@@ -83,6 +86,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 export default {
     data: () => ({
         fecha_calendario: '',
@@ -107,47 +111,82 @@ export default {
     methods: {
         async viewDay({ date }) {
             this.fecha_calendario = date
-            alert(date)
-            /*this.type = 'category'
+            //alert(date)
+
+            this.type = 'category'
+            this.pedir_datos(date);
+        },
+        async pedir_datos(date) {
             var res = await axios({
                 method: 'get',
-                url: `/${process.env.MIX_CARPETA}/cita/` + this.date,
+                url: `/${process.env.MIX_CARPETA}/lista_configuracion/` + date,
             }).then(
                 (response) => {
                     console.log(response);
-                    
+                    this.categories = [];
+
+                    for (const key in response.data) {
+                        console.log(response.data[key]['descripcion'])
+                        this.categories.push(response.data[key]['descripcion'])
+                    }
+                    const min = new Date(`${this.fecha_calendario}T00:00:00`)
+                    const max = new Date(`${this.fecha_calendario}T23:59:59`)
+                    const days = (max.getTime() - min.getTime()) / 86400000
+                    const eventCount = this.rnd(days, days + 20)
+                    const allDay = this.rnd(0, 3) === 0
+                    const firstTimestamp = this.rnd(min.getTime(), max.getTime())
+                    const first = new Date(firstTimestamp - (firstTimestamp % 900000))
+                    const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
+                    const second = new Date(first.getTime() + secondTimestamp)
+
+                    this.events.push({
+                        name: this.names[this.rnd(0, this.names.length - 1)],
+                        start: first,
+                        end: second,
+                        color: this.colors[this.rnd(0, this.colors.length - 1)],
+                        timed: 0,
+                        category: this.categories[this.rnd(0, this.categories.length - 1)],
+                    })
                 }, (error) => {
                     console.log(error);
                 }
-            );*/
+            );
         },
         getEventColor(event) {
             return event.color
         },
         setToday() {
+            var f = new Date();
             this.fecha_calendario = ''
+            this.fecha_calendario = f.toISOString().substr(0, 10);
         },
         prev() {
             if (this.type == 'category' || this.type == 'day') {
                 var valor = -1;
                 var contador = this.contarvalidos(valor);
                 this.$refs.calendar.prev(contador);
+
             } else {
                 this.$refs.calendar.prev();
             }
+            this.pedir_datos(this.fecha_calendario)
         },
         next() {
-            this.$refs.calendar.next()
+
             if (this.type == 'category' || this.type == 'day') {
-                var valor = 1;
+                var valor = +1;
                 var contador = this.contarvalidos(valor);
                 this.$refs.calendar.next(contador);
+
 
             } else {
                 this.$refs.calendar.next();
             }
+            this.pedir_datos(this.fecha_calendario)
         },
         diavalido(day) {
+            console.log(day);
+            console.log(day.getUTCDay());
             if (day.getUTCDay() == 0 || day.getUTCDay() == 6) {
                 return true;
             }
@@ -155,18 +194,21 @@ export default {
             return false;
         },
         contarvalidos(valor) {
-            let fecha = this.$store.state.fecha_actual
+            let fecha = structuredClone(this.fecha_calendario);
+            console.log(fecha);
             var dateStr = fecha + 'T00:00:00-04:00';
             var f = new Date(dateStr);
-
-            var contador = 1;
+            var contador = 0;
+            contador++;
             f.setDate(f.getDate() + valor);
+
             while (this.diavalido(f)) {
                 f.setDate(f.getDate() + valor);
                 contador++;
+
             }
-            this.$store.state.fecha_actual = f.toISOString().substr(0, 10);
-            this.anterior_dia = this.$store.state.fecha_actual;
+            console.log("saltar", contador);
+            this.fecha_calendario = f.toISOString().substr(0, 10);
             return contador;
         },
         showEvent({ nativeEvent, event }) {

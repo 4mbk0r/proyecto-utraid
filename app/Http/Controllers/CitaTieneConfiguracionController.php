@@ -56,7 +56,27 @@ class CitaTieneConfiguracionController extends Controller
             ->select('*')
             ->where('fecha', '=', $fecha)
             ->get();
-        return $list_config;
+        if (sizeof($list_config) == 0) {
+            $list_config = DB::table('configuracions')
+                ->select('*')
+                ->where('fecha_inicio', '<=', $fecha)
+                ->where('fecha_final', '>=', $fecha)
+                ->where('tipo', '>=', 'permanente')
+                ->get();
+        }
+        $salas = [];
+        if (sizeof($list_config) > 0) {
+            try {
+                $salas = DB::table('salas')
+                    ->select('*')
+                    ->where('id', '=', $list_config[0]->id)
+                    ->get();
+            } catch (\Throwable $th) {
+                return $th;
+            }
+            return $salas;
+        }
+        return $salas;
     }
 
     /**
@@ -123,17 +143,17 @@ class CitaTieneConfiguracionController extends Controller
                 $fecha_entre = DB::table('configuracions')
                     ->select('*')
                     ->where('fecha_inicio', '<=', date($value))
-                    ->where('fecha_final', '>=',date($value) )
-                    ->where('tipo', '=', 'permanente' )->get();
+                    ->where('fecha_final', '>=', date($value))
+                    ->where('tipo', '=', 'permanente')->get();
             } catch (\Throwable $th) {
                 return $th;
             }
             if (count($list_config) > 0) {
 
-               
+
                 array_push($temp, $value);
-            }else{
-                array_push($conf_default,$fecha_entre[0]);
+            } else {
+                array_push($conf_default, $fecha_entre[0]);
             }
         }
         $verificar = false;
@@ -144,7 +164,7 @@ class CitaTieneConfiguracionController extends Controller
         $resp = [
             'lista_fechas' => $temp,
             'verificar' => $verificar,
-            'default'=> $conf_default,
+            'default' => $conf_default,
             'n' => count($temp)
         ];
         return $resp;

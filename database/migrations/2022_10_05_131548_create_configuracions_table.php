@@ -23,7 +23,6 @@ class CreateConfiguracionsTable extends Migration
             $table->string('tipo')->default('temporal');
             $table->boolean('atencion')->default(0);
             $table->String('descripcion');
-            $table->String('observacion');
             //$table->boolean('activo')->default(1);
             $table->integer('historial')->nullable();
             //$table->primary('id');

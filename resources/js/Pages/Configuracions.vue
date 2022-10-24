@@ -511,7 +511,7 @@ export default {
             console.log(`/${process.env.MIX_CARPETA}/configuracion2`,)
             let salas = []
             if (this.editedItem.atencion) {
-                let salas = structuredClone(this.$refs.salas.desserts)
+                salas = structuredClone(this.$refs.salas.desserts)
             }
 
             var res = await this.axios({
