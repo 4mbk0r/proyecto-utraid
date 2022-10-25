@@ -31,13 +31,15 @@
                                 </v-btn>
                             </template>
                             <v-list>
-                                <v-list-item @click="type = 'category'">
-                                    <v-list-item-title>Dia</v-list-item-title>
+                                <v-list-item @click="changeType('category2')">
+                                    <v-list-item-title>Atencion</v-list-item-title>
                                 </v-list-item>
-                                <v-list-item @click="type = 'week'">
-                                    <v-list-item-title>Semana</v-list-item-title>
+
+                                <v-list-item @click="changeType('category')">
+                                    <v-list-item-title>Citas</v-list-item-title>
                                 </v-list-item>
-                                <v-list-item @click="type = 'month'">
+                                
+                                <v-list-item @click="changeType('month')">
                                     <v-list-item-title>Mes</v-list-item-title>
                                 </v-list-item>
                             </v-list>
@@ -45,14 +47,21 @@
                     </v-toolbar>
                 </v-sheet>
                 <v-sheet height="600">
-                    <v-calendar ref="calendar" v-model="fecha_calendario" color="primary" :events="events"
-                        :categories="categories" :event-color="getEventColor" :type="type" @click:event="showEvent"
-                        event-category @click:more="viewDay" @click:date="viewDay" @change="updateRange" :max-days=5
-                        weekdays="1, 2, 3, 4, 5" :weekday-format="getDay" :first-interval=7 :interval-minutes=60
-                        :interval-count=12>
-
-
+                    <v-calendar v-if="estado == 'calendario'" ref="calendar" v-model="fecha_calendario" :type="type"
+                        color="error" :events="events" :categories="categories" :event-color="getEventColor"
+                        @click:event="showEvent" @click:more="viewDay" @click:date="viewDay" @change="updateRange"
+                        :max-days=5 weekdays="1, 2, 3, 4, 5" :weekday-format="getDay" :first-interval=7
+                        :interval-minutes=60 :interval-count=12>
                     </v-calendar>
+                    <v-calendar v-if="estado == 'cita'" ref="calendar" v-model="fecha_calendario" color="error"
+                        type="category" category-show-all :categories="categories" :events="events"
+                        :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent"
+                        :interval-minutes=60 :first-interval=7 :interval-count=14></v-calendar>
+
+                    <v-calendar v-if="estado == 'atencion'" ref="calendar" v-model="fecha_calendario" color="error"
+                        type="category" category-show-all :categories="categories" :events="events"
+                        :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent"
+                        :interval-minutes=60 :first-interval=7 :interval-count=14></v-calendar>
                     <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement"
                         offset-x>
                         <v-card color="grey lighten-4" min-width="350px" flat>
@@ -71,6 +80,7 @@
                             </v-toolbar>
                             <v-card-text>
                                 <span v-html="selectedEvent.details"></span>
+                                {{ selectedEvent }}
                             </v-card-text>
                             <v-card-actions>
                                 <v-btn text color="secondary" @click="selectedOpen = false">
@@ -82,39 +92,96 @@
                 </v-sheet>
             </v-col>
         </v-row>
+        <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+
+            <v-card>
+                <v-toolbar dark color="red">
+                    <v-btn icon dark @click="dialog = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title>Agendar</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn dark text @click="dialog = false">
+                            Guardar
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-list three-line subheader>
+                    <v-subheader>Paciente</v-subheader>
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-list-item-title>Datos Personales </v-list-item-title>
+                            <v-list-item-subtitle>
+                                <buscar></buscar>
+                                <datospesonales></datospesonales>
+                            </v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+
+                </v-list>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
 <script>
 import moment from 'moment'
+import buscar from '@/Pages/Micomponet/Buscar'
+import datospesonales from '@/Pages/Micomponet/Datospersonales'
 export default {
+    components: {
+        buscar,
+        datospesonales,
+    },
     data: () => ({
-        fecha_calendario: '',
+        dialog: false,
+        estado: 'calendario',
+        fecha_calendario: new Date().toISOString().substr(0, 10),
         type: 'month',
         typeToLabel: {
             month: 'Mes',
             week: 'Semana',
-            day: 'category',
-            'category': 'Dia'
+            day: 'Category',
+            'category': 'Citas',
+            'category2': 'Atencion'
         },
         selectedEvent: {},
         selectedElement: null,
         selectedOpen: false,
         events: [],
         colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
-        names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
+        names: ['Reunion', 'Cita', 'Viaje'],
         categories: [],
     }),
     mounted() {
+ 
         this.$refs.calendar.checkChange()
     },
     methods: {
+        changeType(nombre) {
+            if (nombre == 'category2') {
+                this.estado = 'atencion'
+                this.categories = ['Doctor 1','Doctor 2' ]
+                //this.pedir_datos(this.fecha_calendario)
+                return;
+            }
+            if (nombre == 'category') {
+                this.estado = 'cita'
+                this.type = nombre
+                this.pedir_datos(this.fecha_calendario)
+            } else {
+                this.estado = 'calendario'
+                this.type = nombre
+            }
+        },
         async viewDay({ date }) {
             this.fecha_calendario = date
             //alert(date)
 
             this.type = 'category'
             this.pedir_datos(date);
+
         },
         async pedir_datos(date) {
             var res = await axios({
@@ -123,30 +190,47 @@ export default {
             }).then(
                 (response) => {
                     console.log(response);
-                    this.categories = [];
+                    let start = moment(`${this.fecha_calendario}T00:00:00`),
+                        intervalos = 1440 / 45;
+                    let list_intervalo = []
+                    for (let i = 0; i < intervalos; i++) {
+                        console.log(start.format('hh:mm A'))
+                        list_intervalo.push(start.add(45, 'm').format('hh:mm A'))
 
+                    }
+                    this.categories = [];
+                    let events = [];
+                    this.events = [];
+                    let start2 = new Date(this.fecha_calendario + 'T01:01:00-04:00')
+                    let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
                     for (const key in response.data) {
+                        console.log(start);
+                        console.log(end);
+
                         console.log(response.data[key]['descripcion'])
                         this.categories.push(response.data[key]['descripcion'])
-                    }
-                    const min = new Date(`${this.fecha_calendario}T00:00:00`)
-                    const max = new Date(`${this.fecha_calendario}T23:59:59`)
-                    const days = (max.getTime() - min.getTime()) / 86400000
-                    const eventCount = this.rnd(days, days + 20)
-                    const allDay = this.rnd(0, 3) === 0
-                    const firstTimestamp = this.rnd(min.getTime(), max.getTime())
-                    const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-                    const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-                    const second = new Date(first.getTime() + secondTimestamp)
+                        this.events.push({
+                            name: 'Agendar',
+                            start: start2,
+                            end: end,
+                            color: 'red',
+                            timed: 0,
+                            category: this.categories[key],
+                        })
 
-                    this.events.push({
-                        name: this.names[this.rnd(0, this.names.length - 1)],
-                        start: first,
-                        end: second,
-                        color: this.colors[this.rnd(0, this.colors.length - 1)],
-                        timed: 0,
-                        category: this.categories[this.rnd(0, this.categories.length - 1)],
-                    })
+                        this.events.push({
+                            name: 'Cita',
+                            start: new Date(this.fecha_calendario + 'T08:01:00-04:00'),
+                            end: new Date(this.fecha_calendario + 'T09:01:00-04:00'),
+                            color: 'blue',
+                            timed: 1,
+                            category: this.categories[key],
+                        })
+                    }
+                    console.log(this.type);
+
+                    this.fetchEvents()
+                    console.log(this.events)
                 }, (error) => {
                     console.log(error);
                 }
@@ -159,17 +243,19 @@ export default {
             var f = new Date();
             this.fecha_calendario = ''
             this.fecha_calendario = f.toISOString().substr(0, 10);
+            this.pedir_datos(this.fecha_calendario);
         },
         prev() {
             if (this.type == 'category' || this.type == 'day') {
                 var valor = -1;
                 var contador = this.contarvalidos(valor);
                 this.$refs.calendar.prev(contador);
+                this.pedir_datos(this.fecha_calendario)
 
             } else {
                 this.$refs.calendar.prev();
             }
-            this.pedir_datos(this.fecha_calendario)
+
         },
         next() {
 
@@ -177,12 +263,11 @@ export default {
                 var valor = +1;
                 var contador = this.contarvalidos(valor);
                 this.$refs.calendar.next(contador);
-
+                this.pedir_datos(this.fecha_calendario)
 
             } else {
                 this.$refs.calendar.next();
             }
-            this.pedir_datos(this.fecha_calendario)
         },
         diavalido(day) {
             console.log(day);
@@ -212,46 +297,62 @@ export default {
             return contador;
         },
         showEvent({ nativeEvent, event }) {
-            const open = () => {
+
+            console.log(event);
+            if (event.name == 'Agendar') {
+                this.dialog = true
                 this.selectedEvent = event
-                this.selectedElement = nativeEvent.target
-                requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
-            }
-
-            if (this.selectedOpen) {
-                this.selectedOpen = false
-                requestAnimationFrame(() => requestAnimationFrame(() => open()))
+                //this.selectedElement = nativeEvent.target
+                //nativeEvent.stopPropagation()
             } else {
-                open()
+                const open = () => {
+                    this.selectedEvent = event
+                    this.selectedElement = nativeEvent.target
+                    requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
+                }
+                if (this.selectedOpen) {
+                    this.selectedOpen = false
+                    requestAnimationFrame(() => requestAnimationFrame(() => open()))
+                } else {
+                    open()
+                }
+                nativeEvent.stopPropagation()
             }
 
-            nativeEvent.stopPropagation()
+
+
         },
         updateRange({ start, end }) {
-            /*const events = []
-      
+            let events = []
+            this.events = []
+            /*
             const min = new Date(`${start.date}T00:00:00`)
             const max = new Date(`${end.date}T23:59:59`)
+            console.log(min)
+            console.log(max)
             const days = (max.getTime() - min.getTime()) / 86400000
             const eventCount = this.rnd(days, days + 20)
-      
+
             for (let i = 0; i < eventCount; i++) {
-              const allDay = this.rnd(0, 3) === 0
-              const firstTimestamp = this.rnd(min.getTime(), max.getTime())
-              const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-              const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-              const second = new Date(first.getTime() + secondTimestamp)
-      
-              events.push({
-                name: this.names[this.rnd(0, this.names.length - 1)],
-                start: first,
-                end: second,
-                color: this.colors[this.rnd(0, this.colors.length - 1)],
-                timed: !allDay,
-              })
+                const allDay = this.rnd(1, 3) === 0
+                const firstTimestamp = this.rnd(min.getTime(), max.getTime())
+                const first = new Date(firstTimestamp - (firstTimestamp % 900000))
+                const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
+                const second = new Date(first.getTime() + secondTimestamp)
+
+                events.push({
+                    name: this.names[this.rnd(0, this.names.length - 1)],
+                    start: first,
+                    end: second,
+                    color: this.colors[this.rnd(0, this.colors.length - 1)],
+                    timed: !allDay,
+                    category: this.categories[this.rnd(0, this.categories.length - 1)],
+                })
             }
-      
-            this.events = events*/
+
+            this.events = events
+            console.log(this.events)*/
+
         },
         rnd(a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
@@ -262,7 +363,33 @@ export default {
 
             return WeekDays[date.weekday];
 
-        }
+        },
+        fetchEvents() {
+            const events = []
+            console.log('---' + this.fecha_calendario)
+            const min = new Date(this.fecha_calendario + ' T00:00')
+            const max = new Date(this.fecha_calendario + ' T23:59')
+            const days = (max.getTime() - min.getTime()) / 86400000
+            const eventCount = this.rnd(days, days + 20)
+
+            for (let i = 0; i < eventCount; i++) {
+                const allDay = this.rnd(1, 3) === 0
+                const firstTimestamp = this.rnd(min.getTime(), max.getTime())
+                const first = new Date(firstTimestamp - (firstTimestamp % 900000))
+                const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
+                const second = new Date(first.getTime() + secondTimestamp)
+
+                events.push({
+                    name: this.names[this.rnd(0, this.names.length - 1)],
+                    start: first,
+                    end: second,
+                    color: this.colors[this.rnd(0, this.colors.length - 1)],
+                    timed: 1,
+                    category: this.categories[this.rnd(0, this.categories.length - 1)],
+                })
+            }
+            //this.events.push(events)
+        },
     }
 }
 
