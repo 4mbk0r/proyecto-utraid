@@ -116,6 +116,17 @@ class PersonaCitaController extends Controller
             ->get();
         return $data;
     }
+    public static function buscar_persona_ci(String $ci)
+    {
+        $persona = DB::table('persona_citas')
+            ->select('*')
+            ->where('ci', '=', $ci)
+            ->get();
+        if (sizeof($persona) >= 1) {
+            return ['persona' => $persona[0], 'mensaje' => 'SQLSTATE[23505]:'];
+        }
+        return ['mensaje' => 'ok'];
+    }
     public static function guardar_persona(Request $request)
     {
         $antiguo = $request['antiguo'];
@@ -126,7 +137,19 @@ class PersonaCitaController extends Controller
                 //write your codes here
                 DB::table('persona_citas')->insert($nuevo);
             } catch (Exception $e) {
-                return explode(' ', $e->getMessage());
+                $error = explode(' ', $e->getMessage())[0];
+                if ($error == 'SQLSTATE[23505]:') {
+                    $persona = DB::table('persona_citas')->where('ci', $nuevo['ci'])->get();
+                    $respuesta = [
+                        'persona' => $persona[0],
+                        'mensaje' => $error,
+                    ];
+                    return $respuesta;
+                }
+                $respuesta = [
+                    'mensaje' => $error,
+                ];
+                return $respuesta;
             }
             $persona = DB::table('persona_citas')->where('ci', $nuevo['ci'])->get();
             return ['persona' => $persona[0], 'mensaje' => 'ok'];
@@ -138,12 +161,23 @@ class PersonaCitaController extends Controller
                 foreach ($citas as $date) {
                     Cache::forget('citas' . $date->fecha);
                 }
-            } catch (Exception $ex) {
-                return  explode(' ', $ex->getMessage())[0];
+            } catch (Exception $e) {
+                $error = explode(' ', $e->getMessage())[0];
+                if ($error == 'SQLSTATE[23505]:') {
+                    $persona = DB::table('persona_citas')->where('ci', $nuevo['ci'])->get();
+                    $respuesta = [
+                        'persona' => $persona[0],
+                        'mensaje' => $error,
+                    ];
+                    return $respuesta;
+                }
+                $respuesta = [
+                    'mensaje' => $error,
+                ];
+                return $respuesta;
             }
             $persona = DB::table('persona_citas')->where('ci', $nuevo['ci'])->get();
             return ['persona' => $persona[0], 'mensaje' => 'ok update'];
         }
-        return 'iguales';
     }
 }

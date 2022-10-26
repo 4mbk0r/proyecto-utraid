@@ -27,8 +27,8 @@
                                 <v-container>
                                     <v-row no-gutters>
                                         <v-col cols="12" sm="6">
-                                            <v-text-field v-model="paciente.ci" :rules="nombreRules" @change="valorar"
-                                                label="Cedula de Identidad" required>
+                                            <v-text-field v-model="paciente.ci" :rules="nombreRules"
+                                                label="Cedula de Identidad" @change="buscadorporci()" required>
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6">
@@ -93,6 +93,9 @@
                                             </v-btn>
                                         </v-col>
                                     </v-row>
+                                    <v-card v-if="buscador==true">
+                                        buscar datos
+                                    </v-card>
                                 </v-container>
                             </v-form>
                         </v-card>
@@ -211,6 +214,48 @@
                 </v-card>
             </template>
         </v-dialog>
+
+        <v-dialog v-model="msm_existe" persistent max-width="290">
+
+            <v-card>
+                <v-card-title class="text-h5">
+                    El usuario con cedula de identidad {{ paciente.ci}} ya existe
+                </v-card-title>
+                <v-card-text>
+                    Puedes user los datos ya tienes
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" text @click="msm_existe = false">
+                        Cancelar
+                    </v-btn>
+                    <v-btn color="green darken-1" text @click="persona_existente()">
+                        Usar datos
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="msm_update" persistent max-width="300">
+
+            <v-card>
+                <v-card-title class="text-h5">
+                    cedula de identidad fue cambiada {{paciente_edit.ci}}
+                    por {{paciente.ci}}
+                </v-card-title>
+                <v-card-text>
+                    desea realizar una nueva busqueda o actulizar el ci
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" text @click="nueva_busqueda">
+                        Nueva Busqueda
+                    </v-btn>
+                    <v-btn color="green darken-1" text @click="update_ci()">
+                        Actualizar
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-card>
 </template>
 
@@ -237,6 +282,7 @@ export default {
     data: () => ({
         validacion: false,
         paciente: {},
+        paciente_existen: {},
         op: Number,
         citas: [],
         v_agendar: false,
@@ -245,6 +291,9 @@ export default {
         op1: Number,
         valid: false,
         dialog: false,
+        buscador: false,
+        msm_existe: false,
+        msm_update: false,
         paciente_edit: {},
         las_citas: [],
         cita_nueva: {},
@@ -403,6 +452,55 @@ export default {
     },
 
     methods: {
+        nueva_busqueda() {
+            this.op1 = 1
+            let datos = structuredClone(this.paciente.ci)
+            this.paciente = {}
+            this.paciente_edit = {}
+            this.paciente_existen = {}
+            this.cita = []
+            this.paciente.ci = datos
+            this.msm_update = false
+            this.buscadorporci()
+
+        },
+        update_ci() {
+            this.cambiar_datos()
+            this.msm_update = false
+        },
+        async buscadorporci() {
+            if (this.op1 == 1) {
+                console.log(this.paciente.ci);
+                var res = await axios({
+                    method: 'get',
+                    url: `/${process.env.MIX_CARPETA}/api/buscar_persona/` + this.paciente.ci,
+                }).then(
+                    (response) => {
+                        console.log(response);
+                        if (response['data']['mensaje'] == 'SQLSTATE[23505]:') {
+                            //let rep = response['data']['persona']
+                            this.msm_existe = true
+                            this.paciente_existen = response['data']['persona']
+                        }
+                    }, (error) => {
+                        console.log(error);
+                    }
+                )
+            } else {
+                this.paciente_existen = {}
+            }
+            if (this.op1 == 2) {
+                this.msm_update = true
+            }
+
+        },
+        persona_existente() {
+            this.paciente = this.paciente_existen
+            this.paciente_existen = {}
+            this.msm_existe = false
+            this.paciente_edit = structuredClone(this.paciente)
+            this.op1 = 2
+        },
         alert(text) {
             this.$alert(text).then(res => this.$inform("Cambios guardados!"));
         },
@@ -422,6 +520,9 @@ export default {
             this.datos_informacion = a
 
         },
+        buscadoractivate() {
+
+        },
         close() {
             this.dialog = false
             this.cita_nueva = {}
@@ -429,35 +530,39 @@ export default {
             this.datos_informacion = ""
         },
         async cambiar_datos() {
-            console.log(this.paciente)
-            console.log(" antiguo: ")
-            console.log(this.paciente_edit)
-            var res = await axios({
-                method: 'post',
-                url: 'api/guardar_persona',
-                data: {
-                    nuevo: this.paciente,
-                    antiguo: this.paciente_edit,
-                    opcion: this.op1,
+            if (this.$refs.formDatopersonales.validate()) {
+
+                console.log(this.paciente)
+                console.log(" antiguo: ")
+                console.log(this.paciente_edit)
+                var res = await axios({
+                    method: 'post',
+                    url: 'api/guardar_persona',
+                    data: {
+                        nuevo: this.paciente,
+                        antiguo: this.paciente_edit,
+                        opcion: this.op1,
+                    }
+                }).then();
+                console.log(res);
+                if (res['data']['mensaje'] == 'ok') {
+                    console.log('inserccion correcta')
+                    this.alert('Inserccion Correcta')
+                    this.paciente = res['data']['persona']
+                    this.paciente_edit = structuredClone(this.paciente)
+                    this.op1 = 2;
                 }
-            }).then();
-            console.log(res);
-            if (res['data']['mensaje'] == 'ok') {
-                console.log('inserccion correcta')
-                this.alert('Inserccion Correcta')
-                this.paciente = res['data']['persona']
-                this.paciente_edit = structuredClone(this.paciente)
-                this.op1 = 2;
-            }
-            if (res['data']['mensaje'] == 'ok update') {
-                console.log('update correcto')
-                this.alert('Actulizacion Correcta')
-                this.paciente = res['data']['persona']
-                this.paciente_edit = structuredClone(this.paciente)
-                this.op1 = 2;
-            }
-            if (res['data'] == 'SQLSTATE[23505]:') {
-                console.log('Error la nueva ci ya existe');
+                if (res['data']['mensaje'] == 'ok update') {
+                    console.log('update correcto')
+                    this.alert('Actulizacion Correcta')
+                    this.paciente = res['data']['persona']
+                    this.paciente_edit = structuredClone(this.paciente)
+                    this.op1 = 2;
+                }
+                if (res['data']['mensaje'] == 'SQLSTATE[23505]:') {
+                    let rep = res['data']['persona']
+                    this.msm_existe = true
+                }
             }
 
         },

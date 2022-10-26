@@ -1,6 +1,8 @@
 <template>
     <v-app>
+
         <v-row class="fill-height">
+
             <v-col>
                 <v-sheet height="64">
                     <v-toolbar flat>
@@ -38,7 +40,7 @@
                                 <v-list-item @click="changeType('category')">
                                     <v-list-item-title>Citas</v-list-item-title>
                                 </v-list-item>
-                                
+
                                 <v-list-item @click="changeType('month')">
                                     <v-list-item-title>Mes</v-list-item-title>
                                 </v-list-item>
@@ -46,7 +48,7 @@
                         </v-menu>
                     </v-toolbar>
                 </v-sheet>
-                <v-sheet height="600">
+                <v-sheet>
                     <v-calendar v-if="estado == 'calendario'" ref="calendar" v-model="fecha_calendario" :type="type"
                         color="error" :events="events" :categories="categories" :event-color="getEventColor"
                         @click:event="showEvent" @click:more="viewDay" @click:date="viewDay" @change="updateRange"
@@ -90,49 +92,24 @@
                         </v-card>
                     </v-menu>
                 </v-sheet>
+
             </v-col>
+
         </v-row>
-        <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
-
-            <v-card>
-                <v-toolbar dark color="red">
-                    <v-btn icon dark @click="dialog = false">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                    <v-toolbar-title>Agendar</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-toolbar-items>
-                        <v-btn dark text @click="dialog = false">
-                            Guardar
-                        </v-btn>
-                    </v-toolbar-items>
-                </v-toolbar>
-                <v-list three-line subheader>
-                    <v-subheader>Paciente</v-subheader>
-                    <v-list-item>
-                        <v-list-item-content>
-                            <v-list-item-title>Datos Personales </v-list-item-title>
-                            <v-list-item-subtitle>
-                                <buscar></buscar>
-                                <datospesonales></datospesonales>
-                            </v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
-
-                </v-list>
-            </v-card>
-        </v-dialog>
+        <datos ref="dato">
+        </datos>
     </v-app>
 </template>
 
 <script>
 import moment from 'moment'
 import buscar from '@/Pages/Micomponet/Buscar'
-import datospesonales from '@/Pages/Micomponet/Datospersonales'
+import datos from '@/Pages/Micomponet/Datospersonales'
+
 export default {
     components: {
         buscar,
-        datospesonales,
+        datos,
     },
     data: () => ({
         dialog: false,
@@ -155,14 +132,16 @@ export default {
         categories: [],
     }),
     mounted() {
- 
+
         this.$refs.calendar.checkChange()
+        console.log(this.$refs);
+        //console.log();
     },
     methods: {
         changeType(nombre) {
             if (nombre == 'category2') {
                 this.estado = 'atencion'
-                this.categories = ['Doctor 1','Doctor 2' ]
+                this.categories = ['Doctor 1', 'Doctor 2']
                 //this.pedir_datos(this.fecha_calendario)
                 return;
             }
@@ -300,8 +279,13 @@ export default {
 
             console.log(event);
             if (event.name == 'Agendar') {
-                this.dialog = true
-                this.selectedEvent = event
+                //this.dialog = true
+                //this.selectedEvent = event
+
+                console.log(this.$refs.dato);
+                console.log(this.$refs)
+                this.$refs.dato.open()
+                this.$refs.dato.op1 = 1;
                 //this.selectedElement = nativeEvent.target
                 //nativeEvent.stopPropagation()
             } else {

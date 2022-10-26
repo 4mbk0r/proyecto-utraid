@@ -94,6 +94,9 @@ Route::post('/buscar_persona', function (Request $request) {
     return PersonaCitaController::buscar_persona($request);
 });
 
+Route::get('/buscar_persona/{ci}', function (String $ci) {
+    return PersonaCitaController::buscar_persona_ci($ci);
+});
 
 Route::post('/guardar_persona', function (Request $request) {
     return PersonaCitaController::guardar_persona($request);
