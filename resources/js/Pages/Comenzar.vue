@@ -12,9 +12,8 @@
 
             <v-tabs-items v-model="tab" touchless>
                 <v-tab-item>
-                    <v-card flat>
-                        <barrasu />
-                    </v-card>
+                    <agenda ref='agendar' />
+
                 </v-tab-item>
                 <v-tab-item>
                     {{ $store.getters.gethoy }}
@@ -31,9 +30,8 @@
 
 <script>
 import AppLayout from '@/Layouts/AppLayout'
-import Welcome from '@/Jetstream/Welcome'
-import Barrasu from '@/Pages/Micomponet/Barrasu'
-import Agenda from '@/Pages/Micomponet/Agenda'
+import Agenda from '@/Pages/Micomponet/Agenda2'
+
 
 export default {
     data() {
@@ -47,12 +45,10 @@ export default {
         }
     },
     props: {
-        fechas: Array,
+        fecha_server: String,
     },
     components: {
         AppLayout,
-        Welcome,
-        Barrasu,
         Agenda,
     },
     methods: {
@@ -60,17 +56,16 @@ export default {
             return this.menu
         },
         async initialize() {
-            console.log('inicio')
-            console.log(this.fechas["data"])
-            this.$store.state.fecha = this.fechas["data"]
-            await this.$store.dispatch('pedirConfig')
+            
+            //console.log('inicio')
+            //console.log(this.fecha_server)
+            //console.log(this.$store.state.fecha_server )
+            this.$store.dispatch('guardarfechaserver', this.fecha_server)
+            //console.log(this.$store.state.fecha_server)
         }
     },
     created() {
         this.initialize()
-
-        console.log('--sss-')
-        console.log(this.$store.state.config_data)
     },
 
 

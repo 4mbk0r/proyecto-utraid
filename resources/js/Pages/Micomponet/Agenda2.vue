@@ -130,6 +130,7 @@ export default {
         colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
         names: ['Reunion', 'Cita', 'Viaje'],
         categories: [],
+        fecha_min: '',
     }),
     mounted() {
 
@@ -173,7 +174,7 @@ export default {
                         intervalos = 1440 / 45;
                     let list_intervalo = []
                     for (let i = 0; i < intervalos; i++) {
-                        console.log(start.format('hh:mm A'))
+                        //console.log(start.format('hh:mm A'))
                         list_intervalo.push(start.add(45, 'm').format('hh:mm A'))
 
                     }
@@ -182,34 +183,38 @@ export default {
                     this.events = [];
                     let start2 = new Date(this.fecha_calendario + 'T01:01:00-04:00')
                     let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
+                    let fecha_server = moment(this.$store.getters.getfecha_server+'T00:00:00-04:00')
+                    this.fecha_min = fecha_server.format('YYYY-MM-DD')
                     for (const key in response.data) {
-                        console.log(start);
-                        console.log(end);
-
-                        console.log(response.data[key]['descripcion'])
+                        //console.log(start);
+                        //console.log(end);
+                        //console.log(response.data[key]['descripcion'])
                         this.categories.push(response.data[key]['descripcion'])
-                        this.events.push({
-                            name: 'Agendar',
-                            start: start2,
-                            end: end,
-                            color: 'red',
-                            timed: 0,
-                            category: this.categories[key],
-                        })
+                        if (this.fecha_calendario > this.fecha_min) {
+                            this.events.push({
+                                name: 'Agendar',
+                                start: start2,
+                                end: end,
+                                color: 'red',
+                                timed: 0,
+                                category: this.categories[key],
+                            })
+                        }
 
-                        this.events.push({
+
+                        /*this.events.push({
                             name: 'Cita',
                             start: new Date(this.fecha_calendario + 'T08:01:00-04:00'),
                             end: new Date(this.fecha_calendario + 'T09:01:00-04:00'),
                             color: 'blue',
                             timed: 1,
                             category: this.categories[key],
-                        })
+                        })*/
                     }
-                    console.log(this.type);
+                    //console.log(this.type);
 
-                    this.fetchEvents()
-                    console.log(this.events)
+                    //this.fetchEvents()
+                    //console.log(this.events)
                 }, (error) => {
                     console.log(error);
                 }
@@ -284,8 +289,11 @@ export default {
 
                 console.log(this.$refs.dato);
                 console.log(this.$refs)
-                this.$refs.dato.open()
+
                 this.$refs.dato.op1 = 1;
+                this.$refs.dato.fecha_cita = this.fecha_calendario
+                this.$refs.dato.open()
+                this.$refs.dato.change_fecha2()
                 //this.selectedElement = nativeEvent.target
                 //nativeEvent.stopPropagation()
             } else {

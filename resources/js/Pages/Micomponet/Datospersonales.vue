@@ -1,11 +1,11 @@
 <template>
     <v-card>
-        <v-dialog v-model="dialog" fullscreen hide-overlay class="fill-height" transition="dialog-bottom-transition">
+        <v-dialog v-model="dialog" fullscreen hide-overlay class="fill-height" color="red" transition="dialog-bottom-transition">
             <v-toolbar>
                 <v-btn icon @click="close">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <v-toolbar-title>datos</v-toolbar-title>
+                <v-toolbar-title>Agendar Cita</v-toolbar-title>
                 <v-spacer></v-spacer>
             </v-toolbar>
 
@@ -102,7 +102,7 @@
                     </v-tab-item>
                     <v-tab-item>
                         <v-card flat>
-                            <v-btn color="primary" class="mb-2" @click="v_agendar = true">
+                            <v-btn color="primary" class="mb-2" @click="openAgendar()">
                                 Agendar Nueva cita
                             </v-btn>
                             <v-data-table :headers="encabezado" :items="las_citas" :sort-by.sync="sortBy"
@@ -239,11 +239,11 @@
 
             <v-card>
                 <v-card-title class="text-h5">
-                    cedula de identidad fue cambiada {{paciente_edit.ci}}
-                    por {{paciente.ci}}
+                    La cedula de identidad {{paciente_edit.ci}}<br>
+                    fue cambiada por {{paciente.ci}}
                 </v-card-title>
                 <v-card-text>
-                    desea realizar una nueva busqueda o actulizar el ci
+                    Desea realizar una nueva busqueda o actulizar del cedula de identidad?
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -297,6 +297,7 @@ export default {
         paciente_edit: {},
         las_citas: [],
         cita_nueva: {},
+        fecha_cita: '',
         fechacitaMin: moment(day1).add(1, 'd').format('YYYY-MM-DD'),
         //equipos
         equipos_actuales: [],
@@ -452,13 +453,19 @@ export default {
     },
 
     methods: {
+        openAgendar(){
+            console.log(this.fecha_cita);
+            this.v_agendar = true
+            this.cita_nueva.fecha = this.fecha_cita
+        },  
         nueva_busqueda() {
+            
             this.op1 = 1
             let datos = structuredClone(this.paciente.ci)
             this.paciente = {}
             this.paciente_edit = {}
             this.paciente_existen = {}
-            this.cita = []
+            this.cita = {}
             this.paciente.ci = datos
             this.msm_update = false
             this.buscadorporci()
@@ -469,6 +476,9 @@ export default {
             this.msm_update = false
         },
         async buscadorporci() {
+            if(this.paciente.ci==''){
+                return;
+            }
             if (this.op1 == 1) {
                 console.log(this.paciente.ci);
                 var res = await axios({
@@ -559,10 +569,22 @@ export default {
                     this.paciente_edit = structuredClone(this.paciente)
                     this.op1 = 2;
                 }
-                if (res['data']['mensaje'] == 'SQLSTATE[23505]:') {
-                    let rep = res['data']['persona']
+                if (res['data']['mensaje'] == 'SQLSTATE[23505]:' && this.op1==1) {
                     this.msm_existe = true
+                    this.paciente_existen = structuredClone(res['data']['persona'])
+                    //this.paciente_edit = structuredClone(this.paciente)
+                    //this.paciente = res['data']['persona']
                 }
+                if (res['data']['mensaje'] == 'SQLSTATE[23505]:' && this.op1==2) {
+                    this.alert('No se puede cambiar la cedula de identidad '+this.paciente.ci+' por '+this.paciente_edit.ci+ '. Por que esta ('+this.paciente_edit.ci+') ya existe. Se volvera a la antigua configuracion')
+                    this.paciente = structuredClone(this.paciente_edit)
+                    
+                    this.paciente_existen = {}
+                    this.op1 = 2
+                    //this.paciente_edit = structuredClone(this.paciente)
+                    //this.paciente = res['data']['persona']
+                }
+                
             }
 
         },
@@ -570,23 +592,25 @@ export default {
 
         },
         allowedDates(val) {
-            var d = new Date(val).getDay()
-            var f = new Date(val).toISOString().slice(0, 10);
-            var datos = JSON.parse(this.$store.getters.getConfig.dias);
-            var dias_s = [
-                "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", 'Domingo']
-            if (datos.includes(dias_s[d])) return false;
-            var datos = JSON.parse(this.$store.getters.getConfig.feriados);
-            if (typeof datos == 'undefined') return false//console.log(datos)
-            for (const element of datos) { // You can use `let` instead of `const` if you like
-                if (f == element.fecha) {
-                    return false;
-                }
-            }
+           
             return true;
         },
         async change_fecha2() {
-            if (this.cita_nueva.fecha < this.fechacitaMin) {
+            
+            if(typeof this.cita_nueva.fecha == 'undefined') return;
+            if(this.cita_nueva.fecha_cita!=''){
+                var res = await axios({
+                method: 'get',
+                url: `/${process.env.MIX_CARPETA}/api/citas_actuales/` + this.cita_nueva.fecha,
+            }).then(
+                (response) => {
+                    console.log(response);
+                }, (error) => {
+                    console.log(error);
+                }
+            );
+            }
+            /*if (this.cita_nueva.fecha < this.fechacitaMin) {
                 this.cita_nueva = {}
                 return;
             }
@@ -615,7 +639,7 @@ export default {
             }
             this.cita_nueva.equipo = ""
             this.cita_nueva.hora_inicio = ""
-
+            */
         },
         cambioequipo() {
             this.tiempos_actuales = this.lista_tiempos['' + this.cita_nueva.equipo];

@@ -105,5 +105,5 @@ Route::resource('/lista_configuracion', CitaTieneConfiguracionController::class)
 
 
 Route::get('/agenda2', function () {
-    return Inertia::render('Micomponet/Agenda2');;
+    return Inertia::render('Micomponet/Agenda2');
 })->name('agenda');

@@ -46,7 +46,7 @@ Route::post('/datos_citas/{id}', function ($id) {
     return CitaController::cita_usuario($id);
 });
 
-Route::post('/citas_actuales/{fecha}', function ($fecha) {
+Route::get('/citas_actuales/{fecha}', function ($fecha) {
     return CitaController::citas_disponibles($fecha);
 });
 

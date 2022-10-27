@@ -21,28 +21,23 @@ class CitaController extends Controller
     {
         //
         //dd(request());
-        $valor = request('valor');
-        if ($valor == 1) {
-            dd($valor);
-            return 'hola';
-        } else {
 
-            $date = date_create(date(""), timezone_open('America/La_Paz'));
-            $date = date_format($date, 'Y-m-d');
-            if (Cache::has('citas' . $date)) {
-                $cita_fecha =  Cache::get('citas' . $date);
-            } else {
-                $cita_fecha = DB::table('citas')
-                    ->join('persona_citas', 'citas.ci', '=', 'persona_citas.ci')
-                    ->where('fecha', $date)
-                    ->get();
-                Cache::put('citas' . $date, $cita_fecha);
-            }
-            $config = DB::table('configuracions')->select('*')->get();
+        $date = date_create(date(""), timezone_open('America/La_Paz'));
+        $date = date_format($date, 'Y-m-d');
+        if (Cache::has('citas' . $date)) {
+            $cita_fecha =  Cache::get('citas' . $date);
+        } else {
+            $cita_fecha = DB::table('citas')
+                ->join('persona_citas', 'citas.ci', '=', 'persona_citas.ci')
+                ->where('fecha', $date)
+                ->get();
+            Cache::put('citas' . $date, $cita_fecha);
         }
+        $config = DB::table('configuracions')->select('*')->get();
+        return inertia('Comenzar', ['fecha_server' => $date]);
         //  dd($date);
         //dd($users);
-        return Inertia::render('Comenzar', ['fechas' => $cita_fecha, 'valor' => $valor, 'config' => $config]);
+        //return Inertia::render('Comenzar', ['fechas' => $cita_fecha, 'valor' => $valor, 'config' => $config]);
     }
 
     /**
@@ -196,7 +191,7 @@ class CitaController extends Controller
         //if (Cache::has('usuario' . $ci)) {
         //$cita_fecha = Cache::get('citas' . $ci);
         //}else {
-
+        /*
         $cita_fecha = DB::table('citas')
             ->select(['hora_inicio', DB::raw('sum(case equipo WHEN 1 then 1 else 0 end) AS GRUPO1, 
                 sum(case equipo WHEN 2 then 1 else 0 end) AS GRUPO2, 
@@ -244,9 +239,8 @@ class CitaController extends Controller
                     }
                 }
             }
-        }
-
-        return $citas;
+        }*/
+        return $fecha;
     }
     public static function dar_cita(Request $resquest)
     {

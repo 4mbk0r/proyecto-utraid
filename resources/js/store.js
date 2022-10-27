@@ -1,3 +1,4 @@
+import { update } from 'lodash';
 import Vue from 'vue';
 import Vuex from 'vuex'
 Vue.use(Vuex);
@@ -6,7 +7,13 @@ const day1 = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)
 const store = new Vuex.Store({
     state: {
         //estado inicial de las variables
+        fecha_server: '',
 
+
+
+        //variables de agenda 2 
+        fecha_calendario: '',
+        
         //configuraciones 
         config_data: {},
         fecha_hoy: day1,
@@ -23,8 +30,13 @@ const store = new Vuex.Store({
         id_config: '',
 
 
+
     },
     mutations: {
+        update_fecha_server(state, fecha){
+            
+            state.fecha_server = fecha
+        },
         updateid_config(state, dato){
             state.id_config = dato
         },
@@ -91,6 +103,9 @@ const store = new Vuex.Store({
         }
     },
     actions: {
+        guardarfechaserver(constext, fecha){
+            constext.commit('update_fecha_server', fecha)
+        },
         updateid_configAction(context) {
             context.commit('updateid_config')
         },
@@ -105,7 +120,6 @@ const store = new Vuex.Store({
         },
         listEventsAction(context) {
             context.commit('listevent')
-
         },
         async pedirConfig(context) {
             try {
@@ -136,6 +150,9 @@ const store = new Vuex.Store({
         },
         getid_config(){
             return store.state.id_config
+        },
+        getfecha_server(){
+            return store.state.fecha_server
         }
     }
 });
