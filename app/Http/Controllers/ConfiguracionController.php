@@ -21,11 +21,21 @@ class ConfiguracionController extends Controller
         //
         date_default_timezone_set("America/La_Paz");
         $date = date_create();
-        $list_config = DB::table('configuracions')
-            ->select('*')
-            ->where('fecha_final', '>=', date_format($date, "Y-m-d"))
-            ->get();
         
+        $list_config = DB::table('configuracions')
+        ->select('*',DB::raw(' COALESCE(cita_tiene_configuracions.fecha,configuracions.fecha_inicio) as fecha_agenda'))
+        ->leftJoin('cita_tiene_configuracions',  function ($join) use ($date) {
+            $join->on('configuracions.id', '=', 'cita_tiene_configuracions.id');
+            //date_format($date, "Y-m-d"));
+        })
+        ->where('configuracions.fecha_final','>=',date_format($date, "Y-m-d"))
+        ->get();
+    
+
+        
+        //->whereRaw('fecha_agenda','>=',date_format($date, "Y-m-d"))
+        //->join('cita_tiene_configuracions.fecha', '>=', date_format($date, "Y-m-d"))
+        //->get();
         $date = date_format($date, "Y-m-d H:i:s");
         return inertia('Configuracions', [
             'configuracion' => $list_config,

@@ -14,14 +14,12 @@ class CreateHorariosTable extends Migration
     public function up()
     {
         Schema::create('horarios', function (Blueprint $table) {
-            $table->id();
-            $table->time('tiempo_inicio');
-            $table->time('tiempo_final');
-            $table->string('estado')->default('habilitado');
+            
+            $table->time('hora_inicio')->primary();
+            $table->time('hora_final');
             $table->integer('sala');
             $table->foreign('sala')->references('sala')->on('salas')->onDelete('cascade')->onUpdate('cascade');
-            $table->timestamps();
-            $table->unique(['tiempo_inicio', 'sala']);
+            $table->unique(['hora_inicio', 'sala']);
         });
     }
 

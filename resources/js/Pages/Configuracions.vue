@@ -1,10 +1,12 @@
 <template>
     <v-app>
 
-        <v-data-table :headers="headers" :items="desserts" :sort-by="['fecha_inicio']" :sort-desc="[false]" multi-sort
-            class="elevation-1" :header-props="{sortByText: 'Ordenar por'}" :items-per-page="20" :footer-props="{
-              'items-per-page-text':'Configuraciones por pagina',
-            'items-per-page-options':[20, 30, 50, 100, -1], 'items-per-page-all-text':'Todos'}">
+        <v-data-table :headers="headers" :items="desserts"   item-key="fecha_agenda" :sort-by="['fecha_agenda']" :sort-desc="[false]" multi-sort
+            class="elevation-1" :header-props="{ sortByText: 'Ordenar por' }" :items-per-page="20" :footer-props="{
+                'items-per-page-text': 'Configuraciones por pagina',
+                'items-per-page-options': [20, 30, 50, 100, -1], 'items-per-page-all-text': 'Todos'
+                
+            }">
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title>Configuraciones</v-toolbar-title>
@@ -22,7 +24,7 @@
                             <v-btn icon dark @click="close()">
                                 <v-icon>mdi-close</v-icon>
                             </v-btn>
-                            <v-toolbar-title>{{formTitle}}</v-toolbar-title>
+                            <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
                             <v-spacer></v-spacer>
                         </v-toolbar>
                         <v-stepper v-model="e1">
@@ -61,7 +63,7 @@
                                                 <!--v-if="editedItem.atencion"-->
                                                 <v-row>
 
-                                                    <v-col cols="12" v-if='editedItem.tipo=="permanente"'>
+                                                    <v-col cols="12" v-if='editedItem.tipo == "permanente"'>
                                                         <v-menu ref="menu" v-model="menu"
                                                             :close-on-content-click="false" :return-value.sync="date"
                                                             transition="scale-transition" offset-y min-width="auto">
@@ -86,7 +88,7 @@
                                                             </v-date-picker>
                                                         </v-menu>
                                                     </v-col>
-                                                    <v-col v-if='editedItem.tipo=="temporal"'>
+                                                    <v-col v-if='editedItem.tipo == "temporal"'>
                                                         <v-col cols="12">
                                                             <v-checkbox v-model="editedItem.atencion"
                                                                 label="Se realiara la atencion">
@@ -134,7 +136,7 @@
                                             <v-btn color="blue darken-1" text @click="close">
                                                 Cancelar
                                             </v-btn>
-                                            
+
                                         </v-card-actions>
                                     </v-card>
 
@@ -149,24 +151,24 @@
                                         </v-card-title>
 
                                         <v-card-text>
-                                            <v-container v-if="e1>=2">
+                                            <v-container v-if="e1 >= 2">
                                                 <sala ref="salas" :id_configuracion="editedItem.id"></sala>
                                             </v-container>
                                         </v-card-text>
 
                                         <v-card-actions>
-                                            
+
                                             <v-btn color="blue darken-1" text @click="close">
                                                 Cancelar
                                             </v-btn>
-                                            <v-btn color="primary" @click="e1=3">
+                                            <v-btn color="primary" @click="e1 = 3">
                                                 Continue
                                             </v-btn>
                                             <v-spacer></v-spacer>
                                             <v-btn color="primary" @click="e1 = 1">
                                                 Atras
                                             </v-btn>
-                                            
+
                                         </v-card-actions>
                                     </v-card>
 
@@ -178,12 +180,12 @@
                                             Se planificara la siguiente configuración:
                                         </v-card-title>
                                         <v-card-text>
-                                            <span>ID: {{editedItem.id}}</span>
+                                            <span>ID: {{ editedItem.id }}</span>
                                             <v-divider></v-divider>
-                                            <span>Descripcion {{editedItem.descripcion}}</span>
+                                            <span>Descripcion {{ editedItem.descripcion }}</span>
                                             <v-divider></v-divider>
-                                            <span>Para la Fechas: {{editedItem.fecha_inicio}}</span>
-                                            <span v-if="!editedItem.principal"> - {{editedItem.fecha_final}}</span>
+                                            <span>Para la Fechas: {{ editedItem.fecha_inicio }}</span>
+                                            <span v-if="!editedItem.principal"> - {{ editedItem.fecha_final }}</span>
                                         </v-card-text>
 
                                     </v-card>
@@ -210,12 +212,12 @@
                         <v-card>
                             <v-card-title class="text-h5">Estas seguro que quieres eliminar</v-card-title>
                             <v-card-text>
-                                <span>ID: {{editedItem.id}}</span>
+                                <span>ID: {{ editedItem.id }}</span>
                                 <v-divider></v-divider>
-                                <span>Descripcion {{editedItem.descripcion}}</span>
+                                <span>Descripcion {{ editedItem.descripcion }}</span>
                                 <v-divider></v-divider>
-                                <span>Fechas: {{editedItem.fecha_inicio}}</span>
-                                <span v-if="!editedItem.principal"> - {{editedItem.fecha_final}}</span>
+                                <span>Fechas: {{ editedItem.fecha_inicio }}</span>
+                                <span v-if="!editedItem.principal"> - {{ editedItem.fecha_final }}</span>
 
 
                             </v-card-text>
@@ -235,11 +237,14 @@
                 <v-simple-checkbox v-model="item.atencion" disabled></v-simple-checkbox>
             </template>
             <template v-slot:item.fecha_final="{ item }">
-                <span v-if="item.fecha_final=='9999-01-01'">
+                <span v-if="item.fecha_final == '9999-01-01'">
                     Indefinido
                 </span>
                 <span v-else>
-                    {{item.fecha_final}}
+                    <span v-if="item.tipo != 'temporal'">
+                        {{ item.fecha_final }}    
+                    </span>
+                    
                 </span>
 
             </template>
@@ -255,7 +260,7 @@
                 <v-icon v-if="item.atencion" small class="mr-2" @click="consultasItem(item)">
                     mdi-home-circle
                 </v-icon>
-                <v-icon v-if="item.historial!=0" small @click="deleteItem(item)">
+                <v-icon v-if="item.historial != 0 || item.tipo!='permanente'" small @click="deleteItem(item)">
                     mdi-delete
                 </v-icon>
             </template>
@@ -268,8 +273,8 @@
                 <v-card-title class="text-h5">Estas seguro que quieres eliminar</v-card-title>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="permanente=false">Cancelar</v-btn>
-                    <v-btn color="blue darken-1" text @click="permanente=false">Aceptar</v-btn>
+                    <v-btn color="blue darken-1" text @click="permanente = false">Cancelar</v-btn>
+                    <v-btn color="blue darken-1" text @click="permanente = false">Aceptar</v-btn>
                     <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
@@ -310,14 +315,12 @@ export default {
         dialogDelete: false,
         headers: [
             {
-                text: 'ID',
+                text: 'Fecha inicio',
                 align: 'start',
-                value: 'id',
+                value: 'fecha_agenda',
 
             },
-            { text: 'Fecha inicio', value: 'fecha_inicio' },
             { text: 'Fecha final', value: 'fecha_final' },
-
             { text: 'Descripcion', value: 'descripcion' },
             { text: 'Principal', value: 'principal' },
             { text: '', value: 'actions', sortable: false },
@@ -570,10 +573,10 @@ export default {
             this.edit_consulta = true
 
         },
-        atras3(){
-            if (this.editedItem.atencion){
+        atras3() {
+            if (this.editedItem.atencion) {
                 this.e1 = 2
-            }else{
+            } else {
                 this.e1 = 1
             }
         }
