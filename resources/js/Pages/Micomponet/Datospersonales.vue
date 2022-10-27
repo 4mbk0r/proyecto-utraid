@@ -21,7 +21,7 @@
 
                 <v-tabs-items v-model="datos_informacion" touchless>
                     <v-tab-item>
-                        <v-card flat>
+                        <v-card :color="op1 === 1 ? 'green' : 'blue'" flat>
 
                             <v-form v-model="valid" ref='formDatopersonales'>
                                 <v-container>
@@ -576,7 +576,7 @@ export default {
                     //this.paciente = res['data']['persona']
                 }
                 if (res['data']['mensaje'] == 'SQLSTATE[23505]:' && this.op1==2) {
-                    this.alert('No se puede cambiar la cedula de identidad '+this.paciente.ci+' por '+this.paciente_edit.ci+ '. Por que esta ('+this.paciente_edit.ci+') ya existe. Se volvera a la antigua configuracion')
+                    this.alert('No se puede cambiar la cedula de identidad '+this.paciente_edit.ci+' por '+this.paciente.ci+'. Por que esta ('+this.paciente_edit.ci+') ya existe. Se volvera a la antigua configuracion')
                     this.paciente = structuredClone(this.paciente_edit)
                     
                     this.paciente_existen = {}
