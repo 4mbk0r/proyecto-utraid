@@ -537,6 +537,7 @@ export default {
             let salas = []
             if (this.editedItem.atencion) {
                 salas = structuredClone(this.$refs.salas.desserts)
+
             }
             try {
                 var res = await this.axios({
@@ -633,6 +634,47 @@ export default {
             } else {
                 this.e1 = 1
             }
+        },
+        calcular_horario(editedItem) {
+            let horario = []
+            if (editedItem.tiempo_apertura == '') {
+                return horario = []
+            }
+
+            //console.log(this.fin_atencion, this.fin_atencion)
+            let tiempo_i = moment(editedItem.tiempo_apertura, 'hh:mm')
+            let tiempo_f = moment(editedItem.tiempo_cierre, 'hh:mm')
+            //console.log(tiempo_i, tiempo_f)
+            horario = []
+            let i = 0;
+            let tiempo_descanso = true
+            if (!tiempo_i.isBefore(tiempo_f)) return horario
+            //console.log('calcular_horario', this.editedItem.tiempo_atencion);
+
+            if (editedItem.min_promedio_atencion > 0 && editedItem.min_promedio_atencion != '') {
+
+                while (tiempo_i.isBefore(tiempo_f)) {
+                    let op = {}
+                    op.hora_inicio = tiempo_i.format('hh:mm')
+
+                    let s = tiempo_i.add(editedItem.min_promedio_atencion, 'minutes')
+                    op.hora_final = s.format('hh:mm')
+                    op.sala = editedItem.sala
+                    horario.push(op);
+                    if (tiempo_i.isSameOrAfter(moment(editedItem.tiempo_descanso, 'hh:mm')) && tiempo_descanso == true) {
+                        let mensaje = 'hora de descanso sera ' + tiempo_i.format('hh:mm')
+                        tiempo_i = tiempo_i.add(30, 'minutes')
+                        mensaje += ' - ' + tiempo_i.format('hh:mm')
+                        //alert(mensaje)
+                        tiempo_descanso = false
+                    } else {
+                        tiempo_i = s
+                        //console.log(tiempo_i, tiempo_f)
+                    }
+
+                }
+            }
+            return horario
         }
     },
 

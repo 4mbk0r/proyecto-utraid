@@ -25,17 +25,33 @@
                 </v-row>
                 <v-row>
                   <v-col cols="12" sm="4">
-                    <v-text-field v-model="editedItem.tiempo_apertura" type="time" label="Hora de aperuta">
+                    <v-text-field v-model="editedItem.tiempo_apertura" type="time" label="Hora de apertura">
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4">
                     <v-text-field v-model="editedItem.tiempo_cierre" type="time" label="Hora de cierre"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4">
-                    <v-text-field v-model="editedItem.min_promedio_atencion" label="Minutos promedio de atencio">
+                    <v-text-field v-model="editedItem.min_promedio_atencion" label="Minutos promedio de atencion"
+                      @change="calcular_horario">
                     </v-text-field>
                   </v-col>
                 </v-row>
+                <v-row>
+                  <v-col cols="12" sm="4">
+                    <v-text-field v-model="editedItem.tiempo_descanso" @change="calcular_horario" type="time"
+                      label="Hora de descanso">
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+                <v-data-table :headers="headers_consultorio" :footer-props="{
+                
+                  'items-per-page-text': '',
+                  'items-per-page-all-text': 'Todos'
+                
+                }" :items="horario" sort-by="calories" class="elevation-1">
+
+                </v-data-table>
 
               </v-form>
             </v-card-text>
@@ -115,6 +131,23 @@ export default {
     defaultItem: {
       id: '',
     },
+    headers_consultorio: [
+
+      {
+        text: 'Hora inicio',
+        align: 'start',
+        sortable: true,
+        value: 'hora_inicio',
+      },
+      {
+        text: 'Hora final',
+        align: 'start',
+        sortable: true,
+        value: 'hora_final',
+      },
+    ],
+    horario: [],
+    lista_horario: {},
   }),
   computed: {
     formTitle() {
@@ -140,13 +173,25 @@ export default {
   methods: {
     async initialize() {
       if (this.id_configuracion) {
-        var res = await this.axios({
-          method: 'get',
-          url: '/main/configuracion2/' + this.id_configuracion,
 
-        }).then();
-        console.log(res);
-        this.desserts = await res.data['salas']
+        try {
+          var res = await axios({
+            method: 'get',
+            url: '/main/configuracion2/' + this.id_configuracion,
+          }).then(
+            (response) => {
+              //console.log(response);
+              this.desserts = response.data['salas']
+
+            }, (error) => {
+              console.log(error);
+            }
+          );
+        } catch (err) {
+          console.log("err->", err.response.data)
+          return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+        }
+
         //this.id_configuracion = $store.state.getid_config()
 
       }
@@ -157,7 +202,9 @@ export default {
       this.dialog = true
       this.editedItem.tiempo_apertura = moment(this.editedItem.tiempo_apertura, 'hh:mm:ss').format('HH:mm');
       this.editedItem.tiempo_cierre = moment(this.editedItem.tiempo_cierre, 'hh:mm:ss').format('HH:mm');
-
+      console.log(this.editedItem)
+      this.editedItem.tiempo_descanso = moment(this.editedItem.tiempo_descanso, 'hh:mm:ss').format('HH:mm');
+      this.calcular_horario()
 
 
     },
@@ -219,6 +266,7 @@ export default {
         } else {
           Object.assign(this.desserts[this.editedIndex], this.editedItem)
 
+
         }
         this.close()
         return;
@@ -226,11 +274,14 @@ export default {
       console.log(this.editedIndex)
       if (!(this.editedIndex > -1)) {
         this.editedItem.id = this.id_configuracion
+        this.calcular_horario()
+        console.log(this.horario)
         var res = await this.axios({
           method: 'post',
           url: `/${process.env.MIX_CARPETA}/sala`,
           data: {
-            datos: this.editedItem
+            datos: this.editedItem,
+            horario: this.horario
           },
 
         }).then(
@@ -248,11 +299,14 @@ export default {
       } else {
         this.editedItem.id = this.id_configuracion
         console.log(this.editedItem)
+        this.calcular_horario()
+        console.log(this.horario)
         var res = await this.axios({
           method: 'put',
           url: `/${process.env.MIX_CARPETA}/sala/` + this.editedItem.sala,
           data: {
-            datos: this.editedItem
+            datos: this.editedItem,
+            horario: this.horario
           },
 
         }).then(
@@ -275,6 +329,45 @@ export default {
     },
     clear_time(val) {
       return moment(val, 'hh:mm:ss').format('h:mm a');
+    },
+    calcular_horario() {
+      if (this.editedItem.tiempo_apertura == '') {
+        return
+      }
+
+      //console.log(this.fin_atencion, this.fin_atencion)
+      let tiempo_i = moment(this.editedItem.tiempo_apertura, 'hh:mm')
+      let tiempo_f = moment(this.editedItem.tiempo_cierre, 'hh:mm')
+      //console.log(tiempo_i, tiempo_f)
+      this.horario = []
+      let i = 0;
+      let tiempo_descanso = true
+      if (!tiempo_i.isBefore(tiempo_f)) return
+      //console.log('calcular_horario', this.editedItem.tiempo_atencion);
+
+      if (this.editedItem.min_promedio_atencion > 0 && this.editedItem.min_promedio_atencion != '') {
+
+        while (tiempo_i.isBefore(tiempo_f)) {
+          let op = {}
+          op.hora_inicio = tiempo_i.format('hh:mm')
+
+          let s = tiempo_i.add(this.editedItem.min_promedio_atencion, 'minutes')
+          op.hora_final = s.format('hh:mm')
+          op.sala = this.editedItem.sala
+          this.horario.push(op);
+          if (tiempo_i.isSameOrAfter(moment(this.editedItem.tiempo_descanso, 'hh:mm')) && tiempo_descanso == true) {
+            let mensaje = 'hora de descanso sera ' + tiempo_i.format('hh:mm')
+            tiempo_i = tiempo_i.add(30, 'minutes')
+            mensaje += ' - ' + tiempo_i.format('hh:mm')
+            //alert(mensaje)
+            tiempo_descanso = false
+          } else {
+            tiempo_i = s
+            //console.log(tiempo_i, tiempo_f)
+          }
+
+        }
+      }
     }
   },
 
