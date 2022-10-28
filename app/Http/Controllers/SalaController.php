@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\sala;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class SalaController extends Controller
@@ -40,7 +41,13 @@ class SalaController extends Controller
     public function store(Request $request)
     {
         //
-        return $request['datos'];
+        try {
+            DB::table('salas')->insert($request['datos']);
+        } catch (\Throwable $th) {
+            return $th;
+            //new Response(['message' => 'th'], 400);
+        }
+        return $request;
     }
 
     /**
@@ -76,6 +83,14 @@ class SalaController extends Controller
     public function update(Request $request, int $sala)
     {
         //
+        $consultorio = $request['datos'];
+
+        try {
+            DB::table('salas')->where('sala', $consultorio['sala'])
+                ->where('id', $consultorio['id'])->update($consultorio);
+        } catch (\Throwable $th) {
+            return $th;
+        }
         return $sala;
     }
 

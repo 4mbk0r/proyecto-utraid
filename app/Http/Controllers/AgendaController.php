@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\agenda;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AgendaController extends Controller
 {
@@ -82,5 +83,45 @@ class AgendaController extends Controller
     public function destroy(agenda $agenda)
     {
         //
+    }
+    public static function buscar_consultorios(Request $request)
+    {
+        $agenda = $request['datos_agenda'];
+        try {
+            $configuracion = DB::table('cita_tiene_configuracions')
+                ->select('*')
+                ->where('fecha', '=', $agenda['fecha'])
+                ->get();
+        } catch (\Throwable $th) {
+            return $th;
+        }
+        if (sizeof($configuracion) <= 0) {
+
+            try {
+                $configuracion = DB::table('configuracions')
+                    ->select('*')
+                    ->where('fecha_inicio', '<=', $agenda['fecha'])
+                    ->where('fecha_final', '>=', $agenda['fecha'])
+                    ->where('tipo', '=', 'permanente')
+                    ->get();
+            } catch (\Throwable $th) {
+                return $th;
+            }
+        }
+        if (sizeof($configuracion) == 1) {
+            $conf = $configuracion[0];
+            try {
+                $salas = DB::table('salas')
+                    ->select('*')
+                    ->where('id', '=', $conf->id)
+                    ->get();
+            } catch (\Throwable $th) {
+                return $th;
+            }
+            return $salas;
+        }
+
+
+        return $configuracion;
     }
 }

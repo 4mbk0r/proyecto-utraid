@@ -21,18 +21,37 @@ class ConfiguracionController extends Controller
         //
         date_default_timezone_set("America/La_Paz");
         $date = date_create();
-        
-        $list_config = DB::table('configuracions')
-        ->select('*',DB::raw(' COALESCE(cita_tiene_configuracions.fecha,configuracions.fecha_inicio) as fecha_agenda'))
-        ->leftJoin('cita_tiene_configuracions',  function ($join) use ($date) {
-            $join->on('configuracions.id', '=', 'cita_tiene_configuracions.id');
-            //date_format($date, "Y-m-d"));
-        })
-        ->where('configuracions.fecha_final','>=',date_format($date, "Y-m-d"))
-        ->get();
-    
 
-        
+        $list_config = DB::table('configuracions')
+            ->select(
+                'configuracions.descripcion',
+                'configuracions.atencion',
+                'configuracions.principal',
+                'configuracions.tipo',
+                'configuracions.historial',
+                'configuracions.id',
+                'configuracions.fecha_final',
+                DB::raw('configuracions.tipo, COALESCE(cita_tiene_configuracions.fecha,configuracions.fecha_inicio) as fecha_inicio')
+            )
+            ->leftJoin('cita_tiene_configuracions',  function ($join) use ($date) {
+                $join->on('configuracions.id', '=', 'cita_tiene_configuracions.id');
+                //date_format($date, "Y-m-d"));
+            })
+            ->where('configuracions.fecha_final', '>=', date_format($date, "Y-m-d"))
+            ->get();
+        $fechas_no_validas = DB::table('configuracions')
+            ->select(
+                'cita_tiene_configuracions.fecha',
+            )
+            ->leftJoin('cita_tiene_configuracions',  function ($join) use ($date) {
+                $join->on('configuracions.id', '=', 'cita_tiene_configuracions.id');
+                //date_format($date, "Y-m-d"));
+            })
+            ->where('fecha', '>=', date_format($date, "Y-m-d"))
+            ->get();
+
+
+
         //->whereRaw('fecha_agenda','>=',date_format($date, "Y-m-d"))
         //->join('cita_tiene_configuracions.fecha', '>=', date_format($date, "Y-m-d"))
         //->get();
@@ -40,6 +59,7 @@ class ConfiguracionController extends Controller
         return inertia('Configuracions', [
             'configuracion' => $list_config,
             'fecha_server' => $date,
+            'fechas_no_validas' =>  array_column(json_decode($fechas_no_validas), 'fecha'),
         ]);
     }
 
@@ -66,9 +86,9 @@ class ConfiguracionController extends Controller
         $edit = $request['datos'];
         $n_fecha_final = date($edit['fecha_inicio']);
         $n_fecha_final = date("Y-m-d", strtotime($n_fecha_final . "- 1 days"));
-        
+
         if ($edit['tipo'] == 'permanente') {
-            
+
             try {
                 $default_actual =  DB::table('configuracions')
                     ->where('principal', true)
@@ -78,7 +98,7 @@ class ConfiguracionController extends Controller
                 unset($edit['id']);
                 $default_actual =  DB::table('configuracions')->insertGetId($edit);
                 $salas = $request['salas'];
-                
+
                 foreach ($salas as $id => $row) {
                     # code...
                     //$row->id;
@@ -115,8 +135,21 @@ class ConfiguracionController extends Controller
             }
         }
         $list_config = DB::table('configuracions')
-            ->select('*')
-            ->where('fecha_final', '>', date_format($date, "Y-m-d"))
+            ->select(
+                'configuracions.descripcion',
+                'configuracions.atencion',
+                'configuracions.principal',
+                'configuracions.tipo',
+                'configuracions.historial',
+                'configuracions.id',
+                'configuracions.fecha_final',
+                DB::raw('configuracions.tipo, COALESCE(cita_tiene_configuracions.fecha,configuracions.fecha_inicio) as fecha_inicio')
+            )
+            ->leftJoin('cita_tiene_configuracions',  function ($join) use ($date) {
+                $join->on('configuracions.id', '=', 'cita_tiene_configuracions.id');
+                //date_format($date, "Y-m-d"));
+            })
+            ->where('configuracions.fecha_final', '>=', date_format($date, "Y-m-d"))
             ->get();
         return $list_config;
     }
@@ -192,6 +225,26 @@ class ConfiguracionController extends Controller
         $list_config = DB::table('configuracions')
             ->select('*')
             ->where('fecha_final', '>', date_format($date, "Y-m-d"))
+            ->get();
+        return $list_config;
+    }
+    public static function fechas_invalidos()
+    {
+        /*
+        select fecha from configuracions 
+left join cita_tiene_configuracions on configuracions.id = cita_tiene_configuracions.id 
+where atencion = false;*/
+        date_default_timezone_set("America/La_Paz");
+        $date = date_create();
+        $list_config = DB::table('configuracions')
+            ->select(
+                'cita_tiene_configuracions.fecha',
+            )
+            ->leftJoin('cita_tiene_configuracions',  function ($join) use ($date) {
+                $join->on('configuracions.id', '=', 'cita_tiene_configuracions.id');
+                //date_format($date, "Y-m-d"));
+            })
+            ->where('configuracions.fecha_final', '>=', date_format($date, "Y-m-d"))
             ->get();
         return $list_config;
     }

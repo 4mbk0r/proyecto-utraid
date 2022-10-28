@@ -26,13 +26,8 @@ class CreateAgendasTable extends Migration
         });
         DB::statement(
             "ALTER TABLE agendas ADD FOREIGN KEY (fecha) REFERENCES cita_tiene_configuracions(fecha) ON DELETE CASCADE"
-            
+
         );
-        DB::statement(
-           
-            "ALTER TABLE agendas ADD FOREIGN KEY (hora_inicio) REFERENCES horarios(hora_inicio) ON DELETE CASCADE"
-        );
-        
     }
 
     /**

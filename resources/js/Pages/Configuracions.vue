@@ -1,11 +1,12 @@
 <template>
     <v-app>
 
-        <v-data-table :headers="headers" :items="desserts"   item-key="fecha_agenda" :sort-by="['fecha_agenda']" :sort-desc="[false]" multi-sort
-            class="elevation-1" :header-props="{ sortByText: 'Ordenar por' }" :items-per-page="20" :footer-props="{
+        <v-data-table :headers="headers" :items="desserts" item-key="fecha_inicio" :sort-by="['fecha_inicio']"
+            :sort-desc="[false]" multi-sort class="elevation-1" :header-props="{ sortByText: 'Ordenar por' }"
+            :items-per-page="20" :footer-props="{
                 'items-per-page-text': 'Configuraciones por pagina',
                 'items-per-page-options': [20, 30, 50, 100, -1], 'items-per-page-all-text': 'Todos'
-                
+            
             }">
             <template v-slot:top>
                 <v-toolbar flat>
@@ -79,7 +80,7 @@
                                                                 no-title scrollable>
                                                                 <v-spacer></v-spacer>
                                                                 <v-btn text color="primary" @click="menu = false">
-                                                                    Cancel
+                                                                    Cancelar
                                                                 </v-btn>
                                                                 <v-btn text color="primary"
                                                                     @click="$refs.menu.save(date)">
@@ -91,7 +92,12 @@
                                                     <v-col v-if='editedItem.tipo == "temporal"'>
                                                         <v-col cols="12">
                                                             <v-checkbox v-model="editedItem.atencion"
-                                                                label="Se realiara la atencion">
+                                                                label="Se realizara la atencion">
+                                                            </v-checkbox>
+                                                        </v-col>
+                                                        <v-col cols="12">
+                                                            <v-checkbox v-model="editedItem.feriado"
+                                                                label="Sera feriado">
                                                             </v-checkbox>
                                                         </v-col>
                                                         <v-col cols="12">
@@ -107,10 +113,11 @@
                                                                     </v-text-field>
                                                                 </template>
                                                                 <v-date-picker v-model="date_temp" multiple no-title
-                                                                    scrollable>
+                                                                    :min="inicioFecha()" :max="getMeses(12)"
+                                                                    :allowed-dates="diasnoValidos" scrollable>
                                                                     <v-spacer></v-spacer>
                                                                     <v-btn text color="primary" @click="menu = false">
-                                                                        Cancel
+                                                                        Cancelar
                                                                     </v-btn>
                                                                     <v-btn text color="primary"
                                                                         @click="$refs.menu.save(date_temp)">
@@ -242,9 +249,9 @@
                 </span>
                 <span v-else>
                     <span v-if="item.tipo != 'temporal'">
-                        {{ item.fecha_final }}    
+                        {{ item.fecha_final }}
                     </span>
-                    
+
                 </span>
 
             </template>
@@ -257,10 +264,10 @@
                 <v-icon v-if="item.principal" small class="mr-2" @click="editItem(item)">
                     mdi-pencil
                 </v-icon>
-                <v-icon v-if="item.atencion" small class="mr-2" @click="consultasItem(item)">
+                <v-icon v-show="item.atencion" small class="mr-2" @click="consultasItem(item)">
                     mdi-home-circle
                 </v-icon>
-                <v-icon v-if="item.historial != 0 || item.tipo!='permanente'" small @click="deleteItem(item)">
+                <v-icon v-if="item.historial != 0 || item.tipo != 'permanente'" small @click="deleteItem(item)">
                     mdi-delete
                 </v-icon>
             </template>
@@ -307,6 +314,7 @@ export default {
     props: {
         configuracion: Array,
         fecha_server: '',
+        fechas_no_validas: Array,
     },
     data: () => ({
         permanente: false,
@@ -317,7 +325,7 @@ export default {
             {
                 text: 'Fecha inicio',
                 align: 'start',
-                value: 'fecha_agenda',
+                value: 'fecha_inicio',
 
             },
             { text: 'Fecha final', value: 'fecha_final' },
@@ -332,12 +340,14 @@ export default {
             descripcion: '',
             tipo: '',
             atencion: true,
+            feriado: false,
         },
         defaultItem: {
             id: '',
             descripcion: '',
             tipo: '',
             atencion: true,
+            feriado: false,
 
         },
         menu: false,
@@ -374,7 +384,7 @@ export default {
             this.editedIndex = this.desserts.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.date_inicio = structuredClone(this.editedItem.fecha_inicio)
-            console.log(this.editedItem)
+            console.log('ss' + this.editedIndex)
             this.dialog = true
 
         },
@@ -392,6 +402,7 @@ export default {
                 (response) => {
                     console.log(response);
                     this.desserts = response.data
+
                     //this.verificar_fecha(response.data)
                 }, (error) => {
                     console.log(error);
@@ -439,6 +450,8 @@ export default {
         async step2() {
 
             if (this.editedItem.tipo == 'permanente') {
+                console.log(this.editedItem.atencion)
+                console.log(this.editedItem)
                 if (this.$refs.paso1.validate()) {
                     var res = await axios({
                         method: 'get',
@@ -448,6 +461,7 @@ export default {
                         (response) => {
                             console.log(response);
                             this.verificar_fecha(response.data)
+
                         }, (error) => {
                             console.log(error);
                         }
@@ -491,14 +505,22 @@ export default {
                     //console.log(resp['default'][0].id);
                     this.editedItem.id = resp['default'][0].id
 
+
                 } else {
                     this.editedItem.fecha_inicio = this.date
                 }
                 if (this.editedItem.atencion) {
                     this.e1 = 2
+                    console.log(this.$refs.salas);
+                    setTimeout(() => {
+                        this.$refs.salas.editedIndex = -1
+
+                    }, 0)
+
                 } else {
                     this.e1 = 3
                 }
+
 
             } else {
 
@@ -516,33 +538,40 @@ export default {
             if (this.editedItem.atencion) {
                 salas = structuredClone(this.$refs.salas.desserts)
             }
+            try {
+                var res = await this.axios({
+                    method: 'post',
+                    url: `/${process.env.MIX_CARPETA}/configuracion2`,
+                    data: {
+                        datos: this.editedItem,
+                        fecha_temporales: this.date_temp,
+                        salas: salas
+                    }
 
-            var res = await this.axios({
-                method: 'post',
-                url: `/${process.env.MIX_CARPETA}/configuracion2`,
-                data: {
-                    datos: this.editedItem,
-                    fecha_temporales: this.date_temp,
-                    salas: salas
-                }
+                }).then(
+                    (response) => {
+                        //this.headers = response.data
+                        console.log(response.data);
+                        this.desserts = response.data
+                        this.e1 = 1
+                        this.close()
 
-            }).then(
-                (response) => {
-                    //this.headers = response.data
-                    console.log(response.data);
-                    this.desserts = response.data
-                    this.e1 = 1
-                    this.close()
+                    }, (error) => {
+                        console.log(error);
+                    }
+                );
+            } catch (error) {
 
-                }, (error) => {
-                    console.log(error);
-                }
-            );
+            }
+
         },
         inicioFecha() {
+
+            //console.log(this.fecha_server, '  ', this.date_inicio)
             let f1 = moment(this.fecha_server).add(1, "d")
             let f2 = moment(this.date_inicio).add(1, 'd')
             if (f1.isBefore(f2)) { //<
+
                 this.minfecha = f2.format("YYYY-MM-DD")
                 return this.minfecha
             }
@@ -553,6 +582,8 @@ export default {
         adicionar_temp() {
             this.dialog = true
             this.editedItem.tipo = "temporal"
+            /*this.$refs.salas.editedIndex = -1
+            console.log(this.editedIndex);*/
         },
         getMeses(m) {
             let fecha_final = moment(this.fecha_server).add(m, "M")
@@ -560,7 +591,28 @@ export default {
 
         },
         diasnoValidos(val) {
+            //console.log(this.fechas_no_validas)
+
             var d = new Date(val).getDay();
+            for (let i = 0; i < this.fechas_no_validas.length; i++) {
+                console.log(this.fechas_no_validas)
+                if (this.fechas_no_validas[i] == val) {
+                    var d = new Date(val).getDay();
+                    if (d == 5) {
+
+                        let f = moment(val).add(2, "d").format("YYYY-MM-DD")
+                        if (!this.fechas_no_validas.includes(f))
+                            this.fechas_no_validas.push(f)
+                    }
+                    if (d == 6) {
+                        let f = moment(val).add(1, "d").format("YYYY-MM-DD")
+                        if (!this.fechas_no_validas.includes(f))
+                            this.fechas_no_validas.push(f)
+                    }
+                    return false
+                }
+
+            }
             if (d == 5) return false;
             if (d == 6) return false;
             return true;
@@ -571,6 +623,8 @@ export default {
         consultasItem(item) {
             this.editedItem = item
             this.edit_consulta = true
+            this.id_configuracion = item.id
+
 
         },
         atras3() {

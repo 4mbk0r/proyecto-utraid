@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\DoctorController;
@@ -11,7 +12,7 @@ use App\Http\Controllers\PersonaAntiguoController;
 use App\Http\Controllers\PersonaCitaController;
 use App\Models\personas_antiguo;
 use App\Http\Controllers\CitaTieneConfiguracionController;
-
+use App\Models\Configuracion;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,4 +115,15 @@ Route::post('/verificar_fecha', function (Request $request) {
 
 Route::post('/delete_sala', function (Request $request) {
     return SalaController::eliminar($request);
+});
+
+
+Route::post('/buscar_consultorios', function (Request $request) {
+
+    return AgendaController::buscar_consultorios($request);
+});
+
+Route::get('/fechas_validas', function (Request $request) {
+
+    return ConfiguracionController::fechas_invalidos();
 });

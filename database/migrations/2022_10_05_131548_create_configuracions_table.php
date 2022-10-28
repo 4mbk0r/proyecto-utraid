@@ -21,6 +21,7 @@ class CreateConfiguracionsTable extends Migration
             $table->date('fecha_final')->nullable();
             $table->boolean('principal')->default(0);
             $table->string('tipo')->default('temporal');
+            $table->boolean('feriado')->default(0);
             $table->boolean('atencion')->default(0);
             $table->String('descripcion');
             //$table->boolean('activo')->default(1);

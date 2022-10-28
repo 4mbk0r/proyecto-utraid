@@ -199,6 +199,7 @@ export default {
                                     color: 'red',
                                     timed: 0,
                                     category: this.categories[key],
+                                    consultorio: response.data[key],
                                 })
                             }
 
@@ -292,11 +293,12 @@ export default {
                 //this.dialog = true
                 //this.selectedEvent = event
 
-                console.log(this.$refs.dato);
-                console.log(this.$refs)
+                console.log('datos');
+                console.log(event.consultorio)
 
                 this.$refs.dato.op1 = 1;
                 this.$refs.dato.fecha_cita = this.fecha_calendario
+                this.$refs.dato.consultorio = event.consultorio.sala
                 this.$refs.dato.open()
                 this.$refs.dato.change_fecha2()
                 //this.selectedElement = nativeEvent.target

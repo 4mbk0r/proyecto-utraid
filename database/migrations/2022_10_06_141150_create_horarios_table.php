@@ -14,8 +14,9 @@ class CreateHorariosTable extends Migration
     public function up()
     {
         Schema::create('horarios', function (Blueprint $table) {
-            
-            $table->time('hora_inicio')->primary();
+
+            $table->integer('id_horario')->primary();
+            $table->time('hora_inicio');
             $table->time('hora_final');
             $table->integer('sala');
             $table->foreign('sala')->references('sala')->on('salas')->onDelete('cascade')->onUpdate('cascade');

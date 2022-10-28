@@ -1,6 +1,7 @@
 <template>
     <v-card>
-        <v-dialog v-model="dialog" fullscreen hide-overlay class="fill-height" color="red" transition="dialog-bottom-transition">
+        <v-dialog v-model="dialog" fullscreen hide-overlay class="fill-height" color="red"
+            transition="dialog-bottom-transition">
             <v-toolbar>
                 <v-btn icon @click="close">
                     <v-icon>mdi-close</v-icon>
@@ -93,7 +94,7 @@
                                             </v-btn>
                                         </v-col>
                                     </v-row>
-                                    <v-card v-if="buscador==true">
+                                    <v-card v-if="buscador == true">
                                         buscar datos
                                     </v-card>
                                 </v-container>
@@ -160,15 +161,16 @@
                                             </v-text-field>
                                         </template>
                                         <v-date-picker v-model="cita_nueva.fecha" :allowed-dates="allowedDates"
-                                            @input="menu2 = false" @change="change_fecha2" :min="fechacitaMin"
+                                            @input="menu2 = false" @change="buscar_consultorios" :min="fechacitaMin"
                                             locale="es-ES">
                                         </v-date-picker>
                                     </v-menu>
                                 </v-col>
                                 <v-col cols="12" sm="4" md="4">
-                                    <v-select v-model="cita_nueva.equipo" :items="equipos_actuales" :rules="nombreRules"
-                                        persistent-placeholder placeholder="Selecione el equipo" @change="cambioequipo"
-                                        color="purple darken-3" label="Equipo" required>
+                                    <v-select v-model="cita_nueva.consultorio" item-text="descripcion"
+                                        :items="consultorios" :rules="nombreRules" persistent-placeholder
+                                        placeholder="Selecione el Consultorio" color="purple darken-3"
+                                        label="Consultorio" required>
                                     </v-select>
                                 </v-col>
                                 <v-col cols="12" sm="4" md="4">
@@ -219,7 +221,7 @@
 
             <v-card>
                 <v-card-title class="text-h5">
-                    El usuario con cedula de identidad {{ paciente.ci}} ya existe
+                    El usuario con cedula de identidad {{ paciente.ci }} ya existe
                 </v-card-title>
                 <v-card-text>
                     Puedes user los datos ya tienes
@@ -239,8 +241,8 @@
 
             <v-card>
                 <v-card-title class="text-h5">
-                    La cedula de identidad {{paciente_edit.ci}}<br>
-                    fue cambiada por {{paciente.ci}}
+                    La cedula de identidad {{ paciente_edit.ci }}<br>
+                    fue cambiada por {{ paciente.ci }}
                 </v-card-title>
                 <v-card-text>
                     Desea realizar una nueva busqueda o actulizar del cedula de identidad?
@@ -283,11 +285,14 @@ export default {
         validacion: false,
         paciente: {},
         paciente_existen: {},
+        consultorios: [],
         op: Number,
         citas: [],
         v_agendar: false,
         menu2: false,
         datos_informacion: "1",
+        consultorio: "",
+        sala: [],
         op1: Number,
         valid: false,
         dialog: false,
@@ -453,13 +458,29 @@ export default {
     },
 
     methods: {
-        openAgendar(){
-            console.log(this.fecha_cita);
+        openAgendar() {
+            this.fecha_cita;
             this.v_agendar = true
             this.cita_nueva.fecha = this.fecha_cita
-        },  
+            this.cita_nueva.consultorio = this.consultorio
+            console.log(this.cita_nueva)
+            /*var res = await axios({
+                method: 'get',
+                url: `/${process.env.MIX_CARPETA}/api/buscar_persona/` + this.paciente.ci,
+            }).then(
+                (response) => {
+                    console.log(response);
+                    if (response['data']['mensaje'] == 'SQLSTATE[23505]:') {
+                        //let rep = response['data']['persona']
+                        this.msm_existe = true
+                        this.paciente_existen = response['data']['persona']
+                    }
+                }, (error) => {
+                    console.log(error);
+                }*/
+        },
         nueva_busqueda() {
-            
+
             this.op1 = 1
             let datos = structuredClone(this.paciente.ci)
             this.paciente = {}
@@ -476,7 +497,7 @@ export default {
             this.msm_update = false
         },
         async buscadorporci() {
-            if(this.paciente.ci==''){
+            if (this.paciente.ci == '') {
                 return;
             }
             if (this.op1 == 1) {
@@ -569,22 +590,22 @@ export default {
                     this.paciente_edit = structuredClone(this.paciente)
                     this.op1 = 2;
                 }
-                if (res['data']['mensaje'] == 'SQLSTATE[23505]:' && this.op1==1) {
+                if (res['data']['mensaje'] == 'SQLSTATE[23505]:' && this.op1 == 1) {
                     this.msm_existe = true
                     this.paciente_existen = structuredClone(res['data']['persona'])
                     //this.paciente_edit = structuredClone(this.paciente)
                     //this.paciente = res['data']['persona']
                 }
-                if (res['data']['mensaje'] == 'SQLSTATE[23505]:' && this.op1==2) {
-                    this.alert('No se puede cambiar la cedula de identidad '+this.paciente_edit.ci+' por '+this.paciente.ci+'. Por que esta ('+this.paciente_edit.ci+') ya existe. Se volvera a la antigua configuracion')
+                if (res['data']['mensaje'] == 'SQLSTATE[23505]:' && this.op1 == 2) {
+                    this.alert('No se puede cambiar la cedula de identidad ' + this.paciente_edit.ci + ' por ' + this.paciente.ci + '. Por que esta (' + this.paciente_edit.ci + ') ya existe. Se volvera a la antigua configuracion')
                     this.paciente = structuredClone(this.paciente_edit)
-                    
+
                     this.paciente_existen = {}
                     this.op1 = 2
-                    //this.paciente_edit = structuredClone(this.paciente)
+                    //this.paciente_edi t = structuredClone(this.paciente)
                     //this.paciente = res['data']['persona']
                 }
-                
+
             }
 
         },
@@ -592,23 +613,45 @@ export default {
 
         },
         allowedDates(val) {
-           
+
             return true;
         },
-        async change_fecha2() {
-            
-            if(typeof this.cita_nueva.fecha == 'undefined') return;
-            if(this.cita_nueva.fecha_cita!=''){
+        async buscar_consultorios() {
+            try {
                 var res = await axios({
-                method: 'get',
-                url: `/${process.env.MIX_CARPETA}/api/citas_actuales/` + this.cita_nueva.fecha,
-            }).then(
-                (response) => {
-                    console.log(response);
-                }, (error) => {
-                    console.log(error);
-                }
-            );
+                    method: 'post',
+                    url: `/${process.env.MIX_CARPETA}/api/buscar_consultorios`,
+                    data: {
+                        datos_agenda: this.cita_nueva,
+                    }
+                }).then(
+                    (response) => {
+                        console.log(response);
+                        this.consultorios = response.data
+                    }, (error) => {
+                        console.log(error);
+                    }
+                );
+            } catch (err) {
+                console.log("err->", err.response.data)
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            }
+        },
+        //futuro eliminar
+        async change_fecha2() {
+
+            if (typeof this.cita_nueva.fecha == 'undefined') return;
+            if (this.cita_nueva.fecha_cita != '') {
+                var res = await axios({
+                    method: 'get',
+                    url: `/${process.env.MIX_CARPETA}/api/citas_actuales/` + this.cita_nueva.fecha,
+                }).then(
+                    (response) => {
+                        console.log(response);
+                    }, (error) => {
+                        console.log(error);
+                    }
+                );
             }
             /*if (this.cita_nueva.fecha < this.fechacitaMin) {
                 this.cita_nueva = {}

@@ -98,7 +98,7 @@ export default {
     dialogDelete: false,
     headers: [
 
-    
+
       {
         text: 'Descrpcion',
         align: 'start',
@@ -110,7 +110,7 @@ export default {
     editedIndex: -1,
     editedItem: {
       id: '',
-      
+
     },
     defaultItem: {
       id: '',
@@ -123,6 +123,8 @@ export default {
   },
   watch: {
     dialog(val) {
+      console.log(val)
+      console.log(this.editedIndex);
       val || this.close()
     },
     dialogDelete(val) {
@@ -152,13 +154,12 @@ export default {
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
-      
-      this.dialog = true  
-      this.editedItem.tiempo_apertura = moment(this.editedItem.tiempo_apertura,'hh:mm:ss').format('HH:mm');
-      this.editedItem.tiempo_cierre = moment(this.editedItem.tiempo_cierre,'hh:mm:ss').format('HH:mm');
-      
-      
-      
+      this.dialog = true
+      this.editedItem.tiempo_apertura = moment(this.editedItem.tiempo_apertura, 'hh:mm:ss').format('HH:mm');
+      this.editedItem.tiempo_cierre = moment(this.editedItem.tiempo_cierre, 'hh:mm:ss').format('HH:mm');
+
+
+
     },
     deleteItem(item) {
       this.editedIndex = this.desserts.indexOf(item)
@@ -167,29 +168,31 @@ export default {
     },
     async deleteItemConfirm() {
       if (this.editar_consulta) {
-        var res = await this.axios({
-          method: 'post',
-          url: `/${process.env.MIX_CARPETA}/api/delete_sala`,
-          data: {
-            dato: this.editedItem
-          },
+        if (this.editedIndex >= 0) {
+          var res = await this.axios({
+            method: 'post',
+            url: `/${process.env.MIX_CARPETA}/api/delete_sala`,
+            data: {
+              dato: this.editedItem
+            },
 
-        }).then(
-          (response) => {
-            //this.headers = response.data
-            console.log(response.data);
-            this.desserts = response.data
+          }).then(
+            (response) => {
+              //this.headers = response.data
+              console.log(response.data);
+              this.desserts = response.data
 
-          }, (error) => {
-            console.log(error);
-          });
+            }, (error) => {
+              console.log(error);
+            });
+        }
+      } else {
 
-
+        this.desserts.splice(this.editedIndex, 1)
+        this.closeDelete()
       }
       /*
       */
-      this.desserts.splice(this.editedIndex, 1)
-      this.closeDelete()
     },
     close() {
       this.dialog = false
@@ -207,33 +210,23 @@ export default {
       })
     },
     async save() {
-      
-      if (this.editedIndex > -1) {
-        if (this.editar_consulta) {
-          var res = await this.axios({
-          method: 'put',
-          url: `/${process.env.MIX_CARPETA}/sala/`+this.editedItem.id,
-          data: {
-            datos: this.editedItem
-          },
+      console.log("editar" + this.editar_consulta);
+      if (typeof this.editar_consulta == 'undefined' || this.editar_consulta == false) {
+        if (!(this.editedIndex > -1)) {
+          Object.assign(this.desserts[this.editedIndex], this.editedItem)
+          this.desserts.push(this.editedItem)
 
-        }).then(
-          (response) => {
-            //this.headers = response.data
-            console.log(response.data);
-            //this.desserts = response.data
+        } else {
+          Object.assign(this.desserts[this.editedIndex], this.editedItem)
 
-          }, (error) => {
-            console.log(error);
-          });
-        
         }
-        
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
-        
-      } else {
-        if(this.editar_consulta){
-          var res = await this.axios({
+        this.close()
+        return;
+      }
+      console.log(this.editedIndex)
+      if (!(this.editedIndex > -1)) {
+        this.editedItem.id = this.id_configuracion
+        var res = await this.axios({
           method: 'post',
           url: `/${process.env.MIX_CARPETA}/sala`,
           data: {
@@ -244,13 +237,34 @@ export default {
           (response) => {
             //this.headers = response.data
             console.log(response.data);
+            this.desserts.push(this.editedItem)
             //this.desserts = response.data
 
           }, (error) => {
             console.log(error);
           });
-        }
-        this.desserts.push(this.editedItem)
+
+
+      } else {
+        this.editedItem.id = this.id_configuracion
+        console.log(this.editedItem)
+        var res = await this.axios({
+          method: 'put',
+          url: `/${process.env.MIX_CARPETA}/sala/` + this.editedItem.sala,
+          data: {
+            datos: this.editedItem
+          },
+
+        }).then(
+          (response) => {
+            //this.headers = response.data
+            console.log(response.data);
+            //this.desserts.push(this.editedItem)
+            //this.desserts = response.data
+
+          }, (error) => {
+            console.log(error);
+          });
       }
       this.close()
     },
@@ -259,8 +273,8 @@ export default {
       this.id_configuracion = e
       console.log('---' + this.id_configuracion)
     },
-    clear_time(val){
-      return moment(val,'hh:mm:ss').format('h:mm a');
+    clear_time(val) {
+      return moment(val, 'hh:mm:ss').format('h:mm a');
     }
   },
 

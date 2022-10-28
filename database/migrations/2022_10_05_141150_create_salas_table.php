@@ -20,7 +20,7 @@ class CreateSalasTable extends Migration
             $table->string('descripcion');
             $table->time('tiempo_apertura');
             $table->time('tiempo_cierre');
-            $table->time('tiempo_descanso');
+            $table->time('tiempo_descanso')->nullable();
             $table->integer('min_promedio_atencion');
             $table->boolean('estado')->default(1);
             $table->jsonb('horario')->nullable();
@@ -28,61 +28,60 @@ class CreateSalasTable extends Migration
             $table->unique(['id', 'descripcion']);
         });
         $datos2 = [
-           
+
             'id' => '1',
             'descripcion' => 'SALA 1',
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:00:00',
             'tiempo_descanso' => '12:00:00',
-            'min_promedio_atencion'=>'60',
-            'estado'=>'true',
+            'min_promedio_atencion' => '60',
+            'estado' => 'true',
         ];
         DB::table('salas')->insert($datos2);
         $datos2 = [
-           
+
             'id' => '1',
             'descripcion' => 'SALA 2',
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:00:00',
             'tiempo_descanso' => '12:00:00',
-            'min_promedio_atencion'=>'60',
-            'estado'=>'true',
+            'min_promedio_atencion' => '60',
+            'estado' => 'true',
         ];
         DB::table('salas')->insert($datos2);
         $datos2 = [
-           
+
             'id' => '1',
             'descripcion' => 'SALA 3',
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:00:00',
             'tiempo_descanso' => '12:00:00',
-            'min_promedio_atencion'=>'60',
-            'estado'=>'true',
+            'min_promedio_atencion' => '60',
+            'estado' => 'true',
         ];
         DB::table('salas')->insert($datos2);
         $datos2 = [
-           
+
             'id' => '1',
             'descripcion' => 'SALA 4',
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:00:00',
             'tiempo_descanso' => '12:00:00',
-            'min_promedio_atencion'=>'60',
-            'estado'=>'true',
+            'min_promedio_atencion' => '60',
+            'estado' => 'true',
         ];
         DB::table('salas')->insert($datos2);
         $datos2 = [
-           
+
             'id' => '1',
             'descripcion' => 'SALA 5',
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:00:00',
             'tiempo_descanso' => '12:00:00',
-            'min_promedio_atencion'=>'60',
-            'estado'=>'true',
+            'min_promedio_atencion' => '60',
+            'estado' => 'true',
         ];
         DB::table('salas')->insert($datos2);
-        
     }
 
     /**
