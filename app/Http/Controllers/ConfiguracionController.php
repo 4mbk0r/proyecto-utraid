@@ -48,6 +48,7 @@ class ConfiguracionController extends Controller
                 //date_format($date, "Y-m-d"));
             })
             ->where('fecha', '>=', date_format($date, "Y-m-d"))
+            ->where('feriado', '=', 'true')
             ->get();
 
 

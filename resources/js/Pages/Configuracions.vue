@@ -595,7 +595,7 @@ export default {
 
             var d = new Date(val).getDay();
             for (let i = 0; i < this.fechas_no_validas.length; i++) {
-                console.log(this.fechas_no_validas)
+                //console.log(this.fechas_no_validas)
                 if (this.fechas_no_validas[i] == val) {
                     var d = new Date(val).getDay();
                     if (d == 5) {
