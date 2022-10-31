@@ -93,6 +93,8 @@ class HorarioController extends Controller
     {
         //
         //return 'ss';
+
+        /* falta modificar el horaraio  */
         $horario  =  $request['cita_nueva'];
         $horarios =  DB::table('horarios')
         ->where('sala', '=', $horario['consultorio'])
