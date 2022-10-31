@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Horario;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HorarioController extends Controller
 {
@@ -45,9 +46,14 @@ class HorarioController extends Controller
      * @param  \App\Models\Horario  $horario
      * @return \Illuminate\Http\Response
      */
-    public function show(Horario $horario)
+    public function show(int $horario)
     {
         //
+        //return 'ss';
+        $horarios =  DB::table('horarios')
+        ->where('sala', '=', $horario)
+        ->get();
+        return $horarios;
     }
 
     /**
@@ -82,5 +88,15 @@ class HorarioController extends Controller
     public function destroy(Horario $horario)
     {
         //
+    }
+    public static function horario_disponible(Request $request)
+    {
+        //
+        //return 'ss';
+        $horario  =  $request['cita_nueva'];
+        $horarios =  DB::table('horarios')
+        ->where('sala', '=', $horario['consultorio'])
+        ->get();
+        return $horarios;
     }
 }

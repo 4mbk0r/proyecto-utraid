@@ -12,6 +12,7 @@ use App\Http\Controllers\PersonaAntiguoController;
 use App\Http\Controllers\PersonaCitaController;
 use App\Models\personas_antiguo;
 use App\Http\Controllers\CitaTieneConfiguracionController;
+use App\Http\Controllers\HorarioController;
 use App\Models\Configuracion;
 
 /*
@@ -126,4 +127,10 @@ Route::post('/buscar_consultorios', function (Request $request) {
 Route::get('/fechas_validas', function (Request $request) {
 
     return ConfiguracionController::fechas_invalidos();
+});
+
+
+Route::post('/horario_disponible', function (Request $request) {
+
+    return HorarioController::horario_disponible($request);
 });

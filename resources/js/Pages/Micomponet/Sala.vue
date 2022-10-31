@@ -147,7 +147,6 @@ export default {
       },
     ],
     horario: [],
-    lista_horario: {},
   }),
   computed: {
     formTitle() {
@@ -158,6 +157,7 @@ export default {
     dialog(val) {
       console.log(val)
       console.log(this.editedIndex);
+  
       val || this.close()
     },
     dialogDelete(val) {
@@ -182,6 +182,7 @@ export default {
             (response) => {
               //console.log(response);
               this.desserts = response.data['salas']
+              console.log(response.data)
 
             }, (error) => {
               console.log(error);
@@ -196,7 +197,25 @@ export default {
 
       }
     },
-    editItem(item) {
+    async editItem(item) {
+      try {
+          var res = await axios({
+            method: 'get',
+            url: `/${process.env.MIX_CARPETA}/horario/` + item.sala,
+          }).then(
+            (response) => {
+              //console.log(response);
+              this.horario = response.data
+              console.log(response.data)
+
+            }, (error) => {
+              console.log(error);
+            }
+          );
+        } catch (err) {
+          console.log("err->", err.response.data)
+          return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+        }
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
@@ -228,6 +247,7 @@ export default {
               //this.headers = response.data
               console.log(response.data);
               this.desserts = response.data
+              this.closeDelete();
 
             }, (error) => {
               console.log(error);
@@ -243,7 +263,7 @@ export default {
     },
     close() {
       this.dialog = false
-
+      this.horario = []
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
         this.editedIndex = -1
@@ -287,9 +307,10 @@ export default {
         }).then(
           (response) => {
             //this.headers = response.data
-            console.log(response.data);
-            this.desserts.push(this.editedItem)
-            //this.desserts = response.data
+            console.log('------');
+            console.log(response.data)
+
+            this.desserts = response.data
 
           }, (error) => {
             console.log(error);
@@ -301,6 +322,8 @@ export default {
         console.log(this.editedItem)
         this.calcular_horario()
         console.log(this.horario)
+      
+       
         var res = await this.axios({
           method: 'put',
           url: `/${process.env.MIX_CARPETA}/sala/` + this.editedItem.sala,
@@ -314,7 +337,7 @@ export default {
             //this.headers = response.data
             console.log(response.data);
             //this.desserts.push(this.editedItem)
-            //this.desserts = response.data
+            this.desserts = response.data
 
           }, (error) => {
             console.log(error);
@@ -349,16 +372,16 @@ export default {
 
         while (tiempo_i.isBefore(tiempo_f)) {
           let op = {}
-          op.hora_inicio = tiempo_i.format('hh:mm')
+          op.hora_inicio = tiempo_i.format('HH:mm')
 
           let s = tiempo_i.add(this.editedItem.min_promedio_atencion, 'minutes')
-          op.hora_final = s.format('hh:mm')
+          op.hora_final = s.format('HH:mm')
           op.sala = this.editedItem.sala
           this.horario.push(op);
-          if (tiempo_i.isSameOrAfter(moment(this.editedItem.tiempo_descanso, 'hh:mm')) && tiempo_descanso == true) {
-            let mensaje = 'hora de descanso sera ' + tiempo_i.format('hh:mm')
+          if (tiempo_i.isSameOrAfter(moment(this.editedItem.tiempo_descanso, 'HH:mm')) && tiempo_descanso == true) {
+            let mensaje = 'hora de descanso sera ' + tiempo_i.format('HH:mm')
             tiempo_i = tiempo_i.add(30, 'minutes')
-            mensaje += ' - ' + tiempo_i.format('hh:mm')
+            mensaje += ' - ' + tiempo_i.format('HH:mm')
             //alert(mensaje)
             tiempo_descanso = false
           } else {

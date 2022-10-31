@@ -42,12 +42,19 @@ class SalaController extends Controller
     {
         //
         try {
-            DB::table('salas')->insert($request['datos']);
+            $id_last = DB::table('salas')->insertGetId($request['datos']);
+            $horario = $request['horario'];
+            foreach ($horario as $id => $row) {
+                $row['id'] = $id_last;
+                //unset($row['sala']);
+                DB::table('horarios')->insert($row);
+            }
         } catch (\Throwable $th) {
             return $th;
             //new Response(['message' => 'th'], 400);
         }
-        return $request;
+        $salas = DB::table('salas')->get();
+        return $salas;
     }
 
     /**
@@ -84,13 +91,30 @@ class SalaController extends Controller
     {
         //
         $consultorio = $request['datos'];
-
+        $horario = $request['horario'];
+        //return $horario;
         try {
-            DB::table('salas')->where('sala', $consultorio['sala'])
+           
+            DB::table('salas')->where('sala',$consultorio['sala'])
                 ->where('id', $consultorio['id'])->update($consultorio);
+
+            DB::table('horarios')
+                ->where('sala', '=', $consultorio['sala'])
+                ->delete();
+            
+            
+            foreach ($horario as $id => $row) {
+                //$row['id'] = $id_last;
+                //unset($row['sala']);
+                
+                DB::table('horarios')
+                    ->insert($horario[$id]);
+            }
         } catch (\Throwable $th) {
             return $th;
         }
+        $salas = DB::table('salas')->get();
+        return $salas;
         return $sala;
     }
 

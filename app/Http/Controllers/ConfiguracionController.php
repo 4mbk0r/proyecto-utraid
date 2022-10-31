@@ -164,11 +164,20 @@ class ConfiguracionController extends Controller
     public function show(int $configuracion)
     {
         //
-        $dato = DB::table('salas')->where('id', $configuracion)->get();
+        $date = '';
+        try {
+            $dato = DB::table('salas') //->where('id', $configuracion)
+                ->select('*')->get();
+
+          
+        } catch (\Throwable $th) {
+            return $th;
+        }
         $n_salas =  count($dato);
         $datos = [
             'salas' => $dato,
-            'n_sala' => $n_salas
+            'n_sala' => $n_salas,
+            //'horarios' => $horarios
         ];
         return $datos;
     }

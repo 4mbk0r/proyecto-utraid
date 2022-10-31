@@ -161,22 +161,26 @@
                                             </v-text-field>
                                         </template>
                                         <v-date-picker v-model="cita_nueva.fecha" :allowed-dates="allowedDates"
-                                            @input="menu2 = false" @change="buscar_consultorios" :min="fechacitaMin"
+                                            @input="menu2 = false" @change="buscar_consultorios" :min-value="fecha_min"
+                                            :max-value="fecha_max"
                                             locale="es-ES">
                                         </v-date-picker>
                                     </v-menu>
                                 </v-col>
                                 <v-col cols="12" sm="4" md="4">
-                                    <v-select v-model="cita_nueva.consultorio" item-text="descripcion"
+                                    <v-select v-model="cita_nueva.consultorio" item-text="descripcion" item-value="sala"
                                         :items="consultorios" :rules="nombreRules" persistent-placeholder
                                         placeholder="Selecione el Consultorio" color="purple darken-3"
-                                        label="Consultorio" required>
+                                        @change="buscar_horario" label="Consultorio" required>
                                     </v-select>
                                 </v-col>
                                 <v-col cols="12" sm="4" md="4">
-                                    <v-select v-model="cita_nueva.hora_inicio" :items="tiempos_actuales"
-                                        :rules="nombreRules" persistent-placeholder placeholder="Selecione hora de cita"
+                                    <v-select v-model="cita_nueva.hora_inicio" :item-text="item => ver_horario(item)"
+                                        item-value="id_horario" :items="horario" :rules="nombreRules"
+                                        persistent-placeholder placeholder="Selecione hora de cita"
                                         color="purple darken-3" label="Hora de inicio" required>
+
+
                                     </v-select>
                                 </v-col>
                             </v-row>
@@ -262,9 +266,7 @@
 </template>
 
 <script>
-import {
-    objectExpression
-} from '@babel/types'
+
 import axios from 'axios'
 import moment from 'moment'
 const day1 = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + new Date().getDate()).slice(-2)
@@ -303,10 +305,10 @@ export default {
         las_citas: [],
         cita_nueva: {},
         fecha_cita: '',
-        fechacitaMin: moment(day1).add(1, 'd').format('YYYY-MM-DD'),
+        fechacitaMin: '',
         //equipos
         equipos_actuales: [],
-        tiempos_actuales: [],
+        horario: [],
         lista_tiempos: {},
         t_equipo: null,
         sortBy: 'fecha',
@@ -452,12 +454,26 @@ export default {
     unmounted() {
 
     },
-    beforeUpdate() {
+    created() {
         //this.paciente_edit = structuredClone(this.paciente);
-        console.log("++++" + moment(this.fechacitaMin).add(1, 'd').format('YYYY-MM-DD'))
+        //console.log("++++" + moment(this.fechacitaMin).add(1, 'd').format('YYYY-MM-DD'))
+
     },
 
     methods: {
+
+        /*  inicialiazar fecha minima*/
+        fecha_min() {
+            let fecha= moment(this.$store.getters.getfecha_server).add(1, 'd').format('YYYY-MM-DD')
+            return fecha
+        },
+        fecha_max() {
+            let fecha = moment(this.$store.getters.getfecha_server).add(6, 'M').format('YYYY-MM-DD')
+            console.log("hohooh")
+            console.log(fecha)
+            
+            return fecha
+        },
         openAgendar() {
             this.fecha_cita;
             this.v_agendar = true
@@ -495,6 +511,34 @@ export default {
         update_ci() {
             this.cambiar_datos()
             this.msm_update = false
+        },
+        ver_horario(item) {
+
+            return moment(item.hora_inicio, 'hh:mm:ss').format('HH:mm') + " - " + moment(item.hora_final, 'hh:mm:ss').format('HH:mm')
+        },
+        async buscar_horario() {
+            console.log(this.cita_nueva)
+            try {
+                var res = await axios({
+                    method: 'post',
+                    url: `/${process.env.MIX_CARPETA}/api/horario_disponible`,
+                    data: {
+                        cita_nueva: this.cita_nueva
+                    }
+                }).then(
+                    (response) => {
+                        console.log(response);
+                        this.horario = response.data
+                        this.horario[0]
+                        //this.horario =  response.data['horario']
+                    }, (error) => {
+                        console.log(error);
+                    }
+                );
+            } catch (err) {
+                console.log("err->", err.response.data)
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            }
         },
         async buscadorporci() {
             if (this.paciente.ci == '') {
@@ -628,6 +672,8 @@ export default {
                     (response) => {
                         console.log(response);
                         this.consultorios = response.data
+                        this.buscar_horario()
+                        //this.horario =  response.data['horario']
                     }, (error) => {
                         console.log(error);
                     }
@@ -685,13 +731,13 @@ export default {
             */
         },
         cambioequipo() {
-            this.tiempos_actuales = this.lista_tiempos['' + this.cita_nueva.equipo];
-            this.cita_nueva.hora_inicio = this.tiempos_actuales[0];
-            console.log(this.tiempos_actuales)
+            this.horario = this.lista_tiempos['' + this.cita_nueva.equipo];
+            this.cita_nueva.hora_inicio = this.horario[0];
+            console.log(this.horario)
         },
         cambioequipos() {
-            this.tiempos_actuales = this.lista_tiempos['' + this.editar.equipo];
-            this.editar.hora = this.tiempos_actuales[0];
+            this.horario = this.lista_tiempos['' + this.editar.equipo];
+            this.editar.hora = this.horario[0];
         },
         async guardar_cita() {
             if (this.$refs.form_cita.validate()) {
