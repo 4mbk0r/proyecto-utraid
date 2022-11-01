@@ -27,6 +27,7 @@ class AgendaController extends Controller
     public function create()
     {
         //
+
     }
 
     /**
@@ -38,6 +39,28 @@ class AgendaController extends Controller
     public function store(Request $request)
     {
         //
+        $cita = $request['cita'];
+
+        try {
+            $query = DB::table('cita_tiene_configuracions')->where('fecha','=',$cita['fecha'])->get();
+            if(sizeof($query)==0){
+                $query = DB::table('configuracions')->where('fecha_inicio','<=',$cita['fecha'])
+                ->where('fecha_final','>=',$cita['fecha'])
+                ->where('tipo','=','permanente')
+                ->get();
+                $use = [
+                    'fecha'=>$cita['fecha'],
+                    'id'=>$query[0]->id
+                ];
+                $query = DB::table('cita_tiene_configuracions')->insert($use);
+            }    
+            DB::table('agendas')->insert($cita);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+        return $request['cita'];
+
     }
 
     /**

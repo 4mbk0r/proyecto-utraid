@@ -17,7 +17,8 @@
                         <v-icon color="poobrown">{{ icon_ci }}</v-icon>
                     </v-tab>
                     <v-tab v-if="paciente.register" key="1">
-                        Las Citas
+                        Citas
+                        <v-icon color="poobrown">{{ 'mdi-calendar-account' }}</v-icon>
                     </v-tab>
                 </v-tabs>
 
@@ -165,8 +166,8 @@
                                             </v-text-field>
                                         </template>
                                         <v-date-picker v-model="cita_nueva.fecha" :allowed-dates="allowedDates"
-                                            @input="menu2 = false" @change="buscar_consultorios" :min-value="fecha_min"
-                                            :max-value="fecha_max" locale="es-ES">
+                                            @input="menu2 = false" @change="buscar_consultorios" :min="fechacitaMin"
+                                            :max="fechacitaMax" locale="es-ES">
                                         </v-date-picker>
                                     </v-menu>
                                 </v-col>
@@ -178,7 +179,7 @@
                                     </v-select>
                                 </v-col>
                                 <v-col cols="12" sm="4" md="4">
-                                    <v-select v-model="cita_nueva.hora_inicio" :item-text="item => ver_horario(item)"
+                                    <v-select v-model="cita_nueva.horario" :item-text="item => ver_horario(item)"
                                         item-value="id_horario" :items="horario" :rules="nombreRules"
                                         persistent-placeholder placeholder="Selecione hora de cita"
                                         color="purple darken-3" label="Hora de inicio" required>
@@ -188,21 +189,24 @@
                                 </v-col>
                             </v-row>
                             <v-row no-gutters>
-                                <v-col cols="12" sm="4" md="4">
+                                <v-col cols="12" sm="4" md="6">
 
                                     <v-select v-model="cita_nueva.tipo_cita" :items="tipo_cita" color="purple darken-3"
                                         persistent-placeholder :rules="nombreRules" placeholder="Selecione tipo de cita"
                                         label="Tipo de cita">
                                     </v-select>
                                 </v-col>
-                                <v-col cols="12" sm="4" md="4">
+                                <v-col cols="12" sm="4" md="6">
 
                                     <v-select v-model="cita_nueva.lugar" :items="lugares" color="purple darken-3"
                                         :rules="nombreRules" persistent-placeholder
                                         placeholder="Selecione lugar de cita" label="Lugar" required>
                                     </v-select>
                                 </v-col>
-                                <v-col cols="12" sm="4" md="4">
+                            </v-row>
+                            <v-row no-gutters>
+
+                                <v-col cols="12" sm="12" md="12">
 
                                     <v-text-field v-model="cita_nueva.observacion" type="text" persistent-placeholder
                                         placeholder="Agregar observaciones" label="Observacion">
@@ -311,6 +315,7 @@ export default {
         cita_nueva: {},
         fecha_cita: '',
         fechacitaMin: '',
+        fechacitaMax: '',
         //equipos
         equipos_actuales: [],
         horario: [],
@@ -461,14 +466,18 @@ export default {
     },
     created() {
         //this.paciente_edit = structuredClone(this.paciente);
-        //console.log("++++" + moment(this.fechacitaMin).add(1, 'd').format('YYYY-MM-DD'))
-
+        //console.log("++++" + moment(this.fechacitaMin).add(1, 'd').format('YYYY-MM-DD')
+        //this.buscar_consultorios()
+        this.fechacitaMin = moment(this.$store.getters.getfecha_server).add(1, 'd').format('YYYY-MM-DD');
+        this.fechacitaMax = moment(this.$store.getters.getfecha_server).add(1, 'Y').format('YYYY-MM-DD');
     },
 
     methods: {
 
         /*  inicialiazar fecha minima*/
         fecha_min() {
+            console.log('-----');
+            console.log(this.$store.getters.getfecha_server)
             let fecha = moment(this.$store.getters.getfecha_server).add(1, 'd').format('YYYY-MM-DD')
             return fecha
         },
@@ -484,6 +493,7 @@ export default {
             this.v_agendar = true
             this.cita_nueva.fecha = this.fecha_cita
             this.cita_nueva.consultorio = this.consultorio
+            this.buscar_consultorios()
             console.log(this.cita_nueva)
             /*var res = await axios({
                 method: 'get',
@@ -525,6 +535,7 @@ export default {
         },
         async buscar_horario() {
             console.log(this.cita_nueva)
+
             try {
                 var res = await axios({
                     method: 'post',
@@ -694,82 +705,35 @@ export default {
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
         },
-        //futuro eliminar
-        async change_fecha2() {
-
-            if (typeof this.cita_nueva.fecha == 'undefined') return;
-            if (this.cita_nueva.fecha_cita != '') {
-                var res = await axios({
-                    method: 'get',
-                    url: `/${process.env.MIX_CARPETA}/api/citas_actuales/` + this.cita_nueva.fecha,
-                }).then(
-                    (response) => {
-                        console.log(response);
-                    }, (error) => {
-                        console.log(error);
-                    }
-                );
-            }
-            /*if (this.cita_nueva.fecha < this.fechacitaMin) {
-                this.cita_nueva = {}
-                return;
-            }
-            console.log(this.cita_nueva.fecha)
-            var a = await axios.post('api/citas_actuales/' + this.cita_nueva.fecha).then();
-            console.log(a['data']);
-            var array = a['data']
-            this.equipos_actuales = [];
-            var primera = true;
-            var p, w = "";
-            this.lista_tiempos = {};
-            for (let i = 0; i < array.length; i++) {
-                if (Object.keys(array[i]).length >= 1) {
-                    this.equipos_actuales.push(i + 1);
-                    var aux = [];
-                    for (const key in array[i]) {
-                        aux.push(array[i][key]);
-                        if (primera) {
-                            p = i,
-                                w = array[i][key]
-                            primera = false;
-                        }
-                    }
-                    this.lista_tiempos['' + (i + 1)] = aux;
-                }
-            }
-            this.cita_nueva.equipo = ""
-            this.cita_nueva.hora_inicio = ""
-            */
-        },
-        cambioequipo() {
-            this.horario = this.lista_tiempos['' + this.cita_nueva.equipo];
-            this.cita_nueva.hora_inicio = this.horario[0];
-            console.log(this.horario)
-        },
-        cambioequipos() {
-            this.horario = this.lista_tiempos['' + this.editar.equipo];
-            this.editar.hora = this.horario[0];
-        },
         async guardar_cita() {
             if (this.$refs.form_cita.validate()) {
                 let hof = moment(this.cita_nueva.fecha + 'T' + this.cita_nueva.hora_inicio).add(1, "h");
 
-                var datos = {
-                    hora_final: hof.format("HH:mm:ss"),
-                    ci: this.paciente.ci,
-                    ci_doctor: '-1',
+                this.cita_nueva.ci_paciente = this.paciente.ci;
+
+                try {
+                    var res = await axios({
+                        method: 'post',
+                        url: `/${process.env.MIX_CARPETA}/agendar`,
+                        data: {
+                            cita: this.cita_nueva,
+                            paciente: this.paciente
+                        }
+                    }).then(
+                        (response) => {
+                            console.log(response);
+                        }, (error) => {
+                            console.log(error);
+                        }
+                    );
+                } catch (err) {
+                    console.log("err->", err.response.data)
+                    return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 }
-                datos = Object.assign(this.cita_nueva, datos);
-                var res = await axios({
-                    method: 'post',
-                    url: 'api/dar_cita',
-                    data: {
-                        cita: datos,
-                    }
-                }).then();
-                console.log(res['data']);
+                
+                /*console.log(res['data']);
                 this.las_citas = res['data'];
-                this.v_agendar = false;
+                this.v_agendar = false;*/
 
             }
 

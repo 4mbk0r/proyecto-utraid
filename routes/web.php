@@ -5,6 +5,8 @@ use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\SalaController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\CitaTieneConfiguracionController;
+use App\Http\Controllers\AgendaController;
+
 
 
 use App\Http\Controllers\ConfigController;
@@ -43,7 +45,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 
 Route::middleware(['auth:sanctum', 'verified', 'permiso'])->get('/inicio', [CitaController::class, 'index'],)->name('inicio');
 
-Route::resource('/agendar', CitaController::class)->middleware(['auth:sanctum', 'verified']);
+Route::resource('/agendar', AgendaController::class)->middleware(['auth:sanctum', 'verified']);
 
 
 Route::get('/registra', function () {
