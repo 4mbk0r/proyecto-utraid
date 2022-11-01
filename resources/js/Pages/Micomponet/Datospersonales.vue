@@ -1,8 +1,8 @@
 <template>
     <v-card>
-        <v-dialog v-model="dialog" fullscreen hide-overlay class="fill-height" color="red"
+        <v-dialog v-model="dialog" fullscreen hide-overlay class="fill-height" color="blue"
             transition="dialog-bottom-transition">
-            <v-toolbar>
+            <v-toolbar :color="op1 === 1 ? 'green' : 'blue'">
                 <v-btn icon @click="close">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -11,9 +11,10 @@
             </v-toolbar>
 
             <v-card>
-                <v-tabs v-model="datos_informacion" centered>
-                    <v-tab key="0">
-                        Datos Personales
+                <v-tabs :color="op1 === 1 ? 'green' : 'blue'" v-model="datos_informacion" icons-and-text centered>
+                    <v-tab :color="op1 === 1 ? 'errror' : 'blue'" key="0">
+                        {{ op1 === 1 ? 'Paciente Nuevo' : 'Paciente' }}
+                        <v-icon color="poobrown">{{ icon_ci }}</v-icon>
                     </v-tab>
                     <v-tab v-if="paciente.register" key="1">
                         Las Citas
@@ -22,17 +23,20 @@
 
                 <v-tabs-items v-model="datos_informacion" touchless>
                     <v-tab-item>
-                        <v-card :color="op1 === 1 ? 'green' : 'blue'" flat>
+                        <v-card flat>
 
                             <v-form v-model="valid" ref='formDatopersonales'>
                                 <v-container>
                                     <v-row no-gutters>
-                                        <v-col cols="12" sm="6">
+                                        <v-col cols="12" sm="8" class="pr-4">
                                             <v-text-field v-model="paciente.ci" :rules="nombreRules"
-                                                label="Cedula de Identidad" @change="buscadorporci()" required>
+                                                :color="op1 === 1 ? 'green' : 'blue'" label="Cedula de Identidad"
+                                                @change="buscadorporci()" required>
+
                                             </v-text-field>
+
                                         </v-col>
-                                        <v-col cols="12" sm="6">
+                                        <v-col cols="12" sm="4">
                                             <v-select v-model="paciente.expedido" :rules="nombreRules"
                                                 persistent-placeholder placeholder="No se tiene datos"
                                                 :items="departamentos" label="Expedido">
@@ -162,8 +166,7 @@
                                         </template>
                                         <v-date-picker v-model="cita_nueva.fecha" :allowed-dates="allowedDates"
                                             @input="menu2 = false" @change="buscar_consultorios" :min-value="fecha_min"
-                                            :max-value="fecha_max"
-                                            locale="es-ES">
+                                            :max-value="fecha_max" locale="es-ES">
                                         </v-date-picker>
                                     </v-menu>
                                 </v-col>
@@ -256,7 +259,7 @@
                     <v-btn color="green darken-1" text @click="nueva_busqueda">
                         Nueva Busqueda
                     </v-btn>
-                    <v-btn color="green darken-1" text @click="update_ci()">
+                    <v-btn color="green darken-1" text @click="update_ci">
                         Actualizar
                     </v-btn>
                 </v-card-actions>
@@ -285,8 +288,10 @@ export default {
     },
     data: () => ({
         validacion: false,
+
         paciente: {},
         paciente_existen: {},
+        icon_ci: 'mdi-account',
         consultorios: [],
         op: Number,
         citas: [],
@@ -464,14 +469,14 @@ export default {
 
         /*  inicialiazar fecha minima*/
         fecha_min() {
-            let fecha= moment(this.$store.getters.getfecha_server).add(1, 'd').format('YYYY-MM-DD')
+            let fecha = moment(this.$store.getters.getfecha_server).add(1, 'd').format('YYYY-MM-DD')
             return fecha
         },
         fecha_max() {
             let fecha = moment(this.$store.getters.getfecha_server).add(6, 'M').format('YYYY-MM-DD')
             console.log("hohooh")
             console.log(fecha)
-            
+
             return fecha
         },
         openAgendar() {
@@ -506,11 +511,13 @@ export default {
             this.paciente.ci = datos
             this.msm_update = false
             this.buscadorporci()
+            this.$refs.formDatopersonales.resetValidation()
 
         },
         update_ci() {
-            this.cambiar_datos()
             this.msm_update = false
+            this.cambiar_datos()
+
         },
         ver_horario(item) {
 
@@ -626,6 +633,7 @@ export default {
                     this.paciente = res['data']['persona']
                     this.paciente_edit = structuredClone(this.paciente)
                     this.op1 = 2;
+                    return;
                 }
                 if (res['data']['mensaje'] == 'ok update') {
                     console.log('update correcto')
@@ -633,10 +641,12 @@ export default {
                     this.paciente = res['data']['persona']
                     this.paciente_edit = structuredClone(this.paciente)
                     this.op1 = 2;
+                    return;
                 }
                 if (res['data']['mensaje'] == 'SQLSTATE[23505]:' && this.op1 == 1) {
                     this.msm_existe = true
                     this.paciente_existen = structuredClone(res['data']['persona'])
+                    return;
                     //this.paciente_edit = structuredClone(this.paciente)
                     //this.paciente = res['data']['persona']
                 }
@@ -646,6 +656,7 @@ export default {
 
                     this.paciente_existen = {}
                     this.op1 = 2
+                    return;
                     //this.paciente_edi t = structuredClone(this.paciente)
                     //this.paciente = res['data']['persona']
                 }

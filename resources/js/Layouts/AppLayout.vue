@@ -30,11 +30,11 @@
                         <v-list-item link>
                             <v-list-item-content style="color: white" key="1">
                                 <v-list-item-title>
-                                    {{$page.props.user.cargo}}
+                                    {{ $page.props.user.cargo }}
                                 </v-list-item-title>
                                 <v-list-item-title>
-                                    {{$page.props.user.nombre }} {{$page.props.user.ap_paterno}}
-                                    {{$page.props.user.ap_materno}}
+                                    {{ $page.props.user.nombre }} {{ $page.props.user.ap_paterno }}
+                                    {{ $page.props.user.ap_materno }}
                                 </v-list-item-title>
                                 <v-list-item-subtitle style="color: white;">{{ $page.props.user.email }}
                                 </v-list-item-subtitle>
@@ -52,7 +52,7 @@
                         </v-list-item>
 
                         <Link :href="route('inicio')">
-                        <v-list-item v-if="$page.props.user.cargo=='recepcionista'" key="3" @click="mostrar(3)">
+                        <v-list-item v-if="$page.props.user.cargo == 'recepcionista'" key="3" @click="mostrar(3)">
                             <v-list-item-content style="color: white;">
                                 <v-list-item-title>
                                     <v-icon>mdi-file-document-edit</v-icon>
@@ -62,7 +62,7 @@
                         </v-list-item>
                         </Link>
                         <jet-nav-link :href="route('registro')">
-                            <v-list-item v-if=" $page.props.user.cargo=='Admin'" key="4" link>
+                            <v-list-item v-if="$page.props.user.cargo == 'Admin'" key="4" link>
                                 <v-list-item-content style="color: white;">
                                     <v-list-item-title>
                                         <v-icon>mdi-file-document-edit</v-icon>
@@ -72,7 +72,7 @@
                             </v-list-item>
                         </jet-nav-link>
                         <jet-nav-link :href="route('configuracion')">
-                            <v-list-item v-if=" $page.props.user.cargo=='Admin'" key="5" link>
+                            <v-list-item v-if="$page.props.user.cargo == 'Admin'" key="5" link>
 
                                 <v-list-item-content style="color: white;">
                                     <v-list-item-title>
@@ -111,10 +111,10 @@
             <!-- Modal Portal -->
             <portal-target name="modal" multiple>
             </portal-target>
-            <v-dialog v-model="v_carga" hide-overlay persistent width="300">
+            <v-dialog v-model="v_carga" persistent width="300">
                 <v-card color="primary" dark>
                     <v-card-text>
-                        Espere por favor
+                        Espere por favor...
                         <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
                     </v-card-text>
                 </v-card>
