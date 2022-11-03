@@ -2,7 +2,6 @@
     <div v-if="hasErrors">
 
         <v-alert border="bottom" colored-border type="warning" elevation="2">
-            ¡Vaya! Algo salió mal
             <ul class="mt-3 list-disc list-inside text-sm text-red-600">
                 <li v-for="(error, key) in errors" :key="key">{{ error }}</li>
             </ul>

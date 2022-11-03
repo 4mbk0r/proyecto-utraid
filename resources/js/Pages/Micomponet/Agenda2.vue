@@ -300,7 +300,6 @@ export default {
                 this.$refs.dato.fecha_cita = this.fecha_calendario
                 this.$refs.dato.consultorio = event.consultorio.sala
                 this.$refs.dato.open()
-                this.$refs.dato.change_fecha2()
                 //this.selectedElement = nativeEvent.target
                 //nativeEvent.stopPropagation()
             } else {

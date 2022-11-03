@@ -22,7 +22,7 @@ class CreateAgendasTable extends Migration
             $table->string('lugar');
             $table->string('tipo_cita');
             $table->string('ci_paciente');
-            $table->string('observacion')->nullable(0);
+            $table->string('observacion')->nullable();
             //$table->foreign('fecha')->references('fecha')->on('cita_tiene_configuracions')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('consultorio')->references('sala')->on('salas')->onDelete('cascade')->onUpdate('cascade');
             $table->unique(['fecha', 'consultorio', 'horario']);
@@ -36,7 +36,6 @@ class CreateAgendasTable extends Migration
         DB::statement(
             "ALTER TABLE agendas ADD FOREIGN KEY (ci_paciente) REFERENCES persona_citas(ci) ON DELETE CASCADE"
         );
-        
     }
 
     /**
