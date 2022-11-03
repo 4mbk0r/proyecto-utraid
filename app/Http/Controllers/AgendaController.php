@@ -68,9 +68,25 @@ class AgendaController extends Controller
      * @param  \App\Models\agenda  $agenda
      * @return \Illuminate\Http\Response
      */
-    public function show(agenda $agenda)
+    public function show(string $agenda)
     {
         //
+
+        $date = date_create(date($agenda), timezone_open('America/La_Paz'));
+        $date = date_format($date, 'Y-m-d');
+        /*if (Cache::has('citas' . $date)) {
+            $cita_fecha =  Cache::get('citas' . $date);
+        } else {*/
+
+        
+            $agenda = DB::table('agendas')
+                ->leftJoin('persona_citas', 'agendas.ci_paciente', '=', 'persona_citas.ci')
+                ->leftJoin('horarios', 'agendas.horario', '=', 'horarios.id_horario')
+                ->where('fecha', $date)
+                ->get();
+           // Cache::put('citas' . $date, $cita_fecha);
+        //}
+        return $agenda;
     }
 
     /**

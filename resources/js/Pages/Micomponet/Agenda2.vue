@@ -81,8 +81,32 @@
                                 </v-btn>
                             </v-toolbar>
                             <v-card-text>
-                                <span v-html="selectedEvent.details"></span>
-                                {{ selectedEvent }}
+                                <V-row no-gutters>
+                                    <v-col>
+                                        CI: 
+                                    
+                                    </v-col>
+                                    <v-col>
+                                        {{ valores(selectedEvent.paciente, 'ci') }}
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-col>
+                                    <span> Nombre Completo:</span>
+                                    </v-col>
+                                    <v-col>
+                                        {{ selectedEvent.name }} 
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-col>
+                                    <span> Fecha:</span>
+                                    </v-col>
+                                    <v-col>
+                                        {{ valores(selectedEvent.paciente, 'fecha') }} 
+                                    </v-col>
+                                </v-row>
+
                             </v-card-text>
                             <v-card-actions>
                                 <v-btn text color="secondary" @click="selectedOpen = false">
@@ -132,10 +156,15 @@ export default {
         categories: [],
         fecha_min: '',
     }),
+    created() {
+        console.log("inicioao");
+
+    },
     mounted() {
 
         this.$refs.calendar.checkChange()
         console.log(this.$refs);
+
         //console.log();
     },
     methods: {
@@ -225,6 +254,44 @@ export default {
                 console.log("err->", err.response.data)
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
+            try {
+                var res = await axios({
+                    method: 'get',
+                    url: `/${process.env.MIX_CARPETA}/lista_agenda/` + date,
+                }).then(
+                    (response) => {
+                        let pacientes = response.data;
+                        for (const key in pacientes) {
+                            let paciente = pacientes[key];
+                            //console.log(paciente.fecha + 'T'+paciente.hora_inicio+'-04:00')//new Date(),);
+                            this.events.push({
+                                name: paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
+                                start: new Date(paciente.fecha + 'T' + paciente.hora_inicio + '-04:00'),
+                                end: new Date(paciente.fecha + 'T' + paciente.hora_final + '-04:00'),
+                                color: 'blue',
+                                timed: 1,
+                                category: this.categories[paciente.consultorio-1],
+                                paciente: structuredClone(paciente)
+                            })
+                            /*if (Object.hasOwnProperty.call(object, key)) {
+                                const element = object[key];
+                                
+                            }*/
+                        }
+
+                    }, (error) => {
+                        console.log(error);
+                    }
+                );
+            } catch (err) {
+                console.log("err->", err.response.data)
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            }
+        },
+        valores(objecto, x) {
+            if (typeof objecto == "undefined") return
+            console.log(objecto)
+            return objecto['' + x]
         },
         getEventColor(event) {
             return event.color
@@ -304,7 +371,7 @@ export default {
                 //nativeEvent.stopPropagation()
             } else {
                 const open = () => {
-                    this.selectedEvent = event
+                    this.selectedEvent = structuredClone(event)
                     this.selectedElement = nativeEvent.target
                     requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
                 }

@@ -45,6 +45,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 
 Route::middleware(['auth:sanctum', 'verified', 'permiso'])->get('/inicio', [CitaController::class, 'index'],)->name('inicio');
 
+
 Route::resource('/agendar', AgendaController::class)->middleware(['auth:sanctum', 'verified']);
 
 
@@ -106,6 +107,9 @@ Route::resource('/sala', SalaController::class)->middleware(['auth:sanctum', 've
 Route::resource('/horario', HorarioController::class);
 
 Route::resource('/lista_configuracion', CitaTieneConfiguracionController::class)->middleware(['auth:sanctum', 'verified']);;
+
+
+Route::resource('/lista_agenda', AgendaController::class)->middleware(['auth:sanctum', 'verified']);;
 
 
 Route::get('/agenda2', function () {

@@ -24,17 +24,17 @@ class CitaController extends Controller
 
         $date = date_create(date(""), timezone_open('America/La_Paz'));
         $date = date_format($date, 'Y-m-d');
-        if (Cache::has('citas' . $date)) {
+        /*if (Cache::has('citas' . $date)) {
             $cita_fecha =  Cache::get('citas' . $date);
-        } else {
-            $cita_fecha = DB::table('citas')
-                ->join('persona_citas', 'citas.ci', '=', 'persona_citas.ci')
+        } else {*/
+            $agenda = DB::table('agendas')
+                ->join('persona_citas', 'agendas.ci_paciente', '=', 'persona_citas.ci')
                 ->where('fecha', $date)
                 ->get();
-            Cache::put('citas' . $date, $cita_fecha);
-        }
+           // Cache::put('citas' . $date, $cita_fecha);
+        //}
         $config = DB::table('configuracions')->select('*')->get();
-        return inertia('Comenzar', ['fecha_server' => $date]);
+        return inertia('Comenzar', ['fecha_server' => $date, 'agenda' => $agenda]);
         //  dd($date);
         //dd($users);
         //return Inertia::render('Comenzar', ['fechas' => $cita_fecha, 'valor' => $valor, 'config' => $config]);
@@ -119,7 +119,7 @@ class CitaController extends Controller
     public static function show($date)
     {
         //
-        if (Cache::has('citas' . $date)) {
+        /*if (Cache::has('citas' . $date)) {
             $cita_fecha = Cache::get('citas' . $date);
         } else {
             $cita_fecha = DB::table('citas')
@@ -127,7 +127,9 @@ class CitaController extends Controller
                 ->where('fecha', $date)
                 ->get();
             Cache::put('citas' . $date, $cita_fecha);
-        }
+        }*/
+        
+
         return $cita_fecha;
     }
     public static function mostrar($date)

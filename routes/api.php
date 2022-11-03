@@ -134,3 +134,9 @@ Route::post('/horario_disponible', function (Request $request) {
 
     return HorarioController::horario_disponible($request);
 });
+
+
+Route::get('/buscar_persona_citas/{ci}', function (string $ci) {
+
+    return PersonaCitaController::buscar_persona_citas($ci);
+});

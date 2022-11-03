@@ -16,7 +16,7 @@
                         {{ op1 === 1 ? 'Paciente Nuevo' : 'Paciente' }}
                         <v-icon color="poobrown">{{ icon_ci }}</v-icon>
                     </v-tab>
-                    <v-tab v-if="paciente.register" key="1">
+                    <v-tab v-if="paciente.register" @click="buscar_citas" key="1">
                         Citas
                         <v-icon color="poobrown">{{ 'mdi-calendar-account' }}</v-icon>
                     </v-tab>
@@ -120,9 +120,9 @@
                                         'secondary': i.item.fecha < fechacitaMin
                                     }">
                                         <td>{{ i.item.fecha }}</td>
-                                        <td>{{ i.item.hora_inicio }}</td>
-                                        <td>{{ i.item.ci_doctor }}</td>
-                                        <td>{{ i.item.equipo }}</td>
+                                        <td>{{ i.item.consultorio }}</td>
+                                        <td>{{ i.item.ci_paciente }}</td>
+                                        <td>{{ i.tipo_cita }}</td>
                                         <td>{{ i.item.se_presento }}</td>
                                         <td>{{ i.item.observacion }}</td>
                                     </tr>
@@ -421,24 +421,12 @@ export default {
             value: 'fecha',
         },
         {
-            text: 'Hora de Cita',
-            value: 'hora_inicio'
+            text: 'Consultorio',
+            value: 'consultorio'
         },
         {
-            text: 'doctor',
-            value: 'ci_doctor',
-        },
-        {
-            text: 'Equipo',
-            value: 'equipo',
-        },
-        {
-            text: 'Se presento',
-            value: 'se_presento',
-        },
-        {
-            text: 'Observaciones',
-            value: 'observacion',
+            text: 'Paciente',
+            value: 'ci_paciente'
         },
             /*
                     { text: 'Fat (g)', value: 'fat' },
@@ -671,9 +659,28 @@ export default {
                     //this.paciente_edi t = structuredClone(this.paciente)
                     //this.paciente = res['data']['persona']
                 }
+                if (this.op1 == 2) {
 
+                }
             }
 
+        },
+        async buscar_citas() {
+            try {
+                var res = await axios({
+                    method: 'get',
+                    url: `/${process.env.MIX_CARPETA}/api/buscar_persona_citas/` + this.paciente.ci,
+                }).then(
+                    (response) => {
+                        console.log(response);
+                        this.las_citas = response.data;
+                    }, (error) => {
+                        console.log(error);
+                    }
+                )
+            } catch (error) {
+
+            }
         },
         async valorar() {
 
@@ -722,6 +729,7 @@ export default {
                     }).then(
                         (response) => {
                             console.log(response);
+                            this.v_agendar =  false;
                         }, (error) => {
                             console.log(error);
                         }
@@ -730,7 +738,7 @@ export default {
                     console.log("err->", err.response.data)
                     return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 }
-                
+
                 /*console.log(res['data']);
                 this.las_citas = res['data'];
                 this.v_agendar = false;*/

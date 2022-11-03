@@ -185,4 +185,13 @@ class PersonaCitaController extends Controller
             }
         }
     }
+    public static function buscar_persona_citas(String $ci)
+    {
+        $persona = DB::table('agendas')
+            ->select('*')
+            ->where('ci_paciente', '=', $ci)
+            ->get();
+        
+        return $persona;
+    }
 }
