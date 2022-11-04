@@ -5,6 +5,7 @@ use App\Http\Controllers\CitaController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\SalaController;
+use App\Http\Controllers\ProfesionController;
 use App\Http\Controllers\PdfViewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -139,4 +140,9 @@ Route::post('/horario_disponible', function (Request $request) {
 Route::get('/buscar_persona_citas/{ci}', function (string $ci) {
 
     return PersonaCitaController::buscar_persona_citas($ci);
+});
+
+Route::post('/listar_profesion', function (Request $request) {
+
+    return ProfesionController::listar_profesion($request);
 });

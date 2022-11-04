@@ -31,6 +31,16 @@ class CreatePersonaCitasTable extends Migration
             $table->text('nom_departamento', 50)->nullable();
             $table->boolean('register')->default(True);
         });
+        /*$datos = [
+            'ci' => '8340024',
+            'nombres' => 'F',
+            'ap_materno' => 'Condori',
+            'ap_paterno' => 'Quispe',
+            'ci' => '8340024',
+            'expedido' => 'La Paz',
+            
+        ];
+        DB::table('persona_citas')->insert($datos);*/
     }
 
     /**

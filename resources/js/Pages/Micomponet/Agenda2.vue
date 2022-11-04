@@ -110,7 +110,7 @@
                             </v-card-text>
                             <v-card-actions>
                                 <v-btn text color="secondary" @click="selectedOpen = false">
-                                    Cancel
+                                    Cancelar
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
@@ -122,6 +122,7 @@
         </v-row>
         <datos ref="dato">
         </datos>
+        <atencion ref="atender"></atencion>
     </v-app>
 </template>
 
@@ -129,11 +130,13 @@
 import moment from 'moment'
 import buscar from '@/Pages/Micomponet/Buscar'
 import datos from '@/Pages/Micomponet/Datospersonales'
+import atencion from '@/Pages/Micomponet/Atencion'
 
 export default {
     components: {
         buscar,
         datos,
+        atencion,
     },
     data: () => ({
         dialog: false,
@@ -160,6 +163,9 @@ export default {
         console.log("inicioao");
 
     },
+    updated(){
+       
+    },  
     mounted() {
 
         this.$refs.calendar.checkChange()
@@ -172,6 +178,7 @@ export default {
             if (nombre == 'category2') {
                 this.estado = 'atencion'
                 this.categories = ['Doctor 1', 'Doctor 2']
+                this.pedir_doctores(this.fecha_calendario)
                 //this.pedir_datos(this.fecha_calendario)
                 return;
             }
@@ -182,6 +189,7 @@ export default {
             } else {
                 this.estado = 'calendario'
                 this.type = nombre
+                
             }
         },
         async viewDay({ date }) {
@@ -191,6 +199,102 @@ export default {
             this.type = 'category'
             this.pedir_datos(date);
 
+        },
+        async pedir_doctores(date) {
+            try {
+                var res = await axios({
+                    method: 'get',
+                    url: `/${process.env.MIX_CARPETA}/lista_configuracion/` + date,
+                }).then(
+                    (response) => {
+                        console.log(response);
+                        let start = moment(`${this.fecha_calendario}T00:00:00`),
+                            intervalos = 1440 / 45;
+                        let list_intervalo = []
+                        for (let i = 0; i < intervalos; i++) {
+                            //console.log(start.format('hh:mm A'))
+                            list_intervalo.push(start.add(45, 'm').format('hh:mm A'))
+
+                        }
+                        this.categories = [];
+                        let events = [];
+                        this.events = [];
+                        let start2 = new Date(this.fecha_calendario + 'T01:01:00-04:00')
+                        let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
+                        let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
+                        this.fecha_min = fecha_server.format('YYYY-MM-DD')
+                        for (const key in response.data) {
+                            //console.log(start);
+                            //console.log(end);
+                            //console.log(response.data[key]['descripcion'])
+                            this.categories.push(response.data[key]['descripcion'])
+                           
+                                this.events.push({
+                                    name: 'Atencion',
+                                    start: start2,
+                                    end: end,
+                                    color: 'green',
+                                    timed: 0,
+                                    category: this.categories[key],
+                                    consultorio: response.data[key],
+                                })
+                        
+
+
+                            /*this.events.push({
+                                name: 'Cita',
+                                start: new Date(this.fecha_calendario + 'T08:01:00-04:00'),
+                                end: new Date(this.fecha_calendario + 'T09:01:00-04:00'),
+                                color: 'blue',
+                                timed: 1,
+                                category: this.categories[key],
+                            })*/
+                        }
+                        //console.log(this.type);
+
+                        //this.fetchEvents()
+                        //console.log(this.events)
+                    }, (error) => {
+                        console.log(error);
+                    }
+                );
+            } catch (err) {
+                console.log("err->", err.response.data)
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            }
+            /*try {
+                var res = await axios({
+                    method: 'get',
+                    url: `/${process.env.MIX_CARPETA}/lista_agenda/` + date,
+                }).then(
+                    (response) => {
+                        let pacientes = response.data;
+                        for (const key in pacientes) {
+                            let paciente = pacientes[key];
+                            //console.log(paciente.fecha + 'T'+paciente.hora_inicio+'-04:00')//new Date(),);
+                            this.events.push({
+                                name: paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
+                                start: new Date(paciente.fecha + 'T' + paciente.hora_inicio + '-04:00'),
+                                end: new Date(paciente.fecha + 'T' + paciente.hora_final + '-04:00'),
+                                color: 'blue',
+                                timed: 1,
+                                category: this.categories[paciente.consultorio-1],
+                                paciente: structuredClone(paciente)
+                            })
+                            /*if (Object.hasOwnProperty.call(object, key)) {
+                                const element = object[key];
+                                
+                            }*//*
+                        }
+
+                    }, (error) => {
+                        console.log(error);
+                    }
+                );
+            } catch (err) {
+                console.log("err->", err.response.data)
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            }*/
         },
         async pedir_datos(date) {
             try {
@@ -288,6 +392,7 @@ export default {
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
         },
+
         valores(objecto, x) {
             if (typeof objecto == "undefined") return
             console.log(objecto)
@@ -300,9 +405,22 @@ export default {
             var f = new Date();
             this.fecha_calendario = ''
             this.fecha_calendario = f.toISOString().substr(0, 10);
-            this.pedir_datos(this.fecha_calendario);
+            if(this.estado == 'atencion'){
+                this.pedir_doctores(this.fecha_calendario);
+                return
+            }
+            this.pedir_datos(this.fecha_calendario)
+            
         },
         prev() {
+            console.log(this.type);
+            if (this.estado == 'atencion') {
+                var valor = -1;
+                var contador = this.contarvalidos(valor);
+                this.$refs.calendar.prev(contador);
+                this.pedir_doctores(this.fecha_calendario)
+                return;
+            }
             if (this.type == 'category' || this.type == 'day') {
                 var valor = -1;
                 var contador = this.contarvalidos(valor);
@@ -314,8 +432,15 @@ export default {
             }
 
         },
-        next() {
+        next(){
 
+            if (this.estado == 'atencion') {
+                var valor = +1;
+                var contador = this.contarvalidos(valor);
+                this.$refs.calendar.next(contador);
+                this.pedir_doctores(this.fecha_calendario)
+                return
+            }
             if (this.type == 'category' || this.type == 'day') {
                 var valor = +1;
                 var contador = this.contarvalidos(valor);
@@ -356,6 +481,21 @@ export default {
         showEvent({ nativeEvent, event }) {
 
             console.log(event);
+            if (event.name == 'Atencion') {
+                //this.dialog = true
+                //this.selectedEvent = event
+
+                console.log('datos');
+                console.log(event.consultorio)
+
+                //this.$refs.atender.op1 = 1;
+                //this.$refs.a.fecha_cita = this.fecha_calendario
+                //this.$refs.dato.consultorio = event.consultorio.sala
+                this.$refs.atender.open()
+                return;
+                //this.selectedElement = nativeEvent.target
+                //nativeEvent.stopPropagation()
+            } 
             if (event.name == 'Agendar') {
                 //this.dialog = true
                 //this.selectedEvent = event

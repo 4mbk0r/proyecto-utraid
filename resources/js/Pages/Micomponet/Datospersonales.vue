@@ -609,6 +609,7 @@ export default {
             this.cita_nueva = {}
             this.paciente = {}
             this.datos_informacion = ""
+            
         },
         async cambiar_datos() {
             if (this.$refs.formDatopersonales.validate()) {
@@ -674,6 +675,7 @@ export default {
                     (response) => {
                         console.log(response);
                         this.las_citas = response.data;
+
                     }, (error) => {
                         console.log(error);
                     }
@@ -730,6 +732,7 @@ export default {
                         (response) => {
                             console.log(response);
                             this.v_agendar =  false;
+                            this.buscar_citas()
                         }, (error) => {
                             console.log(error);
                         }
