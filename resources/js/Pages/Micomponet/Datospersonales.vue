@@ -701,6 +701,7 @@ export default {
                     }
                 }).then(
                     (response) => {
+                        console.log('......')
                         console.log(response);
                         this.consultorios = response.data
                         this.buscar_horario()

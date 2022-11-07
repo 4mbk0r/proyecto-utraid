@@ -14,7 +14,7 @@ require('dotenv').config();
 
 
 mix.setResourceRoot('/main/public')
-mix.js('resources/js/app.js', 'public/js').vue()
+mix.js('resources/js/app.js', 'public/js').vue().sourceMaps()
     .postCss('resources/css/app.css', 'public/css', [
         require('postcss-import'),
         require('tailwindcss'),
@@ -23,7 +23,6 @@ mix.js('resources/js/app.js', 'public/js').vue()
     ])
     .webpackConfig(
         require('./webpack.config'));
-
 if (mix.inProduction()) {
     mix.version();
 }

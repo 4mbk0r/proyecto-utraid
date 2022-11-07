@@ -78,13 +78,13 @@ class AgendaController extends Controller
             $cita_fecha =  Cache::get('citas' . $date);
         } else {*/
 
-        
-            $agenda = DB::table('agendas')
-                ->leftJoin('persona_citas', 'agendas.ci_paciente', '=', 'persona_citas.ci')
-                ->leftJoin('horarios', 'agendas.horario', '=', 'horarios.id_horario')
-                ->where('fecha', $date)
-                ->get();
-           // Cache::put('citas' . $date, $cita_fecha);
+
+        $agenda = DB::table('agendas')
+            ->leftJoin('persona_citas', 'agendas.ci_paciente', '=', 'persona_citas.ci')
+            ->leftJoin('horarios', 'agendas.horario', '=', 'horarios.id_horario')
+            ->where('fecha', $date)
+            ->get();
+        // Cache::put('citas' . $date, $cita_fecha);
         //}
         return $agenda;
     }
@@ -149,9 +149,27 @@ class AgendaController extends Controller
         if (sizeof($configuracion) == 1) {
             $conf = $configuracion[0];
             try {
+
+                /*
+                    select horarios.sala, salas.descripcion from salas
+JOIN horarios on horarios.sala = salas.sala 
+LEFT join agendas on agendas.horario = horarios.id_horario and agendas.fecha = '2022-11-30'
+--RIGHT join salas on horarios.sala = salas.sala 
+where agendas.horario is NULL  --and agendas.consultorio =  horarios.sala
+group by horarios.sala, salas.descripcion
+                */
                 $salas = DB::table('salas')
-                    ->select('*')
-                    ->where('id', '=', $conf->id)
+                    //->select('salas.sala, salas.descripcion')
+                    ->join('horarios', "horarios.sala",'=', "salas.sala")
+                    ->leftJoin("agendas", function ($join) use ($agenda) {
+                        $v = $agenda['fecha'];
+                        $join->on("agendas.horario", "=", "horarios.id_horario");
+                        $join->where('agendas.fecha','=',$v);
+                      })
+                    ->whereNull('agendas.horario')
+                    
+                    ->groupBy('salas.sala', 'salas.descripcion')
+                    ->select('salas.sala', 'salas.descripcion')
                     ->get();
             } catch (\Throwable $th) {
                 return $th;
