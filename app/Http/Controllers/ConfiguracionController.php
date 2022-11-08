@@ -19,25 +19,40 @@ class ConfiguracionController extends Controller
     public function index()
     {
         //
+        /*
+        
+select configuracions.id, count(configuracions.id) fechas_uso, 
+configuracions.fecha_inicio, configuracions.fecha_final, configuracions.tipo,
+configuracions.principal, configuracions.feriado
+from configuracions
+left join cita_tiene_configuracions on configuracions.id = cita_tiene_configuracions.id  
+where configuracions.fecha_final >= '2022-11-15' or configuracions.feriado = 'true'
+group by configuracions.id
+
+        */
+
         date_default_timezone_set("America/La_Paz");
         $date = date_create();
 
         $list_config = DB::table('configuracions')
             ->select(
+                'configuracions.id',
+                DB::raw('count(configuracions.id) as fecha_uso'),
                 'configuracions.descripcion',
                 'configuracions.atencion',
                 'configuracions.principal',
                 'configuracions.tipo',
                 'configuracions.historial',
-                'configuracions.id',
                 'configuracions.fecha_final',
-                DB::raw('configuracions.tipo, COALESCE(cita_tiene_configuracions.fecha,configuracions.fecha_inicio) as fecha_inicio')
+                'configuracions.fecha_inicio',
+                //DB::raw('configuracions.tipo, COALESCE(cita_tiene_configuracions.fecha,configuracions.fecha_inicio) as fecha_inicio')
             )
             ->leftJoin('cita_tiene_configuracions',  function ($join) use ($date) {
                 $join->on('configuracions.id', '=', 'cita_tiene_configuracions.id');
                 //date_format($date, "Y-m-d"));
             })
             ->where('configuracions.fecha_final', '>=', date_format($date, "Y-m-d"))
+            ->groupBy('configuracions.id')
             ->get();
         $fechas_no_validas = DB::table('configuracions')
             ->select(
@@ -167,7 +182,9 @@ class ConfiguracionController extends Controller
         $date = '';
         try {
             $dato = DB::table('salas') //->where('id', $configuracion)
-                ->select('*')->get();
+                ->select('*')
+                ->where('id', '=', $configuracion)
+                ->get();
 
           
         } catch (\Throwable $th) {

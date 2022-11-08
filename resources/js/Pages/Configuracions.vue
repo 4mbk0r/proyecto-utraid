@@ -248,9 +248,10 @@
                     Indefinido
                 </span>
                 <span v-else>
-                    <span v-if="item.tipo != 'temporal'">
+                    {{ item.fecha_final }}
+                    <!--<span v-if="item.tipo != 'temporal'">
                         {{ item.fecha_final }}
-                    </span>
+                    </span>-->
 
                 </span>
 
@@ -328,7 +329,18 @@ export default {
                 value: 'fecha_inicio',
 
             },
+            
             { text: 'Fecha final', value: 'fecha_final' },
+            {
+                text: 'Dias en  uso',
+                value: 'fecha_uso',
+
+            },
+            {
+                text: 'Tipo',
+                value: 'tipo',
+
+            },
             { text: 'Descripcion', value: 'descripcion' },
             { text: 'Principal', value: 'principal' },
             { text: '', value: 'actions', sortable: false },

@@ -122,8 +122,8 @@
                                         <td>{{ i.item.fecha }}</td>
                                         <td>{{ i.item.consultorio }}</td>
                                         <td>{{ i.item.ci_paciente }}</td>
-                                        <td>{{ i.tipo_cita }}</td>
-                                        <td>{{ i.item.se_presento }}</td>
+                                        <td>{{ i.item.horario }}</td>
+                                        <td>{{ i.item.tipo_cita }}</td>
                                         <td>{{ i.item.observacion }}</td>
                                     </tr>
                                 </template>
@@ -138,7 +138,7 @@
         </v-dialog>
         <v-dialog v-model="v_agendar" max-width="600">
             <v-toolbar dark color="#1CA698">
-                <v-btn icon dark @click="v_agendar = false">
+                <v-btn icon dark @click="close_v_agendar()">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
                 <v-toolbar-title>Agendar Cita</v-toolbar-title>
@@ -605,10 +605,22 @@ export default {
 
         },
         close() {
+            console.log(this.cita_nueva.fecha);
+            console.log("----");
+            if(typeof this.cita_nueva.fecha != 'undefined'){
+                console.log("----");
+                
+                this.$emit('actulizar', this.cita_nueva.fecha)
+            }
             this.dialog = false
             this.cita_nueva = {}
             this.paciente = {}
             this.datos_informacion = ""
+            
+            
+        },
+        close_v_agendar() {
+            this.v_agendar=false
             
         },
         async cambiar_datos() {

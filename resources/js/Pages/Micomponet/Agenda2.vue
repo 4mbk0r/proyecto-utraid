@@ -122,7 +122,7 @@
         </v-row>
         <datos ref="dato">
         </datos>
-        <atencion ref="atender"></atencion>
+        <atencion @actulizar="actulizar($event)" ref="atender"></atencion>
     </v-app>
 </template>
 
@@ -174,6 +174,11 @@ export default {
         //console.log();
     },
     methods: {
+        actulizar(fecha){
+            console.log('.+.+.+.+'+fecha)
+
+            this.pedir_datos(fecha)
+        },  
         changeType(nombre) {
             if (nombre == 'category2') {
                 this.estado = 'atencion'
@@ -322,7 +327,7 @@ export default {
                         for (const key in response.data) {
                             //console.log(start);
                             //console.log(end);
-                            //console.log(response.data[key]['descripcion'])
+                            console.log(response.data[key])
                             this.categories.push(response.data[key]['descripcion'])
                             if (this.fecha_calendario > this.fecha_min) {
                                 this.events.push({
