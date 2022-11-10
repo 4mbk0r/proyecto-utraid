@@ -1,6 +1,5 @@
 <template>
-    <v-card>
-        <v-dialog v-model="dialog" fullscreen hide-overlay class="fill-height" color="blue"
+        <v-dialog v-model="dialog" ref="ventana" fullscreen hide-overlay class="fill-height" color="blue"
             transition="dialog-bottom-transition">
             <v-toolbar :color="op1 === 1 ? 'green' : 'blue'">
                 <v-btn icon @click="close">
@@ -135,8 +134,7 @@
                     </v-tab-item>
                 </v-tabs-items>
             </v-card>
-        </v-dialog>
-        <v-dialog v-model="v_agendar" max-width="600">
+            <v-dialog v-model="v_agendar" max-width="600">
             <v-toolbar dark color="#1CA698">
                 <v-btn icon dark @click="close_v_agendar()">
                     <v-icon>mdi-close</v-icon>
@@ -269,7 +267,9 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-    </v-card>
+        </v-dialog>
+       
+
 </template>
 
 <script>
@@ -459,7 +459,7 @@ export default {
         this.fechacitaMin = moment(this.$store.getters.getfecha_server).add(1, 'd').format('YYYY-MM-DD');
         this.fechacitaMax = moment(this.$store.getters.getfecha_server).add(1, 'Y').format('YYYY-MM-DD');
     },
-
+    
     methods: {
 
         /*  inicialiazar fecha minima*/
@@ -604,13 +604,12 @@ export default {
         buscadoractivate() {
 
         },
-        close() {
+        close(event) {
             console.log(this.cita_nueva.fecha);
             console.log("----");
             if(typeof this.cita_nueva.fecha != 'undefined'){
-                console.log("----");
-                
-                this.$emit('actulizar', this.cita_nueva.fecha)
+                this.$emit('pedir', this.cita_nueva.fecha)
+                //console.log('aaaa',this.$emit('actulizar', 'dato'))
             }
             this.dialog = false
             this.cita_nueva = {}

@@ -120,9 +120,11 @@
             </v-col>
 
         </v-row>
-        <datos ref="dato">
+        <datos @pedir='actualizador'  ref="dato">
         </datos>
-        <atencion @actulizar="actulizar($event)" ref="atender"></atencion>
+        <atencion ref="atender"></atencion>
+        
+        
     </v-app>
 </template>
 
@@ -131,6 +133,7 @@ import moment from 'moment'
 import buscar from '@/Pages/Micomponet/Buscar'
 import datos from '@/Pages/Micomponet/Datospersonales'
 import atencion from '@/Pages/Micomponet/Atencion'
+
 
 export default {
     components: {
@@ -160,7 +163,7 @@ export default {
         fecha_min: '',
     }),
     created() {
-        console.log("inicioao");
+        
 
     },
     updated(){
@@ -169,14 +172,17 @@ export default {
     mounted() {
 
         this.$refs.calendar.checkChange()
-        console.log(this.$refs);
+        console.log(this.$root.$refs);
 
         //console.log();
     },
-    methods: {
-        actulizar(fecha){
-            console.log('.+.+.+.+'+fecha)
-
+    computed: {
+          
+  },
+    methods:{
+        actualizador(fecha){
+            console.log('.+.+.+.+')
+            this.fecha_calendario = fecha
             this.pedir_datos(fecha)
         },  
         changeType(nombre) {
@@ -327,6 +333,7 @@ export default {
                         for (const key in response.data) {
                             //console.log(start);
                             //console.log(end);
+                            console.log('----')
                             console.log(response.data[key])
                             this.categories.push(response.data[key]['descripcion'])
                             if (this.fecha_calendario > this.fecha_min) {

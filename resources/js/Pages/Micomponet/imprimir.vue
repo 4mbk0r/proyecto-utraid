@@ -4,37 +4,34 @@
             <v-container class="green lighten-5" align="center" justify="center" id="section-to-print">
                 <v-row class="pa-0 ma-0">
                     <v-col class="pa-0 ma-0" outlined tile align="center" cols="2" justify="center">
-                        <v-card>
-                            <v-img height="100" width="100" contain src="assets/logo-sedes-lapaz.png"></v-img>
-                        </v-card>
-
+                            <v-img height="80" width="100" contain src="assets/logo-sedes-lapaz.png"></v-img>
                     </v-col>
                     <v-col class="pa-0 ma-0" align="center" justify="center" cols="8"
                         style="font-size: 10px !important;">
                         <v-card>
                             <p class="subtitle-2 pa-0 ma-0">Gobierno Autónomo Departamental de La Paz</p>
-                            <p class="subtitle-2 pa-0 ma-0">SERVICIO DEPARTAMENTAL DE SALUD
+                            <p class="subtitle-3 pa-0 ma-0">SERVICIO DEPARTAMENTAL DE SALUD
                                 UNIDAD DE TRATAMIENTO, REHABILITACION, INVESTIGACION SOCIAL EN DROGODEPENDENCIAS Y
                                 DISCAPACIDAD</p>
-                            <p class="subtitle-2 pa-0 ma-0">UTRAID - LA PAZ</p>
+                            <p class="subtitle-3 pa-0 ma-0">UTRAID - LA PAZ</p>
                         </v-card>
 
                     </v-col>
                     <v-col class="pa-0 ma-0" align="center" cols="2" justify="center">
-                        <v-card>
-                            <v-img height="100" width="100" contain src="assets/GOBIERNO.png"></v-img>
-                        </v-card>
+                        
+                            <v-img height="80" width="100" contain src="assets/GOBIERNO.png"></v-img>
+                        
                     </v-col>
 
                 </v-row>
                 <v-row class="pa-0 ma-0">
 
-                    <v-col class="pa-1 ma-1" align="center" justify="center" style="font-size: 10px !important;">
+                    <v-col class="pa-0 ma-0" align="center" justify="center" style="font-size: 10px !important;">
                         <p class="pa-0 ma-0">PROGRAMACION PARA EVALUACION DE DISCAPACIDAD</p>
                     </v-col>
                 </v-row>
-                <v-row>
-                    <v-col class="pa-0 ma-0" outlined tile align="center" justify="center">
+                <v-row class="pa-1 ma-0">
+                    <v-col class="pa-0 ma-0" outlined align="center" justify="center">
                         <v-card class="subtitle-1">
                             Nombre Completo: {{ cita.nombres }} {{cita.ap_paterno}} {{cita.ap_materno}}
 
@@ -42,24 +39,24 @@
                     </v-col>
 
                 </v-row>
-                <v-row>
-                    <v-col cols="8" outlined tile class="subtitle-1" align="center" justify="center">
+                <v-row class="pa-1 ma-0">
+                    <v-col  class="pa-0 ma-0" cols="8" outlined tile align="center" justify="center">
                         <v-card>
                             Fecha de evaluacion: {{ cita.fecha }}
 
                         </v-card>
                     </v-col>
-                    <v-col cols="4" outlined class="subtitle-1" tile align="center" justify="center">
+                    <v-col  class="pa-0 ma-0" cols="4" outlined  tile align="center" justify="center">
                         <v-card>
-                            hora: {{ cita.hora_inicio }}
+                            Hora: {{ cita.hora_inicio }}
 
                         </v-card>
                     </v-col>
 
                 </v-row>
-                <v-row class="pa-0 ma-0">
+                <v-row class="pa-1 ma-0">
 
-                    <v-col class="pa-2" outlined tile align="center" justify="center">
+                    <v-col class="pa-0 ma-0" cols="12" outlined tile align="center" justify="center">
                         <v-card>
                             Lugar: {{ cita.lugar }}
 
@@ -69,7 +66,7 @@
                 <v-row class="pa-0 ma-0">
                     <v-col class="pa-0 ma-0" align="center" justify="center">
 
-                        <v-textarea class="pa-0 ma-0" label="Descripcion" auto-grow outlined rows="1">
+                        <v-textarea class="pa-0 ma-0" label="Observaciones" auto-grow outlined rows="1">
                         </v-textarea>
                     </v-col>
                 </v-row>
@@ -77,12 +74,16 @@
                     <v-col class="pa-0 ma-0" outlined tile justify="center" style="font-size: 18px !important;">
                         <v-card class="pa-0 ma-0">
                             <p class="pa-0 ma-0" style="font-size: 14px !important;">
-                                LA FALTA DE DOCUMENTACION Y EL RETRASO DE 10 MINUTOS DARA LUGAR A REPROGRAMAR<br>
-                                PRESENTARSE 10 MINUTOS ANTES DE LA HORA DE PROGRAMACION<br>
-                                DE NO ASISTIR INFORMAR CON 48 HORAS DE ANTICIPACION TELEFONO 2412391 UTRAID<br>
-                                TRAER: 2 FOTOCOPIAS C.I., 1 COPIA CARNET DISCAPACIDAD, INFORME MEDICO ORIGINAL, CROQUIS
-                                DOMICILIO<br>
-                                PRESENTAR SU DOCUMENTACION EN FOLDER AMARILLO TAMAÑO OFICIO CON FASTENER<br>
+                                <v-icon>mdi-numeric-1-circle</v-icon>LA FALTA DE DOCUMENTACION Y EL RETRASO DE <v-icon color="red">mdi-numeric-10-circle-outline</v-icon> MINUTOS DARA LUGAR A REPROGRAMAR<br>
+                                <v-icon>mdi-numeric-2-circle</v-icon>PRESENTARSE 10 MINUTOS ANTES DE LA HORA DE PROGRAMACION<br>
+                                <v-icon>mdi-numeric-3-circle</v-icon>DE NO ASISTIR INFORMAR CON 48 HORAS DE ANTICIPACION TELEFONO 2412391 UTRAID<v-icon>mdi-phone-incoming-outline</v-icon><br>
+                                
+                                
+                                <v-card class="pa-0 ma-0 .d-inline-flex .flex-column">
+                                <v-icon>mdi-numeric-4-circle</v-icon><span class=".d-flex flex-grow-1">2 FOTOCOPIAS C.I. <v-icon>mdi-card-account-details-outline</v-icon>, 1 COPIA CARNET DISCAPACIDAD <v-icon>mdi-card-account-details-star</v-icon>, INFORME MEDICO ORIGINAL  <v-icon>mdi-text-box-check-outline</v-icon>, CROQUIS
+                                DOMICILIO <v-icon>mdi-home-map-marker</v-icon></span>
+                            </v-card>
+                                <v-icon>mdi-numeric-5-circle</v-icon>PRESENTAR SU DOCUMENTACION EN FOLDER AMARILLO TAMAÑO OFICIO CON FASTENER <v-icon color="yellow darken-1">mdi-folder</v-icon><br>
                             </p>
 
                         </v-card>
@@ -105,9 +106,6 @@
 </template>
     
 <script>
-import AppLayout from '@/Layouts/AppLayout'
-import Welcome from '@/Jetstream/Welcome'
-import Barrasu from '@/Pages/Micomponet/Barrasu'
 
 export default {
     data() {
@@ -122,17 +120,21 @@ export default {
                 icon: 'mdi-forum'
             },
             ],
-            cita: {},
+            cita: {
+                nombres: '',
+                ap_paterno: '',
+                ap_materno: '',
+                facha: '',
+                hora_inicio: '',
+                lugar: '',
+            },
         }
     },
     created() {
-        this.cita = JSON.parse(localStorage.getItem('cita'))
-        console.log(typeof this.cita)
+        //this.cita = //JSON.parse(localStorage.getItem('cita'))
+        console.log(this.cita)
     },
     components: {
-        AppLayout,
-        Welcome,
-        Barrasu,
     },
     methods:
     {
