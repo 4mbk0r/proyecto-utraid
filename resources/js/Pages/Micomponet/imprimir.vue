@@ -131,7 +131,8 @@ export default {
         }
     },
     created() {
-        //this.cita = //JSON.parse(localStorage.getItem('cita'))
+        this.cita = JSON.parse(localStorage.getItem('cita'))
+        
         console.log(this.cita)
     },
     components: {
