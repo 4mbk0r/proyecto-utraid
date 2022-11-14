@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\agenda;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AgendaController extends Controller
 {
@@ -40,7 +42,7 @@ class AgendaController extends Controller
     {
         //
         $cita = $request['cita'];
-
+        unset($cita['hora_inicio']);
         try {
             $query = DB::table('cita_tiene_configuracions')->where('fecha', '=', $cita['fecha'])->get();
             if (sizeof($query) == 0) {
@@ -56,7 +58,7 @@ class AgendaController extends Controller
             }
             DB::table('agendas')->insert($cita);
         } catch (\Throwable $th) {
-            return $th;
+            return response()->json(['error' => 'You need to add a card first'], 409);
         }
 
         return $request['cita'];

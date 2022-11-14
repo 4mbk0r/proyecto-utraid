@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\citas;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
@@ -249,11 +250,12 @@ class CitaController extends Controller
         $cita = request('cita');
         $date = $cita['fecha'];
         //return $cita;
+        unset($cita['hora_inicio']);
         try {
             $resp = DB::table('citas')
                 ->insert($cita);
         } catch (\Throwable $th) {
-            return $th;
+            return  Response::json(['hello' => $th],500);
         }
         if (Cache::has('citas' . $date)) {
             Cache::forget('citas' . $date);

@@ -237,11 +237,14 @@ export default {
             });
             axios.interceptors.response.use(response => {
                 // Every Axios response should decrease our counter
-                this.pendingRequests--;
-                if (this.pendingRequests == 0) {
-                    this.v_carga = false;
-                }
+                this.v_carga = false;
                 return response;
+            }, (error)=>{
+                // Any status codes that falls outside the range of 2xx cause this function to trigger
+                // Do something with response error
+                this.v_carga = false;
+                return Promise.reject(error);
+                
             });
         },
         toggleTheme() {

@@ -1,13 +1,6 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    ref="ventana"
-    fullscreen
-    hide-overlay
-    class="fill-height"
-    color="blue"
-    transition="dialog-bottom-transition"
-  >
+  <v-dialog v-model="dialog" ref="ventana" fullscreen hide-overlay class="fill-height" color="blue"
+    transition="dialog-bottom-transition">
     <v-toolbar :color="op1 === 1 ? 'green' : 'blue'">
       <v-btn icon @click="close">
         <v-icon>mdi-close</v-icon>
@@ -17,12 +10,7 @@
     </v-toolbar>
 
     <v-card>
-      <v-tabs
-        :color="op1 === 1 ? 'green' : 'blue'"
-        v-model="datos_informacion"
-        icons-and-text
-        centered
-      >
+      <v-tabs :color="op1 === 1 ? 'green' : 'blue'" v-model="datos_informacion" icons-and-text centered>
         <v-tab :color="op1 === 1 ? 'errror' : 'blue'" key="0">
           {{ op1 === 1 ? "Paciente Nuevo" : "Paciente" }}
           <v-icon color="poobrown">{{ icon_ci }}</v-icon>
@@ -40,69 +28,39 @@
               <v-container>
                 <v-row no-gutters>
                   <v-col cols="12" sm="8" class="pr-4">
-                    <v-text-field
-                      v-model="paciente.ci"
-                      :rules="nombreRules"
-                      :color="op1 === 1 ? 'green' : 'blue'"
-                      label="Cedula de Identidad"
-                      @change="buscadorporci()"
-                      required
-                    >
+                    <v-text-field v-model="paciente.ci" :rules="nombreRules" :color="op1 === 1 ? 'green' : 'blue'"
+                      label="Cedula de Identidad" @change="buscadorporci()" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4">
-                    <v-select
-                      v-model="paciente.expedido"
-                      :rules="nombreRules"
-                      persistent-placeholder
-                      placeholder="No se tiene datos"
-                      :items="departamentos"
-                      label="Expedido"
-                    >
+                    <v-select v-model="paciente.expedido" :rules="nombreRules" persistent-placeholder
+                      placeholder="No se tiene datos" :items="departamentos" label="Expedido">
                     </v-select>
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field
-                      v-model="paciente.nombres"
-                      :rules="nombreRules"
-                      label="Nombre"
-                      @input="
-                        (v) => {
-                          paciente.nombres = v.toUpperCase();
-                        }
-                      "
-                      required
-                    >
+                    <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombre" @input="
+                      (v) => {
+                        paciente.nombres = v.toUpperCase();
+                      }
+                    " required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field
-                      v-model="paciente.ap_paterno"
-                      :rules="nombreRules"
-                      @input="
-                        (v) => {
-                          paciente.ap_paterno = v.toUpperCase();
-                        }
-                      "
-                      label="Apellido Paterno"
-                      required
-                    >
+                    <v-text-field v-model="paciente.ap_paterno" :rules="nombreRules" @input="
+                      (v) => {
+                        paciente.ap_paterno = v.toUpperCase();
+                      }
+                    " label="Apellido Paterno" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field
-                      v-model="paciente.ap_materno"
-                      :rules="nombreRules"
-                      @input="
-                        (v) => {
-                          paciente.ap_materno = v.toUpperCase();
-                        }
-                      "
-                      label="Apellido Materno"
-                      required
-                    >
+                    <v-text-field v-model="paciente.ap_materno" :rules="nombreRules" @input="
+                      (v) => {
+                        paciente.ap_materno = v.toUpperCase();
+                      }
+                    " label="Apellido Materno" required>
                     </v-text-field>
                   </v-col>
                 </v-row>
@@ -112,42 +70,23 @@
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field
-                      v-model="paciente.celular"
-                      label="Numero Celular"
-                    >
+                    <v-text-field v-model="paciente.celular" label="Numero Celular">
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field
-                      v-model="paciente.direccion"
-                      label="Direccion"
-                    >
+                    <v-text-field v-model="paciente.direccion" label="Direccion">
                     </v-text-field>
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
                   <v-col cols="12" sm="6">
-                    <v-text-field
-                      v-model="paciente.fecha_nacimiento"
-                      :min="minFechaNac"
-                      :max="maxFechaNac"
-                      type="date"
-                      label="Fecha de nacimiento"
-                    >
+                    <v-text-field v-model="paciente.fecha_nacimiento" :min="minFechaNac" :max="maxFechaNac" type="date"
+                      label="Fecha de nacimiento">
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6">
-                    <v-select
-                      v-model="paciente.sexo"
-                      persistent-placeholder
-                      placeholder="No se tiene datos"
-                      :items="ssexo"
-                      color="purple darken-3"
-                      label="Sexo"
-                      pa-0
-                      solo
-                    >
+                    <v-select v-model="paciente.sexo" persistent-placeholder placeholder="No se tiene datos"
+                      :items="ssexo" color="purple darken-3" label="Sexo" pa-0 solo>
                     </v-select>
                   </v-col>
                 </v-row>
@@ -168,22 +107,14 @@
             <v-btn color="primary" class="mb-2" @click="openAgendar()">
               Agendar Nueva cita
             </v-btn>
-            <v-data-table
-              :headers="encabezado"
-              :items="las_citas"
-              :sort-by.sync="sortBy"
-              :sort-desc.sync="sortDesc"
-              hide-default-footer
-              disable-pagination
-            >
+            <v-data-table :headers="encabezado" :items="las_citas" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc"
+              hide-default-footer disable-pagination>
               <template v-slot:item="i">
                 <!-- Since v-slot:item overrides how each row is rendered, I rebuild the row starting from <tr>. This allows me to add a class to <tr> based on any condition I want (in this case, the calorie count) -->
-                <tr
-                  :color="{
-                    primary: i.item.fecha > fechacitaMin,
-                    secondary: i.item.fecha < fechacitaMin,
-                  }"
-                >
+                <tr :color="{
+                  primary: i.item.fecha > fechacitaMin,
+                  secondary: i.item.fecha < fechacitaMin,
+                }">
                   <td>{{ i.item.fecha }}</td>
                   <td>{{ i.item.consultorio }}</td>
                   <td>{{ i.item.ci_paciente }}</td>
@@ -212,122 +143,60 @@
             <v-container>
               <v-row no-gutters>
                 <v-col cols="12" sm="4" md="4">
-                  <v-menu
-                    v-model="menu2"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
+                  <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <!--<v-text-field v-model="date" label="Picker without buttons"
                                                         prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
                                                     </v-text-field>-->
-                      <v-text-field
-                        v-model="cita_nueva.fecha"
-                        :rules="nombreRules"
-                        placeholder="Selecione fecha de cita"
-                        required
-                        prepend-icon="mdi-calendar"
-                        readonly
-                        v-bind="attrs"
-                        v-on="on"
-                      >
+                      <v-text-field v-model="cita_nueva.fecha" :rules="nombreRules"
+                        placeholder="Selecione fecha de cita" required prepend-icon="mdi-calendar" readonly
+                        v-bind="attrs" v-on="on">
                       </v-text-field>
                     </template>
-                    <v-date-picker
-                      v-model="cita_nueva.fecha"
-                      :allowed-dates="allowedDates"
-                      @input="menu2 = false"
-                      @change="buscar_consultorios"
-                      :min="fechacitaMin"
-                      :max="fechacitaMax"
-                      locale="es-ES"
-                    >
+                    <v-date-picker v-model="cita_nueva.fecha" :allowed-dates="allowedDates" @input="menu2 = false"
+                      @change="buscar_consultorios" :min="fechacitaMin" :max="fechacitaMax" locale="es-ES">
                     </v-date-picker>
                   </v-menu>
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
-                  <v-select
-                    v-model="cita_nueva.consultorio"
-                    item-text="descripcion"
-                    item-value="sala"
-                    :items="consultorios"
-                    :rules="nombreRules"
-                    persistent-placeholder
-                    placeholder="Selecione el Consultorio"
-                    color="purple darken-3"
-                    @change="buscar_horario"
-                    label="Consultorio"
-                    required
-                  >
+                  <v-select v-model="cita_nueva.consultorio" item-text="descripcion" item-value="sala"
+                    :items="consultorios" :rules="[validar_seleccion]" persistent-placeholder
+                    placeholder="Selecione el Consultorio" color="purple darken-3" @change="buscar_horario"
+                    label="Consultorio" required>
                   </v-select>
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
-                  <v-select
-                    v-model="cita_nueva.horario"
-                    :item-text="(item) => ver_horario(item)"
-                
-                    :items="horario"
-                    :rules="nombreRules"
-                    persistent-placeholder
-                    placeholder="Selecione hora de cita"
-                    color="purple darken-3"
-                    label="Hora de inicio"
-                    required
-                  >
+                  <v-select v-model="cita_nueva.horario" :item-text="(item) => ver_horario(item)"
+                    item-value="id_horario" :items="horario" :rules="[nombreRules]" persistent-placeholder
+                    placeholder="Selecione hora de cita" color="purple darken-3" label="Hora de inicio" required>
                   </v-select>
                 </v-col>
               </v-row>
               <v-row no-gutters>
                 <v-col cols="12" sm="4" md="6">
-                  <v-select
-                    v-model="cita_nueva.tipo_cita"
-                    :items="tipo_cita"
-                    color="purple darken-3"
-                    persistent-placeholder
-                    :rules="nombreRules"
-                    placeholder="Selecione tipo de cita"
-                    label="Tipo de cita"
-                  >
+                  <v-select v-model="cita_nueva.tipo_cita" :items="tipo_cita" color="purple darken-3"
+                    persistent-placeholder :rules="nombreRules" placeholder="Selecione tipo de cita"
+                    label="Tipo de cita">
                   </v-select>
                 </v-col>
                 <v-col cols="12" sm="4" md="6">
-                  <v-select
-                    v-model="cita_nueva.lugar"
-                    :items="lugares"
-                    color="purple darken-3"
-                    :rules="nombreRules"
-                    persistent-placeholder
-                    placeholder="Selecione lugar de cita"
-                    label="Lugar"
-                    required
-                  >
+                  <v-select v-model="cita_nueva.lugar" :items="lugares" color="purple darken-3" :rules="nombreRules"
+                    persistent-placeholder placeholder="Selecione lugar de cita" label="Lugar" required>
                   </v-select>
                 </v-col>
               </v-row>
               <v-row no-gutters>
                 <v-col cols="12" sm="12" md="12">
-                  <v-text-field
-                    v-model="cita_nueva.observacion"
-                    type="text"
-                    persistent-placeholder
-                    placeholder="Agregar observaciones"
-                    label="Observacion"
-                  >
+                  <v-text-field v-model="cita_nueva.observacion" type="text" persistent-placeholder
+                    placeholder="Agregar observaciones" label="Observacion">
                   </v-text-field>
                 </v-col>
               </v-row>
               <v-btn color="primary" class="mr-4" @click="guardar_cita">
                 Guardar Cita
               </v-btn>
-              <v-btn
-                color="primary"
-                class="mr-4"
-                @click="imprimir_directo"
-                @click.stop="v_agendar = false"
-              >
+              <v-btn color="primary" class="mr-4" @click="imprimir_directo" @click.stop="v_agendar = false">
                 Boleta
               </v-btn>
             </v-container>
@@ -396,11 +265,11 @@
     <v-dialog v-model="msm_imprimir" persistent max-width="300">
       <v-card>
         <v-card-title class="text-h5">
-          El paciente con  cedula de identidad {{ paciente_edit.ci }}<br />
-          fue cambiada guradado correctamente  {{ paciente.ci }}
+          El paciente con cedula de identidad {{ paciente_edit.ci }}<br />
+          fue cambiada guradado correctamente {{ paciente.ci }}
         </v-card-title>
         <v-card-text>
-            Desea imprimir boleta de cita?
+          Desea imprimir boleta de cita?
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -417,6 +286,7 @@
 </template>
 
 <script>
+import { thisTypeAnnotation } from "@babel/types";
 import axios from "axios";
 import moment from "moment";
 const day1 =
@@ -583,8 +453,14 @@ export default {
     ],
     nombreRules: [
       (v) => !!v || "Dato requerido",
+      
       //v => v.length <= 10 || 'Name must be less than 10 characters',
     ],
+    rules: {
+      select: [(v) => !!v || "Item is required"],
+      select2: [(v) =>  validar_seleccion(v)],
+      
+    },
     email: "",
     emailRules: [
       (v) => !!v || "E-mail is required",
@@ -605,7 +481,7 @@ export default {
     maxFechaNac: day1,
     ssexo: ["MASCULINO", "FEMENINO"],
   }),
-  unmounted() {},
+  unmounted() { },
   created() {
     //this.paciente_edit = structuredClone(this.paciente);
     //console.log("++++" + moment(this.fechacitaMin).add(1, 'd').format('YYYY-MM-DD')
@@ -620,19 +496,43 @@ export default {
 
   methods: {
     /*  inicialiazar fecha minima*/
-    direccion_imprimir(){
-        console.log(this.consultorios)
-        let cita = Object.assign(this.paciente, this.cita_nueva)
-        localStorage.setItem('cita', JSON.stringify(cita));
-        window.open(`/${process.env.MIX_CARPETA}/imprimir`);
+    validar_seleccion(){
+      console.log("___________");
+      console.log(this.consultorios);
+      
+      console.log(this.cita_nueva.consultorio);
+      console.log(this.consultorios.filter(e => e.sala === this.cita_nueva.consultorio).length>0);
+      if(this.consultorios.filter(e => e.sala === this.cita_nueva.consultorio).length>0){
+        return true;
+      }else{
+        //this.consultorio = null
+        //this.cita_nueva.consultorio =null
+        return 'valor requerido'
+      }
+    },
+    direccion_imprimir() {
+      console.log(".....");
+      console.log(this.horario)
+      console.log(this.cita_nueva)
 
-    },  
-    open_imprimir(){
-        this.msm_imprimir =true
+      for (const K in this.horario) {
+        if (this.horario[K].id_horario == this.cita_nueva.horario) {
+          console.log(this.horario[K].hora_inicio + " - " + this.horario[K].hora_final);
+          this.cita_nueva.hora_inicio = this.horario[K].hora_inicio + " - " + this.horario[K].hora_final
+
+        }
+      }
+      let cita = Object.assign(this.paciente, this.cita_nueva)
+      localStorage.setItem('cita', JSON.stringify(cita));
+      window.open(`/${process.env.MIX_CARPETA}/imprimir`);
+      this.close_imprimir()
+    },
+    open_imprimir() {
+      this.msm_imprimir = true
 
     },
-    close_imprimir(){
-        this.msm_imprimir =false
+    close_imprimir() {
+      this.msm_imprimir = false
 
     },
     fecha_min() {
@@ -781,7 +681,7 @@ export default {
     async tabselect(a) {
       this.datos_informacion = a;
     },
-    buscadoractivate() {},
+    buscadoractivate() { },
     close(event) {
       console.log(this.cita_nueva.fecha);
       console.log("----");
@@ -838,12 +738,12 @@ export default {
         if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 2) {
           this.alert(
             "No se puede cambiar la cedula de identidad " +
-              this.paciente_edit.ci +
-              " por " +
-              this.paciente.ci +
-              ". Por que esta (" +
-              this.paciente_edit.ci +
-              ") ya existe. Se volvera a la antigua configuracion"
+            this.paciente_edit.ci +
+            " por " +
+            this.paciente.ci +
+            ". Por que esta (" +
+            this.paciente_edit.ci +
+            ") ya existe. Se volvera a la antigua configuracion"
           );
           this.paciente = structuredClone(this.paciente_edit);
 
@@ -873,9 +773,9 @@ export default {
             console.log(error);
           }
         );
-      } catch (error) {}
+      } catch (error) { }
     },
-    async valorar() {},
+    async valorar() { },
     allowedDates(val) {
       return true;
     },
@@ -915,32 +815,30 @@ export default {
         ).add(1, "h");
 
         this.cita_nueva.ci_paciente = this.paciente.ci;
+        var res = await axios({
+          method: "post",
+          url: `/${process.env.MIX_CARPETA}/agendar`,
+          data: {
+            cita: this.cita_nueva,
+            paciente: this.paciente,
+          },
+        }).then(
+          (response) => {
+            console.log(response);
+            this.v_agendar = false;
+            this.buscar_citas();
+            this.open_imprimir()
+            this.cita_nueva ={}
+            this.cita_nueva.fecha = this.fecha_cita;
+            this.cita_nueva.consultorio = this.consultorio;
+            
+          }
+        ).catch((error) => {
+          console.log(error.response)
+          this.alert("occurio un error")
+          return;
+        });
 
-        try {
-          var res = await axios({
-            method: "post",
-            url: `/${process.env.MIX_CARPETA}/agendar`,
-            data: {
-              cita: this.cita_nueva,
-              paciente: this.paciente,
-            },
-          }).then(
-            (response) => {
-              console.log(response);
-              this.v_agendar = false;
-              this.buscar_citas();
-              this.open_imprimir()
-            },
-            (error) => {
-              console.log(error);
-            }
-          );
-        } catch (err) {
-          console.log("err->", err.response.data);
-          return res
-            .status(500)
-            .send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-        }
 
         /*console.log(res['data']);
                 this.las_citas = res['data'];

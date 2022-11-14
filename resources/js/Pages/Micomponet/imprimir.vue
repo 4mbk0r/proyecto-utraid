@@ -1,7 +1,7 @@
 <template>
     <v-app>
-        <v-content>
-            <v-container class="green lighten-5" align="center" justify="center" id="section-to-print">
+
+            <v-container class="teal lighten-3" align="center" justify="center" id="section-to-print">
                 <v-row class="pa-0 ma-0">
                     <v-col class="pa-0 ma-0" outlined tile align="center" cols="2" justify="center">
                             <v-img height="80" width="100" contain src="assets/logo-sedes-lapaz.png"></v-img>
@@ -99,8 +99,12 @@
                     <v-btn @click='print' align="center" justify="center">IMPRIMIR
                     </v-btn>
                 </v-col>
+                <v-col class="pa-2" outlined tile align="center" justify="center">
+                    <v-btn @click='close' align="center" justify="center">CERRAR
+                    </v-btn>
+                </v-col>
             </v-row>
-        </v-content>
+
 
     </v-app>
 </template>
@@ -141,7 +145,11 @@ export default {
     {
         print() {
             print()
+        },
+        close() {
+            window.close();
         }
+
 
     }
 
