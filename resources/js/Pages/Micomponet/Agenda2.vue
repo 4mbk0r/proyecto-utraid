@@ -315,14 +315,12 @@ export default {
                 }).then(
                     (response) => {
                         console.log(response);
-                        let start = moment(`${this.fecha_calendario}T00:00:00`),
-                            intervalos = 1440 / 45;
-                        let list_intervalo = []
-                        for (let i = 0; i < intervalos; i++) {
-                            //console.log(start.format('hh:mm A'))
-                            list_intervalo.push(start.add(45, 'm').format('hh:mm A'))
-
-                        }
+                        let salas = response.data['salas'];
+                        let salas_disponibles = response.data['salas_diponibles'];
+                        
+                        //console.log('__'+salas)
+                        
+                        
                         this.categories = [];
                         let events = [];
                         this.events = [];
@@ -330,13 +328,15 @@ export default {
                         let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
                         let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
                         this.fecha_min = fecha_server.format('YYYY-MM-DD')
-                        for (const key in response.data) {
+                        for (const key in salas) {
                             //console.log(start);
                             //console.log(end);
                             console.log('----')
-                            console.log(response.data[key])
-                            this.categories.push(response.data[key]['descripcion'])
-                            if (this.fecha_calendario > this.fecha_min) {
+                            console.log(salas)
+                            console.log(salas_disponibles)
+                            this.categories.push(salas[key]['descripcion'])
+                            if (this.fecha_calendario > this.fecha_min  && salas_disponibles.filter(e => e.descripcion === salas[key]['descripcion']).length > 0)
+                            {
                                 this.events.push({
                                     name: 'Agendar',
                                     start: start2,
@@ -344,7 +344,7 @@ export default {
                                     color: 'red',
                                     timed: 0,
                                     category: this.categories[key],
-                                    consultorio: response.data[key],
+                                    consultorio: salas[key],
                                 })
                             }
 

@@ -611,6 +611,7 @@ export default {
           (response) => {
             console.log(response);
             this.horario = response.data;
+            this.horario.sort()
             this.horario[0];
             //this.horario =  response.data['horario']
           },
@@ -828,9 +829,7 @@ export default {
             this.v_agendar = false;
             this.buscar_citas();
             this.open_imprimir()
-            this.cita_nueva ={}
-            this.cita_nueva.fecha = this.fecha_cita;
-            this.cita_nueva.consultorio = this.consultorio;
+            
             
           }
         ).catch((error) => {

@@ -153,12 +153,13 @@ class AgendaController extends Controller
             try {
 
                 /*
-                    select horarios.sala, salas.descripcion from salas
-JOIN horarios on horarios.sala = salas.sala 
-LEFT join agendas on agendas.horario = horarios.id_horario and agendas.fecha = '2022-11-30'
---RIGHT join salas on horarios.sala = salas.sala 
-where agendas.horario is NULL  --and agendas.consultorio =  horarios.sala
-group by horarios.sala, salas.descripcion
+                select horarios.sala, salas.descripcion from salas
+                JOIN horarios on horarios.sala = salas.sala 
+                LEFT join agendas on agendas.horario = horarios.id_horario and agendas.fecha = '2022-11-16'
+                --RIGHT join salas on horarios.sala = salas.sala 
+                where agendas.horario is NULL  --and agendas.consultorio =  horarios.sala
+                group by horarios.sala, salas.descripcion 
+                ORDER BY  horarios.sala, salas.descripcion
                 */
                 $salas = DB::table('salas')
                     //->select('salas.sala, salas.descripcion')
@@ -169,9 +170,9 @@ group by horarios.sala, salas.descripcion
                         $join->where('agendas.fecha','=',$v);
                       })
                     ->whereNull('agendas.horario')
-                    
                     ->groupBy('salas.sala', 'salas.descripcion')
                     ->select('salas.sala', 'salas.descripcion')
+                    ->orderBy('salas.descripcion')
                     ->get();
             } catch (\Throwable $th) {
                 return $th;

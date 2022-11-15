@@ -71,11 +71,31 @@ class CitaTieneConfiguracionController extends Controller
                     ->select('*')
                     ->where('id', '=', $list_config[0]->id)
                     ->get();
+                $salas_disponibles = DB::table('salas')
+                    //->select('salas.sala, salas.descripcion')
+                    ->join('horarios', "horarios.sala",'=', "salas.sala")
+                    ->leftJoin("agendas", function ($join) use ($fecha) {
+                        $join->on("agendas.horario", "=", "horarios.id_horario");
+                        $join->where('agendas.fecha','=',$fecha);
+                      })
+                    ->whereNull('agendas.horario')
+                    ->groupBy('salas.sala', 'salas.descripcion')
+                    ->select('salas.sala', 'salas.descripcion')
+                    ->orderBy('salas.descripcion')
+                    ->get();
+                $resp = [
+                    'salas'=> $salas,
+                    'salas_diponibles'=>$salas_disponibles
+                ];
             } catch (\Throwable $th) {
                 return $th;
             }
-            return $salas;
+            return $resp;
         }
+        $resp = [
+            'salas'=> $salas,
+            'salas_diponibles'=>$salas
+        ];
         return $salas;
     }
 
