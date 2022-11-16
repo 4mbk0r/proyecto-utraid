@@ -62,9 +62,9 @@
                                                     </v-col>
                                                 </v-row>
                                                 <!--v-if="editedItem.atencion"-->
-                                                <v-row>
+                                                <v-row  v-if='editedItem.tipo == "permanente"'>
 
-                                                    <v-col cols="12" v-if='editedItem.tipo == "permanente"'>
+                                                    <v-col cols="12">
                                                         <v-menu ref="menu" v-model="menu"
                                                             :close-on-content-click="false" :return-value.sync="date"
                                                             transition="scale-transition" offset-y min-width="auto">
@@ -89,47 +89,45 @@
                                                             </v-date-picker>
                                                         </v-menu>
                                                     </v-col>
-                                                    <v-col v-if='editedItem.tipo == "temporal"'>
-                                                        <v-col cols="12">
-                                                            <v-checkbox v-model="editedItem.atencion"
-                                                                label="Se realizara la atencion">
-                                                            </v-checkbox>
-                                                        </v-col>
-                                                        <v-col cols="12">
-                                                            <v-checkbox v-model="editedItem.feriado"
-                                                                label="Sera feriado">
-                                                            </v-checkbox>
-                                                        </v-col>
-                                                        <v-col cols="12">
-                                                            <v-menu ref="menu" v-model="menu"
-                                                                :close-on-content-click="false"
-                                                                :return-value.sync="date_temp"
-                                                                transition="scale-transition" offset-y min-width="auto">
-                                                                <template v-slot:activator="{ on, attrs }">
-                                                                    <v-text-field v-model="date_temp"
-                                                                        label="Fecha de Configuracion temporal"
-                                                                        prepend-icon="mdi-calendar" readonly
-                                                                        v-bind="attrs" v-on="on">
-                                                                    </v-text-field>
-                                                                </template>
-                                                                <v-date-picker v-model="date_temp" multiple no-title
-                                                                    :min="inicioFecha()" :max="getMeses(12)"
-                                                                    :allowed-dates="diasnoValidos" scrollable>
-                                                                    <v-spacer></v-spacer>
-                                                                    <v-btn text color="primary" @click="menu = false">
-                                                                        Cancelar
-                                                                    </v-btn>
-                                                                    <v-btn text color="primary"
-                                                                        @click="$refs.menu.save(date_temp)">
-                                                                        OK
-                                                                    </v-btn>
-                                                                </v-date-picker>
-                                                            </v-menu>
-                                                        </v-col>
-                                                    </v-col>
+                                                    
                                                 </v-row>
-                                                <v-row>
+                                                <v-row v-if='editedItem.tipo == "temporal"'>
+                                                    <v-col>
+                                                        <v-checkbox v-model="editedItem.atencion"
+                                                            label="Se realizara la atencion">
+                                                        </v-checkbox>
+                                                        <v-checkbox v-model="editedItem.feriado" label="Sera feriado">
+                                                        </v-checkbox>
+                                                        <v-menu ref="menu" v-model="menu"
+                                                            :close-on-content-click="false"
+                                                            :return-value.sync="date_temp" transition="scale-transition"
+                                                            offset-y min-width="auto">
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <v-text-field v-model="date_temp"
+                                                                    label="Fecha de Configuracion Temporal"
+                                                                    prepend-icon="mdi-calendar" readonly v-bind="attrs"
+                                                                    v-on="on"
+                                                                    :rules="[v => v.length>0 || 'Se requiere completar']"
+                                                                    required>
+                                                                </v-text-field>
+                                                            </template>
+                                                            <v-date-picker v-model="date_temp" multiple no-title
+                                                                :min="inicioFecha()" :max="getMeses(12)"
+                                                                :allowed-dates="diasnoValidos" scrollable
+                                                                :rules="[v => !!v || 'Se requiere completar']"
+                                                                >
+                                                                <v-spacer></v-spacer>
+                                                                <v-btn text color="primary" @click="menu = false">
+                                                                    Cancelar
+                                                                </v-btn>
+                                                                <v-btn text color="primary"
+                                                                    @click="$refs.menu.save(date_temp)">
+                                                                    OK
+                                                                </v-btn>
+                                                            </v-date-picker>
+                                                        </v-menu>
 
+                                                    </v-col>
                                                 </v-row>
                                             </v-form>
                                         </v-card-text>
@@ -329,7 +327,7 @@ export default {
                 value: 'fecha_inicio',
 
             },
-            
+
             { text: 'Fecha final', value: 'fecha_final' },
             {
                 text: 'Dias en  uso',
@@ -367,6 +365,8 @@ export default {
         date_inicio: '',
         date_temp: [],
         minfecha: '',
+        fechas_con_configuracion: [],
+        //fechas_no_validas: [], 
         e1: 1,
     }),
     computed: {
@@ -389,6 +389,7 @@ export default {
         initialize() {
             this.desserts = this.configuracion
             let date = new Date(this.fecha_server)
+
         },
         editItem(item) {
 
@@ -460,7 +461,7 @@ export default {
             this.e1 = 1
         },
         async step2() {
-
+            console.log(this.$refs.paso1);
             if (this.editedItem.tipo == 'permanente') {
                 console.log(this.editedItem.atencion)
                 console.log(this.editedItem)
@@ -481,7 +482,7 @@ export default {
                 }
             }
             if (this.editedItem.tipo == 'temporal') {
-                if (this.$refs.paso1.validate()) {
+                if (this.$refs.paso1.validate() ) {
                     console.log(this.editedItem.atencion)
                     console.log(this.editedItem)
 
@@ -547,18 +548,25 @@ export default {
 
             console.log(`/${process.env.MIX_CARPETA}/configuracion2`,)
             let salas = []
+            let horarios = []
             if (this.editedItem.atencion) {
+                this.$refs.salas.generar_horario()
                 salas = structuredClone(this.$refs.salas.desserts)
+                //console.log(this.$refs.salas.desserts)
 
             }
+            //console.log(this.editedItem)
+
             try {
+
                 var res = await this.axios({
                     method: 'post',
                     url: `/${process.env.MIX_CARPETA}/configuracion2`,
                     data: {
                         datos: this.editedItem,
                         fecha_temporales: this.date_temp,
-                        salas: salas
+                        salas: salas,
+                        //horario: this.horario
                     }
 
                 }).then(
@@ -592,9 +600,37 @@ export default {
             return this.minfecha
 
         },
+        async dias_con_configuracion() {
+            var res = await this.axios({
+                method: 'get',
+                url: `/${process.env.MIX_CARPETA}/api/dias_tiene_configuracion`,
+                /*data: {
+                    datos: this.editedItem,
+                    fecha_temporales: this.date_temp,
+                    salas: salas
+                }*/
+
+            }).then(
+                (response) => {
+                    //this.headers = response.data
+                    console.log(response.data);
+                    this.fechas_con_configuracion = response.data['dias_con_configuracion'];
+
+
+                }, (error) => {
+                    console.log(error);
+                }
+            ).catch(
+                function (error) {
+                    console.log('Show error notification!')
+                    return Promise.reject(error)
+                }
+            )
+        },
         adicionar_temp() {
             this.dialog = true
             this.editedItem.tipo = "temporal"
+            this.dias_con_configuracion()
             /*this.$refs.salas.editedIndex = -1
             console.log(this.editedIndex);*/
         },
@@ -607,25 +643,11 @@ export default {
             //console.log(this.fechas_no_validas)
 
             var d = new Date(val).getDay();
-            for (let i = 0; i < this.fechas_no_validas.length; i++) {
-                //console.log(this.fechas_no_validas)
-                if (this.fechas_no_validas[i] == val) {
-                    var d = new Date(val).getDay();
-                    if (d == 5) {
-
-                        let f = moment(val).add(2, "d").format("YYYY-MM-DD")
-                        if (!this.fechas_no_validas.includes(f))
-                            this.fechas_no_validas.push(f)
-                    }
-                    if (d == 6) {
-                        let f = moment(val).add(1, "d").format("YYYY-MM-DD")
-                        if (!this.fechas_no_validas.includes(f))
-                            this.fechas_no_validas.push(f)
-                    }
-                    return false
-                }
-
-            }
+            //console.log(val)
+            //console.log(this.fechas_con_configuracion)
+            //console.log(this.fechas_con_configuracion.filter( (x) => x.fecha === val));
+            if (this.fechas_con_configuracion.filter((x) => x.fecha === val).length > 0)
+                return false
             if (d == 5) return false;
             if (d == 6) return false;
             return true;

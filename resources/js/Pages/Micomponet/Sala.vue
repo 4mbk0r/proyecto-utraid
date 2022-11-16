@@ -353,6 +353,19 @@ export default {
     clear_time(val) {
       return moment(val, 'hh:mm:ss').format('h:mm a');
     },
+    ///genera los horarios de todas las salas 
+    generar_horario(){
+      //console.log('----genearara')
+      //console.log(this.desserts);
+      let salas = this.desserts
+      for (const i in salas) {
+        
+        this.editedItem =  salas[i]
+        this.calcular_horario()
+        //console.log(this.editedItem)
+        salas[i].generar_horario = structuredClone(this.horario)        
+      }
+    },  
     calcular_horario() {
       if (this.editedItem.tiempo_apertura == '') {
         return

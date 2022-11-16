@@ -183,4 +183,95 @@ class AgendaController extends Controller
 
         return $configuracion;
     }
+    public static function dias_tiene_configuracion(){
+        $date = date_create('', timezone_open('America/La_Paz'));
+        $date = date_format($date, 'Y-m-d');
+        $list_config = DB::table('cita_tiene_configuracions')
+            ->select('*')
+            ->leftJoin('configuracions', 'configuracions.id', '=', 'cita_tiene_configuracions.id')
+            ->where('fecha', '>=', $date)
+            ->where('atencion', '=', 'true')
+            ->get();
+        $verificar = false;
+        
+        $resp = [
+            'dias_con_configuracion' => $list_config,
+            //'verificar' => $verificar,
+            'n' => count($list_config)
+        ];
+        return $resp;
+        return $date;
+    }
+    public static function salas_por_fechas(){
+        /*
+select cita_tiene_configuracions.fecha, 
+SUM(CASE WHEN  not agendas.consultorio IS NULL  THEN 1 ELSE 0 END) as uso, 
+SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END) AS disponibles, 
+count(salas.id) as total
+--select cita_tiene_configuracions.fecha, horarios.id_horario, horarios.hora_inicio, horarios.sala, agendas.codigo_cita 
+from cita_tiene_configuracions
+left join salas on salas.id = cita_tiene_configuracions.id
+left join horarios on horarios.sala = salas.sala
+LEFT join agendas on  agendas.fecha = cita_tiene_configuracions.fecha and agendas.consultorio = salas.sala and agendas.horario = horarios.id_horario
+--where not salas.id is null and 
+--where cita_tiene_configuracions.fecha >= '2022-11-29'
+GROUP by cita_tiene_configuracions.fecha
+--having SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END)> 0
+order by cita_tiene_configuracions.fecha
+        */
+        $list_config = DB::table('cita_tiene_configuracions')
+        
+        ->leftJoin('salas', function($join) {
+            $join->on('cita_tiene_configuracions.id', '=','salas.id');
+
+        })
+        ->leftJoin('horarios', 'horarios.sala', '=','salas.sala')
+        ->leftJoin("agendas", function ($join) {
+            $join->on("agendas.horario", "=", "horarios.id_horario");
+            $join->where('agendas.consultorio','=',DB::raw("salas.sala"));
+            $join->where('agendas.fecha','=',DB::raw("cita_tiene_configuracions.fecha"));
+            //$join->on()
+          })
+        //->where('cita_tiene_configuracions.fecha', '>=', '2022-11-16')
+        ->groupBy('cita_tiene_configuracions.fecha' )
+        //->havingRaw('SUM(CASE WHEN  not agendas.consultorio IS NULL  THEN 1 ELSE 0 END) = 0')
+        ->selectRaw('cita_tiene_configuracions.fecha, 
+        SUM(CASE WHEN  not agendas.consultorio is null  THEN 1 ELSE 0 END) as uso,
+        SUM(CASE WHEN agendas.consultorio is null and not salas.id is null  THEN 1 ELSE 0 END) AS disponibles,
+        count(salas.id) as total')
+        ->get()
+        ;
+        return $list_config;
+    }
 }
+/*
+select cita_tiene_configuracions.fecha, 
+SUM(CASE WHEN  not agendas.consultorio IS NULL  THEN 1 ELSE 0 END) as uso, 
+SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END) AS disponibles, 
+count(salas.id) as total
+--select cita_tiene_configuracions.fecha, horarios.id_horario, horarios.hora_inicio, horarios.sala, agendas.codigo_cita 
+from cita_tiene_configuracions
+left join salas on salas.id = cita_tiene_configuracions.id 
+left join horarios on horarios.sala = salas.sala
+LEFT join agendas on  agendas.fecha = cita_tiene_configuracions.fecha and agendas.consultorio = salas.sala and agendas.horario = horarios.id_horario
+--where not salas.id is null and 
+--where cita_tiene_configuracions.fecha >= '2022-11-29'
+GROUP by cita_tiene_configuracions.fecha
+--having SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END)> 0
+order by cita_tiene_configuracions.fecha
+
+
+SELECT  * --cita_tiene_configuracions.fecha, horarios.id_horario, horarios.hora_inicio, horarios.sala, agendas.codigo_cita * --cita_tiene_configuracions.fecha 
+from cita_tiene_configuracions
+left join salas on salas.id = cita_tiene_configuracions.id
+
+left join horarios on horarios.sala = salas.sala
+where cita_tiene_configuracions.fecha = '2022-10-11'
+
+
+select * 
+from salas
+
+
+
+*/

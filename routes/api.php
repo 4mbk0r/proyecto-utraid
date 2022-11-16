@@ -146,3 +146,13 @@ Route::post('/listar_profesion', function (Request $request) {
 
     return ProfesionController::listar_profesion($request);
 });
+
+
+Route::get('/dias_tiene_configuracion', function () {
+    return AgendaController::dias_tiene_configuracion();
+});
+
+
+Route::get('/prueba', function () {
+    return AgendaController::salas_por_fechas();
+});

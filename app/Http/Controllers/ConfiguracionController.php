@@ -106,6 +106,7 @@ group by configuracions.id
         if ($edit['tipo'] == 'permanente') {
 
             try {
+                unset($edit['fecha_uso']);
                 $default_actual =  DB::table('configuracions')
                     ->where('principal', true)
                     ->update(['principal' => false, 'fecha_final' => $n_fecha_final]);
@@ -119,8 +120,15 @@ group by configuracions.id
                     # code...
                     //$row->id;
                     $row['id'] = $default_actual;
+                    $horario  =  $row['generar_horario'];
                     unset($row['sala']);
+                    unset($row['generar_horario']);
                     DB::table('salas')->insert($row);
+                    $id_sala = DB::getPdo()->lastInsertId();;
+                    foreach ($horario as $id => $h) {
+                        $h['sala'] = $id_sala;
+                        DB::table('horarios')->insert($h);
+                    }
                 }
             } catch (\Throwable $th) {
                 return $th;
@@ -142,8 +150,15 @@ group by configuracions.id
                     $salas = $request['salas'];
                     foreach ($salas as $id => $row) {
                         $row['id'] = $default_actual;
+                        $horario  =  $row['generar_horario'];
                         unset($row['sala']);
+                        unset($row['generar_horario']);
                         DB::table('salas')->insert($row);
+                        $id_sala = DB::getPdo()->lastInsertId();;
+                        foreach ($horario as $id => $h) {
+                            $h['sala'] = $id_sala;
+                            DB::table('horarios')->insert($h);
+                        }
                     }
                 }
             } catch (\Throwable $th) {
