@@ -73,19 +73,19 @@ class CitaTieneConfiguracionController extends Controller
                     ->get();
                 $salas_disponibles = DB::table('salas')
                     //->select('salas.sala, salas.descripcion')
-                    ->join('horarios', "horarios.sala",'=', "salas.sala")
+                    ->join('horarios', "horarios.sala", '=', "salas.sala")
                     ->leftJoin("agendas", function ($join) use ($fecha) {
                         $join->on("agendas.horario", "=", "horarios.id_horario");
-                        $join->where('agendas.fecha','=',$fecha);
-                      })
+                        $join->where('agendas.fecha', '=', $fecha);
+                    })
                     ->whereNull('agendas.horario')
                     ->groupBy('salas.sala', 'salas.descripcion')
                     ->select('salas.sala', 'salas.descripcion')
                     ->orderBy('salas.descripcion')
                     ->get();
                 $resp = [
-                    'salas'=> $salas,
-                    'salas_diponibles'=>$salas_disponibles
+                    'salas' => $salas,
+                    'salas_diponibles' => $salas_disponibles
                 ];
             } catch (\Throwable $th) {
                 return $th;
@@ -93,8 +93,8 @@ class CitaTieneConfiguracionController extends Controller
             return $resp;
         }
         $resp = [
-            'salas'=> $salas,
-            'salas_diponibles'=>$salas
+            'salas' => $salas,
+            'salas_diponibles' => $salas
         ];
         return $salas;
     }
@@ -134,9 +134,36 @@ class CitaTieneConfiguracionController extends Controller
     }
     public static function verificar_fecha(String $fecha)
     {
+        /*
+        select cita_tiene_configuracions.fecha, 
+SUM(CASE WHEN  not agendas.consultorio IS NULL  THEN 1 ELSE 0 END) as uso, 
+SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END) AS disponibles, 
+count(salas.id) as total
+--, horarios.id_horario, horarios.hora_inicio, horarios.sala, agendas.codigo_cita 
+from cita_tiene_configuracions
+left join salas on salas.id = cita_tiene_configuracions.id
+left join horarios on horarios.sala = salas.sala
+LEFT join agendas on  agendas.fecha = cita_tiene_configuracions.fecha and agendas.consultorio = salas.sala and agendas.horario = horarios.id_horario
+--where not salas.id is null and 
+--where cita_tiene_configuracions.fecha >= '2022-11-29'
+GROUP by cita_tiene_configuracions.fecha
+--having SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END)> 0
+order by cita_tiene_configuracions.fecha
+
+select *
+--cita_tiene_configuracions.fecha, 
+from cita_tiene_configuracions
+left join configuracions ON configuracions.id = cita_tiene_configuracions.id
+where atencion != true
+        
+        
+        
+        */
         $list_config = DB::table('cita_tiene_configuracions')
             ->select('*')
+            ->leftJoin('configuracions', 'configuracions.id', '=', 'cita_tiene_configuracions.id')
             ->where('fecha', '>=', date($fecha))
+            ->where('atencion', '=', 'true')
             ->get();
         $verificar = false;
         if (count($list_config) == 0) {
