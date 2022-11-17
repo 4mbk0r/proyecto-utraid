@@ -14,6 +14,13 @@ class ConfiguracionController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * 
+     * SELECT date_trunc('day', dd):: date as dia, To_Char(date_trunc('day', dd):: date , 'd')
+FROM generate_series
+        ( CURRENT_DATE::timestamp 
+        , (CURRENT_DATE+interval '1 year')::timestamp
+        , '1 day'::interval) as dd
+where  date_trunc('day', dd):: date >='2022-11-17' 
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -200,8 +207,6 @@ group by configuracions.id
                 ->select('*')
                 ->where('id', '=', $configuracion)
                 ->get();
-
-          
         } catch (\Throwable $th) {
             return $th;
         }
