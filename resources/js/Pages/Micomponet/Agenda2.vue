@@ -212,7 +212,7 @@ export default {
 
         },
         async pedir_doctores(date) {
-            try {
+            /*try {
                 var res = await axios({
                     method: 'get',
                     url: `/${process.env.MIX_CARPETA}/lista_configuracion/` + date,
@@ -259,7 +259,7 @@ export default {
                                 color: 'blue',
                                 timed: 1,
                                 category: this.categories[key],
-                            })*/
+                            })
                         }
                         //console.log(this.type);
 
@@ -272,7 +272,7 @@ export default {
             } catch (err) {
                 console.log("err->", err.response.data)
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-            }
+            }*/
             /*try {
                 var res = await axios({
                     method: 'get',
@@ -609,5 +609,31 @@ export default {
         },
     }
 }
+/**
+ * 
+ * 
+ * 
+ * FROM generate_series
+        ( CURRENT_DATE::timestamp 
+        , (CURRENT_DATE+INTERVAL'3 year')::timestamp
+        , '1 day'::interval) dd
+left join cita_tiene_configuracions on 
 
+
+TO_CHAR(dd::date, 'dd/mm')=TO_CHAR(cita_tiene_configuracions.fecha::date, 'dd/mm')
+OR CASE
+           WHEN TO_CHAR((DD)::DATE,'D')='2'
+		  		and cita_tiene_configuracions.fecha = (DD-INTERVAL'1 DAY')::DATE
+		   THEN
+		   		TRUE
+		   WHEN TO_CHAR((DD)::DATE,'D')='2'
+		  		and cita_tiene_configuracions.fecha = (DD-INTERVAL'2 DAY')::DATE
+		   THEN
+		   		 true
+           else false
+       END 
+
+left join configuracions on configuracions.id = cita_tiene_configuracions.id and  configuracions.tipo = 'temporal' and configuracions.atencion = false and configuracions.repeticion = 'Year'--(configuracions.fecha_inicio <= dd  and configuracions.fecha_final >= dd) 
+where not configuracions.id is null
+ */
 </script>

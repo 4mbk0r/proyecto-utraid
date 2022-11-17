@@ -70,7 +70,7 @@ group by configuracions.id
                 //date_format($date, "Y-m-d"));
             })
             ->where('fecha', '>=', date_format($date, "Y-m-d"))
-            ->where('feriado', '=', 'true')
+            ->where('clase', '=', 'Feriado')
             ->get();
 
 

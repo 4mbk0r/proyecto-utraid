@@ -53,6 +53,8 @@
 
                                         <v-card-text>
                                             <v-form ref="paso1">
+                                                
+
                                                 <v-row>
                                                     <v-col>
                                                         <v-text-field v-model="editedItem.descripcion"
@@ -62,6 +64,7 @@
                                                     </v-col>
                                                 </v-row>
                                                 <!--v-if="editedItem.atencion"-->
+                                                
                                                 <v-row  v-if='editedItem.tipo == "permanente"'>
 
                                                     <v-col cols="12">
@@ -93,11 +96,37 @@
                                                 </v-row>
                                                 <v-row v-if='editedItem.tipo == "temporal"'>
                                                     <v-col>
-                                                        <v-checkbox v-model="editedItem.atencion"
+                                                        <v-row>
+                                                    <v-col>
+                                                        <v-select v-model="editedItem.clase" :items="list_config" filled
+                                                            label="Tipo de configuracion" @input="setConfig"
+                                                            :rules="[v => !!v || 'Se requiere completar']"
+                                                            >
+                                                        </v-select>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row v-if="atencion">
+                                                    <v-col>
+                                                        <v-checkbox :disabled="!atencion" v-model="editedItem.atencion"
                                                             label="Se realizara la atencion">
                                                         </v-checkbox>
-                                                        <v-checkbox v-model="editedItem.feriado" label="Sera feriado">
-                                                        </v-checkbox>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row v-if="atencion">
+                                                    <v-col>
+                                                        <span>
+                                                            <div>La configuracion se <strong>Repetira</strong>:</div>
+                                                        </span>
+                                                        <v-radio-group :disabled="!repeticion" v-model="editedItem.repeticion"
+                                                            row>
+                                                            <v-radio label="Nunca" value=""></v-radio>
+                                                            <v-radio label="Mensual" value="Moth"></v-radio>
+                                                            <v-radio label="Anual" value="Year"></v-radio>
+                                                            </v-radio-group>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row>
+                                                    <v-col>
                                                         <v-menu ref="menu" v-model="menu"
                                                             :close-on-content-click="false"
                                                             :return-value.sync="date_temp" transition="scale-transition"
@@ -107,15 +136,14 @@
                                                                     label="Fecha de Configuracion Temporal"
                                                                     prepend-icon="mdi-calendar" readonly v-bind="attrs"
                                                                     v-on="on"
-                                                                    :rules="[v => v.length>0 || 'Se requiere completar']"
+                                                                    :rules="[v => v.length > 0 || 'Se requiere completar']"
                                                                     required>
                                                                 </v-text-field>
                                                             </template>
                                                             <v-date-picker v-model="date_temp" multiple no-title
                                                                 :min="inicioFecha()" :max="getMeses(12)"
                                                                 :allowed-dates="diasnoValidos" scrollable
-                                                                :rules="[v => !!v || 'Se requiere completar']"
-                                                                >
+                                                                :rules="[v => !!v || 'Se requiere completar']">
                                                                 <v-spacer></v-spacer>
                                                                 <v-btn text color="primary" @click="menu = false">
                                                                     Cancelar
@@ -129,6 +157,10 @@
 
                                                     </v-col>
                                                 </v-row>
+                                                        
+                                                    </v-col>
+                                                </v-row>
+                                            
                                             </v-form>
                                         </v-card-text>
 
@@ -316,7 +348,11 @@ export default {
         fechas_no_validas: Array,
     },
     data: () => ({
+        repeticion: false,
+        atencion: false,
         permanente: false,
+        tipo_config: '',
+        list_config: ['Feriado', 'Atencion', 'No atencion', 'Especial'],
         dialog: false,
         edit_consulta: false,
         dialogDelete: false,
@@ -350,14 +386,13 @@ export default {
             descripcion: '',
             tipo: '',
             atencion: true,
-            feriado: false,
         },
         defaultItem: {
             id: '',
             descripcion: '',
             tipo: '',
             atencion: true,
-            feriado: false,
+
 
         },
         menu: false,
@@ -386,6 +421,31 @@ export default {
         this.initialize()
     },
     methods: {
+        setConfig(){
+            console.log(this.tipo_config)
+            console.log(this.editedItem.atencion);
+            this.atencion = false
+            this.repeticion = false
+            if(this.editedItem.clase == 'Feriado'){
+                this.editedItem.repeticion ='Year'
+                this.editedItem.atencion = false
+                
+                return;
+            }
+            if(this.editedItem.clase == 'No atencion'){
+                this.editedItem.repeticion =''
+                this.editedItem.atencion = false
+                console.log(this.editedItem.atencion);
+                return;
+            }
+            if(this.editedItem.clase == 'Atencion'){
+                this.editedItem.repeticion =''
+                this.editedItem.atencion = true
+                return;
+            }
+            this.atencion = true
+            this.repeticion = true
+        },
         initialize() {
             this.desserts = this.configuracion
             let date = new Date(this.fecha_server)
@@ -482,7 +542,7 @@ export default {
                 }
             }
             if (this.editedItem.tipo == 'temporal') {
-                if (this.$refs.paso1.validate() ) {
+                if (this.$refs.paso1.validate()) {
                     console.log(this.editedItem.atencion)
                     console.log(this.editedItem)
 
@@ -641,7 +701,7 @@ export default {
         },
         diasnoValidos(val) {
             //console.log(this.fechas_no_validas)
-
+            if(this.editedItem.clase == 'Feriado') return true;
             var d = new Date(val).getDay();
             //console.log(val)
             //console.log(this.fechas_con_configuracion)
