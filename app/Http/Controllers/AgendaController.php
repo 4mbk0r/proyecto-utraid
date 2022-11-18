@@ -170,6 +170,7 @@ class AgendaController extends Controller
                         $join->where('agendas.fecha','=',$v);
                       })
                     ->whereNull('agendas.horario')
+                    ->where('salas.id', '=', $conf->id)
                     ->groupBy('salas.sala', 'salas.descripcion')
                     ->select('salas.sala', 'salas.descripcion')
                     ->orderBy('salas.descripcion')

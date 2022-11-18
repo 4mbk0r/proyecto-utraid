@@ -61,7 +61,7 @@ class CitaTieneConfiguracionController extends Controller
                 ->select('*')
                 ->where('fecha_inicio', '<=', $fecha)
                 ->where('fecha_final', '>=', $fecha)
-                ->where('tipo', '>=', 'permanente')
+                ->where('tipo', '=', 'permanente')
                 ->get();
         }
         $salas = [];
@@ -71,6 +71,10 @@ class CitaTieneConfiguracionController extends Controller
                     ->select('*')
                     ->where('id', '=', $list_config[0]->id)
                     ->get();
+
+                /*
+                *          
+                */
                 $salas_disponibles = DB::table('salas')
                     //->select('salas.sala, salas.descripcion')
                     ->join('horarios', "horarios.sala", '=', "salas.sala")
@@ -79,6 +83,7 @@ class CitaTieneConfiguracionController extends Controller
                         $join->where('agendas.fecha', '=', $fecha);
                     })
                     ->whereNull('agendas.horario')
+                    ->where('salas.id', '=', $list_config[0]->id)
                     ->groupBy('salas.sala', 'salas.descripcion')
                     ->select('salas.sala', 'salas.descripcion')
                     ->orderBy('salas.descripcion')

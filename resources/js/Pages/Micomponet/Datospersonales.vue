@@ -168,7 +168,7 @@
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
                   <v-select v-model="cita_nueva.horario" :item-text="(item) => ver_horario(item)"
-                    item-value="id_horario" :items="horario" :rules="[nombreRules]" persistent-placeholder
+                    item-value="id_horario" :items="horario" :rules="nombreRules" persistent-placeholder
                     placeholder="Selecione hora de cita" color="purple darken-3" label="Hora de inicio" required>
                   </v-select>
                 </v-col>
@@ -497,11 +497,11 @@ export default {
   methods: {
     /*  inicialiazar fecha minima*/
     validar_seleccion(){
-      console.log("___________");
+      /*console.log("___________");
       console.log(this.consultorios);
       
       console.log(this.cita_nueva.consultorio);
-      console.log(this.consultorios.filter(e => e.sala === this.cita_nueva.consultorio).length>0);
+      console.log(this.consultorios.filter(e => e.sala === this.cita_nueva.consultorio).length>0);*/
       if(this.consultorios.filter(e => e.sala === this.cita_nueva.consultorio).length>0){
         return true;
       }else{

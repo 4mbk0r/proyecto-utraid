@@ -30,7 +30,7 @@
                             <v-list two-line>
                                 <v-list-item-group v-model="selected" active-class="pink--text" multiple>
                                     <template v-for="(item, index) in items">
-                                        <v-list-item :key="item.title" @click="elegir(item)">
+                                        <v-list-item v-if="item.title" :key="item.title" @click="elegir(item)">
                                             <template v-slot:default="{ active }">
                                                 <v-list-item-content>
                                                     <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -69,7 +69,7 @@
                             <v-list two-line>
                                 <v-list-item-group v-model="selected2" active-class="pink--text" multiple>
                                     <template v-for="(item, index) in items_t">
-                                        <v-list-item @click=elegir(item) :key="item.title">
+                                        <v-list-item v-if="item.title" @click=elegir(item) :key="item.title">
                                             <template v-slot:default="{ active }">
                                                 <v-list-item-content>
                                                     <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -187,7 +187,7 @@ export default {
     methods: {
         open() {
             this.dialog = true
-            this.listar_profesines()
+            this.lista_cargo()
         },
         close() {
             this.dialog = false
@@ -195,7 +195,7 @@ export default {
         save() {
             this.dialog = true
         },
-        async listar_profesines() {
+        async lista_cargo() {
             try {
                 var res = await axios({
                     method: 'post',
@@ -218,6 +218,7 @@ export default {
             }
 
         },
+        
         elegir(active) {
             console.log(active.title)
             let s = this.items_t.findIndex(x => x.title === active.title)

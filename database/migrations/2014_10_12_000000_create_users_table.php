@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('item');
             $table->string('email')->nullable();
             $table->string('celular')->nullable();
-            $table->string('cargo')->nullable();
+            $table->string('cargo');
             $table->rememberToken();
             $table->timestamp('email_verified_at')->nullable();
             $table->foreignId('current_team_id')->nullable();
@@ -31,6 +31,9 @@ class CreateUsersTable extends Migration
             $table->string('username')->unique();;
             $table->string('password');
             $table->timestamps();
+            $table->foreign('cargo')->references('cargo')->on('cargos')->onDelete('cascade')->onUpdate('cascade');
+            
+
         });
         $datos = [
             'username' => '8340024',

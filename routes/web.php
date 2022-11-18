@@ -7,6 +7,8 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\CitaTieneConfiguracionController;
 use App\Http\Controllers\AgendaController;
 
+use App\Http\Controllers\Administracion\Registro;
+ 
 
 
 use App\Http\Controllers\ConfigController;
@@ -39,6 +41,14 @@ Route::get('/', function () {
     ]);
 });
 
+
+/*Administracion */
+Route::get('/registrar', [Registro::class, 'index'])->name('registro');
+
+
+
+
+
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return 'ddd';
 })->name('Dashboard');
@@ -49,9 +59,7 @@ Route::middleware(['auth:sanctum', 'verified', 'permiso'])->get('/inicio', [Cita
 Route::resource('/agendar', AgendaController::class)->middleware(['auth:sanctum', 'verified']);
 
 
-Route::get('/registra', function () {
-    return Inertia::render('Auth/Register');;
-})->name('registro');
+
 
 Route::resource('/persona_antigua', PersonaAntiguoController::class)->middleware(['auth:sanctum', 'verified']);
 

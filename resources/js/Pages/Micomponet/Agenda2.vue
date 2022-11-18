@@ -212,7 +212,7 @@ export default {
 
         },
         async pedir_doctores(date) {
-            /*try {
+            try {
                 var res = await axios({
                     method: 'get',
                     url: `/${process.env.MIX_CARPETA}/lista_configuracion/` + date,
@@ -234,13 +234,15 @@ export default {
                         let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
                         let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
                         this.fecha_min = fecha_server.format('YYYY-MM-DD')
-                        for (const key in response.data) {
+                        let salas = response.data['salas']
+                        for (const key in salas) {
                             //console.log(start);
                             //console.log(end);
                             //console.log(response.data[key]['descripcion'])
-                            this.categories.push(response.data[key]['descripcion'])
-                           
-                                this.events.push({
+                            //if()
+                            this.categories.push(salas[key]['descripcion'])
+                            
+                            this.events.push({
                                     name: 'Atencion',
                                     start: start2,
                                     end: end,
@@ -259,7 +261,7 @@ export default {
                                 color: 'blue',
                                 timed: 1,
                                 category: this.categories[key],
-                            })
+                            })*/
                         }
                         //console.log(this.type);
 
@@ -272,7 +274,7 @@ export default {
             } catch (err) {
                 console.log("err->", err.response.data)
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-            }*/
+            }
             /*try {
                 var res = await axios({
                     method: 'get',

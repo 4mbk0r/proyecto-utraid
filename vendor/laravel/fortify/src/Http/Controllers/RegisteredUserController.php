@@ -52,10 +52,9 @@ class RegisteredUserController extends Controller
                           CreatesNewUsers $creator)
     {
         event(new Registered($user = $creator->create($request->all())));
-
-        //$this->guard->login($user);
         
-
+        //$this->guard->login($user);
+        //return $user;
         return redirect()->route('registro');//app(RegisterResponse::class);//);
     }
 }

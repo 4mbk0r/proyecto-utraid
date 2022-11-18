@@ -25,17 +25,21 @@
                         <v-text-field dense outlined id="nombre" label="Nombres" type="text" v-model="form.nombre"
                             :rules="[v => !!v || ' Se requiere completar Nombre']" required autofocus
                             prepend-inner-icon="mdi-account-arrow-right-outline" class="mb-n5 pa-0"
+                            @input="(val) => ( form.nombre = val.toUpperCase())"
                             pattern="[a-zA-Z]+" />
                     </v-col>
                     <v-col>
                         <v-text-field dense outlined id="paterno" label="Apellido Paterno" type="text"
                             v-model="form.ap_paterno" :rules="[v => !!v || 'Se requiere Completar Apellido Paterno']"
                             prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0"
+                            @input="(val) => ( form.ap_paterno = val.toUpperCase())"
                             pattern="[a-zA-Z]+" />
                     </v-col>
                     <v-col>
                         <v-text-field dense outlined id="materno" label="Apellido Materno" type="text"
                             v-model="form.ap_materno" :rules="[v => !!v || 'Se requiere Completar Apellido Materno']"
+                            @input="(val) => ( form.ap_materno = val.toUpperCase())"
+                            
                             prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0"
                             pattern="[a-zA-Z]+" />
                     </v-col>
@@ -53,7 +57,11 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-select dense outlined :items="roles" v-model="form.cargo"
+                    <v-select dense outlined 
+                        item-value="cargo" 
+                        item-text="cargo"
+                        :items="cargos" 
+                        v-model="form.cargo"
                         :rules="[v => !!v || 'Se requiere el Cargo']" filled label="Asigne un cargo" class="mb-n4 pa-0"
                         required prepend-inner-icon="mdi-clipboard-account">
                     </v-select>
@@ -116,6 +124,9 @@ import JetValidationErrors from '@/Jetstream/ValidationErrors'
 
 
 export default {
+    props:{
+        cargos: Array,
+    },
     data() {
         return {
             form: this.$inertia.form({
@@ -133,11 +144,9 @@ export default {
                 terms: false,
 
             }),
-            roles: ['Admin', 'Medico General', 'Trabajo Social', 'Operador Terapético', 'Psicologo', 'Psicologo', 'Secretaria', 'recepcionista'],
+            //roles: [] 
+            //['Admin', 'Medico General', 'Trabajo Social', 'Operador Terapético', 'Psicologo', 'Psicologo', 'Secretaria', 'recepcionista'],
         }
-    },
-    props: {
-
     },
     components: {
         AppLayout,
@@ -150,8 +159,18 @@ export default {
         JetValidationErrors,
 
     },
+    created() {
+        //console.log(cargos)
+    },
+    computed:{
+        update(validate){
 
+        }
 
+    },  
+    watch:{
+
+    },  
     methods: {
         alert(text) {
             this.$alert(text).then(res => this.$inform("Cambios guardados!"));
@@ -184,7 +203,7 @@ export default {
                         }),
                             this.alert('Se registro de forma correcta')
                         this.$refs.form.resetValidation()
-                        this.$inertia.get(route('regitrar'))
+                        //this.$inertia.get(route('regitrar'))
 
                     },
                 })
