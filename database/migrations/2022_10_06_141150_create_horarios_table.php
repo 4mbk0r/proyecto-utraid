@@ -19,53 +19,59 @@ class CreateHorariosTable extends Migration
             $table->increments('id_horario');
             $table->time('hora_inicio');
             $table->time('hora_final');
-            $table->integer('sala');
-            $table->foreign('sala')->references('sala')->on('salas')->onDelete('cascade')->onUpdate('cascade');
-            $table->unique(['hora_inicio', 'sala']);
+            $table->integer('institucion');
+            $table->foreign('institucion')->references('codigo')->on('institucions')->onDelete('cascade')->onUpdate('cascade');
+            $table->unique(['hora_inicio', 'hora_final', 'institucion']);
         });
 
         for ($i=0; $i < 5; $i++) { 
             # code..
             $hora = [
 
-                'sala' => $i+1,
+                //'sala' => $i+1,
                 'hora_inicio' => '08:00:00',
                 'hora_final' => '09:00:00',
+                'institucion'=>'01'
             ];
             DB::table('horarios')->insert($hora);
             $hora = [
     
-                'sala' => $i+1,
+                //'sala' => $i+1,
                 'hora_inicio' => '09:00:00',
                 'hora_final' => '10:00:00',
+                'institucion'=>'01'
             ];
             DB::table('horarios')->insert($hora);
             $hora = [
     
-                'sala' => $i+1,
+                //'sala' => $i+1,
                 'hora_inicio' => '10:00:00',
                 'hora_final' => '11:00:00',
+                'institucion'=>'01'
             ];
             DB::table('horarios')->insert($hora);
             $hora = [
     
-                'sala' => $i+1,
+                //'sala' => $i+1,
                 'hora_inicio' => '11:00:00',
                 'hora_final' => '12:00:00',
+                'institucion'=>'01'
             ];
             DB::table('horarios')->insert($hora);
             $hora = [
     
-                'sala' => $i+1,
+                //'sala' => $i+1,
                 'hora_inicio' => '12:30:00',
                 'hora_final' => '13:30:00',
+                'institucion'=>'01'
             ];
             DB::table('horarios')->insert($hora);
             $hora = [
     
-                'sala' => $i+1,
+                //'sala' => $i+1,
                 'hora_inicio' => '13:30:00',
                 'hora_final' => '14:30:00',
+                'institucion'=>'01'
             ];
             DB::table('horarios')->insert($hora);
     

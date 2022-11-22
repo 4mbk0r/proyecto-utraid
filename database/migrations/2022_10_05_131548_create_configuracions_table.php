@@ -27,6 +27,11 @@ class CreateConfiguracionsTable extends Migration
             $table->String('descripcion');
             //$table->boolean('activo')->default(1);
             $table->integer('historial')->nullable();
+            $table->string('institucion');
+            $table->foreign('institucion')->references('codigo')->on('institucions')->onDelete('cascade')->onUpdate('cascade');
+            
+            
+
             //$table->primary('id');
         });
         $datos = [
@@ -35,7 +40,7 @@ class CreateConfiguracionsTable extends Migration
             'principal' => 'true',
             'atencion' => 'true',
             'descripcion' => 'Configuracion de inicio',
-
+            'institucion' => '01',
             //'activo' => 'true',
             'tipo' => 'permanente',
             'historial' => '0',
