@@ -16,7 +16,7 @@ class CreateCitasTable extends Migration
      */
     public function up()
     {
-        Schema::create('citas', function (Blueprint $table) {
+        /*Schema::create('citas', function (Blueprint $table) {
             $table->date('fecha');
             $table->time('hora_inicio');
             $table->time('hora_final');
@@ -2766,6 +2766,6 @@ class CreateCitasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('citas');
+        //Schema::dropIfExists('citas');
     }
 }

@@ -15,7 +15,7 @@ class CreateDoctoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('doctores', function (Blueprint $table) {
+        /*Schema::create('doctores', function (Blueprint $table) {
             $table->text('ci')->primary();
             //$table->foreignId('nombre')->nullable()->index();
             $table->text('nombre');
@@ -35,7 +35,7 @@ class CreateDoctoresTable extends Migration
         );
         DB::table('doctores')->insert(
             $value
-        );
+        );*/
     }
 
     /**
@@ -45,6 +45,6 @@ class CreateDoctoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('doctores');
+        //Schema::dropIfExists('doctores');
     }
 }

@@ -13,7 +13,7 @@ class CreateCitaAntiguasTable extends Migration
      */
     public function up()
     {
-        Schema::create('cita_antiguas', function (Blueprint $table) {
+        /*Schema::create('cita_antiguas', function (Blueprint $table) {
             $table->increments('id');
             $table->date('fecha');
             $table->time('hora');
@@ -24,7 +24,7 @@ class CreateCitaAntiguasTable extends Migration
             $table->text('se_presento');
             $table->text('observacion');
             $table->text('equipo');
-        });
+        });*/
     }
 
     /**
@@ -34,6 +34,6 @@ class CreateCitaAntiguasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cita_antiguas');
+        //Schema::dropIfExists('cita_antiguas');
     }
 }

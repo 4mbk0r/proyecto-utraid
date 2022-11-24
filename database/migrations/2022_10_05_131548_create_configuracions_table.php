@@ -45,14 +45,6 @@ class CreateConfiguracionsTable extends Migration
             'tipo' => 'permanente',
             'historial' => '0',
         ];
-        $datos2 = [
-
-            'atencion' => 'false',
-            'descripcion' => 'Dia de no atencion',
-            'lugar' => 'ultraid',
-            'n_sala' => '0',
-            //'activo' => 'true',
-        ];
         DB::table('configuracions')->insert($datos);
     }
 

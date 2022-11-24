@@ -14,7 +14,7 @@ class CreateAgendasTable extends Migration
      */
     public function up()
     {
-        Schema::create('agendas', function (Blueprint $table) {
+        /*Schema::create('agendas', function (Blueprint $table) {
             $table->increments('codigo_cita');
             $table->date('fecha');
             $table->integer('horario');
@@ -27,7 +27,7 @@ class CreateAgendasTable extends Migration
             $table->foreign('consultorio')->references('sala')->on('salas')->onDelete('cascade')->onUpdate('cascade');
             $table->unique(['fecha', 'consultorio', 'horario']);
         });
-        DB::statement(
+        /*DB::statement(
             "ALTER TABLE agendas ADD FOREIGN KEY (fecha) REFERENCES cita_tiene_configuracions(fecha) ON DELETE CASCADE"
         );
         DB::statement(
@@ -35,7 +35,7 @@ class CreateAgendasTable extends Migration
         );
         DB::statement(
             "ALTER TABLE agendas ADD FOREIGN KEY (ci_paciente) REFERENCES persona_citas(ci) ON DELETE CASCADE"
-        );
+        );*/
     }
 
     /**
@@ -45,6 +45,6 @@ class CreateAgendasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('agendas');
+        //Schema::dropIfExists('agendas');
     }
 }

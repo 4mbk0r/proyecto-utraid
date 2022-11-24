@@ -13,12 +13,12 @@ class CreatePersonasAntiguosTable extends Migration
      */
     public function up()
     {
-        Schema::create('personas_antiguos', function (Blueprint $table) {
+        /*Schema::create('personas_antiguos', function (Blueprint $table) {
             $table->text('ci')->primary();
             //$table->foreignId('nombre')->nullable()->index();
             $table->text('nombre')->nullable();
             $table->text('celular', 45);
-        });
+        });*/
     }
 
     /**
@@ -28,6 +28,6 @@ class CreatePersonasAntiguosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('personas_antiguos');
+        //Schema::dropIfExists('personas_antiguos');
     }
 }

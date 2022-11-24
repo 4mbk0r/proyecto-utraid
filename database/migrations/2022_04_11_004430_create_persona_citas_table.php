@@ -15,7 +15,7 @@ class CreatePersonaCitasTable extends Migration
      */
     public function up()
     {
-        Schema::create('persona_citas', function (Blueprint $table) {
+        /*Schema::create('persona_citas', function (Blueprint $table) {
             $table->text('ci')->primary();
             //$table->foreignId('nombre')->nullable()->index();
             $table->text('nombres');
@@ -50,6 +50,6 @@ class CreatePersonaCitasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('persona_citas');
+       // Schema::dropIfExists('persona_citas');
     }
 }
