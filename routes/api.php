@@ -7,6 +7,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\SalaController;
 use App\Http\Controllers\ProfesionController;
 use App\Http\Controllers\PdfViewController;
+use App\Http\Controllers\Configuracion\CalendarioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PersonaAntiguoController;
@@ -15,6 +16,7 @@ use App\Models\personas_antiguo;
 use App\Http\Controllers\CitaTieneConfiguracionController;
 use App\Http\Controllers\HorarioController;
 use App\Models\Configuracion;
+use App\Models\Horario;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,8 +32,21 @@ use App\Models\Configuracion;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+/*Configuracion */
+Route::get('/verificar_fecha/{fecha}', function (String $fecha) {
+    return CalendarioController::verificar_fecha($fecha);
+});
 
+Route::post('/verificar_fecha', function (Request $request) {
+    return CitaTieneConfiguracionController::verificar_rangofecha($request);
+});
+/*Configuracion */
 
+/* horario */
+Route::post('/horario_sala', function (Request $request) {
+    return HorarioController::lista_horario($request);
+});
+/* horario */
 
 Route::get('articles', function ($id) {
     return PersonaAntiguoController::mostrar($id);
@@ -105,13 +120,7 @@ Route::post('/guardar_persona', function (Request $request) {
     return PersonaCitaController::guardar_persona($request);
 });
 
-Route::get('/verificar_fecha/{fecha}', function (String $fecha) {
-    return CitaTieneConfiguracionController::verificar_fecha($fecha);
-});
 
-Route::post('/verificar_fecha', function (Request $request) {
-    return CitaTieneConfiguracionController::verificar_rangofecha($request);
-});
 
 
 

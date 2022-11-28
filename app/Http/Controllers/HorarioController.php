@@ -119,6 +119,34 @@ class HorarioController extends Controller
         }
         return $horarios;
     }
+    public static function lista_horario(Request $request)
+    {
+        //
+        //return 'ss';
+        /*
+select * from conf_salas
+left join salas ON salas.id = conf_salas.id_sala
+left join horarios on horarios.id_horario = conf_salas.id_horario
+left join institucions ON institucions.codigo = salas.institucion
+where id_configuracion = '1'  and id_sala=1 and id_institucion = '01'*/
+    
+    try {
+            $horarios =  DB::table('conf_salas')
+            ->select('*')
+            ->leftJoin('salas', 'salas.id','=', 'conf_salas.id_sala')
+            ->leftJoin('horarios', 'horarios.id_horario','=', 'conf_salas.id_horario')
+            ->leftJoin('institucions', 'institucions.codigo','=', 'salas.institucion')
+            ->where('id_configuracion','=', $request['id_configuracion'])
+            ->where('id_sala','=', $request['id_sala'])
+            ->where('id_institucion','=', $request['id_institucion'])
+            ->get(); 
+                        
+        
+        } catch (\Throwable $th) {
+            return $th;
+        }
+        return $horarios;
+    }
     
 }
 

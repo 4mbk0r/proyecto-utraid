@@ -199,13 +199,21 @@ export default {
     },
     async editItem(item) {
       try {
+          
+          let pedido = {
+            id_sala: item.id,
+            id_institucion: '01',
+            id_configuracion: this.id_configuracion
+          }
+          console.log(pedido);
           var res = await axios({
-            method: 'get',
-            url: `/${process.env.MIX_CARPETA}/horario/` + item.sala,
+            method: 'post',
+            url: `/${process.env.MIX_CARPETA}/api/horario_sala`,
+            data: pedido
           }).then(
             (response) => {
               //console.log(response);
-              this.horario = response.data
+              //this.horario = response.data
               console.log(response.data)
 
             }, (error) => {

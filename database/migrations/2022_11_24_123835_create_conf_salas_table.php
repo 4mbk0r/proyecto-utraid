@@ -16,11 +16,16 @@ class CreateConfSalasTable extends Migration
     public function up()
     {
         Schema::create('conf_salas', function (Blueprint $table) {
-            $table->increments('conf_sala');
+            $table->increments('id');
             $table->integer('id_configuracion');
             $table->integer('id_sala');
-            $table->integer('id_horario');
-            $table->unique(['id_configuracion', 'id_sala', 'id_horario']);
+            //$table->integer('id_horario');
+            $table->string('id_institucion');
+            $table->unique(['id_configuracion', 'id_sala',  'id_institucion']);
+            $table->time('hora_apertura');
+            $table->time('hora_cierre');
+            $table->time('hora_descanso')->nullable();
+            $table->integer('min_promedio_atencion');
         });
         DB::statement(
             "ALTER TABLE conf_salas ADD FOREIGN KEY (id_configuracion) REFERENCES configuracions(id) ON DELETE CASCADE"
@@ -28,9 +33,26 @@ class CreateConfSalasTable extends Migration
         DB::statement(
             "ALTER TABLE conf_salas ADD FOREIGN KEY (id_sala) REFERENCES salas(id) ON DELETE CASCADE"
         );
-        DB::statement(
+        /*DB::statement(
             "ALTER TABLE conf_salas ADD FOREIGN KEY (id_horario) REFERENCES horarios(id_horario) ON DELETE CASCADE"
+        );*/
+        DB::statement(
+            "ALTER TABLE conf_salas ADD FOREIGN KEY (id_institucion) REFERENCES institucions(codigo) ON DELETE CASCADE"
         );
+  
+        # code...
+        for ($j = 1; $j <= 5; $j++) {
+            # code...
+            $conf_salas = [
+
+                //'sala' => $i+1,
+                'id_configuracion' => '1',
+                'id_institucion' => '01',
+                'id_sala' => $j,
+            ];
+            DB::table('conf_salas')->insert($conf_salas);
+        }
+
     }
 
     /**

@@ -203,9 +203,11 @@ group by configuracions.id
         //
         $date = '';
         try {
-            $dato = DB::table('salas') //->where('id', $configuracion)
-                ->select('*')
-                ->where('id', '=', $configuracion)
+            $dato = DB::table('conf_salas') //->where('id', $configuracion)
+                ->select(['salas.id', 'salas.descripcion', 'salas.institucion', 'salas.estado'])
+                ->leftJoin('salas','salas.id','=', 'conf_salas.id_sala')
+                ->where('conf_salas.id_configuracion', '=', $configuracion)
+                ->groupBy('salas.id')                
                 ->get();
         } catch (\Throwable $th) {
             return $th;
