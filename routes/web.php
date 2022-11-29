@@ -120,6 +120,8 @@ Route::resource('/lista_configuracion', CitaTieneConfiguracionController::class)
 Route::resource('/lista_agenda', AgendaController::class)->middleware(['auth:sanctum', 'verified']);;
 
 
-Route::get('/agenda2', function () {
-    return Inertia::render('Micomponet/Agenda2');
+Route::get('/configuracion3', function () {
+    return Inertia::render('Configuracion2');
 })->name('agenda');
+
+

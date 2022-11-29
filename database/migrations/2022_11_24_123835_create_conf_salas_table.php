@@ -22,10 +22,7 @@ class CreateConfSalasTable extends Migration
             //$table->integer('id_horario');
             $table->string('id_institucion');
             $table->unique(['id_configuracion', 'id_sala',  'id_institucion']);
-            $table->time('hora_apertura');
-            $table->time('hora_cierre');
-            $table->time('hora_descanso')->nullable();
-            $table->integer('min_promedio_atencion');
+           
         });
         DB::statement(
             "ALTER TABLE conf_salas ADD FOREIGN KEY (id_configuracion) REFERENCES configuracions(id) ON DELETE CASCADE"
