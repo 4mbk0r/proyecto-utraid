@@ -1,12 +1,14 @@
 <template>
      <div>
+      <div>--- {{ configuracion }}</div>
+      <div>--- {{ calendario }}</div>
     <div class="text-center d-flex pb-4">
       <v-btn @click="all">
         all
       </v-btn>
-      <div>{{ panel }}</div>
+      
       <v-btn @click="none">
-        none
+       
       </v-btn>
     </div>
 
@@ -15,12 +17,23 @@
       multiple
     >
       <v-expansion-panel
-        v-for="(item,i) in items"
+        v-for="(item,i) in calendario"
         :key="i"
       >
-        <v-expansion-panel-header>Header {{ item }}</v-expansion-panel-header>
-        <v-expansion-panel-content>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        <v-expansion-panel-header> 
+          <v-row align="center"
+                class="spacer"
+                no-gutters>
+            <v-col>
+              {{ item.descripcion }} {{ item.fecha_inicio }} - <p v-if="item.fecha_final='9999-12-30'">Indefinido</p><p v-else>{{ item.fecha_final }}</p>
+            </v-col>
+          </v-row>
+        </v-expansion-panel-header>
+        
+          
+          <v-expansion-panel-content>
+          <span>{{item.descripcion}}</span>
+          <span>{{item.atencion}}</span>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -33,6 +46,10 @@ import Welcome from '@/Jetstream/Welcome'
 import Sala from '@/Pages/Micomponet/Sala'
 import moment from 'moment'
 export default {
+    props:{
+      configuracion: Array,
+      calendario: Array
+    },  
     data () {
       return {
         panel: [],

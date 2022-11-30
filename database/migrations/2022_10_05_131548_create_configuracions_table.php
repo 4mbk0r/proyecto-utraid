@@ -17,17 +17,14 @@ class CreateConfiguracionsTable extends Migration
         $f = date_format(date_create(date(""), timezone_open("America/La_Paz")), "Y-m-d");
         Schema::create('configuracions', function (Blueprint $table) {
             $table->increments('id')->start_from(0);
-            $table->date('fecha_inicio')->nullable();
-            $table->date('fecha_final')->nullable();
-            $table->boolean('principal')->default(0);
-            $table->string('tipo')->default('temporal');
-            $table->string('repeticion')->default('');
-            $table->boolean('atencion')->default(0);
-            $table->string('clase')->default('Atencion');
-            $table->String('descripcion');
-            //$table->boolean('activo')->default(1);
-            $table->integer('historial')->nullable();
+            $table->string('descripcion');
             $table->string('institucion');
+            $table->boolean('atencion')->default(0);
+            //$table->string('tipo')->default('Atencion');
+            $table->string('repeticion')->default('');
+            //$table->boolean('activo')->default(1);
+            //$table->integer('historial')->nullable();
+          
             $table->foreign('institucion')->references('codigo')->on('institucions')->onDelete('cascade')->onUpdate('cascade');
             
             
@@ -35,17 +32,40 @@ class CreateConfiguracionsTable extends Migration
             //$table->primary('id');
         });
         $datos = [
-            'fecha_inicio' => '2022-10-08',
-            'fecha_final' => '01-01-9999',
-            'principal' => 'true',
-            'atencion' => 'true',
+            
+            
             'descripcion' => 'Configuracion de inicio',
             'institucion' => '01',
+            'atencion' => 'true',
             //'activo' => 'true',
-            'tipo' => 'permanente',
-            'historial' => '0',
+            //'tipo' => 'permanente',
+            //'historial' => '0',
         ];
         DB::table('configuracions')->insert($datos);
+        $datos = [
+            
+            
+            'descripcion' => 'Ferirados',
+            'institucion' => '01',
+            'atencion' => 'false',
+            'repeticion'=>'Year',
+            //'activo' => 'true',
+            //'tipo' => 'permanente',
+            //'historial' => '0',
+        ];
+        $datos = [
+            
+            
+            'descripcion' => 'Viajes',
+            'institucion' => '01',
+            'atencion' => 'True',
+            //'repeticion'=>'Year',
+            //'activo' => 'true',
+            //'tipo' => 'permanente',
+            //'historial' => '0',
+        ];
+        DB::table('configuracions')->insert($datos);
+
     }
 
     /**

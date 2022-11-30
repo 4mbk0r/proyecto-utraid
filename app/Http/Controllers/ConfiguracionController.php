@@ -43,25 +43,18 @@ group by configuracions.id
 
         $list_config = DB::table('configuracions')
             ->select(
-                'configuracions.id',
-                DB::raw('count(configuracions.id) as fecha_uso'),
-                'configuracions.descripcion',
-                'configuracions.atencion',
-                'configuracions.principal',
-                'configuracions.tipo',
-                'configuracions.historial',
-                'configuracions.fecha_final',
-                'configuracions.fecha_inicio',
+                '*'
                 //DB::raw('configuracions.tipo, COALESCE(cita_tiene_configuracions.fecha,configuracions.fecha_inicio) as fecha_inicio')
             )
-            ->leftJoin('cita_tiene_configuracions',  function ($join) use ($date) {
-                $join->on('configuracions.id', '=', 'cita_tiene_configuracions.id');
-                //date_format($date, "Y-m-d"));
-            })
-            ->where('configuracions.fecha_final', '>=', date_format($date, "Y-m-d"))
-            ->groupBy('configuracions.id')
+           
             ->get();
-        $fechas_no_validas = DB::table('configuracions')
+        $tabla ='calendariolineals';
+        $linea_calendarios = DB::table($tabla)
+        ->select('*')
+        ->leftJoin('configuracions', 'configuracions.id','=',$tabla.'.id_configuracion')
+        //->leftJoin('configuracions', 'configuracions.id','=',$tabla.'.id_configuracion')
+        ->get();
+        /*$fechas_no_validas = DB::table('configuracions')
             ->select(
                 'cita_tiene_configuracions.fecha',
             )
@@ -71,7 +64,7 @@ group by configuracions.id
             })
             ->where('fecha', '>=', date_format($date, "Y-m-d"))
             ->where('clase', '=', 'Feriado')
-            ->get();
+            ->get();*/
 
 
 
@@ -82,7 +75,9 @@ group by configuracions.id
         return inertia('Configuracions', [
             'configuracion' => $list_config,
             'fecha_server' => $date,
-            'fechas_no_validas' =>  array_column(json_decode($fechas_no_validas), 'fecha'),
+            'fechas_no_validas' => [],
+            'calendario'=>$linea_calendarios
+            //array_column(json_decode($fechas_no_validas), 'fecha'),
         ]);
     }
 
