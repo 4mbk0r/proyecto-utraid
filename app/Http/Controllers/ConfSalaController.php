@@ -45,9 +45,10 @@ class ConfSalaController extends Controller
      * @param  \App\Models\conf_sala  $conf_sala
      * @return \Illuminate\Http\Response
      */
-    public function show(conf_sala $conf_sala)
+    public function show(int $conf_sala)
     {
         //
+        return $conf_sala;
     }
 
     /**

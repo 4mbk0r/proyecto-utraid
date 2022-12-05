@@ -104,9 +104,9 @@
                 </v-stepper-content>
 
                 <v-stepper-content step="3">
-                    <v-card class="mb-12" color="grey lighten-1" height="200px"></v-card>
+                    <salas v-if="paso=='3'"  :id_configuracion="item"></salas>
 
-                    <v-btn color="primary" @click="paso = 1">
+                    <v-btn color="primary" @click="paso4">
                         Continue
                     </v-btn>
                     <v-divider></v-divider>
@@ -127,9 +127,15 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+
+import Salas from '@/Pages/Micomponet/Sala'
+
 const day1 = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + new Date().getDate()).slice(-2)
 
 export default {
+    components: {
+        Salas
+    },
     props: {
         dialog: Boolean,
         item: Object
@@ -265,9 +271,14 @@ export default {
 
             if (this.$refs.form_configuracion.validate()) {
                 this.validar_configuracion()
-
+                console.log("_________")
+                console.log(this.item)
             }
 
+
+
+        },
+        async paso4() {
 
 
         },

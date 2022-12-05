@@ -18,8 +18,13 @@ class CreateCuposTable extends Migration
             $table->increments('id');
             $table->integer('id_calendario');
             $table->integer('id_sala');
-            $table->integer('id_horario');
-            $table->unique(['id_calendario', 'id_sala', 'id_horario']);
+            //d$table->integer('id_horario');
+            $table->string('id_institucion');
+            $table->time('tiempo_apertura');
+            $table->time('tiempo_cierre');
+            $table->time('tiempo_descanso')->nullable();
+            $table->integer('min_promedio_atencion');
+            $table->unique(['id_calendario', 'id_sala', 'id_institucion']);
         });
         DB::statement(
             "ALTER TABLE cupos ADD FOREIGN KEY (id_calendario) REFERENCES calendarios(id) ON DELETE CASCADE"
@@ -28,7 +33,7 @@ class CreateCuposTable extends Migration
             "ALTER TABLE cupos ADD FOREIGN KEY (id_sala) REFERENCES salas(id) ON DELETE CASCADE"
         );
         DB::statement(
-            "ALTER TABLE cupos ADD FOREIGN KEY (id_horario) REFERENCES horarios(id_horario) ON DELETE CASCADE"
+            "ALTER TABLE cupos ADD FOREIGN KEY (id_institucion) REFERENCES institucions(codigo) ON DELETE CASCADE"
         );
     }
 

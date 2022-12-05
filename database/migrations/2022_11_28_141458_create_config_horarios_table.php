@@ -15,20 +15,43 @@ class CreateConfigHorariosTable extends Migration
     public function up()
     {
         Schema::create('config_horarios', function (Blueprint $table) {
-            $table->integer('id');
-            $table->time('tiempo_apertura');
+            //$table->integer('id');
+            /*$table->time('tiempo_apertura');
             $table->time('tiempo_cierre');
             $table->time('tiempo_descanso')->nullable();
             $table->integer('min_promedio_atencion');
             $table->unique(['tiempo_apertura', 'tiempo_cierre', 'tiempo_descanso', 'min_promedio_atencion']);
+            */
+            
+            $table->integer('id_horario');
+            $table->integer('id_conf_sala');
+            $table->unique(['id_horario', 'id_conf_sala']);
+            
 
         });
-        /*DB::statement(
-            "ALTER TABLE conf_horario ADD FOREIGN KEY (id_horario) REFERENCES horarios(id_horario) ON DELETE CASCADE"
+        DB::statement(
+            "ALTER TABLE config_horarios ADD FOREIGN KEY (id_horario) REFERENCES horarios(id_horario) ON DELETE CASCADE"
         );
         DB::statement(
-            "ALTER TABLE conf_horario ADD FOREIGN KEY (id_conf_sala) REFERENCES conf_horario(id) ON DELETE CASCADE"
-        );*/
+            "ALTER TABLE config_horarios ADD FOREIGN KEY (id_conf_sala) REFERENCES conf_salas(id) ON DELETE CASCADE"
+        );
+        for ($i=1; $i < 6; $i++) { 
+            # code...
+            $datos = [
+                
+                'id_conf_sala' => '1',
+                'id_horario' => $i                 
+                
+            ];
+            DB::table('config_horarios')->insert($datos);
+            $datos = [
+                
+                'id_conf_sala' => '2',
+                'id_horario' => $i                 
+                
+            ];
+            DB::table('config_horarios')->insert($datos);
+        }
     }
 
     /**

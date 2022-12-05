@@ -3,6 +3,7 @@
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\SalaController;
+use App\Http\Controllers\ConfSalaController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\CitaTieneConfiguracionController;
 use App\Http\Controllers\AgendaController;
@@ -47,6 +48,10 @@ Route::get('/', function () {
 Route::get('/registrar', [Registro::class, 'index'])->name('registro');
 
 
+
+/*SALAS*/
+
+Route::resource('/conf_sala', ConfSalaController::class);
 
 
 

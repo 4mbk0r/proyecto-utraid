@@ -19,9 +19,14 @@ class CreateConfSalasTable extends Migration
             $table->increments('id');
             $table->integer('id_configuracion');
             $table->integer('id_sala');
+            $table->integer('id_calendario');
             //$table->integer('id_horario');
             $table->string('id_institucion');
-            $table->unique(['id_configuracion', 'id_sala',  'id_institucion']);
+            $table->time('tiempo_apertura');
+            $table->time('tiempo_cierre');
+            $table->time('tiempo_descanso')->nullable();
+            $table->integer('min_promedio_atencion');
+            $table->unique(['id_configuracion', 'id_sala',  'id_institucion', 'id_calendario']);
            
         });
         DB::statement(
@@ -36,19 +41,35 @@ class CreateConfSalasTable extends Migration
         DB::statement(
             "ALTER TABLE conf_salas ADD FOREIGN KEY (id_institucion) REFERENCES institucions(codigo) ON DELETE CASCADE"
         );
-  
+        DB::statement(
+            "ALTER TABLE conf_salas ADD FOREIGN KEY (id_calendario) REFERENCES calendariolineals(id) ON DELETE CASCADE"
+        );
+        $datos = [
+            'id_configuracion' => '1',
+            'id_sala' => '1',
+            'id_calendario' => '1',
+            'id_institucion' => '01',
+            'tiempo_apertura' => '08:00:00',
+            'tiempo_cierre' => '15:30:00',
+            'tiempo_descanso' => '12:00:00',
+            'min_promedio_atencion'=>'60'
+            
+        ];
+        DB::table('conf_salas')->insert($datos);
         # code...
-        for ($j = 1; $j <= 5; $j++) {
-            # code...
-            $conf_salas = [
-
-                //'sala' => $i+1,
-                'id_configuracion' => '1',
-                'id_institucion' => '01',
-                'id_sala' => $j,
-            ];
-            DB::table('conf_salas')->insert($conf_salas);
-        }
+        $datos = [
+            'id_configuracion' => '1',
+            'id_sala' => '2',
+            'id_calendario' => '1',
+            'id_institucion' => '01',
+            'tiempo_apertura' => '08:00:00',
+            'tiempo_cierre' => '15:30:00',
+            'tiempo_descanso' => '12:00:00',
+            'min_promedio_atencion'=>'60'
+            
+        ];
+        DB::table('conf_salas')->insert($datos);
+        
 
     }
 

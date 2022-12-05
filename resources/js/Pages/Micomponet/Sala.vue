@@ -105,7 +105,7 @@ import moment from 'moment'
 export default {
   props: {
 
-    id_configuracion: '',
+    configuracion: Object,
     editar_consulta: false,
 
   },
@@ -177,10 +177,10 @@ export default {
         try {
           var res = await axios({
             method: 'get',
-            url: '/main/configuracion2/' + this.id_configuracion,
+            url: `/${process.env.MIX_CARPETA}/` + "calendariolineal" + '/' + this.edit.id_calendario,
           }).then(
             (response) => {
-              //console.log(response);
+              console.log(response);
               this.desserts = response.data['salas']
               console.log(response.data)
 
