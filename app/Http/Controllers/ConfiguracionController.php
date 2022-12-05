@@ -46,14 +46,15 @@ group by configuracions.id
                 '*'
                 //DB::raw('configuracions.tipo, COALESCE(cita_tiene_configuracions.fecha,configuracions.fecha_inicio) as fecha_inicio')
             )
-           
+
             ->get();
-        $tabla ='calendariolineals';
+        $tabla = 'calendariolineals';
         $linea_calendarios = DB::table($tabla)
-        ->select('*')
-        ->leftJoin('configuracions', 'configuracions.id','=',$tabla.'.id_configuracion')
-        //->leftJoin('configuracions', 'configuracions.id','=',$tabla.'.id_configuracion')
-        ->get();
+            ->select('calendariolineals.id as id_calendario', '*')
+            ->leftJoin('configuracions', 'configuracions.id', '=', $tabla . '.id_configuracion')
+            //->leftJoin('configuracions', 'configuracions.id','=',$tabla.'.id_configuracion')
+            ->orderBy('fecha_inicio', 'asc')
+            ->get();
         /*$fechas_no_validas = DB::table('configuracions')
             ->select(
                 'cita_tiene_configuracions.fecha',
@@ -71,12 +72,12 @@ group by configuracions.id
         //->whereRaw('fecha_agenda','>=',date_format($date, "Y-m-d"))
         //->join('cita_tiene_configuracions.fecha', '>=', date_format($date, "Y-m-d"))
         //->get();
-        $date = date_format($date, "Y-m-d H:i:s");
+        $date = date_format($date, "Y-m-d");
         return inertia('Configuracions', [
             'configuracion' => $list_config,
             'fecha_server' => $date,
             'fechas_no_validas' => [],
-            'calendario'=>$linea_calendarios
+            'calendario' => $linea_calendarios
             //array_column(json_decode($fechas_no_validas), 'fecha'),
         ]);
     }
@@ -99,7 +100,7 @@ group by configuracions.id
     public function store(Request $request)
     {
         //
-        date_default_timezone_set("America/La_Paz");
+        /*date_default_timezone_set("America/La_Paz");
         $date = date_create();
         $edit = $request['datos'];
         $n_fecha_final = date($edit['fecha_inicio']);
@@ -184,7 +185,7 @@ group by configuracions.id
             })
             ->where('configuracions.fecha_final', '>=', date_format($date, "Y-m-d"))
             ->get();
-        return $list_config;
+        return $list_config;*/
     }
 
     /**
@@ -200,9 +201,9 @@ group by configuracions.id
         try {
             $dato = DB::table('conf_salas') //->where('id', $configuracion)
                 ->select(['salas.id', 'salas.descripcion', 'salas.institucion', 'salas.estado'])
-                ->leftJoin('salas','salas.id','=', 'conf_salas.id_sala')
+                ->leftJoin('salas', 'salas.id', '=', 'conf_salas.id_sala')
                 ->where('conf_salas.id_configuracion', '=', $configuracion)
-                ->groupBy('salas.id')                
+                ->groupBy('salas.id')
                 ->get();
         } catch (\Throwable $th) {
             return $th;
@@ -291,5 +292,26 @@ where atencion = false;*/
             ->where('configuracions.fecha_final', '>=', date_format($date, "Y-m-d"))
             ->get();
         return $list_config;
+    }
+
+    public static function validar_configuracion(Request $request)
+    {
+        $config =  $request['configuracion'];
+        $respuesta = ['validar' => false, 'respuesta' => ''];
+        //return $config;
+        try {
+            $query =  DB::table('configuracions')
+                ->where('descripcion', '=', $config['descripcion'])
+                ->where('institucion', '=', $config['institucion'])
+                ->get();
+            if (count($query) == 0) {
+                $respuesta['validar'] = true;
+            }
+            return $respuesta;
+        } catch (\Throwable $th) {
+            return $th;
+            $respuesta['respuesta'] = $th;
+            return $respuesta;
+        }
     }
 }

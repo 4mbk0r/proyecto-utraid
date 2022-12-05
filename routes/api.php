@@ -40,6 +40,12 @@ Route::get('/verificar_fecha/{fecha}', function (String $fecha) {
 Route::post('/verificar_fecha', function (Request $request) {
     return CitaTieneConfiguracionController::verificar_rangofecha($request);
 });
+
+Route::post('/validar_configuracion', function (Request $request) {
+    return ConfiguracionController::validar_configuracion($request);
+});
+
+
 /*Configuracion */
 
 /* horario */

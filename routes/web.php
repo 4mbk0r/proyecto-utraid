@@ -7,8 +7,9 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\CitaTieneConfiguracionController;
 use App\Http\Controllers\AgendaController;
 
+use App\Http\Controllers\CalendariolinealController;
 use App\Http\Controllers\Administracion\Registro;
- 
+
 
 
 use App\Http\Controllers\ConfigController;
@@ -124,4 +125,4 @@ Route::get('/configuracion3', function () {
     return Inertia::render('Configuracion2');
 })->name('agenda');
 
-
+Route::resource('/calendariolineal', CalendariolinealController::class);//->middleware(['auth:sanctum', 'verified']);;
