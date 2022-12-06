@@ -26,7 +26,7 @@
                         <v-list-item class="px-2" key="0">
                             <v-img max-height="80" max-width="150" src="assets/logo-sedes-lapaz.png"></v-img>
                         </v-list-item>
-
+                        <Link :href="route('inicio')">
                         <v-list-item link>
                             <v-list-item-content style="color: white" key="1">
                                 <v-list-item-title>
@@ -40,6 +40,7 @@
                                 </v-list-item-subtitle>
                             </v-list-item-content>
                         </v-list-item>
+                        </Link>
                         <v-list-item link key="2">
                             <form method="POST" @submit.prevent="logout">
                                 <v-hover>
@@ -51,7 +52,7 @@
                             </form>
                         </v-list-item>
 
-                        <Link :href="route('inicio')">
+                        <Link :href="route('agendar')">
                         <v-list-item v-if="$page.props.user.cargo == 'recepcionista'" key="3" @click="mostrar(3)">
                             <v-list-item-content style="color: white;">
                                 <v-list-item-title>
@@ -239,12 +240,12 @@ export default {
                 // Every Axios response should decrease our counter
                 this.v_carga = false;
                 return response;
-            }, (error)=>{
+            }, (error) => {
                 // Any status codes that falls outside the range of 2xx cause this function to trigger
                 // Do something with response error
                 this.v_carga = false;
                 return Promise.reject(error);
-                
+
             });
         },
         toggleTheme() {

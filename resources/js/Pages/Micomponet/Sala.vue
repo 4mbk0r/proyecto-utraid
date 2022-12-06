@@ -172,16 +172,16 @@ export default {
   },
   methods: {
     async initialize() {
-      if (this.id_configuracion) {
-
+    
+        console.log("----", this.configuracion);
         try {
           var res = await axios({
             method: 'get',
-            url: `/${process.env.MIX_CARPETA}/` + "calendariolineal" + '/' + this.edit.id_calendario,
+            url: `/${process.env.MIX_CARPETA}/` + "conf_sala" + '/' +this.configuracion.id_calendario,
           }).then(
             (response) => {
               console.log(response);
-              this.desserts = response.data['salas']
+              this.desserts = response.data
               console.log(response.data)
 
             }, (error) => {
@@ -194,8 +194,6 @@ export default {
         }
 
         //this.id_configuracion = $store.state.getid_config()
-
-      }
     },
     async editItem(item) {
       try {

@@ -16,9 +16,9 @@ class PermisoMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->user()->cargo == "Admin") {
-            return redirect('registra');
-        }
+        /*if (auth()->user()->cargo == "Admin") {
+            return redirect('registrar');
+        }*/
         return $next($request);
     }
 }

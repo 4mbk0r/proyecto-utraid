@@ -9,12 +9,16 @@ use App\Http\Controllers\CitaTieneConfiguracionController;
 use App\Http\Controllers\AgendaController;
 
 use App\Http\Controllers\CalendariolinealController;
+
 use App\Http\Controllers\Administracion\Registro;
+//personal
 
-
+use App\Http\Controllers\PersonalController;
 
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\Controllgeneral;
+
+use App\Http\Controllers\CuentaController;
 
 
 use Illuminate\Foundation\Application;
@@ -23,6 +27,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\PersonaAntiguoController;
 use App\Http\Controllers\PersonaCitaController;
 use App\Http\Controllers\PermisoController;
+use App\Models\agenda;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -53,17 +59,23 @@ Route::get('/registrar', [Registro::class, 'index'])->name('registro');
 
 Route::resource('/conf_sala', ConfSalaController::class);
 
-
+/**
+ * 
+ * 
+ * Registrar
+ * Registrar lista
+ */
+Route::resource('/lista_personal', PersonalController::class);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return 'ddd';
 })->name('Dashboard');
 
-Route::middleware(['auth:sanctum', 'verified', 'permiso'])->get('/inicio', [CitaController::class, 'index'],)->name('inicio');
+Route::middleware(['auth:sanctum', 'verified', 'permiso'])->get('/inicio', [CuentaController::class, 'index'],)->name('inicio');
 
 
 Route::resource('/agendar', AgendaController::class)->middleware(['auth:sanctum', 'verified']);
-
+Route::middleware(['auth:sanctum', 'verified', 'permiso'])->get('/agenda', [AgendaController::class, 'index'],)->name('agendar');
 
 
 

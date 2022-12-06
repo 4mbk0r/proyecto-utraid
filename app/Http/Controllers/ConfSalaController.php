@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\conf_sala;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ConfSalaController extends Controller
 {
@@ -48,7 +49,13 @@ class ConfSalaController extends Controller
     public function show(int $conf_sala)
     {
         //
-        return $conf_sala;
+        $sala = DB::table('conf_salas')
+        ->leftJoin('salas', 'salas.id', '=', 'conf_salas.id_sala' )
+        //->leftJoin('config_horarios', 'config_horarios.id_conf_sala', '=', 'conf_salas.id')
+        //->leftJoin('horarios', 'horarios.id_horario', '=', 'config_horarios.id_horario')
+        ->where('id_calendario', '=', $conf_sala)
+        ->get();
+        return $sala;
     }
 
     /**

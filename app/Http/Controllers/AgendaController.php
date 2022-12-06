@@ -19,6 +19,19 @@ class AgendaController extends Controller
     public function index()
     {
         //
+        $date = date_create(date(""), timezone_open('America/La_Paz'));
+        $date = date_format($date, 'Y-m-d');
+        /*if (Cache::has('citas' . $date)) {
+            $cita_fecha =  Cache::get('citas' . $date);
+        } else {*/
+            /*$agenda = DB::table('agendas')
+                ->join('persona_citas', 'agendas.ci_paciente', '=', 'persona_citas.ci')
+                ->where('fecha', $date)
+                ->get();*/
+           // Cache::put('citas' . $date, $cita_fecha);
+        //}
+        $config = DB::table('configuracions')->select('*')->get();
+        return inertia('Comenzar', ['fecha_server' => $date, 'agenda' => []]);
     }
 
     /**

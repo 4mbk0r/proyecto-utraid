@@ -16,7 +16,7 @@ class Registro extends Controller
 
         
         $cargos = DB::table('cargos')->select('*')->get();
-        return Inertia::render('Auth/Register', ['cargos' => $cargos]);
+        return Inertia::render('Registro', ['cargos' => $cargos]);
         return  inertia();
     }
 

@@ -28,14 +28,14 @@ class CitaController extends Controller
         /*if (Cache::has('citas' . $date)) {
             $cita_fecha =  Cache::get('citas' . $date);
         } else {*/
-            $agenda = DB::table('agendas')
+            /*$agenda = DB::table('agendas')
                 ->join('persona_citas', 'agendas.ci_paciente', '=', 'persona_citas.ci')
                 ->where('fecha', $date)
-                ->get();
+                ->get();*/
            // Cache::put('citas' . $date, $cita_fecha);
         //}
         $config = DB::table('configuracions')->select('*')->get();
-        return inertia('Comenzar', ['fecha_server' => $date, 'agenda' => $agenda]);
+        return inertia('Comenzar', ['fecha_server' => $date, 'agenda' => []]);
         //  dd($date);
         //dd($users);
         //return Inertia::render('Comenzar', ['fechas' => $cita_fecha, 'valor' => $valor, 'config' => $config]);
@@ -131,7 +131,7 @@ class CitaController extends Controller
         }*/
         
 
-        return $cita_fecha;
+        return $date;
     }
     public static function mostrar($date)
     {

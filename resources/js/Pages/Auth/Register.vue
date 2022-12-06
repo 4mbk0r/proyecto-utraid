@@ -1,5 +1,5 @@
 <template>
-    <app-layout>
+    <!--<app-layout>-->
         <v-card class="pa-2 justify-center">
 
 
@@ -109,7 +109,7 @@
 
             </v-form>
         </v-card>
-    </app-layout>
+    <!--</app-layout>-->
 </template>
 
 <script>

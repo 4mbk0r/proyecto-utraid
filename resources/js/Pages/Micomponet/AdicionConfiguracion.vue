@@ -59,9 +59,9 @@
                     <v-btn color="primary" @click="paso2">
                         Continue
                     </v-btn>
-
-                    <v-btn text>
-                        Cancel
+                    <v-divider row></v-divider>
+                    <v-btn text @click="cancelar">
+                        Cancelar
                     </v-btn>
                 </v-stepper-content>
 
@@ -97,21 +97,21 @@
                     <v-btn color="primary" @click="paso3">
                         Continue
                     </v-btn>
-
-                    <v-btn text>
-                        Cancel
+                    <v-divider row></v-divider>
+                    <v-btn text @click="cancelar">
+                        Cancelar
                     </v-btn>
                 </v-stepper-content>
 
                 <v-stepper-content step="3">
-                    <salas v-if="paso=='3'"  :id_configuracion="item"></salas>
+                    <salas v-if="paso=='3'"  :configuracion="item"></salas>
 
                     <v-btn color="primary" @click="paso4">
                         Continue
                     </v-btn>
-                    <v-divider></v-divider>
-                    <v-btn text>
-                        Cancel
+                    <v-divider row></v-divider>
+                    <v-btn text @click="cancelar">
+                        Cancelar
                     </v-btn>
                 </v-stepper-content>
             </v-stepper-items>
@@ -252,9 +252,9 @@ export default {
             moment('2010-10-20').isAfter('2010-01-01', 'year'); // false >
             moment('2010-10-20').isAfter('2009-12-31', 'year'); // true>*/
             //console.log(this.item);
-            console.log(this.item)
+            //console.log(this.item)
             let t_year = moment(this.$store.getters.fecha_inicio).add(3, 'year')
-            console.log(t_year);
+            //console.log(t_year);
             if (t_year.isSameOrAfter(this.item.fecha_final)) {//>
                 return this.item.fecha_final
             }
@@ -295,8 +295,8 @@ export default {
                     },
                 }).then(
                     (response) => {
-                        console.log('validat');
-                        console.log(response);
+                        //console.log('validat');
+                        //console.log(response);
                         if (response.data['validar'] == false) {
                             this.errors_descripcion = ['ya existe esta descripcion']
                             return
@@ -320,7 +320,9 @@ export default {
                     .send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
         },
-
+        cancelar(){
+            this.close()
+        }
 
     }
 }
