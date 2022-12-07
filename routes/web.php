@@ -11,6 +11,7 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\CalendariolinealController;
 
 use App\Http\Controllers\Administracion\Registro;
+use App\Http\Controllers\CargoController;
 //personal
 
 use App\Http\Controllers\PersonalController;
@@ -58,7 +59,10 @@ Route::get('/registrar', [Registro::class, 'index'])->name('registro');
 /*SALAS*/
 
 Route::resource('/conf_sala', ConfSalaController::class);
+Route::resource('/cargo', CargoController::class);
 
+
+Route::resource('/personal', PersonalController::class);
 /**
  * 
  * 

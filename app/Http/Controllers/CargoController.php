@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cargo;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CargoController extends Controller
 {
@@ -16,6 +17,11 @@ class CargoController extends Controller
     public function index()
     {
         //
+        return DB::table('cargos')
+        ->select('*')
+        ->where('cargo', '!=', 'Admin')
+        ->get();
+
     }
 
     /**
@@ -71,6 +77,7 @@ class CargoController extends Controller
     public function update(Request $request, Cargo $cargo)
     {
         //
+        return $request;
     }
 
     /**

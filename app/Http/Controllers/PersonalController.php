@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Personal;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class PersonalController extends Controller
 {
@@ -73,9 +75,20 @@ class PersonalController extends Controller
      * @param  \App\Models\Personal  $personal
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Personal $personal)
+    public function update(Request $request, int $personal)
     {
-        //
+        $usuario = json_decode(json_encode($request['usuario']),true);
+        try {
+            $lista = DB::table('users')
+            ->where('ci','=',$personal)
+            ->update($usuario);
+            //
+        } catch (\Throwable $th) {
+            return $th;
+            //new Response(['message' => 'th'], 400);
+        }
+       
+        return $usuario;
     }
 
     /**
