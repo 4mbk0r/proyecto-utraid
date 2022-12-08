@@ -18,7 +18,7 @@
                 <Registros :cargos="cargos"></Registros>
             </v-tab-item>
             <v-tab-item>
-                <Lista></Lista>
+                <Lista v-if="tabs=='1'"></Lista>
             </v-tab-item>
             <v-tab-item> </v-tab-item>
         </v-tabs-items>

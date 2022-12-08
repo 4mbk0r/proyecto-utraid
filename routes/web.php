@@ -147,3 +147,10 @@ Route::get('/configuracion3', function () {
 })->name('agenda');
 
 Route::resource('/calendariolineal', CalendariolinealController::class);//->middleware(['auth:sanctum', 'verified']);;
+
+
+
+Route::get('/equipos', function () {
+    return Inertia::render('Configuracion/Equipo');
+})->name('equipos');
+

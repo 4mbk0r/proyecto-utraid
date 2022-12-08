@@ -6,8 +6,16 @@
         <v-toolbar flat>
           <v-toolbar-title>Lista Personal</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" hide-details></v-text-field>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" ></v-text-field>
           <v-divider class="mx-4" inset vertical></v-divider>
+          <v-select
+              v-model="value"
+              :items="items"
+              attach
+              chips
+              label="Chips"
+              multiple
+            ></v-select>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
@@ -64,7 +72,7 @@ import Cuenta from '@/Pages/Personal/CuentaAdministrar'
 
 export default {
   props: {
-
+    actulizar: Boolean
   },
   data: () => ({
     notifications: false,
@@ -96,7 +104,7 @@ export default {
       value: 'cargo'
     },
     {
-      text: 'Actions',
+      text: 'Tarea',
       value: 'actions',
       sortable: false
     },
@@ -117,6 +125,8 @@ export default {
       carbs: 0,
       protein: 0,
     },
+    items: ['foo', 'bar', 'fizz', 'buzz'],
+    value: ['foo', 'bar', 'fizz', 'buzz'],
 
     //roles: [] 
     //['Admin', 'Medico General', 'Trabajo Social', 'Operador Terapético', 'Psicologo', 'Psicologo', 'Secretaria', 'recepcionista'],
@@ -134,13 +144,13 @@ export default {
     //console.log(cargos)
   },
   computed: {
-    update(validate) {
+    update(validaste) {
 
     }
 
   },
   watch: {
-
+    
   },
   methods: {
     openAdminr(item){
