@@ -6,31 +6,31 @@
                 <v-list two-line>
                     <v-list-item-group v-model="selected_equipo" active-class="pink--text">
                         <template v-for="(item, index) in equipo">
-                            <v-list-item :key="item.title" >
+                            <v-list-item :key="item.title">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
                                         <v-list-item-title v-text="item.equipo"></v-list-item-title>
-        
+
                                         <v-list-item-subtitle class="text--primary"
                                             v-text="item.headline"></v-list-item-subtitle>
-        
+
                                         <v-list-item-subtitle v-text="item.ap_paterno"></v-list-item-subtitle>
                                     </v-list-item-content>
-        
+
                                     <v-list-item-action>
                                         <v-list-item-action-text v-text="item.action"></v-list-item-action-text>
-        
+
                                         <v-icon v-if="!active" color="grey lighten-1">
                                             mdi-star-outline
                                         </v-icon>
-        
+
                                         <v-icon v-else color="yello w darken-3">
                                             mdi-star
                                         </v-icon>
                                     </v-list-item-action>
                                 </template>
                             </v-list-item>
-        
+
                             <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
                         </template>
                     </v-list-item-group>
@@ -38,35 +38,38 @@
 
 
             </v-col>
+            <!--seleccion_equipo(selected_equipo)">-->
+
             <v-col cols="6">
-                <v-list two-line>
-                    <v-list-item-group v-model="selected_lista" active-class="pink--text" >
-                        <template v-for="(item, index) in seleccion_equipo(selected_equipo)">
-                            <v-list-item :key="item.title">
+                <v-list two-line v-if="selected_equipo >= 0">
+                    <v-list-item-group v-model="selected_lista" active-class="pink--text">
+                        <template v-for="(item, index) in items">
+
+                            <v-list-item v-if="item.equipo === selected_equipo" :key="item.title">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
                                         <v-list-item-title v-text="item.nombre"></v-list-item-title>
-        
+
                                         <v-list-item-subtitle class="text--primary"
                                             v-text="item.headline"></v-list-item-subtitle>
-        
+
                                         <v-list-item-subtitle v-text="item.ap_paterno"></v-list-item-subtitle>
                                     </v-list-item-content>
-        
+
                                     <v-list-item-action>
                                         <v-list-item-action-text v-text="item.action"></v-list-item-action-text>
-        
+
                                         <v-icon v-if="!active" color="grey lighten-1">
                                             mdi-star-outline
                                         </v-icon>
-        
+
                                         <v-icon v-else color="yello w darken-3">
                                             mdi-star
                                         </v-icon>
                                     </v-list-item-action>
                                 </template>
                             </v-list-item>
-        
+
                             <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
                         </template>
                     </v-list-item-group>
@@ -77,33 +80,34 @@
             <v-col cols="4">
                 <v-list two-line>
                     <h3>Medico</h3>
-                    <v-list-item-group v-model="selected_medico" active-class="pink--text" >
+                    <v-list-item-group v-model="selected_medico" active-class="pink--text">
                         <template v-for="(item, index) in items">
-                            <v-list-item v-if="item.cargo=='Medico General'" :key="item.title" @click="addequipo(item)">
+                            <v-list-item v-if="item.cargo == 'Medico General'" :key="item.title"
+                                @click="addequipo(item, index)">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
                                         <v-list-item-title v-text="item.nombre"></v-list-item-title>
-        
+
                                         <v-list-item-subtitle class="text--primary"
                                             v-text="item.headline"></v-list-item-subtitle>
-        
+
                                         <v-list-item-subtitle v-text="item.ap_paterno"></v-list-item-subtitle>
                                     </v-list-item-content>
-        
+
                                     <v-list-item-action>
                                         <v-list-item-action-text v-text="item.action"></v-list-item-action-text>
-        
-                                        <v-icon v-if="!active" color="grey lighten-1">
+
+                                        <v-icon v-if="!(item.equipo >= 0)" color="grey lighten-1">
                                             mdi-star-outline
                                         </v-icon>
-        
+
                                         <v-icon v-else color="yellow darken-3">
                                             mdi-star
                                         </v-icon>
                                     </v-list-item-action>
                                 </template>
                             </v-list-item>
-        
+
                             <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
                         </template>
                     </v-list-item-group>
@@ -112,37 +116,38 @@
 
 
             </v-col>
-            
+
             <v-col cols="4">
                 <h3>Psicologo</h3>
                 <v-list two-line>
-                    <v-list-item-group v-model="selected_psicologo" active-class="pink--text" >
-                        <template v-if="item.cargo=='Psicologo'" v-for="(item, index) in items" @click="addequipo(item)">
-                            <v-list-item :key="item.title" >
+                    <v-list-item-group v-model="selected_psicologo" active-class="pink--text">
+                        <template v-for="(item, index) in items">
+                            <v-list-item v-if="item.cargo == 'Psicologo'" :key="item.title"
+                                @click="addequipo(item, index)">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
                                         <v-list-item-title v-text="item.nombre"></v-list-item-title>
-        
+
                                         <v-list-item-subtitle class="text--primary"
                                             v-text="item.headline"></v-list-item-subtitle>
-        
+
                                         <v-list-item-subtitle v-text="item.ap_paterno"></v-list-item-subtitle>
                                     </v-list-item-content>
-        
+
                                     <v-list-item-action>
                                         <v-list-item-action-text v-text="item.action"></v-list-item-action-text>
-        
-                                        <v-icon v-if="!active" color="grey lighten-1">
+
+                                        <v-icon v-if="!(item.equipo >= 0)" color="grey lighten-1">
                                             mdi-star-outline
                                         </v-icon>
-        
+
                                         <v-icon v-else color="yellow darken-3">
                                             mdi-star
                                         </v-icon>
                                     </v-list-item-action>
                                 </template>
                             </v-list-item>
-        
+
                             <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
                         </template>
                     </v-list-item-group>
@@ -151,37 +156,37 @@
 
 
             </v-col>
-      
+
             <v-col cols="4">
                 <h3>Trabajo Social</h3>
                 <v-list two-line>
-                    <v-list-item-group  v-model="selected_trabajo" active-class="pink--text" >
-                        <template v-if="item.cargo=='Trabajo Social'" v-for="(item, index) in items" >
-                            <v-list-item :key="item.title" @click="addequipo(item)">
+                    <v-list-item-group v-model="selected_trabajo" active-class="pink--text">
+                        <template v-if="item.cargo == 'Trabajo Social'" v-for="(item, index) in items">
+                            <v-list-item :key="item.title" ref="trabajo" @click="addequipo(item, index)">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
                                         <v-list-item-title v-text="item.nombre"></v-list-item-title>
-        
+
                                         <v-list-item-subtitle class="text--primary"
                                             v-text="item.headline"></v-list-item-subtitle>
-        
+
                                         <v-list-item-subtitle v-text="item.ap_paterno"></v-list-item-subtitle>
                                     </v-list-item-content>
-        
+
                                     <v-list-item-action>
                                         <v-list-item-action-text v-text="item.action"></v-list-item-action-text>
-        
-                                        <v-icon v-if="!active" color="grey lighten-1">
+
+                                        <v-icon v-if="!(item.equipo >= 0)" color="grey lighten-1">
                                             mdi-star-outline
                                         </v-icon>
-        
+
                                         <v-icon v-else color="yellow darken-3">
                                             mdi-star
                                         </v-icon>
                                     </v-list-item-action>
                                 </template>
                             </v-list-item>
-        
+
                             <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
                         </template>
                     </v-list-item-group>
@@ -192,7 +197,7 @@
             </v-col>
 
         </v-row>
-        
+
     </AppLayout>
 
 </template>
@@ -214,7 +219,7 @@ export default {
     },
     data: () => ({
         selected_medico: '',
-        selected_psicologo:'',
+        selected_psicologo: '',
         selected_trabajo: '',
         selected: [2],
         items: [
@@ -258,21 +263,13 @@ export default {
             {
                 equipo: 'Equipo 2',
                 lista: [
-                    {
-                        nombre: 'ERICKpioooo'
-                    },
-                    {
-                        nombre: 'ERICKpioooo'
-                    },
-                    {
-                        nombre: 'ERICKpioooo'
-                    }
 
                 ]
             },
         ],
-        selected_equipo: [],
+        selected_equipo: '',
         selected_lista: []
+
     }),
     mounted() {
         //console.log('sssss', this.item);
@@ -313,23 +310,47 @@ export default {
             }
 
         },
-        seleccion_equipo(i){
-            console.log(i);
-            if(typeof this.equipo[i] == 'undefined') return
+        seleccion_equipo(i) {
+            //console.log(i);
+            if (typeof this.equipo[i] == 'undefined') return
             return this.equipo[i].lista
 
         },
-        addequipo(item){
-            console.log(item);
-            let findx = this.equipo[this.selected_equipo].lista.findIndex(o => o.ci === item.ci)
-            if(typeof this.equipo[this.selected_equipo] == 'undefined') return
-            if(findx >  -1)
-            {
-                this.equipo[this.selected_equipo].lista.splice(findx, 1);
-                return;
+        addequipo(item, index) {
+            console.log(this.selected_equipo);
+            console.log('-->', index);
+            let findx = this.items.findIndex(o => o.cargo === item.cargo && o.equipo == this.selected_equipo)
+
+            if (item.equipo >= 0) {
+                item.equipo = -1
+                
+            } else {
+                if (findx >= 0) {
+                    this.items[findx].equipo = -1
+                }
+                item.equipo = this.selected_equipo
             }
-            
+            return
+            //</let findx = this.equipo[this.selected_equipo].lista.findIndex(o => o.ci === item.ci)>
+            if (typeof this.equipo[this.selected_equipo] == 'undefined') return
+            if (findx > -1) {
+                this.equipo[this.selected_equipo].lista.splice(findx, 1)
+
+                //this.equipo[this.selected_equipo].lista.push(item)
+                return
+
+            }
+            let findy = this.equipo[this.selected_equipo].lista.findIndex(o => o.cargo === item.cargo)
+            if (findy > -1) {
+                this.equipo[this.selected_equipo].lista.splice(findy, 1)
+
+            }
             this.equipo[this.selected_equipo].lista.push(item)
+            //this.equipo[this.selected_equ,,ipo].
+
+        },
+        verificar(active, item) {
+            return
 
         }
     },
