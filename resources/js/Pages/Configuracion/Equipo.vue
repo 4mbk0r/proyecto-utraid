@@ -6,7 +6,7 @@
                 <v-list two-line>
                     <v-list-item-group v-model="selected_equipo" active-class="pink--text">
                         <template v-for="(item, index) in equipo">
-                            <v-list-item :key="item.title">
+                            <v-list-item :key="item.title" @click="seleccion_equipo">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
                                         <v-list-item-title v-text="item.equipo"></v-list-item-title>
@@ -45,7 +45,7 @@
                     <v-list-item-group v-model="selected_lista" active-class="pink--text">
                         <template v-for="(item, index) in items">
 
-                            <v-list-item v-if="item.equipo === selected_equipo" :key="item.title">
+                            <v-list-item v-if="item.equipo === selected_equipo && item.guardar" :key="item.title">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
                                         <v-list-item-title v-text="item.nombre"></v-list-item-title>
@@ -66,15 +66,38 @@
                                         <v-icon v-else color="yello w darken-3">
                                             mdi-star
                                         </v-icon>
+                                        <v-btn @click = "selected_delete(item)">
+                                            <v-icon color="yello w darken-3">
+                                                mdi-delete
+                                            </v-icon>
+                                        </v-btn>
                                     </v-list-item-action>
                                 </template>
                             </v-list-item>
 
                             <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
+
                         </template>
+                        <v-row>
+                            <v-col>
+                                <v-btn class="mx-2" fab dark color="indigo">
+                                    <v-icon dark>
+                                        mdi-content-save-outline
+                                    </v-icon>
+                                </v-btn>
+                            </v-col>
+                            <v-col>
+                                <v-btn class="mx-2" fab dark color="indigo">
+                                    <v-icon dark>
+                                        mdi-delete
+                                    </v-icon>
+                                </v-btn>
+                            </v-col>
+                        </v-row>
                     </v-list-item-group>
                 </v-list>
             </v-col>
+
         </v-row>
         <v-row>
             <v-col cols="4">
@@ -82,7 +105,7 @@
                     <h3>Medico</h3>
                     <v-list-item-group v-model="selected_medico" active-class="pink--text">
                         <template v-for="(item, index) in items">
-                            <v-list-item v-if="item.cargo == 'Medico General'" :key="item.title"
+                            <v-list-item v-if="item.cargo == 'Medico General' && !item.guardar" :key="item.title"
                                 @click="addequipo(item, index)">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
@@ -102,7 +125,7 @@
                                         </v-icon>
 
                                         <v-icon v-else color="yellow darken-3">
-                                            mdi-star
+                                            {{ item.equipo + 1 }}
                                         </v-icon>
                                     </v-list-item-action>
                                 </template>
@@ -122,7 +145,7 @@
                 <v-list two-line>
                     <v-list-item-group v-model="selected_psicologo" active-class="pink--text">
                         <template v-for="(item, index) in items">
-                            <v-list-item v-if="item.cargo == 'Psicologo'" :key="item.title"
+                            <v-list-item v-if="item.cargo == 'Psicologo' && !item.guardar" :key="item.title"
                                 @click="addequipo(item, index)">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
@@ -142,7 +165,7 @@
                                         </v-icon>
 
                                         <v-icon v-else color="yellow darken-3">
-                                            mdi-star
+                                            {{ item.equipo + 1 }}
                                         </v-icon>
                                     </v-list-item-action>
                                 </template>
@@ -161,7 +184,7 @@
                 <h3>Trabajo Social</h3>
                 <v-list two-line>
                     <v-list-item-group v-model="selected_trabajo" active-class="pink--text">
-                        <template v-if="item.cargo == 'Trabajo Social'" v-for="(item, index) in items">
+                        <template v-if="item.cargo == 'Trabajo Social' && !item.guardar" v-for="(item, index) in items">
                             <v-list-item :key="item.title" ref="trabajo" @click="addequipo(item, index)">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
@@ -181,7 +204,7 @@
                                         </v-icon>
 
                                         <v-icon v-else color="yellow darken-3">
-                                            mdi-star
+                                            {{ item.equipo + 1 }}
                                         </v-icon>
                                     </v-list-item-action>
                                 </template>
@@ -266,6 +289,12 @@ export default {
 
                 ]
             },
+            {
+                equipo: 'Equipo 3',
+                lista: [
+
+                ]
+            },
         ],
         selected_equipo: '',
         selected_lista: []
@@ -310,25 +339,42 @@ export default {
             }
 
         },
-        seleccion_equipo(i) {
+        selected_delete(item){
+            console.log(item);
+            item.guardar=false
+            item.equipo=-1
+        },
+        seleccion_equipo() {
             //console.log(i);
-            if (typeof this.equipo[i] == 'undefined') return
-            return this.equipo[i].lista
+            this.selected_medico = ''
+            this.selected_psicologo = ''
+            this.selected_trabajo = ''
+
 
         },
         addequipo(item, index) {
             console.log(this.selected_equipo);
             console.log('-->', index);
+            if (this.selected_equipo == 'undefined' || this.selected_equipo === '') {
+                this.selected_medico = ''
+                this.selected_psicologo = ''
+                this.selected_trabajo = ''
+                return
+
+            }
             let findx = this.items.findIndex(o => o.cargo === item.cargo && o.equipo == this.selected_equipo)
 
             if (item.equipo >= 0) {
                 item.equipo = -1
-                
+                item.guardar = false
+
             } else {
                 if (findx >= 0) {
                     this.items[findx].equipo = -1
+                    this.items[findx].guardar = false
                 }
                 item.equipo = this.selected_equipo
+                item.guardar = true
             }
             return
             //</let findx = this.equipo[this.selected_equipo].lista.findIndex(o => o.ci === item.ci)>

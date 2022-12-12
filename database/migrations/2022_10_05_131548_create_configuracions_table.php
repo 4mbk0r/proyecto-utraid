@@ -26,7 +26,7 @@ class CreateConfiguracionsTable extends Migration
             $table->string('repeticion')->default('');
             //$table->boolean('activo')->default(1);
             //$table->integer('historial')->nullable();
-            $table->unique(['descripcion', 'institucion']);
+            //$table->unique(['descripcion', 'institucion']);
             $table->foreign('institucion')->references('codigo')->on('institucions')->onDelete('cascade')->onUpdate('cascade');
 
 
