@@ -302,6 +302,7 @@ export default {
     }),
     mounted() {
         //console.log('sssss', this.item);
+        
     },
     components: {
         AppLayout
