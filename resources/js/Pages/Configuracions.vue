@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <app-layout>
     <div>
       <div>
         {{ fecha_server }}
@@ -76,7 +76,7 @@
       </deleteconfig>
     </div>
 
-  </v-app>
+  </app-layout>
 </template>
     
 <script>
@@ -89,7 +89,8 @@ import moment from 'moment'
 export default {
   components: {
     Editconfig,
-    deleteconfig
+    deleteconfig,
+    AppLayout
   },
   props: {
 

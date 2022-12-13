@@ -1,6 +1,6 @@
 
 <template>
-    <AppLayout>
+    <v-card>
         <v-row>
             <v-col cols="6">
                 <v-list two-line>
@@ -66,7 +66,7 @@
                                         <v-icon v-else color="yello w darken-3">
                                             mdi-star
                                         </v-icon>
-                                        <v-btn @click = "selected_delete(item)">
+                                        <v-btn @click="selected_delete(item)">
                                             <v-icon color="yello w darken-3">
                                                 mdi-delete
                                             </v-icon>
@@ -220,8 +220,8 @@
             </v-col>
 
         </v-row>
+    </v-card>
 
-    </AppLayout>
 
 </template>
 
@@ -236,6 +236,7 @@ export default {
         dialog: Boolean,
         mensaje: Object,
         datos: Object,
+        equipo: Array,
     },
     created() {
         this.pedir_datos();
@@ -245,39 +246,8 @@ export default {
         selected_psicologo: '',
         selected_trabajo: '',
         selected: [2],
-        items: [
-            {
-                action: '15 min',
-                headline: 'Brunch this weekend?',
-                subtitle: `I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`,
-                title: 'Ali Connors',
-            },
-            {
-                action: '2 hr',
-                headline: 'Summer BBQ',
-                subtitle: `Wish I could come, but I'm out of town this weekend.`,
-                title: 'me, Scrott, Jennifer',
-            },
-            {
-                action: '6 hr',
-                headline: 'Oui oui',
-                subtitle: 'Do you have Paris recommendations? Have you ever been?',
-                title: 'Sandra Adams',
-            },
-            {
-                action: '12 hr',
-                headline: 'Birthday gift',
-                subtitle: 'Have any ideas about what we should get Heidi for her birthday?',
-                title: 'Trevor Hansen',
-            },
-            {
-                action: '18hr',
-                headline: 'Recipe to try',
-                subtitle: 'We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
-                title: 'Britta Holt',
-            },
-        ],
-        equipo: [
+        items: [],
+        /*equipo: [
             {
                 equipo: 'Equipo 1',
                 lista: [
@@ -294,15 +264,15 @@ export default {
                 lista: [
 
                 ]
-            },
-        ],
+            }
+        ],*/
         selected_equipo: '',
         selected_lista: []
 
     }),
     mounted() {
         //console.log('sssss', this.item);
-        
+
     },
     components: {
         AppLayout
@@ -340,10 +310,14 @@ export default {
             }
 
         },
-        selected_delete(item){
+        selected_delete(item) {
             console.log(item);
-            item.guardar=false
-            item.equipo=-1
+            item.guardar = false
+            item.equipo = -1
+            let findy = this.equipo[this.selected_equipo].lista.findIndex(o => o.ci === item.ci)
+            if (findy > -1) {
+                this.equipo[this.selected_equipo].lista.splice(findy, 1)
+            }
         },
         seleccion_equipo() {
             //console.log(i);
@@ -368,33 +342,20 @@ export default {
             if (item.equipo >= 0) {
                 item.equipo = -1
                 item.guardar = false
+                this.selected_delete(item)
 
             } else {
                 if (findx >= 0) {
+
                     this.items[findx].equipo = -1
                     this.items[findx].guardar = false
+                    //
+                    this.selected_delete(this.items[findx])
                 }
                 item.equipo = this.selected_equipo
                 item.guardar = true
+                this.equipo[this.selected_equipo].lista.push(item)
             }
-            return
-            //</let findx = this.equipo[this.selected_equipo].lista.findIndex(o => o.ci === item.ci)>
-            if (typeof this.equipo[this.selected_equipo] == 'undefined') return
-            if (findx > -1) {
-                this.equipo[this.selected_equipo].lista.splice(findx, 1)
-
-                //this.equipo[this.selected_equipo].lista.push(item)
-                return
-
-            }
-            let findy = this.equipo[this.selected_equipo].lista.findIndex(o => o.cargo === item.cargo)
-            if (findy > -1) {
-                this.equipo[this.selected_equipo].lista.splice(findy, 1)
-
-            }
-            this.equipo[this.selected_equipo].lista.push(item)
-            //this.equipo[this.selected_equ,,ipo].
-
         },
         verificar(active, item) {
             return

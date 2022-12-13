@@ -4,13 +4,13 @@
 
         <v-stepper v-model="paso">
             <v-stepper-header>
-                <v-stepper-step :complete="paso > 1" step="1">
+                <v-stepper-step  step="1">
                     Paso 1.
                 </v-stepper-step>
 
                 <v-divider></v-divider>
 
-                <v-stepper-step :complete="paso > 2" step="2">
+                <v-stepper-step  step="2">
                     Paso 2.
                 </v-stepper-step>
 
@@ -18,6 +18,10 @@
 
                 <v-stepper-step step="3">
                     Paso 3.
+                </v-stepper-step>
+                <v-divider></v-divider>
+                <v-stepper-step step="4">
+                    Paso 4.
                 </v-stepper-step>
             </v-stepper-header>
 
@@ -104,9 +108,21 @@
                 </v-stepper-content>
 
                 <v-stepper-content step="3">
-                    <salas v-if="paso=='3'"  :configuracion="item"></salas>
+                    <salas v-if="paso=='3'" ref="sala" :configuracion="item"></salas>
 
                     <v-btn color="primary" @click="paso4">
+                        Continue
+                    </v-btn>
+                    <v-divider row></v-divider>
+                    <v-btn text @click="cancelar">
+                        Cancelar
+                    </v-btn>
+                </v-stepper-content>
+            </v-stepper-items>
+            <v-stepper-content step="4">
+                    <equipo v-if="paso=='4'" :equipo="equipo" ref="equipo" ></equipo>
+
+                    <v-btn color="primary" @click="paso5">
                         Continue
                     </v-btn>
                     <v-divider row></v-divider>
@@ -129,12 +145,14 @@ import axios from 'axios'
 import moment from 'moment'
 
 import Salas from '@/Pages/Micomponet/Sala'
+import Equipo from '@/Pages/Configuracion/Equipo'
 
 const day1 = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + new Date().getDate()).slice(-2)
 
 export default {
     components: {
-        Salas
+        Salas,
+        Equipo,
     },
     props: {
         dialog: Boolean,
@@ -151,7 +169,10 @@ export default {
         menu: false,
         paso: 1,
         alert: false,
-        errors_descripcion: []
+        errors_descripcion: [],
+        equipo: [],
+        salas: []
+
     }),
 
     computed: {
@@ -273,14 +294,58 @@ export default {
                 this.validar_configuracion()
                 console.log("_________")
                 console.log(this.item)
+
+                
             }
 
 
 
         },
-        async paso4() {
+        paso4() {
+            //this.paso+=1
+            /*setTimeout(() => {
+                
+            }, 30);*/
+            this.salas  =  structuredClone(this.$refs.sala.desserts)
+            if(  !(this.salas.length > 0) ) {
+                alert('no se puede crear confuguracion con salas 0')
+                return
+            }
+            let k = 1
+            this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo '+(k++), lista: [] }))]
+            this.paso+=1
 
+            /*
+            this.$refs.equipo.equipo = [{
+                equipo: 'Equipo 1',
+                lista: [
+                ]
+            },
+            {
+                equipo: 'Equipo 2',
+                lista: [
 
+                ]
+            },
+            {
+                equipo: 'Equipo 3',
+                lista: [
+
+                ]
+            },]*/
+
+        },
+        paso5(){
+            console.log("______________");
+            console.log(this.$refs.equipo.equipo);
+            let e = this.$refs.equipo.equipo
+            
+            //console.log(this.$refs.equipo.items);
+            //let lista = this.$refs.equipo.items
+            //this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo '+(k++), lista: [] }))]
+            //let lista = this.equipo[this.selected_equipo].lista
+           
+            
         },
         async validar_configuracion() {
             try {
@@ -301,7 +366,9 @@ export default {
                             this.errors_descripcion = ['ya existe esta descripcion']
                             return
                         }
+                        
                         this.paso += 1
+                        
 
                     },
                     (error) => {

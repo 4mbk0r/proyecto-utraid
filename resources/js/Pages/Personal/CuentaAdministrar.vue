@@ -142,11 +142,12 @@ export default {
     props: {
         form: Object,
         admin: Boolean
+        
     },
     data() {
         return {
             cargos: ['assa'],
-
+            form_edit: {}
             //roles: [] 
             //['Admin', 'Medico General', 'Trabajo Social', 'Operador Terapético', 'Psicologo', 'Psicologo', 'Secretaria', 'recepcionista'],
         }
@@ -156,6 +157,7 @@ export default {
         if (this.admin) {
             this.perdir_cargos()
         }
+        this.form_edit = structuredClone(this.form)
     },
     components: {
         AppLayout,
@@ -236,19 +238,23 @@ export default {
             }
         },
         async updateCargo() {
+            console.log(this.form_edit.ci)
+            this.form.username = this.form.ci
             try {
 
                 var res = await axios({
                     method: 'put',
-                    url: `/${process.env.MIX_CARPETA}/personal/`+this.form.ci,
+                    url: `/${process.env.MIX_CARPETA}/personal/`+this.form_edit.ci,
                     data: {
-                        usuario: this.form
+                        usuario: this.form,
+                        //usuario_inicio: this.form_edit
                     }
 
                 }).then(
                     (response) => {
                         console.log(response);
                         //this.cargos = response.data
+                        this.form_edit = structuredClone(this.form)
                     },
                     (error) => {
                         console.log(error);

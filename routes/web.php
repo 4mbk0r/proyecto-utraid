@@ -103,9 +103,6 @@ Route::post('/loginadmin', function () {
 })->name('loginadmin');
 
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/configuracion', function () {
-    return Inertia::render('Config');
-})->name('configuracion');
 
 Route::resource('/configs', ConfiguracionController::class)->middleware(['auth:sanctum', 'verified']);
 
@@ -130,7 +127,13 @@ Route::resource('/configurageneral', Controllgeneral::class);
 Route::resource('/permiso', PermisoController::class);
 
 /*Configuraciones */
-Route::resource('/configuracion2', ConfiguracionController::class)->middleware(['auth:sanctum', 'verified']);;
+Route::resource('/configuracion', ConfiguracionController::class)->middleware(['auth:sanctum', 'verified']);;
+
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/configuracion', function () {
+    return Inertia::render('Configuracions');
+})->name('configuracion');
+
 
 
 Route::resource('/sala', SalaController::class)->middleware(['auth:sanctum', 'verified']);;

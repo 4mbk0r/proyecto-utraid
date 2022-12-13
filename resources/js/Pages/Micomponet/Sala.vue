@@ -196,7 +196,7 @@ export default {
         //this.id_configuracion = $store.state.getid_config()
     },
     async editItem(item) {
-      try {
+      /*try {
           
           let pedido = {
             id_sala: item.id,
@@ -221,7 +221,7 @@ export default {
         } catch (err) {
           console.log("err->", err.response.data)
           return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-        }
+        }*/
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
@@ -284,13 +284,15 @@ export default {
     },
     async save() {
       console.log("editar" + this.editar_consulta);
-      if (typeof this.editar_consulta == 'undefined' || this.editar_consulta == false) {
+      if (typeof this.editar_consulta === 'undefined' || this.editar_consulta === false) {
         if (!(this.editedIndex > -1)) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
+          
+          //Object.assign(this.desserts[this.editedIndex], this.editedItem)
           this.desserts.push(this.editedItem)
 
         } else {
           Object.assign(this.desserts[this.editedIndex], this.editedItem)
+          //this.desserts.push(this.editedItem)
 
 
         }
