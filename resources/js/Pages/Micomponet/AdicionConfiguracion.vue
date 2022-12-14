@@ -1,26 +1,39 @@
 <template>
-    <v-dialog v-if="dialog" v-model="dialog" persistent>
+    <v-dialog v-if="dialog" v-model="dialog" class="text-left" persistent>
 
+        <v-toolbar color="primary" elevation="4" class="justify-space-between">
+            <v-btn color="primary" class="mx-2" fab dark right small @click="close">
+                <v-icon>
+                    mdi-close
+                </v-icon>
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" class="mx-2" fab dark right small @click="atras">
+                <v-icon>
+                    mdi-arrow-left-box
+                </v-icon>
+            </v-btn>
+        </v-toolbar>
 
         <v-stepper v-model="paso">
             <v-stepper-header>
-                <v-stepper-step  step="1">
+                <v-stepper-step editable step="1">
                     Paso 1.
                 </v-stepper-step>
 
                 <v-divider></v-divider>
 
-                <v-stepper-step  step="2">
+                <v-stepper-step editable step="2">
                     Paso 2.
                 </v-stepper-step>
 
                 <v-divider></v-divider>
 
-                <v-stepper-step step="3">
+                <v-stepper-step editable step="3">
                     Paso 3.
                 </v-stepper-step>
                 <v-divider></v-divider>
-                <v-stepper-step step="4">
+                <v-stepper-step editable step="4">
                     Paso 4.
                 </v-stepper-step>
             </v-stepper-header>
@@ -51,84 +64,85 @@
                             </v-form>
                         </v-card-text>
                         <v-card-actions>
-                            <!--<v-spacer></v-spacer>
-                            <v-btn color="blue darken-1" text @click="close">
-                                Cerrar
+                            <v-btn color="primary" @click="paso2">
+                                Continuar
+                                <v-icon>
+                                    mdi-skip-next-circle
+                                </v-icon>
                             </v-btn>
-                            <v-btn color="blue darken-1" text @click="crear">
-                                Crear
-                            </v-btn>-->
+                            <v-divider></v-divider>
+
+                            <v-spacer></v-spacer>
+                            <v-btn text @click="cancelar">
+                                Cancelar
+                            </v-btn>
                         </v-card-actions>
                     </v-card>
-                    <v-btn color="primary" @click="paso2">
-                        Continue
-                    </v-btn>
-                    <v-divider row></v-divider>
-                    <v-btn text @click="cancelar">
-                        Cancelar
-                    </v-btn>
+
                 </v-stepper-content>
 
                 <v-stepper-content step="2">
-                    <v-card class="mb-12" color="grey lighten-1" height="200px">
+                    <v-card class="mb-12">
                         <v-form ref="form_configuracion">
-                            <v-col cols="12">
-                                <v-text-field v-model="configuracion.descripcion" label="Descripcion"
-                                    :rules="[v => !!v || 'Debe ingresar una descripcion']"
-                                    :error-messages="errors_descripcion" @input="limpiar_errors">
-                                </v-text-field>
-                            </v-col>
-                            <v-col cols="12">
-                                <v-text-field v-model="color" hide-details class="ma-0 pa-0" solo>
-                                    <template v-slot:append>
-                                        <v-menu v-model="menu" top nudge-bottom="105" nudge-left="16"
-                                            :close-on-content-click="false">
-                                            <template v-slot:activator="{ on }">
-                                                <div :style="swatchStyle" v-on="on" />
-                                            </template>
-                                            <v-card>
-                                                <v-card-text class="pa-0">
-                                                    <v-color-picker v-model="color" flat />
-                                                </v-card-text>
-                                            </v-card>
-                                        </v-menu>
-                                    </template>
-                                </v-text-field>
-                            </v-col>
+                            <v-row>
+                                <v-col cols="10">
+                                    <v-text-field v-model="configuracion.descripcion" label="Descripcion"
+                                        :rules="[v => !!v || 'Debe ingresar una descripcion']"
+                                        :error-messages="errors_descripcion" @input="limpiar_errors">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="2">
+
+                                    <v-menu v-model="menu" :close-on-content-click="false">
+                                        <template v-slot:activator="{ on }">
+                                            <div :style="swatchStyle" v-on="on" />
+                                        </template>
+                                        <v-card>
+                                            <v-card-text>
+                                                <v-color-picker v-model="color" flat />
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                </v-col>
+                            </v-row>
                         </v-form>
                     </v-card>
-
-                    <v-btn color="primary" @click="paso3">
-                        Continue
-                    </v-btn>
-                    <v-divider row></v-divider>
-                    <v-btn text @click="cancelar">
-                        Cancelar
-                    </v-btn>
+                    <v-card-actions>
+                        <v-btn color="primary" @click="paso3">
+                            Continuar
+                        </v-btn>
+                        <v-divider></v-divider>
+                        <v-btn text @click="cancelar">
+                            Cancelar
+                        </v-btn>
+                    </v-card-actions>
                 </v-stepper-content>
 
                 <v-stepper-content step="3">
-                    <salas v-if="paso=='3'" ref="sala" :configuracion="item"></salas>
-
-                    <v-btn color="primary" @click="paso4">
-                        Continue
-                    </v-btn>
-                    <v-divider row></v-divider>
-                    <v-btn text @click="cancelar">
-                        Cancelar
-                    </v-btn>
+                    <salas ref="sala" :configuracion="item"></salas>
+                    <v-card-actions>
+                        <v-btn color="primary" @click="paso4">
+                            Continuar
+                        </v-btn>
+                        <v-divider></v-divider>
+                        <v-btn text @click="cancelar">
+                            Cancelar
+                        </v-btn>
+                    </v-card-actions>
                 </v-stepper-content>
-            </v-stepper-items>
-            <v-stepper-content step="4">
-                    <equipo v-if="paso=='4'" :equipo="equipo" ref="equipo" ></equipo>
 
-                    <v-btn color="primary" @click="paso5">
-                        Continue
-                    </v-btn>
-                    <v-divider row></v-divider>
-                    <v-btn text @click="cancelar">
-                        Cancelar
-                    </v-btn>
+                <v-stepper-content step="4">
+                    <equipo :equipo="equipo" ref="equipo"></equipo>
+
+                    <v-card-actions>
+                        <v-btn color="primary" @click="paso5">
+                            Continuar
+                        </v-btn>
+                        <v-divider></v-divider>
+                        <v-btn text @click="cancelar">
+                            Cancelar
+                        </v-btn>
+                    </v-card-actions>
                 </v-stepper-content>
             </v-stepper-items>
         </v-stepper>
@@ -252,7 +266,7 @@ export default {
             moment('2010-10-20').isAfter('2010-01-01', 'year'); // false >
             moment('2010-10-20').isAfter('2009-12-31', 'year'); // true>*/
             //console.log(this.item);
-            console.log(this.item)
+            //console.log(this.item)
             if (moment(this.$store.getters.getfecha_server).isSameOrAfter(this.item.fecha_inicio)) {
                 return this.$store.getters.getfecha_server
             }
@@ -284,7 +298,7 @@ export default {
         },
         paso2() {
             if (this.$refs.calendario_linar.validate()) {
-                this.paso += 1
+                this.paso = 2
             }
 
         },
@@ -294,8 +308,8 @@ export default {
                 this.validar_configuracion()
                 console.log("_________")
                 console.log(this.item)
-
                 
+
             }
 
 
@@ -306,14 +320,14 @@ export default {
             /*setTimeout(() => {
                 
             }, 30);*/
-            this.salas  =  structuredClone(this.$refs.sala.desserts)
-            if(  !(this.salas.length > 0) ) {
+            this.salas = structuredClone(this.$refs.sala.desserts)
+            if (!(this.salas.length > 0)) {
                 alert('no se puede crear confuguracion con salas 0')
                 return
             }
             let k = 1
-            this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo '+(k++), lista: [] }))]
-            this.paso+=1
+            this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo ' + (k++), lista: [] }))]
+            this.paso = 4
 
             /*
             this.$refs.equipo.equipo = [{
@@ -335,17 +349,17 @@ export default {
             },]*/
 
         },
-        paso5(){
+        paso5() {
             console.log("______________");
             console.log(this.$refs.equipo.equipo);
             let e = this.$refs.equipo.equipo
-            
+
             //console.log(this.$refs.equipo.items);
             //let lista = this.$refs.equipo.items
             //this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo '+(k++), lista: [] }))]
             //let lista = this.equipo[this.selected_equipo].lista
-           
-            
+
+
         },
         async validar_configuracion() {
             try {
@@ -366,9 +380,9 @@ export default {
                             this.errors_descripcion = ['ya existe esta descripcion']
                             return
                         }
-                        
-                        this.paso += 1
-                        
+
+                        this.paso = 3
+                        console.log(this.paso);
 
                     },
                     (error) => {
@@ -387,8 +401,11 @@ export default {
                     .send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
         },
-        cancelar(){
+        cancelar() {
             this.close()
+        },
+        atras() {
+            this.paso = (this.paso > 1) ? this.paso - 1 : this.paso
         }
 
     }

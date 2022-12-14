@@ -1,8 +1,26 @@
 
 <template>
+
     <v-card>
+
+        <v-row>
+
+            <v-col cols="6">
+                Seleccion de Equipos
+            </v-col>
+            <v-col cols="6">
+                <v-btn class="float-right" dense small @click="delete_all">
+                    <v-icon color="yello w darken-3">
+                        mdi-delete
+                    </v-icon>
+                    Eliminar Todo
+                </v-btn>
+            </v-col>
+        </v-row>
+
         <v-row>
             <v-col cols="6">
+
                 <v-list two-line>
                     <v-list-item-group v-model="selected_equipo" active-class="pink--text">
                         <template v-for="(item, index) in equipo">
@@ -21,7 +39,7 @@
                                         <v-list-item-action-text v-text="item.action"></v-list-item-action-text>
 
                                         <v-icon v-if="!active" color="grey lighten-1">
-                                            mdi-star-outline
+                                            mdi-star-outline {{ getnumero_por_equipo }}
                                         </v-icon>
 
                                         <v-icon v-else color="yello w darken-3">
@@ -41,6 +59,9 @@
             <!--seleccion_equipo(selected_equipo)">-->
 
             <v-col cols="6">
+
+
+                <v-divider></v-divider>
                 <v-list two-line v-if="selected_equipo >= 0">
                     <v-list-item-group v-model="selected_lista" active-class="pink--text">
                         <template v-for="(item, index) in items">
@@ -78,22 +99,7 @@
                             <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
 
                         </template>
-                        <v-row>
-                            <v-col>
-                                <v-btn class="mx-2" fab dark color="indigo">
-                                    <v-icon dark>
-                                        mdi-content-save-outline
-                                    </v-icon>
-                                </v-btn>
-                            </v-col>
-                            <v-col>
-                                <v-btn class="mx-2" fab dark color="indigo">
-                                    <v-icon dark>
-                                        mdi-delete
-                                    </v-icon>
-                                </v-btn>
-                            </v-col>
-                        </v-row>
+
                     </v-list-item-group>
                 </v-list>
             </v-col>
@@ -272,12 +278,24 @@ export default {
     }),
     mounted() {
         //console.log('sssss', this.item);
-
+        if (this.equipo.length > 0) {
+            this.selected_equipo = 0
+        }
     },
     components: {
         AppLayout
     },
+    computed: {
+        getnumero_por_equipo() {
+            if (typeof this.equipo.lista === 'undefined') return ''
+            if (this.equipo.length > 0) {
+                return this.equipo[this.selected_equipo].lista.length
+            }
+            return 0
+        }
+    },
     methods: {
+
         close() {
             //this.dialog = false
             //console.log(this.date);
@@ -288,6 +306,7 @@ export default {
             //console.log(this.date);
             this.$emit('respuesta', true)
         },
+
         async pedir_datos() {
             console.log("datops");
             try {
@@ -314,6 +333,7 @@ export default {
             console.log(item);
             item.guardar = false
             item.equipo = -1
+            if (typeof this.selected_equipo != 'undefined') return
             let findy = this.equipo[this.selected_equipo].lista.findIndex(o => o.ci === item.ci)
             if (findy > -1) {
                 this.equipo[this.selected_equipo].lista.splice(findy, 1)
@@ -330,7 +350,8 @@ export default {
         addequipo(item, index) {
             console.log(this.selected_equipo);
             console.log('-->', index);
-            if (this.selected_equipo == 'undefined' || this.selected_equipo === '') {
+
+            if (typeof this.selected_equipo == 'undefined' || this.selected_equipo === '') {
                 this.selected_medico = ''
                 this.selected_psicologo = ''
                 this.selected_trabajo = ''
@@ -360,6 +381,19 @@ export default {
         verificar(active, item) {
             return
 
+        },
+        verificar_delete_all() {
+
+        },
+        delete_all() {
+
+            for (let i = 0; i < this.items.length; i++) {
+                this.selected_delete(this.items[i]);
+            }
+            this.selected_medico = ''
+            this.selected_psicologo = ''
+            this.selected_trabajo = ''
+            this.selected_equipo = 0
         }
     },
 }
