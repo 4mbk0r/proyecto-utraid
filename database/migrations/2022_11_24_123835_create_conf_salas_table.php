@@ -30,7 +30,7 @@ class CreateConfSalasTable extends Migration
            
         });
         DB::statement(
-            "ALTER TABLE conf_salas ADD FOREIGN KEY (id_configuracion) REFERENCES configuracions(id) ON DELETE CASCADE"
+            "ALTER TABLE conf_salas ADD FOREIGN KEY (id_configuracion) REFERENCES versions(id) ON DELETE CASCADE"
         );
         DB::statement(
             "ALTER TABLE conf_salas ADD FOREIGN KEY (id_sala) REFERENCES salas(id) ON DELETE CASCADE"

@@ -14,7 +14,7 @@ class CreateCuposTable extends Migration
      */
     public function up()
     {
-        Schema::create('cupos', function (Blueprint $table) {
+       /* Schema::create('cupos', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('id_calendario');
             $table->integer('id_sala');
@@ -34,7 +34,7 @@ class CreateCuposTable extends Migration
         );
         DB::statement(
             "ALTER TABLE cupos ADD FOREIGN KEY (id_institucion) REFERENCES institucions(codigo) ON DELETE CASCADE"
-        );
+        );*/
     }
 
     /**
@@ -44,6 +44,6 @@ class CreateCuposTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cupos');
+        //Schema::dropIfExists('cupos');
     }
 }
