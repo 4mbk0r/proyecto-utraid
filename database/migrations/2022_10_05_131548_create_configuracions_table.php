@@ -21,7 +21,7 @@ class CreateConfiguracionsTable extends Migration
             $table->string('descripcion');
             $table->string('institucion');
             $table->string('color');
-            $table->boolean('atencion')->default(0);
+            $table->boolean('atencion')->default(true);
             //$table->string('tipo')->default('Atencion');
             $table->string('repeticion')->default('');
             //$table->boolean('activo')->default(1);

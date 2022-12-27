@@ -13,7 +13,7 @@ const store = new Vuex.Store({
 
         //variables de agenda 2 
         fecha_calendario: '',
-        
+
         //configuraciones 
         config_data: {},
         fecha_hoy: day1,
@@ -33,11 +33,11 @@ const store = new Vuex.Store({
 
     },
     mutations: {
-        update_fecha_server(state, fecha){
-            
+        update_fecha_server(state, fecha) {
+
             state.fecha_server = fecha
         },
-        updateid_config(state, dato){
+        updateid_config(state, dato) {
             state.id_config = dato
         },
         addconfig(state) {
@@ -103,7 +103,7 @@ const store = new Vuex.Store({
         }
     },
     actions: {
-        guardarfechaserver(constext, fecha){
+        guardarfechaserver(constext, fecha) {
             constext.commit('update_fecha_server', fecha)
         },
         updateid_configAction(context) {
@@ -137,7 +137,7 @@ const store = new Vuex.Store({
     },
     getters: {
         gethoy() {
-            return "Hoy es " + store.state.fecha_hoy;
+            return store.state.fecha_hoy;
         },
         getfechas() {
             return store.state.fechas;
@@ -148,10 +148,10 @@ const store = new Vuex.Store({
         getConfig() {
             return store.state.config_data
         },
-        getid_config(){
+        getid_config() {
             return store.state.id_config
         },
-        getfecha_server(){
+        getfecha_server() {
             return store.state.fecha_server
         }
     }

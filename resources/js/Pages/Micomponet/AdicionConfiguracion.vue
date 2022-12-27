@@ -234,7 +234,8 @@ export default {
                     data: {
                         calendario: this.calendario,
                         configuracion_nueva: this.configuracion,
-                        configuracion_antigua: this.item
+                        configuracion_antigua: this.item,
+
                     },
                 }).then(
                     (response) => {
@@ -267,8 +268,9 @@ export default {
             moment('2010-10-20').isAfter('2009-12-31', 'year'); // true>*/
             //console.log(this.item);
             //console.log(this.item)
-            if (moment(this.$store.getters.getfecha_server).isSameOrAfter(this.item.fecha_inicio)) {
-                return this.$store.getters.getfecha_server
+            let f = this.$store.getters.gethoy
+            if (moment(f).isSameOrAfter(this.item.fecha_inicio)) {
+                return f
             }
             return this.item.fecha_inicio
 
@@ -308,7 +310,7 @@ export default {
                 this.validar_configuracion()
                 console.log("_________")
                 console.log(this.item)
-                
+
 
             }
 
@@ -320,7 +322,9 @@ export default {
             /*setTimeout(() => {
                 
             }, 30);*/
+            this.$refs.sala.generar_horario()
             this.salas = structuredClone(this.$refs.sala.desserts)
+
             if (!(this.salas.length > 0)) {
                 alert('no se puede crear confuguracion con salas 0')
                 return
@@ -352,14 +356,42 @@ export default {
         paso5() {
             console.log("______________");
             console.log(this.$refs.equipo.equipo);
-            let e = this.$refs.equipo.equipo
-
+            this.equipo = this.$refs.equipo.equipo
+            this.paso6()
             //console.log(this.$refs.equipo.items);
             //let lista = this.$refs.equipo.items
             //this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo '+(k++), lista: [] }))]
             //let lista = this.equipo[this.selected_equipo].lista
 
 
+        },
+        async paso6() {
+            var res = await axios({
+                method: "post",
+                url: `/${process.env.MIX_CARPETA}/configuracion`,
+                data: {
+
+                    fecha_nueva: this.date,
+                    configuracion: this.configuracion,
+                    configuracion_antigua: this.item,
+                    salas: this.salas,
+                    equipo: this.equipo
+
+                },
+            }).then(
+                (response) => {
+                    //console.log('validat');
+                    //console.log(response);
+                    console.log('___***___');
+                    console.log(response.data);
+                    this.close()
+
+
+                },
+            ).catch((error) => {
+                console.log(error.response.data.mensaje);
+
+            });
         },
         async validar_configuracion() {
             try {

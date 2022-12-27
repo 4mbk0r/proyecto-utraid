@@ -17,33 +17,17 @@ class CreateConfSalasTable extends Migration
     {
         Schema::create('conf_salas', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('id_configuracion');
-            $table->integer('id_sala');
-            $table->integer('id_calendario');
+
             //$table->integer('id_horario');
-            $table->string('id_institucion');
+            $table->string('detalle')->default('default');
             $table->time('tiempo_apertura');
             $table->time('tiempo_cierre');
             $table->time('tiempo_descanso')->nullable();
             $table->integer('min_promedio_atencion');
-            $table->unique(['id_configuracion', 'id_sala',  'id_institucion', 'id_calendario']);
-           
+            $table->unique(['tiempo_apertura',  'tiempo_apertura', 'tiempo_cierre', 'min_promedio_atencion']);
+            //$table->unique(['detalle']);
         });
-        DB::statement(
-            "ALTER TABLE conf_salas ADD FOREIGN KEY (id_configuracion) REFERENCES versions(id) ON DELETE CASCADE"
-        );
-        DB::statement(
-            "ALTER TABLE conf_salas ADD FOREIGN KEY (id_sala) REFERENCES salas(id) ON DELETE CASCADE"
-        );
-        /*DB::statement(
-            "ALTER TABLE conf_salas ADD FOREIGN KEY (id_horario) REFERENCES horarios(id_horario) ON DELETE CASCADE"
-        );*/
-        DB::statement(
-            "ALTER TABLE conf_salas ADD FOREIGN KEY (id_institucion) REFERENCES institucions(codigo) ON DELETE CASCADE"
-        );
-        DB::statement(
-            "ALTER TABLE conf_salas ADD FOREIGN KEY (id_calendario) REFERENCES calendariolineals(id) ON DELETE CASCADE"
-        );
+
         $datos = [
             'id_configuracion' => '1',
             'id_sala' => '1',
@@ -52,8 +36,8 @@ class CreateConfSalasTable extends Migration
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:30:00',
             'tiempo_descanso' => '12:00:00',
-            'min_promedio_atencion'=>'60'
-            
+            'min_promedio_atencion' => '60'
+
         ];
         DB::table('conf_salas')->insert($datos);
         # code...
@@ -65,12 +49,10 @@ class CreateConfSalasTable extends Migration
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:30:00',
             'tiempo_descanso' => '12:00:00',
-            'min_promedio_atencion'=>'60'
-            
+            'min_promedio_atencion' => '60'
+
         ];
         DB::table('conf_salas')->insert($datos);
-        
-
     }
 
     /**

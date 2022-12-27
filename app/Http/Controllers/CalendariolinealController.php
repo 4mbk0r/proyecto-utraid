@@ -135,10 +135,10 @@ class CalendariolinealController extends Controller
     public function destroy(Calendariolineal $calendariolineal)
     {
         //
-        //return $calendariolineal;
+        $tabla = 'calendariolineals';
         if ($calendariolineal->id > 1) {
             try {
-                $tabla = 'calendariolineals';
+
                 $conf_antigua = DB::table($tabla)->where('id', '=', $calendariolineal->id);
                 $resp = $conf_antigua->delete();
                 if ($resp) {
@@ -148,7 +148,15 @@ class CalendariolinealController extends Controller
                     //$conf_antigua =  $conf_antigua[0];
                     $resul = DB::table(self::$table)
                         ->where('id', '=', $calendariolineal->historial)
-                        ->update(['fecha_final' => $calendariolineal->fecha_final, 'principal' => $calendariolineal->principal]);
+                        ->update([
+                            'fecha_final' => $calendariolineal->fecha_final,
+                            'principal' => $calendariolineal->principal
+                        ]);
+                    $resul = DB::table(self::$table)
+                        ->where('historial', '=', $calendariolineal->id)
+                        ->update([
+                            'historial' => $calendariolineal->historial,
+                        ]);
 
                     //DB::table(self::$table)->update($antigua);
 

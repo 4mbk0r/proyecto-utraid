@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Exception;
 use Exception as GlobalException;
+
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Response;
 
 class ConfiguracionController extends Controller
 {
@@ -26,6 +28,8 @@ where  date_trunc('day', dd):: date >='2022-11-17'
     public function index()
     {
         //
+
+
         /*
         
 select configuracions.id, count(configuracions.id) fechas_uso, 
@@ -99,93 +103,95 @@ group by configuracions.id
      */
     public function store(Request $request)
     {
-        //
-        /*date_default_timezone_set("America/La_Paz");
-        $date = date_create();
-        $edit = $request['datos'];
-        $n_fecha_final = date($edit['fecha_inicio']);
-        $n_fecha_final = date("Y-m-d", strtotime($n_fecha_final . "- 1 days"));
+        $antigua = $request['configuracion_antigua'];
+        $configuracion = $request['configuracion'];
+        $fecha = $request['fecha_nueva'];
+        $table = 'calendariolineals';
+        $salas =  $request['salas'];
+        //return $configuracion;
 
-        if ($edit['tipo'] == 'permanente') {
-
-            try {
-                unset($edit['fecha_uso']);
-                $default_actual =  DB::table('configuracions')
-                    ->where('principal', true)
-                    ->update(['principal' => false, 'fecha_final' => $n_fecha_final]);
-
-                $edit['historial'] = $edit['id'];
-                unset($edit['id']);
-                $default_actual =  DB::table('configuracions')->insertGetId($edit);
-                $salas = $request['salas'];
-
-                foreach ($salas as $id => $row) {
-                    # code...
-                    //$row->id;
-                    $row['id'] = $default_actual;
-                    $horario  =  $row['generar_horario'];
-                    unset($row['sala']);
-                    unset($row['generar_horario']);
-                    DB::table('salas')->insert($row);
-                    $id_sala = DB::getPdo()->lastInsertId();;
-                    foreach ($horario as $id => $h) {
-                        $h['sala'] = $id_sala;
-                        DB::table('horarios')->insert($h);
-                    }
-                }
-            } catch (\Throwable $th) {
-                return $th;
-            }
+        try {
+            $id_config =  DB::table('configuracions')
+                ->insertGetId($configuracion);
+        } catch (\Throwable $th) {
+            return Response::json(['mensaje' => $th->getMessage()], 500);
         }
-        if ($edit['tipo'] == 'temporal') {
-            try {
-                unset($edit['id']);
-                $default_actual =  DB::table('configuracions')->insertGetId($edit);
-                $temp = $request['fecha_temporales'];
-                foreach ($temp as $id => $row) {
-                    $p = [
-                        'id' => $default_actual,
-                        'fecha' => $row
+        try {
+
+            $conf_antigua = DB::table($table)
+                ->where('id', '=', $antigua['id_calendario'])
+                ->get()[0];
+
+            //return $conf_antigua;
+            //$conf_antigua->fecha_final = date('Y-m-d', strtotime($nueva['fecha_inicio'] . ' - 1 days'));
+            //unset($conf_antigua->id);
+            $resul = DB::table($table)
+                ->where('id', '=', $antigua['id_calendario'])
+                ->update(['fecha_final' => date('Y-m-d', strtotime($fecha . ' - 1 days')), 'principal' => false]);
+
+            //DB::table(self::$table)->update($antigua);
+        } catch (\Throwable $th) {
+            DB::table('configuracions')->delete($id_config);
+            return Response::json(['mensaje' => $th->getMessage()], 500);
+        }
+        try {
+            $conf_nueva = clone $conf_antigua;
+            $conf_nueva->fecha_inicio = $fecha;
+            $conf_nueva->fecha_final = $conf_antigua->fecha_final;
+            $conf_nueva->historial = $conf_antigua->id;
+            $conf_nueva->id_configuracion = $id_config;
+
+            unset($conf_nueva->id);
+            $id_nueva = DB::table($table)->insertGetId((array)$conf_nueva);
+        } catch (\Throwable $th) {
+            DB::table('configuracions')->delete($id_config);
+            $resul = DB::table($table)
+                ->where('id', '=',  $antigua['id_calendario'])
+                ->update(['fecha_final' => $conf_antigua->fecha_final, 'principal' => $conf_antigua->principal]);
+            return Response::json(['mensaje' => $th->getMessage()], 500);
+        }
+
+        try {
+            //salas
+            //return $salas;
+            $r = [];
+            foreach ($salas as $key => $value) {
+                # code...
+
+                $cont_salas = DB::table('salas')
+                    ->where('descripcion', '=', $value['descripcion'])
+                    ->get();
+
+                if (count($cont_salas) > 0) {
+                    $s = $cont_salas[0];
+                } else {
+                    $s = [
+                        'descripcion' => $value['descripcion'],
+                        'institucion' => $value['institucion'],
+                        'estado' => true,
                     ];
-                    DB::table('cita_tiene_configuracions')->insert($p);
+                    $e = DB::table('salas')->insertGetId($s);
+                    $s = [
+                        'descripcion' => $value['descripcion'],
+                        'institucion' => $value['institucion'],
+                        'estado' => true,
+                        'id' => $e
+                    ];
                 }
-                if ($edit['atencion']) {
-                    $salas = $request['salas'];
-                    foreach ($salas as $id => $row) {
-                        $row['id'] = $default_actual;
-                        $horario  =  $row['generar_horario'];
-                        unset($row['sala']);
-                        unset($row['generar_horario']);
-                        DB::table('salas')->insert($row);
-                        $id_sala = DB::getPdo()->lastInsertId();;
-                        foreach ($horario as $id => $h) {
-                            $h['sala'] = $id_sala;
-                            DB::table('horarios')->insert($h);
-                        }
-                    }
-                }
-            } catch (\Throwable $th) {
-                return $th;
+                array_push($r, $s);
             }
+            return $r;
+        } catch (\Throwable $th) {
+            DB::table('configuracions')->delete($id_config);
+            $resul = DB::table($table)
+                ->where('id', '=',  $antigua['id_calendario'])
+                ->update(['fecha_final' => $conf_antigua->fecha_final, 'principal' => $conf_antigua->principal]);
+            DB::table($table)->delete($id_nueva);
+            return Response::json(['mensaje' => $th->getMessage()], 500);
         }
-        $list_config = DB::table('configuracions')
-            ->select(
-                'configuracions.descripcion',
-                'configuracions.atencion',
-                'configuracions.principal',
-                'configuracions.tipo',
-                'configuracions.historial',
-                'configuracions.id',
-                'configuracions.fecha_final',
-                DB::raw('configuracions.tipo, COALESCE(cita_tiene_configuracions.fecha,configuracions.fecha_inicio) as fecha_inicio')
-            )
-            ->leftJoin('cita_tiene_configuracions',  function ($join) use ($date) {
-                $join->on('configuracions.id', '=', 'cita_tiene_configuracions.id');
-                //date_format($date, "Y-m-d"));
-            })
-            ->where('configuracions.fecha_final', '>=', date_format($date, "Y-m-d"))
-            ->get();
-        return $list_config;*/
+
+
+        return $request;
     }
 
     /**
@@ -315,3 +321,90 @@ where atencion = false;*/
         }
     }
 }
+ //
+        /*date_default_timezone_set("America/La_Paz");
+        $date = date_create();
+        $edit = $request['datos'];
+        $n_fecha_final = date($edit['fecha_inicio']);
+        $n_fecha_final = date("Y-m-d", strtotime($n_fecha_final . "- 1 days"));
+
+        if ($edit['tipo'] == 'permanente') {
+
+            try {
+                unset($edit['fecha_uso']);
+                $default_actual =  DB::table('configuracions')
+                    ->where('principal', true)
+                    ->update(['principal' => false, 'fecha_final' => $n_fecha_final]);
+
+                $edit['historial'] = $edit['id'];
+                unset($edit['id']);
+                $default_actual =  DB::table('configuracions')->insertGetId($edit);
+                $salas = $request['salas'];
+
+                foreach ($salas as $id => $row) {
+                    # code...
+                    //$row->id;
+                    $row['id'] = $default_actual;
+                    $horario  =  $row['generar_horario'];
+                    unset($row['sala']);
+                    unset($row['generar_horario']);
+                    DB::table('salas')->insert($row);
+                    $id_sala = DB::getPdo()->lastInsertId();;
+                    foreach ($horario as $id => $h) {
+                        $h['sala'] = $id_sala;
+                        DB::table('horarios')->insert($h);
+                    }
+                }
+            } catch (\Throwable $th) {
+                return $th;
+            }
+        }
+        if ($edit['tipo'] == 'temporal') {
+            try {
+                unset($edit['id']);
+                $default_actual =  DB::table('configuracions')->insertGetId($edit);
+                $temp = $request['fecha_temporales'];
+                foreach ($temp as $id => $row) {
+                    $p = [
+                        'id' => $default_actual,
+                        'fecha' => $row
+                    ];
+                    DB::table('cita_tiene_configuracions')->insert($p);
+                }
+                if ($edit['atencion']) {
+                    $salas = $request['salas'];
+                    foreach ($salas as $id => $row) {
+                        $row['id'] = $default_actual;
+                        $horario  =  $row['generar_horario'];
+                        unset($row['sala']);
+                        unset($row['generar_horario']);
+                        DB::table('salas')->insert($row);
+                        $id_sala = DB::getPdo()->lastInsertId();;
+                        foreach ($horario as $id => $h) {
+                            $h['sala'] = $id_sala;
+                            DB::table('horarios')->insert($h);
+                        }
+                    }
+                }
+            } catch (\Throwable $th) {
+                return $th;
+            }
+        }
+        $list_config = DB::table('configuracions')
+            ->select(
+                'configuracions.descripcion',
+                'configuracions.atencion',
+                'configuracions.principal',
+                'configuracions.tipo',
+                'configuracions.historial',
+                'configuracions.id',
+                'configuracions.fecha_final',
+                DB::raw('configuracions.tipo, COALESCE(cita_tiene_configuracions.fecha,configuracions.fecha_inicio) as fecha_inicio')
+            )
+            ->leftJoin('cita_tiene_configuracions',  function ($join) use ($date) {
+                $join->on('configuracions.id', '=', 'cita_tiene_configuracions.id');
+                //date_format($date, "Y-m-d"));
+            })
+            ->where('configuracions.fecha_final', '>=', date_format($date, "Y-m-d"))
+            ->get();
+        return $list_config;*/

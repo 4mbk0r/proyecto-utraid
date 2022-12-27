@@ -38,10 +38,10 @@
                 </v-col>
                 <v-col align="center" cols="12" sm="6">
 
-                  <v-tooltip bottom>
+                  <v-tooltip v-if="item.principal" bottom>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn v-if="item.principal" class="ma-2" small :color="item.color" @click="openeditconfig(i)"
-                        v-bind="attrs" v-on="on" dark>
+                      <v-btn class="ma-2" small :color="item.color" @click="openeditconfig(i)" v-bind="attrs" v-on="on"
+                        dark>
 
                         <v-icon dark>
                           mdi-timer-cog
@@ -188,14 +188,19 @@ export default {
       }).then(
         (response) => {
           console.log(response);
+
           this.calendario = response.data
-        },
-        (error) => {
-          console.log(error);
+          setTimeout(() => {
+
+          }, 3);
+
         }
 
 
-      );
+
+      ).catch((error) => {
+        console.log(error)
+      });
       this.deleteConfig = false
 
 
