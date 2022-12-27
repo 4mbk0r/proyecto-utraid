@@ -24,35 +24,11 @@ class CreateConfSalasTable extends Migration
             $table->time('tiempo_cierre');
             $table->time('tiempo_descanso')->nullable();
             $table->integer('min_promedio_atencion');
-            $table->unique(['tiempo_apertura',  'tiempo_apertura', 'tiempo_cierre', 'min_promedio_atencion']);
+            $table->unique(['tiempo_apertura',  'tiempo_descanso', 'tiempo_cierre', 'min_promedio_atencion']);
             //$table->unique(['detalle']);
         });
 
-        $datos = [
-            'id_configuracion' => '1',
-            'id_sala' => '1',
-            'id_calendario' => '1',
-            'id_institucion' => '01',
-            'tiempo_apertura' => '08:00:00',
-            'tiempo_cierre' => '15:30:00',
-            'tiempo_descanso' => '12:00:00',
-            'min_promedio_atencion' => '60'
-
-        ];
-        DB::table('conf_salas')->insert($datos);
-        # code...
-        $datos = [
-            'id_configuracion' => '1',
-            'id_sala' => '2',
-            'id_calendario' => '1',
-            'id_institucion' => '01',
-            'tiempo_apertura' => '08:00:00',
-            'tiempo_cierre' => '15:30:00',
-            'tiempo_descanso' => '12:00:00',
-            'min_promedio_atencion' => '60'
-
-        ];
-        DB::table('conf_salas')->insert($datos);
+        
     }
 
     /**

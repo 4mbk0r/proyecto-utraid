@@ -35,23 +35,7 @@ class CreateConfigHorariosTable extends Migration
         DB::statement(
             "ALTER TABLE config_horarios ADD FOREIGN KEY (id_conf_sala) REFERENCES conf_salas(id) ON DELETE CASCADE"
         );
-        for ($i=1; $i < 6; $i++) { 
-            # code...
-            $datos = [
-                
-                'id_conf_sala' => '1',
-                'id_horario' => $i                 
-                
-            ];
-            DB::table('config_horarios')->insert($datos);
-            $datos = [
-                
-                'id_conf_sala' => '2',
-                'id_horario' => $i                 
-                
-            ];
-            DB::table('config_horarios')->insert($datos);
-        }
+        
     }
 
     /**
