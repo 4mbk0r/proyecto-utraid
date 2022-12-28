@@ -157,3 +157,7 @@ Route::get('/equipos', function () {
     return Inertia::render('Configuracion/Equipo');
 })->name('equipos');
 
+Route::get('/salaespera', function () {
+    return Inertia::render('Micomponet/SalaEspera');
+})->name('salaespera');
+

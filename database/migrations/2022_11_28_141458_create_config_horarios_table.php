@@ -26,15 +26,8 @@ class CreateConfigHorariosTable extends Migration
             $table->integer('id_horario');
             $table->integer('id_conf_sala');
             $table->unique(['id_horario', 'id_conf_sala']);
-            
-
         });
-        DB::statement(
-            "ALTER TABLE config_horarios ADD FOREIGN KEY (id_horario) REFERENCES horarios(id_horario) ON DELETE CASCADE"
-        );
-        DB::statement(
-            "ALTER TABLE config_horarios ADD FOREIGN KEY (id_conf_sala) REFERENCES conf_salas(id) ON DELETE CASCADE"
-        );
+        
         
     }
 

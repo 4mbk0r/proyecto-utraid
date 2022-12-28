@@ -15,15 +15,26 @@ class CreateAsignarSalasTable extends Migration
     public function up()
     {
         Schema::create('asignar_salas', function (Blueprint $table) {
-            $table->increments('id');
+            $table->integer('id_sala');
+            $table->integer('id_conf');
+            
         });
         DB::statement(
-            "ALTER TABLE asignar_salas ADD FOREIGN KEY (id_horario) REFERENCES horarios(id_horario) ON DELETE CASCADE"
+            "ALTER TABLE asignar_salas ADD FOREIGN KEY (id_sala) REFERENCES salas(id) ON DELETE CASCADE"
         );
         DB::statement(
-            "ALTER TABLE asignar_salas ADD FOREIGN KEY (id_conf_sala) REFERENCES conf_salas(id) ON DELETE CASCADE"
+            "ALTER TABLE asignar_salas ADD FOREIGN KEY (id_conf) REFERENCES conf_salas(id) ON DELETE CASCADE"
         );
-
+        for ($i=1; $i <= 5 ; $i++) { 
+            # code...
+            $datos = [
+                'id_sala' => $i,
+                'id_conf'=>1,
+            ];
+            DB::table('asignar_salas')->insert($datos);
+        }
+     
+        
     }
     
 

@@ -6,67 +6,7 @@
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-              Adicionar Salas
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
-            </v-card-title>
-
-            <v-card-text>
-              <v-form>
-                <v-row>
-                  <v-col>
-                    <v-text-field v-model="editedItem.descripcion" label="Nombre de la Sala"></v-text-field>
-                  </v-col>
-                </v-row>
-
-                <v-row>
-                  <v-col cols="12" sm="4">
-                    <v-text-field v-model="editedItem.tiempo_apertura" type="time" label="Hora de apertura">
-                    </v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="4">
-                    <v-text-field v-model="editedItem.tiempo_cierre" type="time" label="Hora de cierre"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="4">
-                    <v-text-field v-model="editedItem.min_promedio_atencion" label="Minutos promedio de atencion"
-                      @change="calcular_horario">
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12" sm="4">
-                    <v-text-field v-model="editedItem.tiempo_descanso" @change="calcular_horario" type="time"
-                      label="Hora de descanso">
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-data-table :headers="headers_consultorio" :footer-props="{
-                
-                  'items-per-page-text': '',
-                  'items-per-page-all-text': 'Todos'
-                
-                }" :items="horario" sort-by="calories" class="elevation-1">
-
-                </v-data-table>
-
-              </v-form>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close">
-                Cancelar
-              </v-btn>
-              <v-btn color="blue darken-1" text @click="save">
-                Guardar
-              </v-btn>
-            </v-card-actions>
-          </v-card>
+          
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>

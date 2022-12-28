@@ -31,7 +31,7 @@ class CreateCitasTable extends Migration
             
         });
         DB::statement(
-            "ALTER TABLE citas ADD FOREIGN KEY (horario) REFERENCES horarios(id_horario) ON DELETE CASCADE"
+            "ALTER TABLE citas ADD FOREIGN KEY (horario) REFERENCES horarios(id) ON DELETE CASCADE"
         );
         DB::statement(
             "ALTER TABLE citas ADD FOREIGN KEY (consultorio) REFERENCES salas(id) ON DELETE CASCADE"
