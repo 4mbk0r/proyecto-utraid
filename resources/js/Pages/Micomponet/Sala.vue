@@ -5,8 +5,11 @@
         <v-toolbar-title>Sala</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
+        <v-btn color="primary" @click="dialog=true">
+                            Adicionar Sala
+                        </v-btn>
         <v-dialog v-model="dialog" max-width="500px">
-          
+            <salaespera></salaespera>
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
@@ -43,6 +46,7 @@ import AppLayout from '@/Layouts/AppLayout'
 import Welcome from '@/Jetstream/Welcome'
 import Barrasu from '@/Pages/Micomponet/Barrasu'
 import moment from 'moment'
+import salaespera from '@/Pages/Micomponet/SalaEspera'
 export default {
   props: {
 
@@ -90,6 +94,9 @@ export default {
     ],
     horario: [],
   }),
+  components:{
+    salaespera
+  },  
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? 'Nueva Cansulta' : 'Editar Consulta'
