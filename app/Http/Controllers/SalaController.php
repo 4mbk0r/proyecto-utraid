@@ -40,6 +40,9 @@ class SalaController extends Controller
      */
     public function store(Request $request)
     {
+        
+        return $request;
+        
         //
         try {
             $id_last = DB::table('salas')->insertGetId($request['datos']);

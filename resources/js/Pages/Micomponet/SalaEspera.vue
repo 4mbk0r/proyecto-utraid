@@ -1,6 +1,6 @@
 <template>
   <v-app>
-
+    
     <v-card>
       <v-card-title>
         <v-row>
@@ -13,7 +13,7 @@
             </v-btn>
           </v-col>
           <v-col cols="3">
-            <v-btn tile color="success">
+            <v-btn tile color="success" @click="guardar">
               <v-icon left>
                 mdi-pencil
               </v-icon>
@@ -22,34 +22,41 @@
           </v-col>
         </v-row>
       </v-card-title>
-
+      
       <v-card-text>
         <v-form ref="salas">
           <v-row>
             <v-col>
-              <v-text-field v-model="editedItem.descripcion" label="Nombre de la Sala"></v-text-field>
+              <v-text-field v-model="editedItem.descripcion" label="Nombre de la Sala"
+              :rules="nombreRules"
+              ></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12" sm="4">
-              <v-text-field v-model="editedItem.tiempo_apertura" type="time" label="Hora de apertura">
+              <v-text-field v-model="editedItem.tiempo_apertura" @change="calcular_horario" type="time"
+              :rules="nombreRules"  
+              label="Hora de apertura">
               </v-text-field>
             </v-col>
             <v-col cols="12" sm="4">
               <v-text-field v-model="editedItem.tiempo_cierre" type="time" @change="calcular_horario"
-                label="Hora de cierre"></v-text-field>
+              :rules="nombreRules"  
+              label="Hora de cierre"></v-text-field>
             </v-col>
             <v-col cols="12" sm="4">
               <v-text-field v-model="editedItem.min_promedio_atencion" label="Minutos promedio de atencion"
-                @change="calcular_horario">
+              :rules="nombreRules"  
+              @change="calcular_horario">
               </v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" sm="4">
               <v-text-field v-model="editedItem.tiempo_descanso" @change="calcular_horario" type="time"
-                label="Hora de descanso">
+              :rules="nombreRules"  
+              label="Hora de descanso">
               </v-text-field>
             </v-col>
 
@@ -63,6 +70,7 @@
         </v-form>
       </v-card-text>
 
+      <!--
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="close">
@@ -72,6 +80,7 @@
           Guardar
         </v-btn>
       </v-card-actions>
+    -->
     </v-card>
   </v-app>
 
@@ -124,6 +133,11 @@ export default {
       },
     ],
     horario: [],
+    nombreRules: [
+      (v) => !!v || "Dato requerido",
+      
+      //v => v.length <= 10 || 'Name must be less than 10 characters',
+    ],
   }),
   computed: {
     formTitle() {
@@ -148,6 +162,26 @@ export default {
     this.initialize()
   },
   methods: {
+    async guardar() {
+      if(this.$refs.salas.validate()){
+        var res = await axios({
+        method: "post",
+        url: `/${process.env.MIX_CARPETA}/` + "sala" ,
+        data: this.editedItem
+      }).then(
+        (response) => {
+          console.log(response);
+          //console.log(this.salas)
+          this.$emit('lista', response.data)
+        }
+      ).catch((error) => {
+        console.log(error)
+      });
+      }
+      
+
+
+    },
     async initialize() {
 
       console.log("----", this.configuracion);

@@ -9,7 +9,7 @@
                             Adicionar Sala
                         </v-btn>
         <v-dialog v-model="dialog" max-width="500px">
-            <salaespera></salaespera>
+            <salaespera @lista="mostrarsalas($event)" ></salaespera>
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
@@ -361,6 +361,11 @@ export default {
 
         }
       }
+    },
+    mostrarsalas(valor){
+      console.log('*********')
+      console.log(valor)
+      this.desserts.push(valor)
     }
   },
 
