@@ -9,7 +9,10 @@
                             Adicionar Sala
                         </v-btn>
         <v-dialog v-model="dialog" max-width="500px">
-            <salaespera @lista="mostrarsalas($event)" ></salaespera>
+            <salaespera @lista="mostrarsalas($event)" @eliminar="eliminarsalas($event)" 
+            @cerrar = "cerrar($event)" 
+            
+            :editedIndex="editedIndex" :editedItem="editedItem" ></salaespera>
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
@@ -104,9 +107,9 @@ export default {
   },
   watch: {
     dialog(val) {
-      console.log(val)
+      console.log('---> '+val)
       console.log(this.editedIndex);
-
+      //this.editedIndex = val
       val || this.close()
     },
     dialogDelete(val) {
@@ -122,7 +125,7 @@ export default {
   methods: {
     async initialize() {
 
-      console.log("----", this.configuracion);
+      /*console.log("----", this.configuracion);
       try {
         var res = await axios({
           method: 'get',
@@ -141,10 +144,12 @@ export default {
         console.log("err->", err.response.data)
         return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
       }
+      */
 
       //this.id_configuracion = $store.state.getid_config()
     },
     async editItem(item) {
+      //this.dialog = true
       /*try {
           
           let pedido = {
@@ -171,14 +176,19 @@ export default {
           console.log("err->", err.response.data)
           return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
         }*/
+      console.log('itemem')
+      console.log(item)
+      console.log(this.desserts)
       this.editedIndex = this.desserts.indexOf(item)
+      console.log(this.editedIndex)
       this.editedItem = Object.assign({}, item)
-      this.dialog = true
       this.editedItem.tiempo_apertura = moment(this.editedItem.tiempo_apertura, 'hh:mm:ss').format('HH:mm');
       this.editedItem.tiempo_cierre = moment(this.editedItem.tiempo_cierre, 'hh:mm:ss').format('HH:mm');
       console.log(this.editedItem)
       this.editedItem.tiempo_descanso = moment(this.editedItem.tiempo_descanso, 'hh:mm:ss').format('HH:mm');
       this.calcular_horario()
+      this.dialog = true
+      
 
 
     },
@@ -216,6 +226,9 @@ export default {
       /*
       */
     },
+    cerrar(val){
+      this.dialog=val
+    },
     close() {
       this.dialog = false
       this.horario = []
@@ -231,77 +244,7 @@ export default {
         this.editedIndex = -1
       })
     },
-    async save() {
-      console.log("editar" + this.editar_consulta);
-      if (typeof this.editar_consulta === 'undefined' || this.editar_consulta === false) {
-        if (!(this.editedIndex > -1)) {
-
-          //Object.assign(this.desserts[this.editedIndex], this.editedItem)
-          this.desserts.push(this.editedItem)
-
-        } else {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
-          //this.desserts.push(this.editedItem)
-
-
-        }
-        this.close()
-        return;
-      }
-      console.log(this.editedIndex)
-      if (!(this.editedIndex > -1)) {
-        this.editedItem.id = this.id_configuracion
-        this.calcular_horario()
-        console.log(this.horario)
-        var res = await this.axios({
-          method: 'post',
-          url: `/${process.env.MIX_CARPETA}/sala`,
-          data: {
-            datos: this.editedItem,
-            horario: this.horario
-          },
-
-        }).then(
-          (response) => {
-            //this.headers = response.data
-            console.log('------');
-            console.log(response.data)
-
-            this.desserts = response.data
-
-          }, (error) => {
-            console.log(error);
-          });
-
-
-      } else {
-        this.editedItem.id = this.id_configuracion
-        console.log(this.editedItem)
-        this.calcular_horario()
-        console.log(this.horario)
-
-
-        var res = await this.axios({
-          method: 'put',
-          url: `/${process.env.MIX_CARPETA}/sala/` + this.editedItem.sala,
-          data: {
-            datos: this.editedItem,
-            horario: this.horario
-          },
-
-        }).then(
-          (response) => {
-            //this.headers = response.data
-            console.log(response.data);
-            //this.desserts.push(this.editedItem)
-            this.desserts = response.data
-
-          }, (error) => {
-            console.log(error);
-          });
-      }
-      this.close()
-    },
+    
     getId_config(e) {
       console.log('---' + e)
       this.id_configuracion = e
@@ -363,9 +306,19 @@ export default {
       }
     },
     mostrarsalas(valor){
-      console.log('*********')
+      console.log('***-ç-ç-ç-ç-ç-ç-ç-ç-ç-******')
       console.log(valor)
       this.desserts.push(valor)
+      console.log(this.desserts)
+    },
+    eliminarsalas(valor){
+      console.log('*********')
+      //console.log(valor)
+      console.log(valor)
+      //const ret = this.desserts.slice(valor.index);
+
+      this.desserts.splice(valor.index, 1, valor.sala)
+      //this.desserts[valor.index]= structuredClone(valor.sala)
     }
   },
 

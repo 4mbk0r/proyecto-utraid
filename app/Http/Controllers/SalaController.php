@@ -40,24 +40,85 @@ class SalaController extends Controller
      */
     public function store(Request $request)
     {
-        
-        return $request;
-        
+
+        $sala =  $request['sala'];
+        $horario = $request['horario'];
+        //return $sala;
+
         //
         try {
-            $id_last = DB::table('salas')->insertGetId($request['datos']);
-            $horario = $request['horario'];
-            foreach ($horario as $id => $row) {
-                $row['id'] = $id_last;
-                //unset($row['sala']);
-                DB::table('horarios')->insert($row);
+            //se debe de poner la institucion en consulta
+            $busqueda_sala =  DB::table('salas')
+                ->where('descripcion', '=', $sala['descripcion'])
+                ->where('institucion', '=', '01')
+                ->get();
+            if (count($busqueda_sala) == 0) {
+                $datos = [
+                    'descripcion' =>  $sala['descripcion'],
+                    'institucion' => '01'
+                ];
+                $id_insert = DB::table('salas')
+                    ->insertGetId($datos);
+                $sala['id'] =  $id_insert;
+            } elseif (count($busqueda_sala) == 1) {
+                $sala['id'] =  $busqueda_sala[0]->id;
             }
         } catch (\Throwable $th) {
             return $th;
             //new Response(['message' => 'th'], 400);
         }
-        $salas = DB::table('salas')->get();
-        return $salas;
+        try {
+            $busqueda_configuracion =  DB::table('conf_salas')
+                ->where('tiempo_apertura', '=', $sala['tiempo_apertura'],)
+                ->where('tiempo_cierre', '=', $sala['tiempo_cierre'])
+                ->where('tiempo_descanso', '=', isset($sala['tiempo_descanso']) ? $sala['tiempo_descanso'] : null)
+                ->where('min_promedio_atencion', '=', $sala['min_promedio_atencion'])
+                ->get();
+            if (count($busqueda_configuracion) == 0) {
+                $datos = [
+                    'tiempo_apertura' => $sala['tiempo_apertura'],
+                    'tiempo_cierre' => $sala['tiempo_cierre'],
+                    'tiempo_descanso' => isset($sala['tiempo_descanso']) ? $sala['tiempo_descanso'] : null,
+                    'min_promedio_atencion' => $sala['min_promedio_atencion'],
+
+                ];
+                $id_conf = DB::table('conf_salas')
+                    ->insertGetId($datos);
+                $sala['id_configuracion'] =  $id_conf;
+                foreach ($horario as $key => $value) {
+                    $b =  (array) $value;
+                    $horario_busqueda = DB::table('horarios')
+                    ->where('hora_inicio', '=', $b['hora_inicio'])
+                    ->where('hora_final', '=', $b['hora_final'])
+                    ->get();
+                    if(count($horario_busqueda) == 0 ){
+                        $id_horario = DB::table('horarios')
+                        ->insertGetId($value);
+                    
+                    }else{
+                        $b = (array) $horario_busqueda[0];
+                        $id_horario = $b['id'];
+                    }
+                    $hora = [
+                        'id_horarios' => $id_horario,
+                        'id_conf' => $id_conf
+                    ];
+                    DB::table('asignar_horarios')->insert($hora);
+                }    
+            } elseif (count($busqueda_configuracion) >= 1) {
+                $b =  (array) $busqueda_configuracion[0];
+                //return $busqueda_configuracion[0];
+                $sala['id_config'] = $b['id'];
+            }
+
+        } catch (\Throwable $th) {
+            return $th;
+            //new Response(['message' => 'th'], 400);
+        }
+     
+
+        //$salas = DB::table('salas')->get();
+        return $sala;
     }
 
     /**
@@ -97,19 +158,19 @@ class SalaController extends Controller
         $horario = $request['horario'];
         //return $horario;
         try {
-           
-            DB::table('salas')->where('sala',$consultorio['sala'])
+
+            DB::table('salas')->where('sala', $consultorio['sala'])
                 ->where('id', $consultorio['id'])->update($consultorio);
 
             DB::table('horarios')
                 ->where('sala', '=', $consultorio['sala'])
                 ->delete();
-            
-            
+
+
             foreach ($horario as $id => $row) {
                 //$row['id'] = $id_last;
                 //unset($row['sala']);
-                
+
                 DB::table('horarios')
                     ->insert($horario[$id]);
             }

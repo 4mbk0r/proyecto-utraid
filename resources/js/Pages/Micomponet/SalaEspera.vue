@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    
+
     <v-card>
       <v-card-title>
         <v-row>
@@ -13,7 +13,7 @@
             </v-btn>
           </v-col>
           <v-col cols="3">
-            <v-btn tile color="success" @click="guardar">
+            <v-btn tile color="success" @click="save">
               <v-icon left>
                 mdi-pencil
               </v-icon>
@@ -22,41 +22,36 @@
           </v-col>
         </v-row>
       </v-card-title>
-      
+
       <v-card-text>
         <v-form ref="salas">
           <v-row>
             <v-col>
-              <v-text-field v-model="editedItem.descripcion" label="Nombre de la Sala"
-              :rules="nombreRules"
-              ></v-text-field>
+              <v-text-field v-model="editedItem.descripcion" :rules="nombreRules"
+                label="Nombre de la Sala"></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12" sm="4">
-              <v-text-field v-model="editedItem.tiempo_apertura" @change="calcular_horario" type="time"
-              :rules="nombreRules"  
-              label="Hora de apertura">
+              <v-text-field v-model="editedItem.tiempo_apertura" type="time" @change="calcular_horario"
+                :rules="nombreRules" label="Hora de apertura">
               </v-text-field>
             </v-col>
             <v-col cols="12" sm="4">
-              <v-text-field v-model="editedItem.tiempo_cierre" type="time" @change="calcular_horario"
-              :rules="nombreRules"  
-              label="Hora de cierre"></v-text-field>
+              <v-text-field v-model="editedItem.tiempo_cierre" :rules="nombreRules" type="time"
+                @change="calcular_horario" label="Hora de cierre"></v-text-field>
             </v-col>
             <v-col cols="12" sm="4">
-              <v-text-field v-model="editedItem.min_promedio_atencion" label="Minutos promedio de atencion"
-              :rules="nombreRules"  
-              @change="calcular_horario">
+              <v-text-field v-model="editedItem.min_promedio_atencion" :rules="nombreRules"
+                label="Minutos promedio de atencion" @change="calcular_horario">
               </v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" sm="4">
               <v-text-field v-model="editedItem.tiempo_descanso" @change="calcular_horario" type="time"
-              :rules="nombreRules"  
-              label="Hora de descanso">
+                label="Hora de descanso">
               </v-text-field>
             </v-col>
 
@@ -69,7 +64,6 @@
 
         </v-form>
       </v-card-text>
-
       <!--
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -80,7 +74,7 @@
           Guardar
         </v-btn>
       </v-card-actions>
-    -->
+      -->
     </v-card>
   </v-app>
 
@@ -90,9 +84,10 @@ import moment from 'moment'
 export default {
   props: {
 
-    configuracion: Object,
+    configuracion: {},
     editar_consulta: false,
-
+    editedIndex: Number,
+    editedItem: {},
   },
   data: () => ({
     addconfiguracion: '',
@@ -109,11 +104,7 @@ export default {
       { text: 'Opciones', value: 'actions', sortable: false },
     ],
     desserts: [],
-    editedIndex: -1,
-    editedItem: {
-      id: '',
 
-    },
     defaultItem: {
       id: '',
     },
@@ -133,11 +124,7 @@ export default {
       },
     ],
     horario: [],
-    nombreRules: [
-      (v) => !!v || "Dato requerido",
-      
-      //v => v.length <= 10 || 'Name must be less than 10 characters',
-    ],
+    nombreRules: [v => !!v || 'Se requiere el dato'],
   }),
   computed: {
     formTitle() {
@@ -162,233 +149,61 @@ export default {
     this.initialize()
   },
   methods: {
-    async guardar() {
-      if(this.$refs.salas.validate()){
-        var res = await axios({
-        method: "post",
-        url: `/${process.env.MIX_CARPETA}/` + "sala" ,
-        data: this.editedItem
-      }).then(
-        (response) => {
-          console.log(response);
-          //console.log(this.salas)
-          this.$emit('lista', response.data)
-        }
-      ).catch((error) => {
-        console.log(error)
-      });
-      }
-      
-
-
-    },
-    async initialize() {
-
-      console.log("----", this.configuracion);
-      try {
-        var res = await axios({
-          method: 'get',
-          url: `/${process.env.MIX_CARPETA}/` + "lista_sala" + '/' + this.configuracion.id_calendario,
-        }).then(
-          (response) => {
-            console.log(response);
-            this.desserts = response.data
-            console.log(response.data)
-
-          }, (error) => {
-            console.log(error);
-          }
-        );
-      } catch (err) {
-        console.log("err->", err.response.data)
-        return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-      }
-
-      //this.id_configuracion = $store.state.getid_config()
-    },
-    async editItem(item) {
-      /*try {
-          
-          let pedido = {
-            id_sala: item.id,
-            id_institucion: '01',
-            id_configuracion: this.id_configuracion
-          }
-          console.log(pedido);
-          var res = await axios({
-            method: 'post',
-            url: `/${process.env.MIX_CARPETA}/api/horario_sala`,
-            data: pedido
-          }).then(
-            (response) => {
-              //console.log(response);
-              //this.horario = response.data
-              console.log(response.data)
-
-            }, (error) => {
-              console.log(error);
-            }
-          );
-        } catch (err) {
-          console.log("err->", err.response.data)
-          return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-        }*/
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
-      this.editedItem.tiempo_apertura = moment(this.editedItem.tiempo_apertura, 'hh:mm:ss').format('HH:mm');
-      this.editedItem.tiempo_cierre = moment(this.editedItem.tiempo_cierre, 'hh:mm:ss').format('HH:mm');
-      console.log(this.editedItem)
-      this.editedItem.tiempo_descanso = moment(this.editedItem.tiempo_descanso, 'hh:mm:ss').format('HH:mm');
+    initialize(){
       this.calcular_horario()
-
-
-    },
-    deleteItem(item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogDelete = true
-    },
-    async deleteItemConfirm() {
-      if (this.editar_consulta) {
-        if (this.editedIndex >= 0) {
-          var res = await this.axios({
-            method: 'post',
-            url: `/${process.env.MIX_CARPETA}/api/delete_sala`,
-            data: {
-              dato: this.editedItem
-            },
-
-          }).then(
-            (response) => {
-              //this.headers = response.data
-              console.log(response.data);
-              this.desserts = response.data
-              this.closeDelete();
-
-            }, (error) => {
-              console.log(error);
-            });
-        }
-      } else {
-
-        this.desserts.splice(this.editedIndex, 1)
-        this.closeDelete()
-      }
-      /*
-      */
-    },
-    close() {
-      this.dialog = false
-      this.horario = []
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
-    closeDelete() {
-      this.dialogDelete = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
+    },  
     async save() {
-      console.log("editar" + this.editar_consulta);
-      if (typeof this.editar_consulta === 'undefined' || this.editar_consulta === false) {
-        if (!(this.editedIndex > -1)) {
-
-          //Object.assign(this.desserts[this.editedIndex], this.editedItem)
-          this.desserts.push(this.editedItem)
-
-        } else {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
-          //this.desserts.push(this.editedItem)
-
-
-        }
-        this.close()
-        return;
-      }
-      console.log(this.editedIndex)
-      if (!(this.editedIndex > -1)) {
-        this.editedItem.id = this.id_configuracion
-        this.calcular_horario()
-        console.log(this.horario)
-        var res = await this.axios({
-          method: 'post',
-          url: `/${process.env.MIX_CARPETA}/sala`,
-          data: {
-            datos: this.editedItem,
-            horario: this.horario
-          },
-
-        }).then(
-          (response) => {
-            //this.headers = response.data
-            console.log('------');
-            console.log(response.data)
-
-            this.desserts = response.data
-
-          }, (error) => {
-            console.log(error);
-          });
-
-
-      } else {
-        this.editedItem.id = this.id_configuracion
-        console.log(this.editedItem)
-        this.calcular_horario()
-        console.log(this.horario)
-
-
-        var res = await this.axios({
-          method: 'put',
-          url: `/${process.env.MIX_CARPETA}/sala/` + this.editedItem.sala,
-          data: {
-            datos: this.editedItem,
-            horario: this.horario
-          },
-
-        }).then(
-          (response) => {
-            //this.headers = response.data
-            console.log(response.data);
-            //this.desserts.push(this.editedItem)
-            this.desserts = response.data
-
-          }, (error) => {
-            console.log(error);
-          });
-      }
-      this.close()
-    },
-    getId_config(e) {
-      console.log('---' + e)
-      this.id_configuracion = e
-      console.log('---' + this.id_configuracion)
-    },
-    clear_time(val) {
-      return moment(val, 'hh:mm:ss').format('h:mm a');
-    },
-    ///genera los horarios de todas las salas 
-    generar_horario() {
-      //console.log('----genearara')
-      //console.log(this.desserts);
-      let salas = this.desserts
-      for (const i in salas) {
-
-        this.editedItem = salas[i]
-        this.calcular_horario()
-        //console.log(this.editedItem)
-        salas[i].generar_horario = structuredClone(this.horario)
-      }
-    },
-    calcular_horario() {
-      if (this.editedItem.tiempo_apertura == '') {
+      console.log("editar " + this.editar_consulta);
+      console.log("editar " + this.editedIndex);
+      console.log(this.editedItem);
+      if (!this.$refs.salas.validate()) {
+        console.log("razones");
+        this.horario = []
         return
       }
+      var res = await this.axios({
+        method: 'post',
+        url: `/${process.env.MIX_CARPETA}/sala`,
+        data: {
+          sala: this.editedItem,
+          horario: this.horario
+        },
+
+      }).then(
+        (response) => {
+          //this.headers = response.data
+          console.log('Responder');
+          console.log(response.data)
+          if (this.editedIndex <= -1) {
+            this.$emit('lista', response.data)
+          }
+          else {
+            var v = {
+              'index': this.editedIndex,
+              'sala': response.data
+            }
+            this.$emit('eliminar', v);
+
+            //this.$emit('adicionar_sala', this.editedItem)
+          }
+          this.close();
+          //this.editedIndex = response.data['id'];
+
+
+        }).catch((error) => {
+          console.log(error);
+
+        });
+
+
+    },
+    close(){
+      this.$emit('cerrar', false);
+      this.horario =[]
+
+    },
+    calcular_horario() {
+
       try {
         //console.log(this.fin_atencion, this.fin_atencion)
         let tiempo_i = moment(this.editedItem.tiempo_apertura, 'hh:mm')

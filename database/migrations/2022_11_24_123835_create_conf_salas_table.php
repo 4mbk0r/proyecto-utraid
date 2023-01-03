@@ -24,11 +24,13 @@ class CreateConfSalasTable extends Migration
             $table->time('tiempo_cierre')->nullable();
             $table->time('tiempo_descanso')->nullable();
             $table->integer('min_promedio_atencion')->nullable();
-           
+            //$table->string('id_sala');
+            //$table->foreign('id_sala')->references('id')->on('salas')->onDelete('cascade')->onUpdate('cascade');
+            
             //$table->unique(['tiempo_apertura',  'tiempo_descanso', 'tiempo_cierre', 'min_promedio_atencion', 'detalle']);
             //$table->unique(['detalle']);
         });
-       
+        
         $datos = [
             'tiempo_apertura' => '08:00:00',
             'tiempo_cierre' => '15:30:00',
