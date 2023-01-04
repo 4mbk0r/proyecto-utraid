@@ -333,11 +333,13 @@ export default {
             console.log(item);
             item.guardar = false
             item.equipo = -1
-            if (typeof this.selected_equipo != 'undefined') return
+            
+            if (typeof this.selected_equipo == 'undefined') return
             let findy = this.equipo[this.selected_equipo].lista.findIndex(o => o.ci === item.ci)
             if (findy > -1) {
                 this.equipo[this.selected_equipo].lista.splice(findy, 1)
             }
+            //this.update_item()
         },
         seleccion_equipo() {
             //console.log(i);
@@ -377,6 +379,7 @@ export default {
                 item.guardar = true
                 this.equipo[this.selected_equipo].lista.push(item)
             }
+            //this.update_item()
         },
         verificar(active, item) {
             return
@@ -394,6 +397,9 @@ export default {
             this.selected_psicologo = ''
             this.selected_trabajo = ''
             this.selected_equipo = 0
+        },
+        update_item(){
+            this.$emit('update_equipo', this.equipo);
         }
     },
 }

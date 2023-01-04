@@ -8,7 +8,7 @@
         <v-btn color="primary" @click="dialog=true">
                             Adicionar Sala
                         </v-btn>
-        <v-dialog v-model="dialog" max-width="500px">
+        <v-dialog v-if="dialog" v-model="dialog" max-width="500px">
             <salaespera @lista="mostrarsalas($event)" @eliminar="eliminarsalas($event)" 
             @cerrar = "cerrar($event)" 
             

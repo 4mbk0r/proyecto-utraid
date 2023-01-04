@@ -132,7 +132,7 @@
                 </v-stepper-content>
 
                 <v-stepper-content step="4">
-                    <equipo :equipo="equipo" ref="equipo"></equipo>
+                    <equipo @update="equipo_update($emit)" :equipo="equipo" ref="equipo"></equipo>
 
                     <v-card-actions>
                         <v-btn color="primary" @click="paso5">
@@ -366,32 +366,46 @@ export default {
 
         },
         async paso6() {
-            var res = await axios({
-                method: "post",
-                url: `/${process.env.MIX_CARPETA}/configuracion`,
-                data: {
+            console.log(this.equipo);
+            if (this.validar_equipo()) {
+                var res = await axios({
+                    method: "post",
+                    url: `/${process.env.MIX_CARPETA}/configuracion`,
+                    data: {
 
-                    fecha_nueva: this.date,
-                    configuracion: this.configuracion,
-                    configuracion_antigua: this.item,
-                    salas: this.salas,
-                    equipo: this.equipo
+                        fecha_nueva: this.date,
+                        configuracion: this.configuracion,
+                        configuracion_antigua: this.item,
+                        salas: this.salas,
+                        equipo: this.equipo
+                    },
+                }).then(
+                    (response) => {
+                        //console.log('validat');
+                        //console.log(response);
+                        console.log('___***___');
+                        console.log(response.data);
+                        this.close()
 
-                },
-            }).then(
-                (response) => {
-                    //console.log('validat');
-                    //console.log(response);
-                    console.log('___***___');
-                    console.log(response.data);
-                    this.close()
 
+                    },
+                ).catch((error) => {
+                    console.log(error.response.data.mensaje);
 
-                },
-            ).catch((error) => {
-                console.log(error.response.data.mensaje);
+                });
+            }
 
-            });
+            /**/
+        },
+        validar_equipo() {
+            for (let index = 0; index < this.equipo.length; index++) {
+                if (this.equipo[index].lista.length == 0) {
+                    alert('falta elementos en ' + this.equipo[index].equipo)
+                    return false
+                }
+
+            }
+            return true
         },
         async validar_configuracion() {
             try {
@@ -438,6 +452,9 @@ export default {
         },
         atras() {
             this.paso = (this.paso > 1) ? this.paso - 1 : this.paso
+        },
+        equipo_update(valor) {
+            this.equipo = valor
         }
 
     }

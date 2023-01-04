@@ -68,6 +68,13 @@ class SalaController extends Controller
             //new Response(['message' => 'th'], 400);
         }
         try {
+
+            if ( ! isset($sala['tiempo_descanso'])) {
+                 $sala['tiempo_descanso'] = null;
+            }
+            elseif($sala['tiempo_descanso']  == 'Fecha inválida') {
+                $sala['tiempo_descanso']  = null;
+            }
             $busqueda_configuracion =  DB::table('conf_salas')
                 ->where('tiempo_apertura', '=', $sala['tiempo_apertura'],)
                 ->where('tiempo_cierre', '=', $sala['tiempo_cierre'])
@@ -112,6 +119,9 @@ class SalaController extends Controller
             }
 
         } catch (\Throwable $th) {
+            Response::json([
+                'error' => $th
+            ], 404);
             return $th;
             //new Response(['message' => 'th'], 400);
         }
