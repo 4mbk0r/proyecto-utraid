@@ -383,7 +383,7 @@ export default {
                     (response) => {
                         //console.log('validat');
                         //console.log(response);
-                        console.log('___***___');
+                        console.log('__configuracion ___');
                         console.log(response.data);
                         this.close()
 

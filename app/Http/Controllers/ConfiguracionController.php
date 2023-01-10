@@ -108,8 +108,9 @@ group by configuracions.id
         $fecha = $request['fecha_nueva'];
         $table = 'calendariolineals';
         $salas =  $request['salas'];
+        return $salas;
         //return $configuracion;
-
+        
         try {
             $id_config =  DB::table('configuracions')
                 ->insertGetId($configuracion);
@@ -179,8 +180,14 @@ group by configuracions.id
                     ];
                 }
                 array_push($r, $s);
+                DB::table('asignar_config_salas')->insert([
+                    'id_sala'=> $value['id'],
+                    'id_conf_sala'=>$value['id_configuracion'],
+                    'id_conf'=>$id_nueva
+                    ]
+                );
             }
-            return $r;
+            return $salas;
         } catch (\Throwable $th) {
             DB::table('configuracions')->delete($id_config);
             $resul = DB::table($table)

@@ -117,7 +117,12 @@ class SalaController extends Controller
                 //return $busqueda_configuracion[0];
                 $sala['id_config'] = $b['id'];
             }
-
+            DB::table('asignar_horarios')->insert($salas);
+            else{
+                return  Response::json([
+                    'error' => 'esete es un errore'
+                ], 401);
+            }
         } catch (\Throwable $th) {
             Response::json([
                 'error' => $th

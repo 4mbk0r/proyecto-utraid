@@ -7,6 +7,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\SalaController;
 use App\Http\Controllers\ProfesionController;
 use App\Http\Controllers\PdfViewController;
+use App\Http\Controllers\AsignarConfigSalaController;
 use App\Http\Controllers\Configuracion\CalendarioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,7 @@ use App\Http\Controllers\PersonaCitaController;
 use App\Models\personas_antiguo;
 use App\Http\Controllers\CitaTieneConfiguracionController;
 use App\Http\Controllers\HorarioController;
+use App\Models\Asignar_config_sala;
 use App\Models\Configuracion;
 use App\Models\Horario;
 
@@ -58,6 +60,12 @@ Route::get('articles', function ($id) {
     return PersonaAntiguoController::mostrar($id);
 });
 
+
+/** Lista de salas  */
+Route::get('/lista_salas/{id_config}', function ($id_config) {
+    return AsignarConfigSalaController::listar_salas($id_config);
+});
+
 Route::get('/citas_fecha/{id}', function ($id) {
     return CitaController::mostrar($id);
 });
@@ -73,6 +81,7 @@ Route::post('/datos_citas/{id}', function ($id) {
 Route::get('/citas_actuales/{fecha}', function ($fecha) {
     return CitaController::citas_disponibles($fecha);
 });
+
 
 Route::post('/guardar_citas', function (Request $request) {
     return CitaController::guardar($request);

@@ -125,11 +125,11 @@ export default {
   methods: {
     async initialize() {
 
-      /*console.log("----", this.configuracion);
+      console.log("----", this.configuracion);
       try {
         var res = await axios({
           method: 'get',
-          url: `/${process.env.MIX_CARPETA}/` + "conf_sala" + '/' + this.configuracion.id_calendario,
+          url: `/${process.env.MIX_CARPETA}/api/` + "lista_salas" + '/' + this.configuracion.id_calendario,
         }).then(
           (response) => {
             console.log(response);
@@ -144,7 +144,6 @@ export default {
         console.log("err->", err.response.data)
         return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
       }
-      */
 
       //this.id_configuracion = $store.state.getid_config()
     },
