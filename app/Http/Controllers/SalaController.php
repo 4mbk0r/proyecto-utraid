@@ -59,9 +59,9 @@ class SalaController extends Controller
                 ];
                 $id_insert = DB::table('salas')
                     ->insertGetId($datos);
-                $sala['id'] =  $id_insert;
+                $sala['id_sala'] =  $id_insert;
             } elseif (count($busqueda_sala) == 1) {
-                $sala['id'] =  $busqueda_sala[0]->id;
+                $sala['id_sala'] =  $busqueda_sala[0]->id;
             }
         } catch (\Throwable $th) {
             return $th;
@@ -91,7 +91,8 @@ class SalaController extends Controller
                 ];
                 $id_conf = DB::table('conf_salas')
                     ->insertGetId($datos);
-                $sala['id_configuracion'] =  $id_conf;
+                $sala['id_conf_sala'] =  $id_conf;
+               
                 foreach ($horario as $key => $value) {
                     $b =  (array) $value;
                     $horario_busqueda = DB::table('horarios')
@@ -115,14 +116,18 @@ class SalaController extends Controller
             } elseif (count($busqueda_configuracion) >= 1) {
                 $b =  (array) $busqueda_configuracion[0];
                 //return $busqueda_configuracion[0];
-                $sala['id_config'] = $b['id'];
+                $sala['id_conf_sala'] = $b['id'];
             }
-            DB::table('asignar_horarios')->insert($salas);
             else{
                 return  Response::json([
                     'error' => 'esete es un errore'
                 ], 401);
             }
+            $configuracion = [
+                
+                'id_conf' => $id_conf
+            ];
+            DB::table('asignar_salas')->insert($hora);
         } catch (\Throwable $th) {
             Response::json([
                 'error' => $th

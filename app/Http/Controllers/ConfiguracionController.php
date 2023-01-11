@@ -108,7 +108,7 @@ group by configuracions.id
         $fecha = $request['fecha_nueva'];
         $table = 'calendariolineals';
         $salas =  $request['salas'];
-        return $salas;
+        //return $salas;
         //return $configuracion;
         
         try {
@@ -181,8 +181,8 @@ group by configuracions.id
                 }
                 array_push($r, $s);
                 DB::table('asignar_config_salas')->insert([
-                    'id_sala'=> $value['id'],
-                    'id_conf_sala'=>$value['id_configuracion'],
+                    'id_sala'=> $value['id_sala'],
+                    'id_conf_sala'=>$value['id_conf_sala'],
                     'id_conf'=>$id_nueva
                     ]
                 );

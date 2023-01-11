@@ -102,7 +102,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch('guardarfechaserver', this.fecha_server)
-    //console.log(this.$store.getters.getfecha_server);
+    ////console.log(this.$store.getters.getfecha_server);
   },
   data() {
     return {
@@ -126,22 +126,22 @@ export default {
         url: `/${process.env.MIX_CARPETA}/` + "calendariolineal",
       }).then(
         (response) => {
-          console.log(response);
+          //console.log(response);
           this.calendario = response.data
         },
         (error) => {
-          console.log(error);
+          //console.log(error);
         }
 
 
       );
     },
     openeditconfig(item) {
-      //console.log();
-      console.log(this.panel);
-      console.log(this.calendario);
+      ////console.log();
+      //console.log(this.panel);
+      //console.log(this.calendario);
       this.edit = structuredClone(this.calendario[this.panel])
-      console.log(this.edit);
+      //console.log(this.edit);
       setTimeout(() => {
 
       }, 0);
@@ -150,11 +150,11 @@ export default {
 
     },
     opendeleteconfig(item) {
-      //console.log();
-      console.log(this.panel);
-      console.log(this.calendario);
+      ////console.log();
+      //console.log(this.panel);
+      //console.log(this.calendario);
       this.edit = structuredClone(this.calendario[this.panel])
-      console.log(this.edit);
+      //console.log(this.edit);
       this.mensaje = {}
       this.mensaje.texto = 'Deseas eliminar la configuracion'
       this.mensaje.titulo = 'Eliminar Calendario'
@@ -167,8 +167,8 @@ export default {
     },
     closeeditconfig(value) {
       /*
-      console.log(this.panel[this.items])
-      console.log(value)
+      //console.log(this.panel[this.items])
+      //console.log(value)
       */
       this.editarConfig = value
       this.pedir_calendarioslineal()
@@ -187,7 +187,7 @@ export default {
         url: `/${process.env.MIX_CARPETA}/` + "calendariolineal" + '/' + this.edit.id_calendario,
       }).then(
         (response) => {
-          console.log(response);
+          //console.log(response);
 
           this.calendario = response.data
           setTimeout(() => {
@@ -199,7 +199,7 @@ export default {
 
 
       ).catch((error) => {
-        console.log(error)
+        //console.log(error)
       });
       this.deleteConfig = false
 

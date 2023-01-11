@@ -28,6 +28,8 @@
           <v-row>
             <v-col>
               <v-text-field v-model="editedItem.descripcion" :rules="nombreRules"
+              @change="validar_descripcion" 
+              :error-messages="errordescripcion"
                 label="Nombre de la Sala"></v-text-field>
             </v-col>
           </v-row>
@@ -125,6 +127,7 @@ export default {
     ],
     horario: [],
     nombreRules: [v => !!v || 'Se requiere el dato'],
+    errordescripcion: []
   }),
   computed: {
     formTitle() {
@@ -133,8 +136,8 @@ export default {
   },
   watch: {
     dialog(val) {
-      console.log(val)
-      console.log(this.editedIndex);
+      //console.log(val)
+      //console.log(this.editedIndex);
 
       val || this.close()
     },
@@ -153,11 +156,11 @@ export default {
       this.calcular_horario()
     },  
     async save() {
-      console.log("editar " + this.editar_consulta);
-      console.log("editar " + this.editedIndex);
-      console.log(this.editedItem);
+      //console.log("editar " + this.editar_consulta);
+      //console.log("editar " + this.editedIndex);
+      //console.log(this.editedItem);
       if (!this.$refs.salas.validate()) {
-        console.log("razones");
+        //console.log("razones");
         this.horario = []
         return
       }
@@ -172,8 +175,8 @@ export default {
       }).then(
         (response) => {
           //this.headers = response.data
-          console.log('Responder');
-          console.log(response.data)
+          //console.log('Responder');
+          //console.log(response.data)
           if (this.editedIndex <= -1) {
             this.$emit('lista', response.data)
           }
@@ -191,7 +194,7 @@ export default {
 
 
         }).catch((error) => {
-          console.log(error);
+          //console.log(error);
 
         });
 
@@ -202,18 +205,23 @@ export default {
       this.horario =[]
 
     },
+    validar_descripcion(){
+      this.errordescripcion = []
+      //console.log('_______sdfASD_')
+      this.$emit('validar_descripcion', this.editedItem.descripcion);
+    },
     calcular_horario() {
 
       try {
-        //console.log(this.fin_atencion, this.fin_atencion)
+        ////console.log(this.fin_atencion, this.fin_atencion)
         let tiempo_i = moment(this.editedItem.tiempo_apertura, 'hh:mm')
         let tiempo_f = moment(this.editedItem.tiempo_cierre, 'hh:mm')
-        //console.log(tiempo_i, tiempo_f)
+        ////console.log(tiempo_i, tiempo_f)
         this.horario = []
         let i = 0;
         let tiempo_descanso = true
         if (!tiempo_i.isBefore(tiempo_f)) return
-        //console.log('calcular_horario', this.editedItem.tiempo_atencion);
+        ////console.log('calcular_horario', this.editedItem.tiempo_atencion);
 
         if (this.editedItem.min_promedio_atencion > 0 && this.editedItem.min_promedio_atencion != '') {
 
@@ -233,7 +241,7 @@ export default {
               tiempo_descanso = false
             } else {
               tiempo_i = s
-              //console.log(tiempo_i, tiempo_f)
+              ////console.log(tiempo_i, tiempo_f)
             }
 
           }
@@ -243,6 +251,9 @@ export default {
         this.horario = []
       }
 
+    },
+    existedescripcion(){
+      this.errordescripcion.push('Ya existe Nombre de sala en la lista')
     }
   },
 

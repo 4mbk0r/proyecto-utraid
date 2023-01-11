@@ -219,12 +219,12 @@ export default {
         },
         close() {
             //this.dialog = false
-            //console.log(this.date);
+            ////console.log(this.date);
             this.$emit('cerrar', false)
         },
         async crear() {
             //this.dialog = false
-            //console.log(this.date);
+            ////console.log(this.date);
 
             try {
                 this.configuracion.color = this.color
@@ -239,14 +239,14 @@ export default {
                     },
                 }).then(
                     (response) => {
-                        console.log(response);
+                        //console.log(response);
                     },
                     (error) => {
-                        console.log(error);
+                        //console.log(error);
                     }
                 );
             } catch (err) {
-                console.log("err->", err.response.data);
+                //console.log("err->", err.response.data);
                 return res
                     .status(500)
                     .send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
@@ -255,7 +255,7 @@ export default {
         },
         minfecha() {
 
-            //console.log(item)
+            ////console.log(item)
             /*moment('2010-10-20').isBefore('2010-12-31', 'year'); // false <
     
             moment('2010-10-20').isBefore('2011-01-01', 'year'); // true    <
@@ -266,8 +266,8 @@ export default {
     
             moment('2010-10-20').isAfter('2010-01-01', 'year'); // false >
             moment('2010-10-20').isAfter('2009-12-31', 'year'); // true>*/
-            //console.log(this.item);
-            //console.log(this.item)
+            ////console.log(this.item);
+            ////console.log(this.item)
             let f = this.$store.getters.gethoy
             if (moment(f).isSameOrAfter(this.item.fecha_inicio)) {
                 return f
@@ -277,7 +277,7 @@ export default {
         },
         maxfecha() {
 
-            //console.log(item)
+            ////console.log(item)
             /*moment('2010-10-20').isBefore('2010-12-31', 'year'); // false <
             
             moment('2010-10-20').isBefore('2011-01-01', 'year'); // true    <
@@ -288,10 +288,10 @@ export default {
             
             moment('2010-10-20').isAfter('2010-01-01', 'year'); // false >
             moment('2010-10-20').isAfter('2009-12-31', 'year'); // true>*/
-            //console.log(this.item);
-            //console.log(this.item)
+            ////console.log(this.item);
+            ////console.log(this.item)
             let t_year = moment(this.$store.getters.fecha_inicio).add(3, 'year')
-            //console.log(t_year);
+            ////console.log(t_year);
             if (t_year.isSameOrAfter(this.item.fecha_final)) {//>
                 return this.item.fecha_final
             }
@@ -308,8 +308,8 @@ export default {
 
             if (this.$refs.form_configuracion.validate()) {
                 this.validar_configuracion()
-                console.log("_________")
-                console.log(this.item)
+                //console.log("_________")
+                //console.log(this.item)
 
 
             }
@@ -354,11 +354,11 @@ export default {
 
         },
         paso5() {
-            console.log("______________");
-            console.log(this.$refs.equipo.equipo);
+            //console.log("______________");
+            //console.log(this.$refs.equipo.equipo);
             this.equipo = this.$refs.equipo.equipo
             this.paso6()
-            //console.log(this.$refs.equipo.items);
+            ////console.log(this.$refs.equipo.items);
             //let lista = this.$refs.equipo.items
             //this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo '+(k++), lista: [] }))]
             //let lista = this.equipo[this.selected_equipo].lista
@@ -366,7 +366,7 @@ export default {
 
         },
         async paso6() {
-            console.log(this.equipo);
+            //console.log(this.equipo);
             if (this.validar_equipo()) {
                 var res = await axios({
                     method: "post",
@@ -381,16 +381,16 @@ export default {
                     },
                 }).then(
                     (response) => {
-                        //console.log('validat');
-                        //console.log(response);
-                        console.log('__configuracion ___');
-                        console.log(response.data);
+                        ////console.log('validat');
+                        ////console.log(response);
+                        //console.log('__configuracion ___');
+                        //console.log(response.data);
                         this.close()
 
 
                     },
                 ).catch((error) => {
-                    console.log(error.response.data.mensaje);
+                    //console.log(error.response.data.mensaje);
 
                 });
             }
@@ -420,19 +420,19 @@ export default {
                     },
                 }).then(
                     (response) => {
-                        //console.log('validat');
-                        //console.log(response);
+                        ////console.log('validat');
+                        ////console.log(response);
                         if (response.data['validar'] == false) {
                             this.errors_descripcion = ['ya existe esta descripcion']
                             return
                         }
 
                         this.paso = 3
-                        console.log(this.paso);
+                        //console.log(this.paso);
 
                     },
                     (error) => {
-                        console.log(error);
+                        //console.log(error);
                         return false
 
 
