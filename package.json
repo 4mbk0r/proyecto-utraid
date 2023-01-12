@@ -38,6 +38,7 @@
         "vue-axios": "^3.4.1",
         "vue-color": "^2.8.1",
         "vue-color-sketch": "^2.6.2",
+        "vue-xlsx": "^0.2.1",
         "vuetify": "^2.6.4",
         "vuetify-dialog-promise": "^2.4.2",
         "vuex": "^3.6.2",

@@ -44,7 +44,7 @@ class SalaController extends Controller
         $sala =  $request['sala'];
         $horario = $request['horario'];
         //return $sala;
-
+    
         //
         try {
             //se debe de poner la institucion en consulta
@@ -64,11 +64,15 @@ class SalaController extends Controller
                 $sala['id_sala'] =  $busqueda_sala[0]->id;
             }
         } catch (\Throwable $th) {
-            return $th;
-            //new Response(['message' => 'th'], 400);
+           
+            $rrr = Response::json([
+                'error' => $th
+            ], 404);
+            return $rrr;
         }
+        //return $sala;
         try {
-
+            //return $sala;
             if ( ! isset($sala['tiempo_descanso'])) {
                  $sala['tiempo_descanso'] = null;
             }
@@ -81,6 +85,7 @@ class SalaController extends Controller
                 ->where('tiempo_descanso', '=', isset($sala['tiempo_descanso']) ? $sala['tiempo_descanso'] : null)
                 ->where('min_promedio_atencion', '=', $sala['min_promedio_atencion'])
                 ->get();
+                
             if (count($busqueda_configuracion) == 0) {
                 $datos = [
                     'tiempo_apertura' => $sala['tiempo_apertura'],
@@ -116,7 +121,7 @@ class SalaController extends Controller
             } elseif (count($busqueda_configuracion) >= 1) {
                 $b =  (array) $busqueda_configuracion[0];
                 //return $busqueda_configuracion[0];
-                $sala['id_conf_sala'] = $b['id'];
+                $id_conf = $b['id'];
             }
             else{
                 return  Response::json([
@@ -124,15 +129,15 @@ class SalaController extends Controller
                 ], 401);
             }
             $configuracion = [
-                
-                'id_conf' => $id_conf
+                'id_conf' => $id_conf,
+                'id_sala' => $sala['id_sala']
             ];
-            DB::table('asignar_salas')->insert($hora);
+            $sala['id_conf'] = $id_conf;
+            DB::table('asignar_salas')->insert($configuracion);
         } catch (\Throwable $th) {
-            Response::json([
+            return Response::json([
                 'error' => $th
             ], 404);
-            return $th;
             //new Response(['message' => 'th'], 400);
         }
      

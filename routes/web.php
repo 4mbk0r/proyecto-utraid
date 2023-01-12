@@ -161,3 +161,10 @@ Route::get('/salaespera', function () {
     return Inertia::render('Micomponet/SalaEspera');
 })->name('salaespera');
 
+
+
+Route::get('/excel', function () {
+    return Inertia::render('Micomponet/Excel');
+})->name('excelss');
+
+

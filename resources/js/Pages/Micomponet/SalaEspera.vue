@@ -53,7 +53,9 @@
           <v-row>
             <v-col cols="12" sm="4">
               <v-text-field v-model="editedItem.tiempo_descanso" @change="calcular_horario" type="time"
-                label="Hora de descanso">
+                label="Hora de descanso"
+                :value="null"
+                >
               </v-text-field>
             </v-col>
 
@@ -176,7 +178,7 @@ export default {
         (response) => {
           //this.headers = response.data
           //console.log('Responder');
-          //console.log(response.data)
+          console.log(response.data)
           if (this.editedIndex <= -1) {
             this.$emit('lista', response.data)
           }
@@ -194,7 +196,7 @@ export default {
 
 
         }).catch((error) => {
-          //console.log(error);
+          console.log(error);
 
         });
 
@@ -211,7 +213,7 @@ export default {
       this.$emit('validar_descripcion', this.editedItem.descripcion);
     },
     calcular_horario() {
-
+      
       try {
         ////console.log(this.fin_atencion, this.fin_atencion)
         let tiempo_i = moment(this.editedItem.tiempo_apertura, 'hh:mm')
@@ -233,6 +235,7 @@ export default {
             op.hora_final = s.format('HH:mm')
             op.sala = this.editedItem.sala
             this.horario.push(op);
+            
             if (tiempo_i.isSameOrAfter(moment(this.editedItem.tiempo_descanso, 'HH:mm')) && tiempo_descanso == true) {
               let mensaje = 'hora de descanso sera ' + tiempo_i.format('HH:mm')
               tiempo_i = tiempo_i.add(30, 'minutes')
@@ -249,7 +252,11 @@ export default {
 
       } catch (error) {
         this.horario = []
+        
       }
+      var descanso = moment(this.editedItem.tiempo_descanso, 'HH:mm')
+      console.log(descanso)
+      if (!descanso.isValid()) this.editedItem.tiempo_descanso = null
 
     },
     existedescripcion(){

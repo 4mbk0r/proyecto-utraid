@@ -16,6 +16,8 @@ import VuetifyDialogPromise from "vuetify-dialog-promise";
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import store from './store'
+import { XlsxRead, XlsxTable, XlsxSheets, XlsxJson, XlsxWorkbook, XlsxSheet, XlsxDownload } from 'vue-xlsx'
+
 
 
 //import  i18n from  '@/plugins/vue-i18n'
@@ -32,6 +34,8 @@ InertiaProgress.init()
 Vue.mixin({ methods: { route } });
 Vue.use(InertiaPlugin);
 Vue.use(PortalVue);
+Vue.use({ XlsxRead, XlsxTable, XlsxSheets, XlsxJson, XlsxWorkbook, XlsxSheet, XlsxDownload});
+
 //also add this line    
 Vue.use(Vuetify);
 Vue.use(VueAxios, axios);
