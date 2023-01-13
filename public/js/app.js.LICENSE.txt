@@ -1,14 +1,21 @@
+/* @license
+Papa Parse
+v5.3.1
+https://github.com/mholt/PapaParse
+License: MIT
+*/
+
 /* NProgress, (c) 2013, 2014 Rico Sta. Cruz - http://ricostacruz.com/nprogress
  * @license MIT */
 
 /*!
- * Vue.js v2.7.10
+ * Vue.js v2.7.14
  * (c) 2014-2022 Evan You
  * Released under the MIT License.
  */
 
 /*!
- * vue-i18n v8.27.2 
+ * vue-i18n v8.28.2 
  * (c) 2022 kazuya kawaguchi
  * Released under the MIT License.
  */

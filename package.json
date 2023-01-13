@@ -31,10 +31,13 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "@datagridxl/datagridxl2": "^2.0.13",
         "@inertiajs/progress": "^0.2.7",
+        "belair-store": "^0.1.2",
         "moment": "^2.29.1",
         "nprogress": "^0.2.0",
         "path": "^0.12.7",
+        "stream": "^0.0.2",
         "vue-axios": "^3.4.1",
         "vue-color": "^2.8.1",
         "vue-color-sketch": "^2.6.2",
@@ -42,6 +45,7 @@
         "vuetify": "^2.6.4",
         "vuetify-dialog-promise": "^2.4.2",
         "vuex": "^3.6.2",
-        "watch": "^0.13.0"
+        "watch": "^0.13.0",
+        "xlsx": "^0.14.5"
     }
 }
