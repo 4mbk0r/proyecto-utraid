@@ -44,7 +44,6 @@ class SalaController extends Controller
         $sala =  $request['sala'];
         $horario = $request['horario'];
         //return $sala;
-    
         //
         try {
             //se debe de poner la institucion en consulta
@@ -79,13 +78,14 @@ class SalaController extends Controller
             elseif($sala['tiempo_descanso']  == 'Fecha inválida') {
                 $sala['tiempo_descanso']  = null;
             }
+
             $busqueda_configuracion =  DB::table('conf_salas')
                 ->where('tiempo_apertura', '=', $sala['tiempo_apertura'],)
                 ->where('tiempo_cierre', '=', $sala['tiempo_cierre'])
                 ->where('tiempo_descanso', '=', isset($sala['tiempo_descanso']) ? $sala['tiempo_descanso'] : null)
                 ->where('min_promedio_atencion', '=', $sala['min_promedio_atencion'])
                 ->get();
-                
+                 
             if (count($busqueda_configuracion) == 0) {
                 $datos = [
                     'tiempo_apertura' => $sala['tiempo_apertura'],
@@ -94,10 +94,13 @@ class SalaController extends Controller
                     'min_promedio_atencion' => $sala['min_promedio_atencion'],
 
                 ];
+                
+                        
                 $id_conf = DB::table('conf_salas')
                     ->insertGetId($datos);
+
                 $sala['id_conf_sala'] =  $id_conf;
-               
+                //return $sala;
                 foreach ($horario as $key => $value) {
                     $b =  (array) $value;
                     $horario_busqueda = DB::table('horarios')
@@ -114,7 +117,7 @@ class SalaController extends Controller
                     }
                     $hora = [
                         'id_horarios' => $id_horario,
-                        'id_conf' => $id_conf
+                        'id_conf_sala' => $id_conf
                     ];
                     DB::table('asignar_horarios')->insert($hora);
                 }    
@@ -129,12 +132,13 @@ class SalaController extends Controller
                 ], 401);
             }
             $configuracion = [
-                'id_conf' => $id_conf,
+                'id_conf_sala' => $id_conf,
                 'id_sala' => $sala['id_sala']
             ];
-            $sala['id_conf'] = $id_conf;
+            $sala['id_conf_sala'] = $id_conf;
             DB::table('asignar_salas')->insert($configuracion);
         } catch (\Throwable $th) {
+            
             return Response::json([
                 'error' => $th
             ], 404);

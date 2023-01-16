@@ -16,18 +16,18 @@ class CreateAsignarHorariosTable extends Migration
     {
         Schema::create('asignar_horarios', function (Blueprint $table) {
             $table->integer('id_horarios');
-            $table->integer('id_conf');
+            $table->integer('id_conf_sala');
         });
         DB::statement(
             "ALTER TABLE asignar_horarios ADD FOREIGN KEY (id_horarios) REFERENCES horarios(id) ON DELETE CASCADE"
         );
         DB::statement(
-            "ALTER TABLE asignar_horarios ADD FOREIGN KEY (id_conf) REFERENCES conf_salas(id) ON DELETE CASCADE"
+            "ALTER TABLE asignar_horarios ADD FOREIGN KEY (id_conf_sala) REFERENCES conf_salas(id) ON DELETE CASCADE"
         );
         for ($i=1; $i <= 7 ; $i++) { 
             $hora = [
                 'id_horarios' => $i,
-                'id_conf' => 1
+                'id_conf_sala' => 1
             ];
             DB::table('asignar_horarios')->insert($hora);
         }
