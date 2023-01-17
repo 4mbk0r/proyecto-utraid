@@ -31,12 +31,12 @@
                         </select>
                     </template>
                 </xlsx-sheets>
-                <xlsx-table :sheet="selectedSheet" />
+                <!--<xlsx-table :sheet="selectedSheet" />-->
                 <xlsx-json :sheet="selectedSheet">
                     <template #default="{ collection }">
 
 
-                        {{ mostrar(collection) }}
+                        {{ mostrar(collection)}}
 
                     </template>
                 </xlsx-json>
@@ -99,9 +99,11 @@ export default {
         onChange(event) {
 
             this.file = event.target.files ? event.target.files[0] : null;
-            console.log(this.file)
-            console.log(this.sheets)
-            console.log(this.collection)
+            console.log("-----")
+            console.log(event)
+            const dgxlObj = new DataGridXL(this.$refs.dgxl, {
+                data: event
+            });
         },
         addSheet() {
 
