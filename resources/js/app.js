@@ -31,9 +31,6 @@ global.$ = JQuery;
 const THEME_DARK = 'dark';
 const THEME_LIGHT = 'light';
 InertiaProgress.init()
-Vue.mixin({ methods: { route } });
-Vue.use(InertiaPlugin);
-Vue.use(PortalVue);
 Vue.use(XlsxRead)
 Vue.use(XlsxTable)
 Vue.use(XlsxSheets)
@@ -41,6 +38,10 @@ Vue.use(XlsxJson)
 Vue.use(XlsxWorkbook)
 Vue.use(XlsxSheet)
 Vue.use(XlsxDownload)
+Vue.mixin({ methods: { route } });
+Vue.use(InertiaPlugin);
+Vue.use(PortalVue);
+
 
 //also add this line    
 Vue.use(Vuetify);

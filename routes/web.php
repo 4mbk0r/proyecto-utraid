@@ -149,7 +149,7 @@ Route::get('/configuracion3', function () {
     return Inertia::render('Configuracion2');
 })->name('agenda');
 
-Route::resource('/calendariolineal', CalendariolinealController::class);//->middleware(['auth:sanctum', 'verified']);;
+Route::resource('/calendariolineal', CalendariolinealController::class); //->middleware(['auth:sanctum', 'verified']);;
 
 
 
@@ -166,5 +166,3 @@ Route::get('/salaespera', function () {
 Route::get('/excel', function () {
     return Inertia::render('Micomponet/Excel');
 })->name('excelss');
-
-

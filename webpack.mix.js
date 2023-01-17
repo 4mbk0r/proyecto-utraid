@@ -14,11 +14,11 @@ require('dotenv').config();
 
 
 mix.setResourceRoot('/main/public')
-mix.setPublicPath('/main/public')
+
 mix.js('resources/js/app.js', 'public/js').vue().sourceMaps()
     .postCss('resources/css/app.css', 'public/css', [
         //require('postcss-import'),
-        //require('tailwindcss'),
+        //require('tailwindcssnpm'),
         //require('autoprefixer'),
 
     ])
