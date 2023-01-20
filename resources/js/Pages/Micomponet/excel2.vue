@@ -47,6 +47,9 @@
             <input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
             <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
         </div>
+        <div>
+            
+        </div>
     </v-app>
 </template>
 

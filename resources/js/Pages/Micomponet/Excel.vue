@@ -9,13 +9,23 @@
             </div>
             <div>
                 {{ mostrar(this.excelData) }}
+                <v-select v-model="selectedSheet" :items="sheetList" label="Selecione Hoja" @change="onchangeSheet"
+                    outlined></v-select>
             </div>
             <div class="wrapper-dgxl">
                 <div ref="dgxl" class="grid"></div>
-                <input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
+                <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
                 <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
+                -->
             </div>
+
         </div>
+        <v-btn tile color="success">
+            <v-icon left>
+                mdi-content-save-settings
+            </v-icon>
+            Guardar
+        </v-btn>
     </v-app>
 </template>
 
@@ -30,31 +40,82 @@ export default {
             file: null,
             selectedSheet: null,
             sheetName: null,
+            sheetList: [],
             sheets: [{ name: "SheetOne", data: [{ c: 2 }] }],
-            collection: [{ a: 1, b: 3 }],
+            collection: [],
+            dgxl_nl_NL: {
+
+                // Context Menu Item Presets
+
+                "Copy": "Copiar",
+                "Cut": "Cortar",
+                "Paste": "Pegar",
+                "Delete Row(s)": "Eliminar Filas(s)",
+                "Insert Row (up)": "Insertar Fila por Encima",
+                "Insert Row (down)": "Insertar Fila por  Debajo",
+                "Delete Column(s)": "Eliminar Columna(s)",
+                "Insert Column (left)": "Insertar Columna Derecha",
+                "Insert Column (right)": "Insertar Columna Izquierda",
+                "Deselect": "Deseleccionar",
+                "Search": "Buscar",
+                'Hide Column': 'Ocultar columna',
+                'Hide Row': 'Ocultar fila',
+                'Sort A to Z': 'Ordenar A a Z',
+                'Sort Z to A': 'Ordenar Z a A',
+
+
+
+
+            }
         };
     },
     methods: {
         excelExport(event) {
+            console.log(event);
             var input = event.target;
             var reader = new FileReader();
             reader.onload = () => {
                 var fileData = reader.result;
                 var wb = XLSX.read(fileData, { type: 'binary' });
-                const sheetList = wb.SheetNames; //Array of sheet names.
-                console.log(sheetList)
+                this.sheetList = wb.SheetNames; //Array of sheet names.
+
+                console.log(this.$attrssheetList)
                 wb.SheetNames.forEach((sheetName) => {
+                    console.log(sheetName);
                     var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
                     this.excelData = JSON.stringify(rowObj)
                     console.log(JSON.parse(this.excelData))
                     const dgxlObj = new DataGridXL(this.$refs.dgxl, {
-                        data: JSON.parse(this.excelData)
+                        data: JSON.parse(this.excelData),
+                        locale: this.dgxl_nl_NL
                     });
 
                 })
             };
 
             reader.readAsBinaryString(input.files[0]);
+
+
+        },
+        onchangeSheet(event) {
+            var input = event.target;
+            var reader = new FileReader();
+            reader.onload = () => {
+                var fileData = reader.result;
+                var wb = XLSX.read(fileData, { type: 'binary' });
+                this.sheetList = wb.SheetNames; //Array of sheet names.
+
+                console.log(this.$attrssheetList)
+                var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" });
+                this.excelData = JSON.stringify(rowObj)
+                console.log(JSON.parse(this.excelData))
+                const dgxlObj = new DataGridXL(this.$refs.dgxl, {
+                    data: JSON.parse(this.excelData),
+                    locale: this.dgxl_nl_NL
+                });
+            };
+            
+            console.log(this.selectedSheet)
 
 
         },
@@ -72,7 +133,7 @@ export default {
             console.log(event)
             const dgxlObj = new DataGridXL(this.$refs.dgxl, {
                 data: event,
-                locale: 'es'
+                locale: this.dgxl_nl_NL
             });
         },
         addSheet() {
@@ -87,26 +148,10 @@ export default {
 
     },
     mounted: function () {
-        var dgxl_nl_NL = {
 
-            // Context Menu Item Presets
-
-            "Copy": "Copiar",
-            "Cut": "Cortar",
-            "Paste": "Pegar",
-            "Delete Row(s)": "Eliminar Filas(s)",
-            "Insert Row(s) (up)": "Insertar Fila(s) Encima",
-            "Insert Row(s) (down)": "Insertar Fila(s) Debajo",
-            "Delete Column(s)": "Eliminar Columna(s)",
-            "Insert Column(s) (left)": "Insertar Columna(s) Derecha",
-            "Insert Column(s) (right)": "Insertar Columna(s) Izquierda",
-            "Deselect": "Deseleccionar",
-            "Search": "Buscar",
-
-        };
         const dgxlObj = new DataGridXL(this.$refs.dgxl, {
             data: this.excelData,
-            locale: dgxl_nl_NL
+            locale: this.dgxl_nl_NL
         });
         Object.assign(this, { dgxlObj }); // tucks all methods under dgxlObj object in component instance
     },
