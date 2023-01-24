@@ -20,7 +20,7 @@
             </div>
 
         </div>
-        <v-btn tile color="success">
+        <v-btn tile color="success" @click="save">
             <v-icon left>
                 mdi-content-save-settings
             </v-icon>
@@ -100,23 +100,42 @@ export default {
         onchangeSheet(event) {
             var input = event.target;
             var reader = new FileReader();
+            const header = []
             reader.onload = () => {
                 var fileData = reader.result;
+
+                //const header = []
+
+
                 var wb = XLSX.read(fileData, { type: 'binary' });
                 this.sheetList = wb.SheetNames; //Array of sheet names.
 
-                console.log(this.$attrssheetList)
+                //console.log(this.$attrssheetList)
                 var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" });
                 this.excelData = JSON.stringify(rowObj)
-                console.log(JSON.parse(this.excelData))
+               //console.log(JSON.parse(this.excelData))
+
+                var range = XLSX.utils.decode_range(sheet['!ref']);
+                console.log('----'+range);
+                var C, R = range.s.r; /* start in the first row */
+                /* walk every column in the range */
+                for (C = range.s.c; C <= range.e.c; ++C) {
+                    var cell = sheet[XLSX.utils.encode_cell({ c: C, r: R })] /* find the cell in the first row */
+
+                    var hdr = "UNKNOWN " + C; // <-- replace with your desired default 
+                    if (cell && cell.t) hdr = XLSX.utils.format_cell(cell);
+
+                    headers.push(hdr);
+                }
+                
                 const dgxlObj = new DataGridXL(this.$refs.dgxl, {
                     data: JSON.parse(this.excelData),
                     locale: this.dgxl_nl_NL
                 });
             };
-            
-            console.log(this.selectedSheet)
 
+            console.log(this.selectedSheet)
+            console.log(header);
 
         },
         mostrar(x) {
@@ -142,6 +161,9 @@ export default {
             this.sheets.push({ name: this.sheetName, data: [...this.collection] });
 
             this.sheetName = null;
+        },
+        save() {
+            this.$emit('guardar_datos', JSON.parse(this.excelData))
         }
     },
     computed: {

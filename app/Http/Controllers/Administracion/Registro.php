@@ -16,7 +16,11 @@ class Registro extends Controller
 
         
         $cargos = DB::table('cargos')->select('*')->get();
-        return Inertia::render('Registro', ['cargos' => $cargos]);
+        $establecimiento = DB::table('establecimientos')->select('*')->get();
+        
+        return Inertia::render('Registro', ['establecimiento' => $establecimiento,
+        'cargos' => $cargos,
+        ]);
         return  inertia();
     }
 

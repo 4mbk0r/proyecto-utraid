@@ -1,5 +1,7 @@
     php artisan make:model Todo -mcr
 
+    php artisan make:controller UserController -r
+
 if you run php artisan make:model --help you can see all the available options
 
     -m, --migration Create a new migration file for the model.

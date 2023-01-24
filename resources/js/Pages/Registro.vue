@@ -15,7 +15,7 @@
         </v-tabs>
         <v-tabs-items v-model="tabs" touchless>
             <v-tab-item>
-                <Registros :cargos="cargos"></Registros>
+                <Registros :cargos="cargos" :establecimiento="establecimiento"></Registros>
             </v-tab-item>
             <v-tab-item>
                 <Lista v-if="tabs=='1'"></Lista>
@@ -38,6 +38,7 @@ export default {
     }),
     props: {
         cargos: Array,
+        establecimiento: Array, 
     },
     components: {
         AppLayout,

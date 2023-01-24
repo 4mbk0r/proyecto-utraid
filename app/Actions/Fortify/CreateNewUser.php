@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\User;
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -57,6 +58,13 @@ class CreateNewUser implements CreatesNewUsers
                 'username' => $input['username'],
                 'password' => Hash::make($input['password']),
             ]);
+            if($reps){
+                $dato = [
+                    'id_usuario' => $input['ci'],
+                    'id_establecimiento' => $input['establecimiento'],
+                ];
+                DB::table('contratos')->insert($dato);
+            }
             return $reps;
         } catch (QueryExecuted $e) {
 

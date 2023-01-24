@@ -12,6 +12,8 @@ use App\Http\Controllers\CalendariolinealController;
 
 use App\Http\Controllers\Administracion\Registro;
 use App\Http\Controllers\CargoController;
+use App\Http\Controllers\UserController;
+
 //personal
 
 use App\Http\Controllers\PersonalController;
@@ -84,6 +86,10 @@ Route::middleware(['auth:sanctum', 'verified', 'permiso'])->get('/agenda', [Agen
 
 
 Route::resource('/persona_antigua', PersonaAntiguoController::class)->middleware(['auth:sanctum', 'verified']);
+
+Route::resource('/ususario', UserController::class)->middleware(['auth:sanctum', 'verified']);
+
+
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/administrar', function () {
     return Inertia::render('Administrador');
