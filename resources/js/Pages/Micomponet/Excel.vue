@@ -4,7 +4,7 @@
         <div id="app">
             <h1>Importar</h1>
             <div>
-                <input type="file" id="excelFile" @change="excelExport"
+                <input type="file" ref="excelFile" @change="excelExport"
                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
             </div>
             <div>
@@ -38,6 +38,7 @@ export default {
         return {
             excelData: [{ a: 1, b: 3 }],
             file: null,
+            input: null,
             selectedSheet: null,
             sheetName: null,
             sheetList: [],
@@ -66,76 +67,90 @@ export default {
 
 
 
-            }
+            },
+            Workerbook: null,
+            WorkerHeader: null,
         };
     },
     methods: {
         excelExport(event) {
-            console.log(event);
-            var input = event.target;
+
+            var input = this.$refs.excelFile
             var reader = new FileReader();
             reader.onload = () => {
+                //leemos todo el archivo 
                 var fileData = reader.result;
                 var wb = XLSX.read(fileData, { type: 'binary' });
+                this.Workerbook = wb
+                //obtenemos las hojas o sheetnames
                 this.sheetList = wb.SheetNames; //Array of sheet names.
+                //console.log(this.sheetList[0]);
 
-                console.log(this.$attrssheetList)
-                wb.SheetNames.forEach((sheetName) => {
+                this.selectedSheet = this.sheetList[0];
+                console.log(this.selectedSheet);
+
+                //obtenemos los datos en json  de la primiera hoja
+                var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" });
+                this.excelData = JSON.stringify(rowObj)
+                console.log(JSON.parse(this.excelData))
+
+                //obtenermo los encabezados del archivo
+                const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1 });
+                this.WorkerHeader = structuredClone(workbookHeaders)
+
+
+
+                const columnsArray = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 });
+                console.log(columnsArray);
+
+
+
+                //adicionamos a datagridxl o la vista en excel 
+                const dgxlObj = new DataGridXL(this.$refs.dgxl, {
+                    data: JSON.parse(this.excelData),
+                    locale: this.dgxl_nl_NL
+                });
+                //console.log(this.$attrssheetList)
+                /*wb.SheetNames.forEach((sheetName) => {
                     console.log(sheetName);
                     var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
                     this.excelData = JSON.stringify(rowObj)
                     console.log(JSON.parse(this.excelData))
+                    const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1  });
+                    const columnsArray = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[sheetName], { header: 1 });
+                    console.log(columnsArray);
+
                     const dgxlObj = new DataGridXL(this.$refs.dgxl, {
                         data: JSON.parse(this.excelData),
                         locale: this.dgxl_nl_NL
                     });
 
-                })
+                })*/
             };
-
+            console.log(input.files)
             reader.readAsBinaryString(input.files[0]);
 
 
         },
         onchangeSheet(event) {
-            var input = event.target;
-            var reader = new FileReader();
-            const header = []
-            reader.onload = () => {
-                var fileData = reader.result;
+            var wb = this.Workerbook
+            var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" });
+            this.excelData = JSON.stringify(rowObj)
+            console.log(JSON.parse(this.excelData))
 
-                //const header = []
+            //obtenermo los encabezados del archivo
+            const workbookHeaders = this.WorkerHeader
+            const columnsArray = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 });
+            console.log(columnsArray);
 
 
-                var wb = XLSX.read(fileData, { type: 'binary' });
-                this.sheetList = wb.SheetNames; //Array of sheet names.
 
-                //console.log(this.$attrssheetList)
-                var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" });
-                this.excelData = JSON.stringify(rowObj)
-               //console.log(JSON.parse(this.excelData))
+            //adicionamos a datagridxl o la vista en excel 
+            const dgxlObj = new DataGridXL(this.$refs.dgxl, {
+                data: JSON.parse(this.excelData),
+                locale: this.dgxl_nl_NL
+            });
 
-                var range = XLSX.utils.decode_range(sheet['!ref']);
-                console.log('----'+range);
-                var C, R = range.s.r; /* start in the first row */
-                /* walk every column in the range */
-                for (C = range.s.c; C <= range.e.c; ++C) {
-                    var cell = sheet[XLSX.utils.encode_cell({ c: C, r: R })] /* find the cell in the first row */
-
-                    var hdr = "UNKNOWN " + C; // <-- replace with your desired default 
-                    if (cell && cell.t) hdr = XLSX.utils.format_cell(cell);
-
-                    headers.push(hdr);
-                }
-                
-                const dgxlObj = new DataGridXL(this.$refs.dgxl, {
-                    data: JSON.parse(this.excelData),
-                    locale: this.dgxl_nl_NL
-                });
-            };
-
-            console.log(this.selectedSheet)
-            console.log(header);
 
         },
         mostrar(x) {
@@ -146,7 +161,7 @@ export default {
 
         },
         onChange(event) {
-
+            console.log(event)
             this.file = event.target.files ? event.target.files[0] : null;
             console.log("-----")
             console.log(event)
