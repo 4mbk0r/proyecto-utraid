@@ -52,9 +52,14 @@
                         prepend-inner-icon="mdi-card-account-details-outline" />
                 </v-col>
                 <v-col>
-                    <v-text-field dense outlined id="item" label="Item" type="text" v-model="form.item"
+                    <!---<v-text-field dense outlined id="item" label="Item" type="text" v-model="form.item"
                         :rules="[v => !!v || 'Se requiere completar Item']" required class="mb-n4 pa-0"
                         prepend-inner-icon="mdi-account-key" />
+                    --->
+                    <v-select dense outlined item-value="codigo_ine" item-text="departamento" :items="departamentos" v-model="form.expedido"
+                    :rules="[v => !!v || 'Se requiere seleccionar departamento expedicion']" filled label="Seleccione departemento de expacion" class="mb-n4 pa-0"
+                    required prepend-inner-icon="mdi-clipboard-account">
+                </v-select>
                 </v-col>
             </v-row>
             <v-row>
@@ -115,7 +120,7 @@
         </v-form>
 
         <v-dialog v-model="excel_dialog" fullscreen hide-overlay transition="excel_dialog-bottom-transition">
-            
+
             <v-card>
                 <v-toolbar dark color="primary">
                     <v-btn icon dark @click="excel_dialog = false">
@@ -131,7 +136,7 @@
                 </v-toolbar>
                 <excel @guardar_datos="save($event)">
 
-                </excel>  
+                </excel>
             </v-card>
         </v-dialog>
     </v-card>
@@ -154,7 +159,7 @@ export default {
     props: {
         cargos: Array,
         establecimiento: Array,
-
+        departamentos: Array,
     },
     data() {
         return {
@@ -167,7 +172,7 @@ export default {
                 ap_paterno: '',
                 ap_materno: '',
                 ci: '',
-                item: '',
+                expedido: '',
                 cargo: '',
                 email: '',
                 celular: '',
@@ -197,6 +202,7 @@ export default {
     created() {
         console.log(this.cargos)
         console.log(this.establecimiento)
+        console.log(this.departamentos);
     },
     computed: {
         update(validate) {
@@ -219,7 +225,7 @@ export default {
                 this.form.username = this.form.ci
                 this.form.password = this.form.ci + this.form.nombre[0] + this.form.ap_paterno[0] + this.form.ap_materno[0]
                 this.form.password_confirmation = this.form.password
-                console.log(this.form.username)
+                console.log(this.form)
                 this.form.post(this.route('register'), {
                     onFinish: () => this.form.reset('password', 'password_confirmation'),
                     onSuccess: () => {
@@ -228,7 +234,7 @@ export default {
                             ap_paterno: '',
                             ap_materno: '',
                             ci: '',
-                            item: '',
+                            expedido: '',
                             cargo: '',
                             email: '',
                             celular: '',
@@ -238,7 +244,7 @@ export default {
                             password_confirmation: '',
                             terms: false,
                         }),
-                            this.alert('Se registro de forma correcta')
+                        this.alert('Se registro de forma correcta')
                         this.$refs.form.resetValidation()
                         //this.$inertia.get(route('regitrar'))
 
@@ -246,9 +252,28 @@ export default {
                 })
             }
         },
-            save($event){
-                console.log($event);
-            }
+        async save($event) {
+            //console.log($event);
+            
+            var res = await this.axios({
+                method: 'post',
+                url: `/${process.env.MIX_CARPETA}/api/subir_personal`,
+                data: {
+                    datos: $event.datos,
+                    header: $event.header
+                },
+
+            }).then(
+                (response) => {
+                    //this.headers = response.data
+                    //console.log('Responder');
+                    console.log(response.data)
+                    
+                }).catch((error) => {
+                    console.log(error.data);
+
+                });
+        }
     }
 
 }

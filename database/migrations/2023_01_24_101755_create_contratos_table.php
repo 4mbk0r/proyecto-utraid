@@ -19,7 +19,7 @@ class CreateContratosTable extends Migration
             $table->integer('id_establecimiento');
         });
         DB::statement(
-            "ALTER TABLE contratos ADD FOREIGN KEY (id_usuario) REFERENCES users(ci) ON DELETE CASCADE"
+            "ALTER TABLE contratos ADD FOREIGN KEY (id_usuario) REFERENCES users(username) ON DELETE CASCADE"
         );
         DB::statement(
             "ALTER TABLE contratos ADD FOREIGN KEY (id_establecimiento) REFERENCES establecimientos(id) ON DELETE CASCADE"

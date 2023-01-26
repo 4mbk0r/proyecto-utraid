@@ -8,14 +8,14 @@
             </v-tab>
             <v-tab key="2">
                 <v-icon color="poobrown">{{ "mdi-calendar-account" }}</v-icon>
-                Personal
+                Lista Personal
                 
             </v-tab>
             
         </v-tabs>
         <v-tabs-items v-model="tabs" touchless>
             <v-tab-item>
-                <Registros :cargos="cargos" :establecimiento="establecimiento"></Registros>
+                <Registros :cargos="cargos" :establecimiento="establecimiento" :departamentos="departamentos"></Registros>
             </v-tab-item>
             <v-tab-item>
                 <Lista v-if="tabs=='1'"></Lista>
@@ -38,7 +38,8 @@ export default {
     }),
     props: {
         cargos: Array,
-        establecimiento: Array, 
+        establecimiento: Array,
+        departamentos: Array, 
     },
     components: {
         AppLayout,

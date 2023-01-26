@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Personal;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\VarDumper\Cloner\Data;
+
+use function PHPSTORM_META\type;
 
 class PersonalController extends Controller
 {
@@ -20,8 +24,8 @@ class PersonalController extends Controller
     {
         //
         $lista = DB::table('users')
-        ->where('cargo','!=','Admin')
-        ->get();
+            ->where('cargo', '!=', 'Admin')
+            ->get();
         return $lista;
     }
 
@@ -77,17 +81,17 @@ class PersonalController extends Controller
      */
     public function update(Request $request, int $personal)
     {
-        $usuario = json_decode(json_encode($request['usuario']),true);
+        $usuario = json_decode(json_encode($request['usuario']), true);
         try {
             $lista = DB::table('users')
-            ->where('ci','=',$personal)
-            ->update($usuario);
+                ->where('ci', '=', $personal)
+                ->update($usuario);
             //
         } catch (\Throwable $th) {
             return $th;
             //new Response(['message' => 'th'], 400);
         }
-       
+
         return $usuario;
     }
 
@@ -100,5 +104,42 @@ class PersonalController extends Controller
     public function destroy(Personal $personal)
     {
         //
+    }
+    public static function subir_personal(Request $request)
+    {
+
+        $personal  = json_decode($request['datos']);
+        //return  gettype($personal);
+        foreach ($personal as $key => $input) {
+            
+            $input = (array) $input;
+            return $input['ap_paterno'];
+            # code...
+            try {
+                $reps = User::create([
+                    'nombre' => $input['nombres'],
+                    'ap_paterno' => $input['ap_paterno'],
+                    'ap_materno' => $input['ap_materno'],
+                    'ci' => $input['ci'],
+                    'cargo' => $input['cargo'],
+                    'expedido' => $input['expedido'],
+                    'email' => (!isset($input['email'])) ?  null : $input['email'],
+                    'celular' => (!isset($input['celular'])) ?  null : $input['celular'],
+                    'username' => $input['ci'],
+                    'password' => Hash::make($input['password']),
+                ]);
+                if ($reps) {
+                    $dato = [
+                        'id_usuario' => $input['ci'],
+                        'id_establecimiento' => $input['establecimiento'],
+                    ];
+                    DB::table('contratos')->insert($dato);
+                }
+            } catch (QueryExecuted $e) {
+                return $e;
+                
+            }
+        }
+        /**/
     }
 }

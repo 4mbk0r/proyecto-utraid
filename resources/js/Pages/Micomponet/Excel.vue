@@ -70,6 +70,7 @@ export default {
             },
             Workerbook: null,
             WorkerHeader: null,
+            header: []
         };
     },
     methods: {
@@ -97,10 +98,11 @@ export default {
                 //obtenermo los encabezados del archivo
                 const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1 });
                 this.WorkerHeader = structuredClone(workbookHeaders)
-
+                
 
 
                 const columnsArray = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 });
+                this.header = columnsArray;
                 console.log(columnsArray);
 
 
@@ -178,7 +180,12 @@ export default {
             this.sheetName = null;
         },
         save() {
-            this.$emit('guardar_datos', JSON.parse(this.excelData))
+            var objetos =  {
+                'datos': this.excelData,
+                'header': this.header
+            }
+
+            this.$emit('guardar_datos', objetos)
         }
     },
     computed: {

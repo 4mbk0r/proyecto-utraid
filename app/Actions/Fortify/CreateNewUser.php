@@ -30,6 +30,7 @@ class CreateNewUser implements CreatesNewUsers
                 'ap_materno' => ['required', 'string', 'max:255'],
                 'ci' => ['required', 'string', 'max:255', 'unique:users'],
                 'cargo' => ['required', 'string', 'max:255'],
+                'expedido' => ['required', 'string', 'max:255'],
                 'username' => ['required', 'string', 'max:255', 'unique:users'],
                 'password' => $this->passwordRules(),
                 'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['required', 'accepted'] : '',
@@ -41,6 +42,7 @@ class CreateNewUser implements CreatesNewUsers
                 'email.unique' => 'Email ya existe use otro',
                 'email.required' => 'Se requiere email',
                 'cargo.required' => 'Se require cargo',
+                'expedido.required' => 'Se requiere Deparatamento de expedicion',
                 'password.required' => 'Se require contraseña'
             ]
         )->validate();
@@ -51,8 +53,8 @@ class CreateNewUser implements CreatesNewUsers
                 'ap_paterno' => $input['ap_paterno'],
                 'ap_materno' => $input['ap_materno'],
                 'ci' => $input['ci'],
-                'item' => $input['item'],
                 'cargo' => $input['cargo'],
+                'expedido' => $input['expedido'],
                 'email' => $input['email'],
                 'celular' => $input['celular'],
                 'username' => $input['username'],

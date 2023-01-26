@@ -19,8 +19,10 @@ class CreateUsersTable extends Migration
             $table->string('nombre');
             $table->string('ap_materno');
             $table->string('ap_paterno');
-            $table->string('ci')->unique();
-            $table->string('item');
+            $table->string('ci');
+            $table->string('expedido');
+            $table->string('item')->nullable();
+
             $table->string('email')->nullable();
             $table->string('celular')->nullable();
             $table->string('cargo');
@@ -28,19 +30,23 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->foreignId('current_team_id')->nullable();
             $table->text('profile_photo_path')->nullable();
-            $table->string('username')->unique();;
+            $table->string('username')->unique();
             $table->string('password');
             $table->timestamps();
             $table->foreign('cargo')->references('cargo')->on('cargos')->onDelete('cascade')->onUpdate('cascade');
-            
+            $table->unique(['ci', 'expedido']);
 
         });
+        DB::statement(
+            "ALTER TABLE users ADD FOREIGN KEY (expedido) REFERENCES departamentos(codigo_ine) ON DELETE CASCADE "
+        );
         $datos = [
             'username' => '8340024',
             'nombre' => 'Erick',
             'ap_materno' => 'Condori',
             'ap_paterno' => 'Quispe',
             'ci' => '8340024',
+            'expedido' => '2',
             'item' => '1',
             'email' => '4mbk0r@gmail.com',
             'cargo' => 'Admin',

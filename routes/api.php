@@ -16,6 +16,7 @@ use App\Http\Controllers\PersonaCitaController;
 use App\Models\personas_antiguo;
 use App\Http\Controllers\CitaTieneConfiguracionController;
 use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\PersonalController;
 use App\Models\Asignar_config_sala;
 use App\Models\Configuracion;
 use App\Models\Horario;
@@ -179,4 +180,10 @@ Route::get('/dias_tiene_configuracion', function () {
 
 Route::get('/prueba', function () {
     return AgendaController::salas_por_fechas();
+});
+
+
+Route::post('/subir_personal', function (Request $request) {
+
+    return PersonalController::subir_personal($request);
 });
