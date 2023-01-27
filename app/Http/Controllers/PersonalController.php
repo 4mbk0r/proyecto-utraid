@@ -9,6 +9,7 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\VarDumper\Cloner\Data;
 
 use function PHPSTORM_META\type;
@@ -109,34 +110,38 @@ class PersonalController extends Controller
     {
 
         $personal  = json_decode($request['datos']);
-        //return  gettype($personal);
-        foreach ($personal as $key => $input) {
+        //return  $personal;//gettype($personal);
+        foreach ($personal as $key => $i) {
             
-            $input = (array) $input;
-            return $input['ap_paterno'];
+            //return $input;
+            //return $input;
+           $input =  (array) $i;
             # code...
             try {
-                $reps = User::create([
-                    'nombre' => $input['nombres'],
-                    'ap_paterno' => $input['ap_paterno'],
-                    'ap_materno' => $input['ap_materno'],
-                    'ci' => $input['ci'],
-                    'cargo' => $input['cargo'],
-                    'expedido' => $input['expedido'],
-                    'email' => (!isset($input['email'])) ?  null : $input['email'],
-                    'celular' => (!isset($input['celular'])) ?  null : $input['celular'],
-                    'username' => $input['ci'],
-                    'password' => Hash::make($input['password']),
-                ]);
-                if ($reps) {
-                    $dato = [
-                        'id_usuario' => $input['ci'],
-                        'id_establecimiento' => $input['establecimiento'],
-                    ];
-                    DB::table('contratos')->insert($dato);
-                }
+                //$select = DB::table('users')->where('ci','==', $input['ci'] )->get();
+                if(! User::where('ci', $input['ci'])->exists()){
+                    $reps = User::create([
+                        'nombre' => $input['nombres'],
+                        'ap_paterno' => $input['ap_paterno'],
+                        'ap_materno' => $input['ap_materno'],
+                        'ci' => $input['ci'],
+                        'cargo' => $input['cargo'],
+                        'expedido' => trim($input['expedido']),
+                        'username' => $input['ci'],
+                        'password' => Hash::make($input['ci']),
+                    ]);
+                    if ($reps) {
+                        $dato = [
+                            'id_usuario' => $input['ci'],
+                            
+                            'id_establecimiento' => $input['establecimiento'],
+                        ];
+                        DB::table('contratos')->insert($dato);
+                    }
+                }   
+                
             } catch (QueryExecuted $e) {
-                return $e;
+                //return $e;
                 
             }
         }

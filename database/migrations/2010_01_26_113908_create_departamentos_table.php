@@ -16,8 +16,8 @@ class CreateDepartamentosTable extends Migration
     {
         Schema::create('departamentos', function (Blueprint $table) {
             $table->string('abreviado');
-            $table->string('departamento');
-            $table->string('codigo_ine')->primary();
+            $table->string('departamento')->primary();
+            $table->string('codigo_ine');
         });
         $departamento = array(
             array("abreviado"=>"CH","departamento"=>"CHUQUISACA","codigo_ine"=>"1"),

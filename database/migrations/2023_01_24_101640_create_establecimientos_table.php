@@ -15,8 +15,8 @@ class CreateEstablecimientosTable extends Migration
     public function up()
     {
         Schema::create('establecimientos', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre')->unique();
+           
+            $table->string('nombre')->primary();
         });
         $hora = [
             'nombre' => 'UTRAID',

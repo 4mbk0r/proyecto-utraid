@@ -23,31 +23,31 @@ class CreateCargosTable extends Migration
         });
     
         $datos = [
-            'cargo' => 'Admin',
+            'cargo' => 'ADMIN',
         ];
         DB::table('cargos')->insert($datos);
         $datos = [
-            'cargo' => 'Medico General',
+            'cargo' => 'MEDICO GENERAL',
             'servicio' => true
         ];
         DB::table('cargos')->insert($datos);
         $datos = [
-            'cargo' => 'Trabajo Social',
+            'cargo' => 'TRABAJADOR SOCIAL',
             'servicio' => true
         ];
         DB::table('cargos')->insert($datos);
         $datos = [
-            'cargo' => 'Psicologo',
+            'cargo' => 'PSICOLOGO',
             'servicio' => true
         ];
         DB::table('cargos')->insert($datos);
         $datos = [
-            'cargo' => 'Operador Terapético',
+            'cargo' => 'OPERADOR TERAPEUTICO',
             'servicio' => true
         ];
         DB::table('cargos')->insert($datos);
         $datos = [
-            'cargo' => 'Secretaria',
+            'cargo' => 'SECRETARIA',
             'servicio' => false,
             'administrativo' => true
         ];

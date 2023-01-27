@@ -87,23 +87,43 @@ export default {
                 this.sheetList = wb.SheetNames; //Array of sheet names.
                 //console.log(this.sheetList[0]);
 
+
+
                 this.selectedSheet = this.sheetList[0];
                 console.log(this.selectedSheet);
 
-                //obtenemos los datos en json  de la primiera hoja
-                var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" });
-                this.excelData = JSON.stringify(rowObj)
-                console.log(JSON.parse(this.excelData))
 
                 //obtenermo los encabezados del archivo
                 const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1 });
                 this.WorkerHeader = structuredClone(workbookHeaders)
-                
+                this.header = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 })[0];
+
+                for (let i = 0; i < this.header.length; i++) {
+                    this.header[i] = this.header[i].trim();
+                }
 
 
-                const columnsArray = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 });
-                this.header = columnsArray;
-                console.log(columnsArray);
+
+
+
+                //obtenemos los datos en json  de la primiera hoja
+                var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" })
+                    .map(row =>
+                        Object.keys(row).reduce((obj, key) => {
+                            obj[key.trim()] = row[key];
+                            return obj;
+                        }, {})
+                    );
+                    
+                console.log(rowObj)
+                this.excelData = JSON.stringify(rowObj)
+                console.log('__________')
+                console.log(JSON.parse(this.excelData))
+
+
+
+
+
 
 
 
@@ -180,7 +200,7 @@ export default {
             this.sheetName = null;
         },
         save() {
-            var objetos =  {
+            var objetos = {
                 'datos': this.excelData,
                 'header': this.header
             }

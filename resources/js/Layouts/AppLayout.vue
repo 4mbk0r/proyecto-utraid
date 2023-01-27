@@ -63,7 +63,7 @@
                         </v-list-item>
                         </Link>
                         <jet-nav-link :href="route('registro')">
-                            <v-list-item v-if="$page.props.user.cargo == 'Admin'" key="4" link>
+                            <v-list-item v-if="$page.props.user.cargo == 'ADMIN'" key="4" link>
                                 <v-list-item-content style="color: white;">
                                     <v-list-item-title>
                                         <v-icon>mdi-file-document-edit</v-icon>
@@ -73,7 +73,7 @@
                             </v-list-item>
                         </jet-nav-link>
                         <jet-nav-link :href="route('configuracion')">
-                            <v-list-item v-if="$page.props.user.cargo == 'Admin'" key="5" link>
+                            <v-list-item v-if="$page.props.user.cargo == 'ADMIN'" key="5" link>
 
                                 <v-list-item-content style="color: white;">
                                     <v-list-item-title>

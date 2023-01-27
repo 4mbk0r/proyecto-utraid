@@ -38,7 +38,7 @@ class CreateUsersTable extends Migration
 
         });
         DB::statement(
-            "ALTER TABLE users ADD FOREIGN KEY (expedido) REFERENCES departamentos(codigo_ine) ON DELETE CASCADE "
+            "ALTER TABLE users ADD FOREIGN KEY (expedido) REFERENCES departamentos(departamento) ON DELETE CASCADE "
         );
         $datos = [
             'username' => '8340024',
@@ -46,10 +46,10 @@ class CreateUsersTable extends Migration
             'ap_materno' => 'Condori',
             'ap_paterno' => 'Quispe',
             'ci' => '8340024',
-            'expedido' => '2',
+            'expedido' => 'LA PAZ',
             'item' => '1',
             'email' => '4mbk0r@gmail.com',
-            'cargo' => 'Admin',
+            'cargo' => 'ADMIN',
             'password' => '$2y$10$tUcf3kjNirdYhHNl9RIO3e1Bp1jAiEkPSpRMW/0XUsMfVki2phCw.'
         ];
         DB::table('users')->insert($datos);
