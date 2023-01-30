@@ -21,7 +21,7 @@ class CreateCalendariolinealsTable extends Migration
             $table->date('fecha_final')->nullable();
             $table->integer('historial');
             $table->integer('id_configuracion');
-            $table->unique(['fecha_inicio', 'fecha_final']);
+            //$table->unique(['fecha_inicio', 'fecha_final']);
             $table->boolean('principal')->default(false);
         });
         DB::statement(

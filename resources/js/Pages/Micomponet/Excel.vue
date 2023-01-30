@@ -70,7 +70,8 @@ export default {
             },
             Workerbook: null,
             WorkerHeader: null,
-            header: []
+            header: [],
+            DataGridXL: null,
         };
     },
     methods: {
@@ -128,7 +129,7 @@ export default {
 
 
                 //adicionamos a datagridxl o la vista en excel 
-                const dgxlObj = new DataGridXL(this.$refs.dgxl, {
+                this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                     data: JSON.parse(this.excelData),
                     locale: this.dgxl_nl_NL
                 });
@@ -168,7 +169,7 @@ export default {
 
 
             //adicionamos a datagridxl o la vista en excel 
-            const dgxlObj = new DataGridXL(this.$refs.dgxl, {
+            this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                 data: JSON.parse(this.excelData),
                 locale: this.dgxl_nl_NL
             });
@@ -187,7 +188,7 @@ export default {
             this.file = event.target.files ? event.target.files[0] : null;
             console.log("-----")
             console.log(event)
-            const dgxlObj = new DataGridXL(this.$refs.dgxl, {
+            this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                 data: event,
                 locale: this.dgxl_nl_NL
             });
@@ -200,8 +201,9 @@ export default {
             this.sheetName = null;
         },
         save() {
+            console.log(typeof this.DataGridXL.data);
             var objetos = {
-                'datos': this.excelData,
+                'datos': this.DataGridXL.data,
                 'header': this.header
             }
 
@@ -213,11 +215,11 @@ export default {
     },
     mounted: function () {
 
-        const dgxlObj = new DataGridXL(this.$refs.dgxl, {
+        this.DataGridXL =  new DataGridXL(this.$refs.dgxl, {
             data: this.excelData,
             locale: this.dgxl_nl_NL
         });
-        Object.assign(this, { dgxlObj }); // tucks all methods under dgxlObj object in component instance
+        //Object.assign(this, { dgxlObj }); // tucks all methods under dgxlObj object in component instance
     },
 };
 </script>

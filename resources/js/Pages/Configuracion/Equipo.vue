@@ -111,7 +111,7 @@
                     <h3>Medico</h3>
                     <v-list-item-group v-model="selected_medico" active-class="pink--text">
                         <template v-for="(item, index) in items">
-                            <v-list-item v-if="item.cargo == 'Medico General' && !item.guardar" :key="item.title"
+                            <v-list-item v-if="item.cargo == 'MEDICO GENERAL' && !item.guardar" :key="item.title"
                                 @click="addequipo(item, index)">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
@@ -151,7 +151,7 @@
                 <v-list two-line>
                     <v-list-item-group v-model="selected_psicologo" active-class="pink--text">
                         <template v-for="(item, index) in items">
-                            <v-list-item v-if="item.cargo == 'Psicologo' && !item.guardar" :key="item.title"
+                            <v-list-item v-if="item.cargo == 'PSICOLOGO' && !item.guardar" :key="item.title"
                                 @click="addequipo(item, index)">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>
@@ -190,7 +190,7 @@
                 <h3>Trabajo Social</h3>
                 <v-list two-line>
                     <v-list-item-group v-model="selected_trabajo" active-class="pink--text">
-                        <template v-if="item.cargo == 'Trabajo Social' && !item.guardar" v-for="(item, index) in items">
+                        <template v-if="item.cargo == 'TRABAJADOR SOCIAL' && !item.guardar" v-for="(item, index) in items">
                             <v-list-item :key="item.title" ref="trabajo" @click="addequipo(item, index)">
                                 <template v-slot:default="{ active }">
                                     <v-list-item-content>

@@ -109,7 +109,8 @@ class PersonalController extends Controller
     public static function subir_personal(Request $request)
     {
 
-        $personal  = json_decode($request['datos']);
+        $personal  = $request['datos'];
+       
         //return  $personal;//gettype($personal);
         foreach ($personal as $key => $i) {
             
@@ -127,7 +128,7 @@ class PersonalController extends Controller
                         'ci' => $input['ci'],
                         'cargo' => $input['cargo'],
                         'expedido' => trim($input['expedido']),
-                        'username' => $input['ci'],
+                        'username' => trim($input['ci']),
                         'password' => Hash::make($input['ci']),
                     ]);
                     if ($reps) {
@@ -141,10 +142,12 @@ class PersonalController extends Controller
                 }   
                 
             } catch (QueryExecuted $e) {
-                //return $e;
+                //return $e; 
+                $i['error']= $e;
                 
             }
         }
+        return $personal;
         /**/
     }
 }

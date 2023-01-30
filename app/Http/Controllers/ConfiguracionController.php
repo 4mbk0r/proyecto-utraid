@@ -183,7 +183,7 @@ group by configuracions.id
                 DB::table('asignar_config_salas')->insert([
                     'id_sala'=> $value['id_sala'],
                     'id_conf_sala'=>$value['id_conf_sala'],
-                    'id_conf'=>$id_nueva
+                    'id_conf'=>$id_config
                     ]
                 );
             }
