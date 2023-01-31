@@ -56,7 +56,7 @@
                         :rules="[v => !!v || 'Se requiere completar Item']" required class="mb-n4 pa-0"
                         prepend-inner-icon="mdi-account-key" />
                     --->
-                    <v-select dense outlined item-value="codigo_ine" item-text="departamento" :items="departamentos" v-model="form.expedido"
+                    <v-select dense outlined item-value="departamento" item-text="departamento" :items="departamentos" v-model="form.expedido"
                     :rules="[v => !!v || 'Se requiere seleccionar departamento expedicion']" filled label="Seleccione departemento de expacion" class="mb-n4 pa-0"
                     required prepend-inner-icon="mdi-clipboard-account">
                 </v-select>

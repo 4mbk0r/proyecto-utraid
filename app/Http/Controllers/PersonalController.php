@@ -120,7 +120,7 @@ class PersonalController extends Controller
             # code...
             try {
                 //$select = DB::table('users')->where('ci','==', $input['ci'] )->get();
-                if(! User::where('ci', $input['ci'])->exists()){
+                if(! User::where('ci', $input['ci'])->exists() ){
                     $reps = User::create([
                         'nombre' => $input['nombres'],
                         'ap_paterno' => $input['ap_paterno'],

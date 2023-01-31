@@ -188,6 +188,7 @@ export default {
         changeType(nombre) {
             if (nombre == 'category2') {
                 this.estado = 'atencion'
+                this.type = nombre
                 this.categories = ['Doctor 1', 'Doctor 2']
                 this.pedir_doctores(this.fecha_calendario)
                 //this.pedir_datos(this.fecha_calendario)
@@ -196,6 +197,7 @@ export default {
             if (nombre == 'category') {
                 this.estado = 'cita'
                 this.type = nombre
+                this.categories = ['Salas 1', 'Doctor 2']
                 this.pedir_datos(this.fecha_calendario)
             } else {
                 this.estado = 'calendario'
