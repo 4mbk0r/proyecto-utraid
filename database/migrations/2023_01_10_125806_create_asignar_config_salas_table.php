@@ -15,13 +15,14 @@ class CreateAsignarConfigSalasTable extends Migration
     public function up()
     {
         Schema::create('asignar_config_salas', function (Blueprint $table) {
+            $table->increments('id');
             $table->integer('id_sala');
-            $table->integer('id_conf');
+            //$table->integer('id_conf');
             $table->integer('id_conf_sala');
         });
-        DB::statement(
+        /*DB::statement(
             "ALTER TABLE asignar_config_salas ADD FOREIGN KEY (id_conf) REFERENCES configuracions(id) ON DELETE CASCADE"
-        );
+        );*/
         DB::statement(
             "ALTER TABLE asignar_config_salas ADD FOREIGN KEY (id_sala) REFERENCES salas(id) ON DELETE CASCADE"
         );

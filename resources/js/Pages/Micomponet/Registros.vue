@@ -16,7 +16,7 @@
                             <div id="main" class="grid grid-cols-2 gap-1 justify-evenly">
                                 <v-text-field v-model="ci" type="text" label="Carnet" @keyup.enter="buscar_ci(ci)">
                                 </v-text-field>
-                                <v-select :items="departamentos" filled_label="Filled style">
+                                <v-select :items="departamentos" filled_label="Departemento de emicion">
                                 </v-select>
 
                             </div>
