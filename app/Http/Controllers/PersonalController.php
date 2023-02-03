@@ -25,7 +25,7 @@ class PersonalController extends Controller
     {
         //
         $lista = DB::table('users')
-            ->where('cargo', '!=', 'Admin')
+            ->where('cargo', '!=', 'ADMIN')
             ->get();
         return $lista;
     }

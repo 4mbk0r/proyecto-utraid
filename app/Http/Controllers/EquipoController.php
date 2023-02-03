@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\equipo;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EquipoController extends Controller
 {
@@ -16,6 +17,32 @@ class EquipoController extends Controller
     public function index()
     {
         //
+
+        $equipo = [
+            [
+                'equipo'=> 'Equipo 1',
+                'lista'=> []
+            ],
+            [
+                'equipo'=> 'Equipo 2',
+                'lista'=> []
+            ],
+            [
+                'equipo'=> 'Equipo 3',
+                'lista'=> []
+            ]
+            
+        ];
+        $cargo = DB::table('cargos')
+            ->where('servicio', '=', 'true')
+            ->get();
+        //  $equipo = json_encode($equipo);
+        return inertia('Configuracion/Equipo', [
+               
+            'equipo' => $equipo,
+            'cargos' => $cargo
+            
+        ]);
     }
 
     /**

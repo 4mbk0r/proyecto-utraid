@@ -22,8 +22,7 @@ use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\Controllgeneral;
 
 use App\Http\Controllers\CuentaController;
-
-
+use App\Http\Controllers\EquipoController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -172,3 +171,7 @@ Route::get('/salaespera', function () {
 Route::get('/excel', function () {
     return Inertia::render('Micomponet/Excel');
 })->name('excelss');
+
+
+
+Route::resource('/equipos2', EquipoController::class);
