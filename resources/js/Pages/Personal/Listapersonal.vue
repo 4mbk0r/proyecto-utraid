@@ -6,16 +6,10 @@
         <v-toolbar flat>
           <v-toolbar-title>Lista Personal</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" ></v-text-field>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar"></v-text-field>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-select
-              v-model="value"
-              :items="items"
-              attach
-              chips
-              label="Chips"
-              multiple
-            ></v-select>
+          <v-select v-model="caloriesFilterValue" :items="cargos" item-text='cargo' attach chips label="cargos"
+            multiple></v-select>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
@@ -56,7 +50,7 @@
           <v-toolbar-title>Cambiar Datos</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            
+
           </v-toolbar-items>
         </v-toolbar>
         <Cuenta :form="editedItem" :admin="true"></Cuenta>
@@ -72,7 +66,8 @@ import Cuenta from '@/Pages/Personal/CuentaAdministrar'
 
 export default {
   props: {
-    actulizar: Boolean
+    actulizar: Boolean,
+    cargos: Array,
   },
   data: () => ({
     notifications: false,
@@ -81,7 +76,7 @@ export default {
     search: '',
     dialog: false,
     dialogDelete: false,
-    headers: [{
+    /*headers: [{
       text: 'Nombre',
       align: 'start',
       //sortable: false,
@@ -101,7 +96,8 @@ export default {
     },
     {
       text: 'Cargo',
-      value: 'cargo'
+      value: 'cargo',
+      filter: this.cargoFilter
     },
     {
       text: 'Tarea',
@@ -109,6 +105,7 @@ export default {
       sortable: false
     },
     ],
+    */
     desserts: [],
     editedIndex: -1,
     editedItem: {
@@ -127,7 +124,7 @@ export default {
     },
     items: ['foo', 'bar', 'fizz', 'buzz'],
     value: ['foo', 'bar', 'fizz', 'buzz'],
-
+    caloriesFilterValue: [],
     //roles: [] 
     //['Admin', 'Medico General', 'Trabajo Social', 'Operador Terapético', 'Psicologo', 'Psicologo', 'Secretaria', 'recepcionista'],
   }),
@@ -146,19 +143,52 @@ export default {
   computed: {
     update(validaste) {
 
+    },
+
+    headers() {
+      return [{
+        text: 'Nombre',
+        align: 'start',
+        //sortable: false,
+        value: 'nombre',
+      },
+      {
+        text: 'Apellido Paterno',
+        value: 'ap_paterno'
+      },
+      {
+        text: 'Apellido Materno',
+        value: 'ap_materno'
+      },
+      {
+        text: 'Cedula de Identidad',
+        value: 'ci'
+      },
+      {
+        text: 'Cargo',
+        value: 'cargo',
+        filter: this.cargoFilter
+      },
+      {
+        text: 'Tarea',
+        value: 'actions',
+        sortable: false
+      }
+
+      ];
     }
 
   },
   watch: {
-    
+
   },
   methods: {
-    openAdminr(item){
+    openAdminr(item) {
       console.log(item);
-      this.editedItem =  structuredClone(item)
+      this.editedItem = structuredClone(item)
       this.dialog = true
-    }, 
-        async pedir_datos() {
+    },
+    async pedir_datos() {
       try {
         var res = await axios({
           method: 'get',
@@ -179,9 +209,21 @@ export default {
       }
 
     },
-    close(){
+    close() {
       this.dialog = false
       this.pedir_datos()
+    },
+    cargoFilter(value) {
+      console.log(this.caloriesFilterValue);
+
+      // If this filter has no value we just skip the entire filter.
+      if (this.caloriesFilterValue.length == 0) {
+        return true;
+      }
+      var index = this.caloriesFilterValue.findIndex(e => e === value);
+      
+      return index !== -1
+
     }
   }
 

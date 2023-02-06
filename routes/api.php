@@ -8,6 +8,7 @@ use App\Http\Controllers\SalaController;
 use App\Http\Controllers\ProfesionController;
 use App\Http\Controllers\PdfViewController;
 use App\Http\Controllers\AsignarConfigSalaController;
+use App\Http\Controllers\CargoController;
 use App\Http\Controllers\Configuracion\CalendarioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -180,6 +181,11 @@ Route::get('/dias_tiene_configuracion', function () {
 
 Route::get('/prueba', function () {
     return AgendaController::salas_por_fechas();
+});
+
+
+Route::get('/cargo_servicio', function () {
+    return CargoController::cargo_servicio();
 });
 
 

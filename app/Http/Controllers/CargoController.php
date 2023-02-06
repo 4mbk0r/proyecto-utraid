@@ -90,4 +90,14 @@ class CargoController extends Controller
     {
         //
     }
+    public static function cargo_servicio()
+    {
+        //
+        return DB::table('cargos')
+        ->select('*')
+        ->where('cargo', '!=', 'Admin')
+        ->where('servicio', '=', 'true')
+        ->get();
+
+    }
 }

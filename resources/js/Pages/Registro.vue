@@ -1,6 +1,6 @@
 <template>
     <app-layout>
-        
+
         <v-tabs v-model="tabs" icons-and-text centered>
             <v-tab key="1">
                 <v-icon color="poobrown">{{ "mdi-calendar-account" }}</v-icon>
@@ -9,16 +9,17 @@
             <v-tab key="2">
                 <v-icon color="poobrown">{{ "mdi-calendar-account" }}</v-icon>
                 Lista Personal
-                
+
             </v-tab>
-            
+
         </v-tabs>
         <v-tabs-items v-model="tabs" touchless>
             <v-tab-item>
-                <Registros :cargos="cargos" :establecimiento="establecimiento" :departamentos="departamentos"></Registros>
+                <Registros :cargos="cargos" :establecimiento="establecimiento" :departamentos="departamentos">
+                </Registros>
             </v-tab-item>
             <v-tab-item>
-                <Lista v-if="tabs=='1'"></Lista>
+                <Lista :cargos="cargos" v-if="tabs == '1'"></Lista>
             </v-tab-item>
             <v-tab-item> </v-tab-item>
         </v-tabs-items>
@@ -39,7 +40,7 @@ export default {
     props: {
         cargos: Array,
         establecimiento: Array,
-        departamentos: Array, 
+        departamentos: Array,
     },
     components: {
         AppLayout,
@@ -47,5 +48,6 @@ export default {
         Lista
 
     },
+    
 }
 </script>

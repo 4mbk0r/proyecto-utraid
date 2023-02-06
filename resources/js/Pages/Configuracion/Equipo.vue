@@ -66,7 +66,7 @@
                         <v-list-item-group v-model="selected_lista" active-class="pink--text">
                             <template v-for="(item, index) in items">
 
-                                <v-list-item v-if="item.equipo === selected_equipo && item.guardar " :key="item.title">
+                                <v-list-item v-if="item.equipo === selected_equipo && item.guardar" :key="item.title">
                                     <template v-slot:default="{ active }">
                                         <v-list-item-content>
                                             <v-list-item-title v-text="item.nombre"></v-list-item-title>
@@ -108,9 +108,8 @@
             <v-card-title>
 
             </v-card-title>
-            <v-data-table :headers="headers" :items="items" item-key="ci" :search="search" 
-            @click:row="addequipo($event)"
-            class="elevation-1 pa-6">
+            <v-data-table :headers="headers" :items="items" item-key="ci" :search="search"
+                @click:row="addequipo($event)" class="elevation-1 pa-6">
                 <template v-slot:top>
                     <!-- v-container, v-col and v-row are just for decoration purposes. -->
                     <v-container fluid>
@@ -158,7 +157,7 @@ export default {
         mensaje: Object,
         datos: Object,
         equipo: Array,
-        cargos: Array,
+        //cargos: Array,
     },
     created() {
         this.pedir_datos();
@@ -192,8 +191,9 @@ export default {
         selected_equipo: '',
         selected_lista: [],
         caloriesList: [
-            { 
-                cargo: 'Todos' , value: null },
+            {
+                cargo: 'Todos', value: null
+            },
         ],
 
         caloriesFilterValue: null,
@@ -210,7 +210,9 @@ export default {
         if (this.equipo.length > 0) {
             this.selected_equipo = 0
         }
-        if(this.cargos.length > 0 ){
+        console.log(this.cargos);
+        this.pedir_cargos()
+        /*if(this.cargos.length > 0 ){
             for (const key in this.cargos) {
                 if (Object.hasOwnProperty.call(this.cargos, key)) {
                     //const element = this.cargos[key];
@@ -218,8 +220,8 @@ export default {
                 }
             }
             
-        }
-        
+        }*/
+
     },
     components: {
         AppLayout
@@ -256,7 +258,7 @@ export default {
                     value: 'ci',
                     //filter: this.caloriesFilter,
                 },
-                
+
                 {
                     text: 'Cargo',
                     value: 'cargo',
@@ -287,6 +289,34 @@ export default {
             //console.log(this.date);
             this.$emit('respuesta', true)
         },
+        async pedir_cargos() {
+            console.log("datops");
+            try {
+                var res = await axios({
+                    method: 'get',
+                    url: `/${process.env.MIX_CARPETA}/api/` + "cargo_servicio",
+                }).then(
+                    (response) => {
+                        //console.log('dsf'+response); 
+                        this.cargos = response.data
+                        for (const key in this.cargos) {
+                            if (Object.hasOwnProperty.call(this.cargos, key)) {
+                                //const element = this.cargos[key];
+                                this.caloriesList.push(this.cargos[key])
+                            }
+                        }
+                        console.log(response.data)
+
+                    }, (error) => {
+                        console.log(error);
+                    }
+                );
+            } catch (err) {
+                console.log("err->", err.response.data)
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            }
+
+        },
 
         async pedir_datos() {
             console.log("datops");
@@ -299,6 +329,7 @@ export default {
                         //console.log('dsf'+response);
                         this.items = response.data
                         this.desserts = response.data
+
                         console.log('dato')
                         console.log(response.data)
 
@@ -323,7 +354,7 @@ export default {
                 this.equipo[this.selected_equipo].lista.splice(findy, 1)
             }
             //this.update_item()
-            
+
         },
         seleccion_equipo() {
             //console.log(i);
@@ -337,7 +368,12 @@ export default {
             console.log(item);
             console.log(this.selected_equipo);
             //console.log('-->', index);*/
-
+            this.equipo[this.selected_equipo].lista.push(item)
+            item.equipo =  this.selected_equipo
+            item.guardar=  true
+            console.log(item);
+            console.log(this.items);
+            /*
             if (typeof this.selected_equipo == 'undefined' || this.selected_equipo === '') {
                 this.selected_medico = ''
                 this.selected_psicologo = ''
@@ -366,6 +402,7 @@ export default {
             }
             console.log(this.items)
             //this.update_item()
+            */
         },
         verificar(active, item) {
             return
