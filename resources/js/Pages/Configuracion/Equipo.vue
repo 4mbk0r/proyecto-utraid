@@ -66,7 +66,7 @@
                         <v-list-item-group v-model="selected_lista" active-class="pink--text">
                             <template v-for="(item, index) in items">
 
-                                <v-list-item v-if="item.equipo === selected_equipo && item.guardar" :key="item.title">
+                                <v-list-item v-if="item.equipo === selected_equipo" :key="item.title">
                                     <template v-slot:default="{ active }">
                                         <v-list-item-content>
                                             <v-list-item-title v-text="item.nombre"></v-list-item-title>
@@ -108,7 +108,7 @@
             <v-card-title>
 
             </v-card-title>
-            <v-data-table :headers="headers" :items="items" item-key="ci" :search="search"
+            <v-data-table :headers="headers" :items="eventos" item-key="ci" :search="search"
                 @click:row="addequipo($event)" class="elevation-1 pa-6">
                 <template v-slot:top>
                     <!-- v-container, v-col and v-row are just for decoration purposes. -->
@@ -136,6 +136,7 @@
                     </v-container>
 
                 </template>
+
             </v-data-table>
 
 
@@ -188,7 +189,7 @@ export default {
             }
         ],*/
         search: '',
-        selected_equipo: '',
+        selected_equipo: 0,
         selected_lista: [],
         caloriesList: [
             {
@@ -227,6 +228,8 @@ export default {
         AppLayout
     },
     computed: {
+
+        eventos() { return this.items },
         getnumero_por_equipo() {
             if (typeof this.equipo.lista === 'undefined') return ''
             if (this.equipo.length > 0) {
@@ -323,7 +326,7 @@ export default {
             try {
                 var res = await axios({
                     method: 'get',
-                    url: `/${process.env.MIX_CARPETA}/` + "lista_personal",
+                    url: `/${process.env.MIX_CARPETA}/api/` + "personal_servicio",
                 }).then(
                     (response) => {
                         //console.log('dsf'+response);
@@ -367,13 +370,6 @@ export default {
         addequipo(item) {
             console.log(item);
             console.log(this.selected_equipo);
-            //console.log('-->', index);*/
-            this.equipo[this.selected_equipo].lista.push(item)
-            item.equipo =  this.selected_equipo
-            item.guardar=  true
-            console.log(item);
-            console.log(this.items);
-            /*
             if (typeof this.selected_equipo == 'undefined' || this.selected_equipo === '') {
                 this.selected_medico = ''
                 this.selected_psicologo = ''
@@ -381,28 +377,38 @@ export default {
                 return
 
             }
-            let findx = this.items.findIndex(o => o.cargo === item.cargo && o.equipo == this.selected_equipo)
-
             if (item.equipo >= 0) {
-                item.equipo = -1
-                item.guardar = false
-                this.selected_delete(item)
+                alert('ya tiene equipo esta en ' + item.equipo);
+                return;
+            }
 
-            } else {
+            else {
+                //alert('ya tiene un  ' + item.cargo + ' en el equipo');
+                    //return;
+                
+                let findx = this.items.findIndex(o => o.cargo === item.cargo && o.equipo == this.selected_equipo)
                 if (findx >= 0) {
 
+                    alert('ya tiene un  ' + item.cargo + ' en el equipo');
+                    return;
                     this.items[findx].equipo = -1
                     this.items[findx].guardar = false
                     //
                     this.selected_delete(this.items[findx])
                 }
+                
                 item.equipo = this.selected_equipo
                 item.guardar = true
                 this.equipo[this.selected_equipo].lista.push(item)
             }
             console.log(this.items)
             //this.update_item()
-            */
+            this.selected_equipo = -1
+            this.selected_equipo = item.equipo
+            var s = structuredClone(this.items)
+            this.items = []
+            this.items = s
+
         },
         verificar(active, item) {
             return

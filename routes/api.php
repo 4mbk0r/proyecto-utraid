@@ -188,6 +188,10 @@ Route::get('/cargo_servicio', function () {
     return CargoController::cargo_servicio();
 });
 
+Route::get('/personal_servicio', function () {
+    return PersonalController::personal_servicio();
+});
+
 
 Route::post('/subir_personal', function (Request $request) {
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Personal;
 use App\Http\Controllers\Controller;
+use App\Models\Cargo;
 use App\Models\User;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
@@ -149,5 +150,15 @@ class PersonalController extends Controller
         }
         return $personal;
         /**/
+    }
+    public static function personal_servicio()
+    {
+        $cargo = DB::table('users')
+        ->leftJoin('cargos', 'cargos.cargo', '=', 'users.cargo')
+        ->where('cargos.servicio', '=', 'true')
+        //->where('cargo', '=','recepcionista')
+        ->get();
+        return $cargo;
+        
     }
 }

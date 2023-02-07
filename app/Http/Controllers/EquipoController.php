@@ -33,8 +33,10 @@ class EquipoController extends Controller
             ]
             
         ];
-        $cargo = DB::table('cargos')
-            ->where('servicio', '=', 'true')
+        $cargo = DB::table('users')
+            ->leftJoin('cargos', 'cargos.cargo', '=', 'users.cargo')
+            ->where('cargos.servicio', '=', 'true')
+            //->where('cargo', '=','recepcionista')
             ->get();
         //  $equipo = json_encode($equipo);
         return inertia('Configuracion/Equipo', [
