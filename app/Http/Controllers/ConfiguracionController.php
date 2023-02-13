@@ -103,6 +103,7 @@ group by configuracions.id
      */
     public function store(Request $request)
     {
+
         $antigua = $request['configuracion_antigua'];
         $configuracion = $request['configuracion'];
         $fecha = $request['fecha_nueva'];
@@ -110,7 +111,7 @@ group by configuracions.id
         $salas =  $request['salas'];
         //return $salas;
         //return $configuracion;
-        
+
         try {
             $id_config =  DB::table('configuracions')
                 ->insertGetId($configuracion);
@@ -180,10 +181,11 @@ group by configuracions.id
                     ];
                 }
                 array_push($r, $s);
-                DB::table('asignar_config_salas')->insert([
-                    'id_sala'=> $value['id_sala'],
-                    'id_conf_sala'=>$value['id_conf_sala'],
-                    //'id_conf'=>$id_config
+                DB::table('asignar_config_salas')->insert(
+                    [
+                        'id_sala' => $value['id_sala'],
+                        'id_conf_sala' => $value['id_conf_sala'],
+                        'id_conf' => $id_config
                     ]
                 );
             }

@@ -174,4 +174,4 @@ Route::get('/excel', function () {
 
 
 
-Route::resource('/equipos2', EquipoController::class);
+Route::resource('/equipo2', EquipoController::class)->middleware(['auth:sanctum', 'verified']);

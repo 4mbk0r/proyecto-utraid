@@ -9,8 +9,9 @@
           Adicionar Sala
         </v-btn>
         <v-dialog v-if="dialog" v-model="dialog" max-width="500px">
-          <salaespera ref="salaespera" @validar_descripcion="evaluar_descripcion($event)" @lista="mostrarsalas($event)" @eliminar="eliminarsalas($event)" @cerrar="cerrar($event)"
-            :editedIndex="editedIndex" :editedItem="editedItem"></salaespera>
+          <salaespera ref="salaespera" @validar_descripcion="evaluar_descripcion($event)" @lista="mostrarsalas($event)"
+            @eliminar="eliminarsalas($event)" @cerrar="cerrar($event)" :editedIndex="editedIndex"
+            :editedItem="editedItem"></salaespera>
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
@@ -118,16 +119,18 @@ export default {
     }
   },
   created() {
+    console.log(':::::::::::: ')
+    console.log(this.configuracion.id_configuracion);
     this.initialize()
   },
   methods: {
     async initialize() {
 
-      //console.log("----", this.configuracion);
+      console.log("----", this.configuracion);
       try {
         var res = await axios({
           method: 'get',
-          url: `/${process.env.MIX_CARPETA}/api/` + "lista_salas" + '/' + this.configuracion.id_calendario,
+          url: `/${process.env.MIX_CARPETA}/api/` + "lista_salas" + '/' + this.configuracion.id_configuracion,
         }).then(
           (response) => {
             //console.log(response);
@@ -321,14 +324,14 @@ export default {
       //console.log('validar desripcion')
       ////console.log(val)
       for (const i in this.desserts) {
-        
+
         var editedX = this.desserts[i]
-       
-        if (editedX.descripcion  ===  val) {
+
+        if (editedX.descripcion === val) {
           //console.log(editedX.descripcion) 
-        
+
           this.$refs.salaespera.existedescripcion()
-          
+
         }
       }
     }

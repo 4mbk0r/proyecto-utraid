@@ -5,15 +5,23 @@
 
             <v-row>
 
-                <v-col cols="6">
+                <v-col cols="4">
                     Seleccion de Equipos
                 </v-col>
-                <v-col cols="6">
+                <v-col cols="4">
                     <v-btn class="float-right" dense small @click="delete_all">
                         <v-icon color="yello w darken-3">
                             mdi-delete
                         </v-icon>
                         Eliminar Todo
+                    </v-btn>
+                </v-col>
+                <v-col cols="4">
+                    <v-btn class="float-right" dense small @click="save_all">
+                        <v-icon color="yello w darken-3">
+                            mdi-save
+                        </v-icon>
+                        Guardar
                     </v-btn>
                 </v-col>
             </v-row>
@@ -74,7 +82,10 @@
                                             <v-list-item-subtitle class="text--primary"
                                                 v-text="item.headline"></v-list-item-subtitle>
 
-                                            <v-list-item-subtitle v-text="item.ap_paterno"></v-list-item-subtitle>
+                                            <v-list-item-subtitle
+                                                v-text="item.ap_paterno + item.ap_materno"></v-list-item-subtitle>
+                                            <v-list-item-subtitle v-text="item.cargo"></v-list-item-subtitle>
+
                                         </v-list-item-content>
 
                                         <v-list-item-action>
@@ -384,8 +395,8 @@ export default {
 
             else {
                 //alert('ya tiene un  ' + item.cargo + ' en el equipo');
-                    //return;
-                
+                //return;
+
                 let findx = this.items.findIndex(o => o.cargo === item.cargo && o.equipo == this.selected_equipo)
                 if (findx >= 0) {
 
@@ -396,7 +407,7 @@ export default {
                     //
                     this.selected_delete(this.items[findx])
                 }
-                
+
                 item.equipo = this.selected_equipo
                 item.guardar = true
                 this.equipo[this.selected_equipo].lista.push(item)
@@ -426,6 +437,56 @@ export default {
             this.selected_psicologo = ''
             this.selected_trabajo = ''
             this.selected_equipo = 0
+        },
+        validar_equipo() {
+            if (this.equipo.length == 0) {
+                alert('no se tiene equipo');
+                return false
+            }
+            for (let index = 0; index < this.equipo.length; index++) {
+                if (this.equipo[index].lista.length == 0) {
+                    alert('falta elementos en ' + this.equipo[index].equipo)
+                    return false
+                }
+
+            }
+            return true
+        },
+        async save_all() {
+
+            //this.paso6()
+            if (this.validar_equipo()) {
+                var res = await axios({
+                    method: "post",
+                    url: `/${process.env.MIX_CARPETA}/equipo2`,
+                    data: {
+                        equipo: this.equipo
+                    },
+                }).then(
+                    (response) => {
+                        ////console.log('validat');
+                        /*
+                        console.log('-____--------');
+                        console.log(response.data);
+                        console.log(resp);*/
+                        var r = {
+                            resp: true,
+                            datos: response.data
+                        }
+                        //r = JSON.stringify(r)
+                        this.$emit('next', r);
+
+                        //console.log('__configuracion ___');
+                        //console.log(response.data);
+                        //this.close()
+
+
+                    },
+                ).catch((error) => {
+                    //console.log(error.response.data.mensaje);
+
+                });
+            }
         },
         update_item() {
             this.$emit('update_equipo', this.equipo);

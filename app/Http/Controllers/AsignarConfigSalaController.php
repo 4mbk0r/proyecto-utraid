@@ -84,13 +84,14 @@ class AsignarConfigSalaController extends Controller
     {
         //
     }
-    
-    public static function listar_salas(int $id_configuracion){
+
+    public static function listar_salas(int $id_configuracion)
+    {
         $query = DB::table('asignar_config_salas')
-        ->leftJoin('salas', 'asignar_config_salas.id_sala', '=', 'salas.id')
-        ->leftJoin('conf_salas', 'asignar_config_salas.id_conf', '=', 'conf_salas.id')
-        ->where('asignar_config_salas.id_conf', '=', $id_configuracion)
-        ->get();
+            ->leftJoin('salas', 'asignar_config_salas.id_sala', '=', 'salas.id')
+            ->leftJoin('conf_salas', 'asignar_config_salas.id_conf_sala', '=', 'conf_salas.id')
+            ->where('asignar_config_salas.id_conf', '=', $id_configuracion)
+            ->get();
         return $query;
     }
 }

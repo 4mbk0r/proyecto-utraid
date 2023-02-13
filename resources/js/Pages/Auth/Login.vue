@@ -13,6 +13,7 @@
 
             </v-row>
             <v-form @submit.prevent="submit">
+
                 <v-container>
                     <v-text-field label="Nombre de usuario" id="email" type="text" v-model="form.username" required
                         autofocus />

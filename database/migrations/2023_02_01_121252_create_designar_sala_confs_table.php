@@ -18,12 +18,12 @@ class CreateDesignarSalaConfsTable extends Migration
             $table->integer('id_conf');
             $table->integer('id_asignacion');
         });
-        DB::statement(
+        /*DB::statement(
             "ALTER TABLE designar_sala_confs ADD FOREIGN KEY (id_conf) REFERENCES configuracions(id) ON DELETE CASCADE"
         );
         DB::statement(
             "ALTER TABLE designar_sala_confs ADD FOREIGN KEY (id_asignacion) REFERENCES asignar_config_salas(id) ON DELETE CASCADE"
-        );
+        );*/
     }
 
     /**

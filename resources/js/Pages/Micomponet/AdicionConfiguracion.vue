@@ -36,6 +36,10 @@
                 <v-stepper-step editable step="4">
                     Paso 4.
                 </v-stepper-step>
+                <v-divider></v-divider>
+                <v-stepper-step editable step="5">
+                    Paso 5.
+                </v-stepper-step>
             </v-stepper-header>
 
             <v-stepper-items>
@@ -132,7 +136,6 @@
                 </v-stepper-content>
 
                 <v-stepper-content step="4">
-                    <equipo @update="equipo_update($emit)" :equipo="equipo" ref="equipo"></equipo>
 
                     <v-card-actions>
                         <v-btn color="primary" @click="paso5">
@@ -143,6 +146,23 @@
                             Cancelar
                         </v-btn>
                     </v-card-actions>
+                    <equipo @update="equipo_update($emit)" @next="paso5" :equipo="equipo" ref="equipo"></equipo>
+
+                </v-stepper-content>
+                <v-stepper-content step="5">
+
+                    <v-card-actions>
+                        <v-btn color="primary" @click="paso6">
+                            Continuar
+                        </v-btn>
+                        <v-divider></v-divider>
+                        <v-btn text @click="cancelar">
+                            Cancelar
+                        </v-btn>
+                    </v-card-actions>
+                    <!--
+                    <equipo @update="acepatar($emit)" :equipo="equipo" ref="equipo"></equipo>
+                    -->
                 </v-stepper-content>
             </v-stepper-items>
         </v-stepper>
@@ -160,6 +180,7 @@ import moment from 'moment'
 
 import Salas from '@/Pages/Micomponet/Sala'
 import Equipo from '@/Pages/Configuracion/Equipo'
+import { emit } from 'process'
 
 const day1 = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + new Date().getDate()).slice(-2)
 
@@ -307,7 +328,8 @@ export default {
         async paso3() {
 
             if (this.$refs.form_configuracion.validate()) {
-                this.validar_configuracion()
+                this.paso = 3
+                //this.validar_configuracion()
                 //console.log("_________")
                 //console.log(this.item)
 
@@ -353,11 +375,45 @@ export default {
             },]*/
 
         },
-        paso5() {
+        paso5(valor) {
             //console.log("______________");
             //console.log(this.$refs.equipo.equipo);
-            this.equipo = this.$refs.equipo.equipo
-            this.paso6()
+            /** */
+            if (valor.resp) {
+                console.log("______");
+                console.log(valor)
+                console.log(this.paso);
+                this.equipo = valor.datos
+                this.paso = 5;
+
+
+            }
+            return;
+            /*this.equipo = this.$refs.equipo.equipo
+            //this.paso6()
+            if (this.validar_equipo()) {
+                var res = await axios({
+                    method: "post",
+                    url: `/${process.env.MIX_CARPETA}/equipo2`,
+                    data: {
+
+                        equipo: this.equipo
+                    },
+                }).then(
+                    (response) => {
+                        ////console.log('validat');
+                        console.log(response);
+                        //console.log('__configuracion ___');
+                        //console.log(response.data);
+                        //this.close()
+
+
+                    },
+                ).catch((error) => {
+                    //console.log(error.response.data.mensaje);
+
+                });
+            }*/
             ////console.log(this.$refs.equipo.items);
             //let lista = this.$refs.equipo.items
             //this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo '+(k++), lista: [] }))]
@@ -366,34 +422,34 @@ export default {
 
         },
         async paso6() {
-            //console.log(this.equipo);
-            if (this.validar_equipo()) {
-                var res = await axios({
-                    method: "post",
-                    url: `/${process.env.MIX_CARPETA}/configuracion`,
-                    data: {
+            console.log(this.equipo);
+            this.configuracion.color = this.color
+            this.configuracion.institucion = '01'
+            var res = await axios({
+                method: "post",
+                url: `/${process.env.MIX_CARPETA}/configuracion`,
+                data: {
 
-                        fecha_nueva: this.date,
-                        configuracion: this.configuracion,
-                        configuracion_antigua: this.item,
-                        salas: this.salas,
-                        equipo: this.equipo
-                    },
-                }).then(
-                    (response) => {
-                        ////console.log('validat');
-                        ////console.log(response);
-                        //console.log('__configuracion ___');
-                        //console.log(response.data);
-                        this.close()
+                    fecha_nueva: this.date,
+                    configuracion: this.configuracion,
+                    configuracion_antigua: this.item,
+                    salas: this.salas,
+                    equipo: this.equipo
+                },
+            }).then(
+                (response) => {
+                    ////console.log('validat');
+                    ////console.log(response);
+                    //console.log('__configuracion ___');
+                    //console.log(response.data);
+                    this.close()
 
 
-                    },
-                ).catch((error) => {
-                    //console.log(error.response.data.mensaje);
+                },
+            ).catch((error) => {
+                //console.log(error.response.data.mensaje);
 
-                });
-            }
+            });
 
             /**/
         },
@@ -432,7 +488,7 @@ export default {
 
                     },
                     (error) => {
-                        //console.log(error);
+                        console.log(error);
                         return false
 
 

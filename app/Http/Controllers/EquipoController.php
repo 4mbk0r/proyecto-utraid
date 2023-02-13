@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\equipo;
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
 
 class EquipoController extends Controller
 {
@@ -20,18 +22,18 @@ class EquipoController extends Controller
 
         $equipo = [
             [
-                'equipo'=> 'Equipo 1',
-                'lista'=> []
+                'equipo' => 'Equipo 1',
+                'lista' => []
             ],
             [
-                'equipo'=> 'Equipo 2',
-                'lista'=> []
+                'equipo' => 'Equipo 2',
+                'lista' => []
             ],
             [
-                'equipo'=> 'Equipo 3',
-                'lista'=> []
+                'equipo' => 'Equipo 3',
+                'lista' => []
             ]
-            
+
         ];
         $cargo = DB::table('users')
             ->leftJoin('cargos', 'cargos.cargo', '=', 'users.cargo')
@@ -40,10 +42,10 @@ class EquipoController extends Controller
             ->get();
         //  $equipo = json_encode($equipo);
         return inertia('Configuracion/Equipo', [
-               
+
             'equipo' => $equipo,
             'cargos' => $cargo
-            
+
         ]);
     }
 
@@ -66,6 +68,38 @@ class EquipoController extends Controller
     public function store(Request $request)
     {
         //
+        $total =  [];
+        $equipo = (array) $request['equipo'];
+
+        foreach ($equipo as $key => $v) {
+            # code...
+            $lista = (array) $v['lista'];
+            $equipo = $v['equipo'];
+            //s return $value['equipo'];
+            try {
+                $id_equipo =  DB::table('equipos')->insertGetId(
+                    ['nombre_equipo' => $equipo]
+                );
+            } catch (\Throwable $th) {
+
+                return Response::json(['mensaje' => $th->getMessage()], 500);
+            }
+            $r_equipo = [];
+            foreach ($lista as $key => $value) {
+
+                DB::table('asignar_equipos')->insert(
+                    [
+                        'id_equipo' => $id_equipo,
+                        'id_usuario' => $value['id']
+                    ]
+                );
+                array_push($r_equipo, $value);
+            }
+            array_push($total, [$equipo => $r_equipo, 'id_equipo' => $id_equipo]);
+        }
+
+
+        return $total;
     }
 
     /**
