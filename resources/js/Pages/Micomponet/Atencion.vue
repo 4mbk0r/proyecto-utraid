@@ -7,7 +7,8 @@
                 <v-btn icon dark @click="close">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <v-toolbar-title>ATENCION</v-toolbar-title>
+                <v-toolbar-title>ATENCION
+                </v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
                     <v-btn dark text @click="dialog = false">
@@ -17,98 +18,58 @@
             </v-toolbar>
             <v-card>
                 <v-container fluid>
-                    <v-row align="center">
-                        <v-col cols="12">
-                            <v-select v-model="seleccion_profesion" :items="lista_profesion" item-text="cargo" attach
-                                chips label="Cargo" multiple></v-select>
-                        </v-col>
-                    </v-row>
-                    <v-row align="center">
-                        <v-col cols="6">
+                    <v-data-table :headers="dessertHeaders" :items="equipo" :single-expand="singleExpand"
+                        :expanded.sync="expanded" item-key="id" show-expand class="elevation-1">
+                        <template v-slot:top>
+                            <v-toolbar flat>
+                                <v-toolbar-title>Expandable Table</v-toolbar-title>
+                                <v-spacer></v-spacer>
+                                <v-switch v-model="singleExpand" label="Single expand" class="mt-2"></v-switch>
+                            </v-toolbar>
+                        </template>
+                        <template v-slot:expanded-item="{ item }">
+
+                            <td>
+
+                                Cedula de identidad: {{ item.ci }} {{ item.expedido }}
+                            </td>
+                            <td>
+                                Contratado {{ item.id_establecimiento }}
+                            </td>
+
+                            <td>
+                                celular  {{ item.celular }}
+
+                            </td>
+
+                            <td>
+                                <v-container>
+                                    <v-row>
+                                        <v-col>
+
+                                            email {{ item.email }}
+                                        </v-col>
+                                    </v-row>
+                                    
+                                </v-container>
+                            </td>
 
 
-                            <v-list two-line>
-                                <v-list-item-group v-model="selected" active-class="pink--text" multiple>
-                                    <template v-for="(item, index) in items">
-                                        <v-list-item v-if="item.title" :key="item.title" @click="elegir(item)">
-                                            <template v-slot:default="{ active }">
-                                                <v-list-item-content>
-                                                    <v-list-item-title v-text="item.title"></v-list-item-title>
 
-                                                    <v-list-item-subtitle class="text--primary" v-text="item.headline">
-                                                    </v-list-item-subtitle>
+                            <v-row>
+                                <v-col>
+                                    <v-btn color="info">
+                                        cambiar
+                                    </v-btn>
 
-                                                    <v-list-item-subtitle v-text="item.subtitle">
-                                                    </v-list-item-subtitle>
-                                                </v-list-item-content>
-
-                                                <v-list-item-action>
-                                                    <v-list-item-action-text v-text="item.action">
-                                                    </v-list-item-action-text>
-
-                                                    <v-icon v-if="!active" color="grey lighten-1">
-                                                        mdi-star-outline
-                                                    </v-icon>
-
-                                                    <v-icon v-else color="yellow darken-3">
-                                                        mdi-star
-                                                    </v-icon>
-                                                </v-list-item-action>
-                                            </template>
-                                        </v-list-item>
-
-                                        <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
-                                    </template>
-                                </v-list-item-group>
-                            </v-list>
+                                </v-col>
+                            </v-row>
 
 
-                        </v-col>
-                        <v-col cols="6">
 
-                            <v-list two-line>
-                                <v-list-item-group v-model="selected2" active-class="pink--text" multiple>
-                                    <template v-for="(item, index) in items_t">
-                                        <v-list-item v-if="item.title" @click=elegir(item) :key="item.title">
-                                            <template v-slot:default="{ active }">
-                                                <v-list-item-content>
-                                                    <v-list-item-title v-text="item.title"></v-list-item-title>
 
-                                                    <v-list-item-subtitle class="text--primary" v-text="item.headline">
-                                                    </v-list-item-subtitle>
-
-                                                    <v-list-item-subtitle v-text="item.subtitle">
-                                                    </v-list-item-subtitle>
-                                                </v-list-item-content>
-
-                                                <v-list-item-action>
-                                                    <v-list-item-action-text v-text="item.action">
-                                                    </v-list-item-action-text>
-
-                                                    <v-icon v-if="!active" color="grey lighten-1">
-                                                        mdi-star-outline
-                                                    </v-icon>
-
-                                                    <v-icon v-else color="yellow darken-3">
-                                                        mdi-star
-                                                    </v-icon>
-                                                </v-list-item-action>
-                                            </template>
-                                        </v-list-item>
-
-                                        <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
-                                    </template>
-                                </v-list-item-group>
-                            </v-list>
-                            <v-btn class="mx-2" fab dark color="indigo">
-                                
-                                <v-icon dark>
-                                    mdi-plus
-                                </v-icon>
-                            </v-btn>
-                        </v-col>
-
-                    </v-row>
+                        </template>
+                    </v-data-table>
                 </v-container>
             </v-card>
         </v-card>
@@ -127,7 +88,7 @@ const day1 = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)
 export default {
 
     props: {
-
+        equipo: Array,
 
     },
 
@@ -171,6 +132,29 @@ export default {
                 subtitle: 'We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
                 title: 'Britta Holt',
             },
+        ],
+
+        expanded: [],
+        singleExpand: false,
+        dessertHeaders: [
+            /*{
+                text: 'Dessert (100g serving)',
+                align: 'start',
+                sortable: false,
+                value: 'name',
+            },*/
+            { text: 'Nombres', value: 'nombre' },
+            { text: 'Apellido Paterno', value: 'ap_paterno' },
+            { text: 'Apellido Materno', value: 'ap_materno' },
+            { text: 'Cedula de identidad', value: 'ci' },
+
+            { text: 'Cargo', value: 'cargo' },
+
+
+
+            { text: '', value: 'data-table-expand' },
+        ],
+        desserts: [
         ],
     }),
     created() {
@@ -218,7 +202,7 @@ export default {
             }
 
         },
-        
+
         elegir(active) {
             console.log(active.title)
             let s = this.items_t.findIndex(x => x.title === active.title)

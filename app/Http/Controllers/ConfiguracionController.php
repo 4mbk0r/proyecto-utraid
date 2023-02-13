@@ -109,6 +109,12 @@ group by configuracions.id
         $fecha = $request['fecha_nueva'];
         $table = 'calendariolineals';
         $salas =  $request['salas'];
+        $equipo = $request['equipo'];
+        $r = [];
+        
+        
+        //return $r;
+        //return $salas;
         //return $salas;
         //return $configuracion;
 
@@ -189,6 +195,33 @@ group by configuracions.id
                     ]
                 );
             }
+            //return $salas;
+        } catch (\Throwable $th) {
+            DB::table('configuracions')->delete($id_config);
+            $resul = DB::table($table)
+                ->where('id', '=',  $antigua['id_calendario'])
+                ->update(['fecha_final' => $conf_antigua->fecha_final, 'principal' => $conf_antigua->principal]);
+            DB::table($table)->delete($id_nueva);
+            return Response::json(['mensaje' => $th->getMessage()], 500);
+        }
+
+        try {
+            //salas
+            //return $salas;
+            $r  =[];
+            foreach ($equipo as $key => $value) {
+                # code...
+                array_push($r, $value['id_equipo']);
+                DB::table('designar_equipo_lineals')->insert(
+                    [
+                        'id_equipo'=> $value['id_equipo'],
+                        'id_conf'=> $id_config
+                    ]
+                );
+
+
+            }
+
             return $salas;
         } catch (\Throwable $th) {
             DB::table('configuracions')->delete($id_config);

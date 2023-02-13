@@ -93,12 +93,14 @@ class AgendaController extends Controller
             $cita_fecha =  Cache::get('citas' . $date);
         } else {*/
 
-
-        $agenda = DB::table('agendas')
+        $agenda  = [];
+        return $agenda;
+        $agenda = DB::table('asignar_salas')
             ->leftJoin('persona_citas', 'agendas.ci_paciente', '=', 'persona_citas.ci')
             ->leftJoin('horarios', 'agendas.horario', '=', 'horarios.id_horario')
             ->where('fecha', $date)
             ->get();
+        
         // Cache::put('citas' . $date, $cita_fecha);
         //}
         return $agenda;

@@ -51,30 +51,43 @@ class CitaTieneConfiguracionController extends Controller
      */
     public function show(string $fecha)
     {
-        //
-        $list_config = DB::table('cita_tiene_configuracions')
+        /*
+        select * from calendarios
+        where fecha = '14-02-2023';
+        */
+        $list_config = DB::table('calendarios')
             ->select('*')
             ->where('fecha', '=', $fecha)
             ->get();
         if (sizeof($list_config) == 0) {
-            $list_config = DB::table('configuracions')
+            /*
+            select * from calendariolineals
+            where fecha_inicio <= '2023-02-22' and
+            fecha_final >= '2023-02-22';
+            */
+
+            $list_config = DB::table('calendariolineals')
                 ->select('*')
                 ->where('fecha_inicio', '<=', $fecha)
                 ->where('fecha_final', '>=', $fecha)
-                ->where('tipo', '=', 'permanente')
+                //->where('tipo', '=', 'permanente')
                 ->get();
         }
         $salas = [];
         if (sizeof($list_config) > 0) {
             try {
-                $salas = DB::table('salas')
+                $salas = DB::table('asignar_config_salas')
                     ->select('*')
-                    ->where('id', '=', $list_config[0]->id)
+                    ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
+                    ->where('id_conf', '=', $list_config[0]->id_configuracion)
                     ->get();
 
                 /*
                 *          
                 */
+                $salas_disponibles =[];
+                
+                /*
                 $salas_disponibles = DB::table('salas')
                     //->select('salas.sala, salas.descripcion')
                     ->join('horarios', "horarios.sala", '=', "salas.sala")
@@ -88,9 +101,12 @@ class CitaTieneConfiguracionController extends Controller
                     ->select('salas.sala', 'salas.descripcion')
                     ->orderBy('salas.descripcion')
                     ->get();
+                    */
                 $resp = [
                     'salas' => $salas,
-                    'salas_diponibles' => $salas_disponibles
+                    'salas_diponibles' => $salas_disponibles,
+                    'lista_conf' => $list_config,
+                    'casa0' => $list_config[0]->id_configuracion
                 ];
             } catch (\Throwable $th) {
                 return $th;
@@ -99,7 +115,8 @@ class CitaTieneConfiguracionController extends Controller
         }
         $resp = [
             'salas' => $salas,
-            'salas_diponibles' => $salas
+            'salas_diponibles' => $salas,
+           
         ];
         return $salas;
     }

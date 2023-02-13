@@ -438,6 +438,7 @@ export default {
                 },
             }).then(
                 (response) => {
+                    console.log(response);
                     ////console.log('validat');
                     ////console.log(response);
                     //console.log('__configuracion ___');

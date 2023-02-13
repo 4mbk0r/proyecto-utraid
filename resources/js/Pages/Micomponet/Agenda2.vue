@@ -122,7 +122,7 @@
         </v-row>
         <datos @pedir='actualizador'  ref="dato">
         </datos>
-        <atencion ref="atender"></atencion>
+        <atencion ref="atender" :equipo="lista_equipo"></atencion>
         
         
     </v-app>
@@ -161,6 +161,7 @@ export default {
         names: ['Reunion', 'Cita', 'Viaje'],
         categories: [],
         fecha_min: '',
+        lista_equipo: [],
     }),
     created() {
         
@@ -217,7 +218,7 @@ export default {
             try {
                 var res = await axios({
                     method: 'get',
-                    url: `/${process.env.MIX_CARPETA}/lista_configuracion/` + date,
+                    url: `/${process.env.MIX_CARPETA}/api/lista_equipo/` + date,
                 }).then(
                     (response) => {
                         console.log(response);
@@ -236,13 +237,15 @@ export default {
                         let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
                         let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
                         this.fecha_min = fecha_server.format('YYYY-MM-DD')
-                        let salas = response.data['salas']
+                        let salas = response.data['equipos']
+                        
                         for (const key in salas) {
                             //console.log(start);
                             //console.log(end);
                             //console.log(response.data[key]['descripcion'])
                             //if()
-                            this.categories.push(salas[key]['descripcion'])
+                            console.log(salas[key]);
+                            this.categories.push(salas[key]['equipo']['nombre_equipo'])
                             
                             this.events.push({
                                     name: 'Atencion',
@@ -251,7 +254,8 @@ export default {
                                     color: 'green',
                                     timed: 0,
                                     category: this.categories[key],
-                                    consultorio: response.data[key],
+                                    //consultorio: response.data[key],
+                                    integrantes: salas[key]['integrantes']
                                 })
                         
 
@@ -502,8 +506,8 @@ export default {
                 //this.selectedEvent = event
 
                 console.log('datos');
-                console.log(event.consultorio)
-
+                console.log(event.integrantes)
+                this.lista_equipo =  event.integrantes
                 //this.$refs.atender.op1 = 1;
                 //this.$refs.a.fecha_cita = this.fecha_calendario
                 //this.$refs.dato.consultorio = event.consultorio.sala
