@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Personal;
 use App\Http\Controllers\Controller;
 use App\Models\Cargo;
+use App\Models\establecimiento;
 use App\Models\User;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
@@ -144,6 +145,8 @@ class PersonalController extends Controller
                 
             } catch (QueryExecuted $e) {
                 //return $e; 
+
+                //User::where('ci', $input['ci'])->delete();
                 $i['error']= $e;
                 
             }

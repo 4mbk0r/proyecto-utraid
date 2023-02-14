@@ -37,6 +37,7 @@ class FichaController extends Controller
     public function store(Request $request)
     {
         //
+        
     }
 
     /**
