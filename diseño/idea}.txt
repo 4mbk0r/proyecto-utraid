@@ -1,0 +1,28 @@
+1. se tiene que crear una nueva configuracion
+al cambiar de horario
+
+como configurar 
+	si no existe asignacion
+	update conf horario
+
+editar configuracion
+	se configura para todos los dias con asignacion esta seguro
+	si no existe asignacion
+	crear nueva configuracion 
+	1. update for array == 
+	2. insert restante >==
+	3. reasignar update <== delete los restantes
+	
+como configuracion diaria
+	si no existe asignacion
+	crear nueva configuracion 
+	1. update for array == 
+	2. insert restante >==
+	3. reasignar update <== delete los restantes
+	
+ 
+	
+	
+	
+
+calcular numero de fichas
