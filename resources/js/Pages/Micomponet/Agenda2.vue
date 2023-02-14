@@ -83,8 +83,8 @@
                             <v-card-text>
                                 <V-row no-gutters>
                                     <v-col>
-                                        CI: 
-                                    
+                                        CI:
+
                                     </v-col>
                                     <v-col>
                                         {{ valores(selectedEvent.paciente, 'ci') }}
@@ -92,18 +92,18 @@
                                 </v-row>
                                 <v-row no-gutters>
                                     <v-col>
-                                    <span> Nombre Completo:</span>
+                                        <span> Nombre Completo:</span>
                                     </v-col>
                                     <v-col>
-                                        {{ selectedEvent.name }} 
+                                        {{ selectedEvent.name }}
                                     </v-col>
                                 </v-row>
                                 <v-row no-gutters>
                                     <v-col>
-                                    <span> Fecha:</span>
+                                        <span> Fecha:</span>
                                     </v-col>
                                     <v-col>
-                                        {{ valores(selectedEvent.paciente, 'fecha') }} 
+                                        {{ valores(selectedEvent.paciente, 'fecha') }}
                                     </v-col>
                                 </v-row>
 
@@ -120,11 +120,11 @@
             </v-col>
 
         </v-row>
-        <datos @pedir='actualizador'  ref="dato">
+        <datos @pedir='actualizador' ref="dato">
         </datos>
         <atencion ref="atender" :equipo="lista_equipo"></atencion>
-        
-        
+
+
     </v-app>
 </template>
 
@@ -164,12 +164,12 @@ export default {
         lista_equipo: [],
     }),
     created() {
-        
+
 
     },
-    updated(){
-       
-    },  
+    updated() {
+
+    },
     mounted() {
 
         this.$refs.calendar.checkChange()
@@ -178,14 +178,14 @@ export default {
         //console.log();
     },
     computed: {
-          
-  },
-    methods:{
-        actualizador(fecha){
+
+    },
+    methods: {
+        actualizador(fecha) {
             console.log('.+.+.+.+')
             this.fecha_calendario = fecha
             this.pedir_datos(fecha)
-        },  
+        },
         changeType(nombre) {
             if (nombre == 'category2') {
                 this.estado = 'atencion'
@@ -203,7 +203,7 @@ export default {
             } else {
                 this.estado = 'calendario'
                 this.type = nombre
-                
+
             }
         },
         async viewDay({ date }) {
@@ -238,7 +238,7 @@ export default {
                         let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
                         this.fecha_min = fecha_server.format('YYYY-MM-DD')
                         let salas = response.data['equipos']
-                        
+
                         for (const key in salas) {
                             //console.log(start);
                             //console.log(end);
@@ -246,18 +246,18 @@ export default {
                             //if()
                             console.log(salas[key]);
                             this.categories.push(salas[key]['equipo']['nombre_equipo'])
-                            
+
                             this.events.push({
-                                    name: 'Atencion',
-                                    start: start2,
-                                    end: end,
-                                    color: 'green',
-                                    timed: 0,
-                                    category: this.categories[key],
-                                    //consultorio: response.data[key],
-                                    integrantes: salas[key]['integrantes']
-                                })
-                        
+                                name: 'Atencion',
+                                start: start2,
+                                end: end,
+                                color: 'green',
+                                timed: 0,
+                                category: this.categories[key],
+                                //consultorio: response.data[key],
+                                integrantes: salas[key]['integrantes']
+                            })
+
 
 
                             /*this.events.push({
@@ -304,86 +304,109 @@ export default {
                                 const element = object[key];
                                 
                             }*//*
-                        }
+}
 
-                    }, (error) => {
-                        console.log(error);
-                    }
-                );
-            } catch (err) {
-                console.log("err->", err.response.data)
-                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-            }*/
+}, (error) => {
+console.log(error);
+}
+);
+} catch (err) {
+console.log("err->", err.response.data)
+return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+}*/
         },
         async pedir_datos(date) {
-            try {
-                var res = await axios({
-                    method: 'get',
-                    url: `/${process.env.MIX_CARPETA}/lista_configuracion/` + date,
-                }).then(
-                    (response) => {
-                        console.log(response);
-                        let salas = response.data['salas'];
-                        let salas_disponibles = response.data['salas_diponibles'];
-                        
-                        //console.log('__'+salas)
-                        
-                        
-                        this.categories = [];
-                        let events = [];
-                        this.events = [];
-                        let start2 = new Date(this.fecha_calendario + 'T01:01:00-04:00')
-                        let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
-                        let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
-                        this.fecha_min = fecha_server.format('YYYY-MM-DD')
-                        for (const key in salas) {
-                            //console.log(start);
-                            //console.log(end);
-                            console.log('----')
-                            console.log(salas)
-                            console.log(salas_disponibles)
-                            this.categories.push(salas[key]['descripcion'])
-                            if (this.fecha_calendario > this.fecha_min  && salas_disponibles.filter(e => e.descripcion === salas[key]['descripcion']).length > 0)
-                            {
-                                this.events.push({
-                                    name: 'Agendar',
-                                    start: start2,
-                                    end: end,
-                                    color: 'red',
-                                    timed: 0,
-                                    category: this.categories[key],
-                                    consultorio: salas[key],
-                                })
-                            }
+
+            var res = await axios({
+                method: 'get',
+                url: `/${process.env.MIX_CARPETA}/lista_configuracion/` + date,
+            }).then(
+                (response) => {
+                    console.log(response);
+                    let salas = response.data['salas'];
+                    let salas_disponibles = response.data['salas_diponibles'];
+
+                    //console.log('__'+salas)
 
 
-                            /*this.events.push({
-                                name: 'Cita',
-                                start: new Date(this.fecha_calendario + 'T08:01:00-04:00'),
-                                end: new Date(this.fecha_calendario + 'T09:01:00-04:00'),
-                                color: 'blue',
+                    this.categories = [];
+                    let events = [];
+                    this.events = [];
+                    let start2 = new Date(this.fecha_calendario + 'T01:01:00-04:00')
+                    let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
+                    let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
+                    this.fecha_min = fecha_server.format('YYYY-MM-DD')
+                    for (const key in salas) {
+                        //console.log(start);
+                        //console.log(end);
+                        console.log('----')
+                        console.log(salas)
+                        console.log(salas_disponibles)
+                        this.categories.push(salas[key]['descripcion'])
+                        this.events.push({
+                            name: 'Agendar',
+                            start: start2,
+                            end: end,
+                            color: 'red',
+                            timed: 0,
+                            category: this.categories[key],
+                            consultorio: salas[key],
+                        })
+                        //}
+
+
+                        /*this.events.push({
+                            name: 'Cita',
+                            start: new Date(this.fecha_calendario + 'T08:01:00-04:00'),
+                            end: new Date(this.fecha_calendario + 'T09:01:00-04:00'),
+                            color: 'blue',
+                            timed: 1,
+                            category: this.categories[key],
+                        })*/
+                    }
+                    console.log(this.fecha_calendario)
+                    for (const key in salas_disponibles) {
+                        let fichas = salas_disponibles[key];
+                        console.log(fichas);
+                        for (const x in fichas) {
+                            let ficha =  fichas[x];
+                            this.events.push({
+                                //name: paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
+                                start: new Date(this.fecha_calendario + 'T' + ficha.hora_inicio + '-04:00'),
+                                end: new Date(this.fecha_calendario + 'T' + ficha.hora_final + '-04:00'),
+                                color: 'black',
                                 timed: 1,
                                 category: this.categories[key],
-                            })*/
+                                //paciente: structuredClone(paciente)
+                            })
                         }
-                        //console.log(this.type);
+                        //console.log(paciente.fecha + 'T'+paciente.hora_inicio+'-04:00')//new Date(),);
 
-                        //this.fetchEvents()
-                        //console.log(this.events)
-                    }, (error) => {
-                        console.log(error);
+                        /*if (Object.hasOwnProperty.call(object, key)) {
+                            const element = object[key];
+                            
+                        }**/
                     }
-                );
-            } catch (err) {
+
+                    //console.log(this.type);
+
+                    //this.fetchEvents()
+                    //console.log(this.events)
+                }
+            ).catch(err => {
+                console.log(err)
                 console.log("err->", err.response.data)
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-            }
+            });
+            /*
             try {
                 var res = await axios({
                     method: 'get',
                     url: `/${process.env.MIX_CARPETA}/lista_agenda/` + date,
                 }).then(
                     (response) => {
+                        console.log("---")
+                        console.log(response);
                         let pacientes = response.data;
                         for (const key in pacientes) {
                             let paciente = pacientes[key];
@@ -400,7 +423,7 @@ export default {
                             /*if (Object.hasOwnProperty.call(object, key)) {
                                 const element = object[key];
                                 
-                            }*/
+                            }***
                         }
 
                     }, (error) => {
@@ -410,7 +433,7 @@ export default {
             } catch (err) {
                 console.log("err->", err.response.data)
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-            }
+            }*/
         },
 
         valores(objecto, x) {
@@ -425,12 +448,12 @@ export default {
             var f = new Date();
             this.fecha_calendario = ''
             this.fecha_calendario = f.toISOString().substr(0, 10);
-            if(this.estado == 'atencion'){
+            if (this.estado == 'atencion') {
                 this.pedir_doctores(this.fecha_calendario);
                 return
             }
             this.pedir_datos(this.fecha_calendario)
-            
+
         },
         prev() {
             console.log(this.type);
@@ -452,7 +475,7 @@ export default {
             }
 
         },
-        next(){
+        next() {
 
             if (this.estado == 'atencion') {
                 var valor = +1;
@@ -507,7 +530,7 @@ export default {
 
                 console.log('datos');
                 console.log(event.integrantes)
-                this.lista_equipo =  event.integrantes
+                this.lista_equipo = event.integrantes
                 //this.$refs.atender.op1 = 1;
                 //this.$refs.a.fecha_cita = this.fecha_calendario
                 //this.$refs.dato.consultorio = event.consultorio.sala
@@ -515,7 +538,7 @@ export default {
                 return;
                 //this.selectedElement = nativeEvent.target
                 //nativeEvent.stopPropagation()
-            } 
+            }
             if (event.name == 'Agendar') {
                 //this.dialog = true
                 //this.selectedEvent = event
@@ -631,13 +654,13 @@ left join cita_tiene_configuracions on
 TO_CHAR(dd::date, 'dd/mm')=TO_CHAR(cita_tiene_configuracions.fecha::date, 'dd/mm')
 OR CASE
            WHEN TO_CHAR((DD)::DATE,'D')='2'
-		  		and cita_tiene_configuracions.fecha = (DD-INTERVAL'1 DAY')::DATE
-		   THEN
-		   		TRUE
-		   WHEN TO_CHAR((DD)::DATE,'D')='2'
-		  		and cita_tiene_configuracions.fecha = (DD-INTERVAL'2 DAY')::DATE
-		   THEN
-		   		 true
+                    and cita_tiene_configuracions.fecha = (DD-INTERVAL'1 DAY')::DATE
+           THEN
+                        TRUE
+           WHEN TO_CHAR((DD)::DATE,'D')='2'
+                    and cita_tiene_configuracions.fecha = (DD-INTERVAL'2 DAY')::DATE
+           THEN
+                         true
            else false
        END 
 

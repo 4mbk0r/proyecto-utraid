@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\cita_tiene_configuracion;
 use App\Http\Controllers\Controller;
+use App\Models\Horario;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Date;
@@ -81,11 +82,39 @@ class CitaTieneConfiguracionController extends Controller
                     ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
                     ->where('id_conf', '=', $list_config[0]->id_configuracion)
                     ->get();
+                $horario = [];
+                foreach ($salas as $key => $value) {
+                    /*
+                select * from asignar_salas
+                left join salas on asignar_salas.id_sala = salas.id
+                left join asignar_horarios 
+                ON asignar_horarios.id_conf_sala = asignar_salas.id_conf_sala
+                left join horarios ON horarios.id = asignar_horarios.id_horarios
+                            */
+                    /*$h = DB::table('asignar_salas')
+                    ->select('*')
+                    ->leftJoin('salas','asignar_salas.id_sala','=', 'salas.id')
+                    ->leftJoin('conf_salas','conf_salas.id','=','asignar_salas.id_conf_sala')
+                    ->leftJoin('asignar_horarios','asignar_horarios.id_conf_sala', '=', 'conf_salas.id')
+                    ->leftJoin('horarios', 'horarios.id','=', 'asignar_horarios.id_horarios')
+                    ->where('salas.id', '=', $value->id_sala)
+                    ->where('conf_salas.id', '=',  $value->id_conf_sala)*/
 
+                    
+                    //->where('salas.id', '=', $value->id_conf_sala)
+                    $h = DB::table('conf_salas')
+                    ->select('*')
+                    ->leftJoin('asignar_horarios','asignar_horarios.id_conf_sala','=', 'conf_salas.id')
+                    ->leftJoin('horarios','horarios.id','=','asignar_horarios.id_horarios')
+                    ->where('conf_salas.id','=', $value->id_conf_sala)
+
+                    ->get();
+                    array_push($horario,$h );
+                }
                 /*
                 *          
                 */
-                $salas_disponibles =[];
+                //$salas_disponibles =[];
                 
                 /*
                 $salas_disponibles = DB::table('salas')
@@ -104,7 +133,7 @@ class CitaTieneConfiguracionController extends Controller
                     */
                 $resp = [
                     'salas' => $salas,
-                    'salas_diponibles' => $salas_disponibles,
+                    'salas_diponibles' => $horario,
                     'lista_conf' => $list_config,
                     'casa0' => $list_config[0]->id_configuracion
                 ];
