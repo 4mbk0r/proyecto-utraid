@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rules\Unique;
 
 class CreateFichasTable extends Migration
 {
@@ -20,6 +21,7 @@ class CreateFichasTable extends Migration
             $table->integer('id_conf_sala');
             $table->date('fecha');
             $table->string('codigo');
+            $table->unique(['id_sala', 'id_horario', 'id_conf_sala', 'fecha', 'codigo']);
             //$table->timestamps();
         });
         DB::statement(

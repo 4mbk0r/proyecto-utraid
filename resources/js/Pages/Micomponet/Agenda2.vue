@@ -325,7 +325,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     console.log(response);
                     let salas = response.data['salas'];
                     let salas_disponibles = response.data['salas_diponibles'];
-
+                    console.log(salas_disponibles);
                     //console.log('__'+salas)
 
 

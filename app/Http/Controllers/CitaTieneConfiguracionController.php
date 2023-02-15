@@ -56,10 +56,15 @@ class CitaTieneConfiguracionController extends Controller
         select * from calendarios
         where fecha = '14-02-2023';
         */
-        $list_config = DB::table('calendarios')
-            ->select('*')
+
+        $list_config = DB::table('fichas')
+            ->select('id_sala', 'salas.descripcion')
+            ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
             ->where('fecha', '=', $fecha)
+            ->groupBy('id_sala', 'salas.descripcion')
             ->get();
+        //return sizeof($list_config) ;
+        //return $list_config;
         if (sizeof($list_config) == 0) {
             /*
             select * from calendariolineals
@@ -73,81 +78,108 @@ class CitaTieneConfiguracionController extends Controller
                 ->where('fecha_final', '>=', $fecha)
                 //->where('tipo', '=', 'permanente')
                 ->get();
-        }
-        $salas = [];
-        if (sizeof($list_config) > 0) {
-            try {
-                $salas = DB::table('asignar_config_salas')
-                    ->select('*')
-                    ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
-                    ->where('id_conf', '=', $list_config[0]->id_configuracion)
-                    ->get();
-                $horario = [];
-                foreach ($salas as $key => $value) {
+            if (sizeof($list_config) > 0) {
+                try {
+                    $salas = DB::table('asignar_config_salas')
+                        ->select('*')
+                        ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
+                        ->where('id_conf', '=', $list_config[0]->id_configuracion)
+                        ->get();
+                    $horario = [];
+                    foreach ($salas as $key => $value) {
+                        /*
+                        select * from asignar_salas
+                        left join salas on asignar_salas.id_sala = salas.id
+                        left join asignar_horarios 
+                        ON asignar_horarios.id_conf_sala = asignar_salas.id_conf_sala
+                        left join horarios ON horarios.id = asignar_horarios.id_horarios
+                                    */
+                        /*$h = DB::table('asignar_salas')
+                            ->select('*')
+                            ->leftJoin('salas','asignar_salas.id_sala','=', 'salas.id')
+                            ->leftJoin('conf_salas','conf_salas.id','=','asignar_salas.id_conf_sala')
+                            ->leftJoin('asignar_horarios','asignar_horarios.id_conf_sala', '=', 'conf_salas.id')
+                            ->leftJoin('horarios', 'horarios.id','=', 'asignar_horarios.id_horarios')
+                            ->where('salas.id', '=', $value->id_sala)
+                            ->where('conf_salas.id', '=',  $value->id_conf_sala)*/
+
+
+                        //->where('salas.id', '=', $value->id_conf_sala)
+                        $h = DB::table('conf_salas')
+                            ->select('*')
+                            ->leftJoin('asignar_horarios', 'asignar_horarios.id_conf_sala', '=', 'conf_salas.id')
+                            ->leftJoin('horarios', 'horarios.id', '=', 'asignar_horarios.id_horarios')
+
+                            ->where('conf_salas.id', '=', $value->id_conf_sala)
+
+                            ->get();
+                        array_push($horario, $h);
+                    }
                     /*
-                select * from asignar_salas
-                left join salas on asignar_salas.id_sala = salas.id
-                left join asignar_horarios 
-                ON asignar_horarios.id_conf_sala = asignar_salas.id_conf_sala
-                left join horarios ON horarios.id = asignar_horarios.id_horarios
+                        *          
+                        */
+                    //$salas_disponibles =[];
+
+                    /*
+                        $salas_disponibles = DB::table('salas')
+                            //->select('salas.sala, salas.descripcion')
+                            ->join('horarios', "horarios.sala", '=', "salas.sala")
+                            ->leftJoin("agendas", function ($join) use ($fecha) {
+                                $join->on("agendas.horario", "=", "horarios.id_horario");
+                                $join->where('agendas.fecha', '=', $fecha);
+                            })
+                            ->whereNull('agendas.horario')
+                            ->where('salas.id', '=', $list_config[0]->id)
+                            ->groupBy('salas.sala', 'salas.descripcion')
+                            ->select('salas.sala', 'salas.descripcion')
+                            ->orderBy('salas.descripcion')
+                            ->get();
                             */
-                    /*$h = DB::table('asignar_salas')
-                    ->select('*')
-                    ->leftJoin('salas','asignar_salas.id_sala','=', 'salas.id')
-                    ->leftJoin('conf_salas','conf_salas.id','=','asignar_salas.id_conf_sala')
-                    ->leftJoin('asignar_horarios','asignar_horarios.id_conf_sala', '=', 'conf_salas.id')
-                    ->leftJoin('horarios', 'horarios.id','=', 'asignar_horarios.id_horarios')
-                    ->where('salas.id', '=', $value->id_sala)
-                    ->where('conf_salas.id', '=',  $value->id_conf_sala)*/
-
-                    
-                    //->where('salas.id', '=', $value->id_conf_sala)
-                    $h = DB::table('conf_salas')
-                    ->select('*')
-                    ->leftJoin('asignar_horarios','asignar_horarios.id_conf_sala','=', 'conf_salas.id')
-                    ->leftJoin('horarios','horarios.id','=','asignar_horarios.id_horarios')
-                    ->where('conf_salas.id','=', $value->id_conf_sala)
-
-                    ->get();
-                    array_push($horario,$h );
+                    $resp = [
+                        'salas' => $salas,
+                        'salas_diponibles' => $horario,
+                        //'lista_conf' => $list_config,
+                        //'casa0' => $list_config[0]->id_configuracion
+                    ];
+                } catch (\Throwable $th) {
+                    return $th;
                 }
-                /*
-                *          
-                */
-                //$salas_disponibles =[];
-                
-                /*
-                $salas_disponibles = DB::table('salas')
-                    //->select('salas.sala, salas.descripcion')
-                    ->join('horarios', "horarios.sala", '=', "salas.sala")
-                    ->leftJoin("agendas", function ($join) use ($fecha) {
-                        $join->on("agendas.horario", "=", "horarios.id_horario");
-                        $join->where('agendas.fecha', '=', $fecha);
-                    })
-                    ->whereNull('agendas.horario')
-                    ->where('salas.id', '=', $list_config[0]->id)
-                    ->groupBy('salas.sala', 'salas.descripcion')
-                    ->select('salas.sala', 'salas.descripcion')
-                    ->orderBy('salas.descripcion')
+                return $resp;
+            } 
+        } else {
+            //$salas;
+            $horarios =  [];
+            foreach ($list_config as $key => $value) {
+                # code...
+                $horario = DB::table('fichas')
+                    ->select('*')
+                    ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+                    ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_sala')
+                    ->leftJoin('horarios','horarios.id', '=', 'fichas.id_horario' )
+                    ->where('fecha', '=', $fecha)
+                    ->where('fichas.id_sala', '=', $value->id_sala)
+                    //->groupBy('id_sala', 'salas.descripcion')
                     ->get();
-                    */
-                $resp = [
-                    'salas' => $salas,
-                    'salas_diponibles' => $horario,
-                    'lista_conf' => $list_config,
-                    'casa0' => $list_config[0]->id_configuracion
-                ];
-            } catch (\Throwable $th) {
-                return $th;
+                array_push($horarios, $horario);
+                
             }
+            $resp = [
+                'salas' => $list_config,
+                'salas_diponibles' => $horarios,
+    
+            ];
             return $resp;
+      
+            
         }
+        //$salas = [];
+
         $resp = [
-            'salas' => $salas,
-            'salas_diponibles' => $salas,
-           
+            'salas' => [],
+            'salas_diponibles' => [],
+
         ];
-        return $salas;
+        return $resp;
     }
 
     /**
