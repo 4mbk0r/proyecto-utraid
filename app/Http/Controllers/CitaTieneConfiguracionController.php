@@ -145,7 +145,7 @@ class CitaTieneConfiguracionController extends Controller
                     return $th;
                 }
                 return $resp;
-            } 
+            }
         } else {
             //$salas;
             $horarios =  [];
@@ -155,22 +155,21 @@ class CitaTieneConfiguracionController extends Controller
                     ->select('*')
                     ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
                     ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_sala')
-                    ->leftJoin('horarios','horarios.id', '=', 'fichas.id_horario' )
+                    ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
+                    ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
+                    ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
                     ->where('fecha', '=', $fecha)
                     ->where('fichas.id_sala', '=', $value->id_sala)
                     //->groupBy('id_sala', 'salas.descripcion')
                     ->get();
                 array_push($horarios, $horario);
-                
             }
             $resp = [
                 'salas' => $list_config,
                 'salas_diponibles' => $horarios,
-    
+
             ];
             return $resp;
-      
-            
         }
         //$salas = [];
 

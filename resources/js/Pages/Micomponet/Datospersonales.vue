@@ -453,13 +453,13 @@ export default {
     ],
     nombreRules: [
       (v) => !!v || "Dato requerido",
-      
+
       //v => v.length <= 10 || 'Name must be less than 10 characters',
     ],
     rules: {
       select: [(v) => !!v || "Item is required"],
-      select2: [(v) =>  validar_seleccion(v)],
-      
+      select2: [(v) => validar_seleccion(v)],
+
     },
     email: "",
     emailRules: [
@@ -496,15 +496,15 @@ export default {
 
   methods: {
     /*  inicialiazar fecha minima*/
-    validar_seleccion(){
+    validar_seleccion() {
       /*console.log("___________");
       console.log(this.consultorios);
       
       console.log(this.cita_nueva.consultorio);
       console.log(this.consultorios.filter(e => e.sala === this.cita_nueva.consultorio).length>0);*/
-      if(this.consultorios.filter(e => e.sala === this.cita_nueva.consultorio).length>0){
+      if (this.consultorios.filter(e => e.sala === this.cita_nueva.consultorio).length > 0) {
         return true;
-      }else{
+      } else {
         //this.consultorio = null
         //this.cita_nueva.consultorio =null
         return 'valor requerido'
@@ -705,6 +705,30 @@ export default {
         console.log(this.paciente_edit);
         var res = await axios({
           method: "post",
+          url: `/${process.env.MIX_CARPETA}/configuracion`,
+          data: {
+            nuevo: this.paciente,
+            antiguo: this.paciente_edit,
+            opcion: this.op1,
+          },
+        }).then(
+          (response) => {
+            console.log(response);
+            ////console.log('validat');
+            ////console.log(response);
+            //console.log('__configuracion ___');
+            //console.log(response.data);
+            this.activar(response)
+
+
+
+          },
+        ).catch((error) => {
+          //console.log(error.response.data.mensaje);
+
+        });
+        var res = await axios({
+          method: "post",
           url: "api/guardar_persona",
           data: {
             nuevo: this.paciente,
@@ -759,12 +783,14 @@ export default {
       }
     },
     async buscar_citas() {
+      console.log('......');
+      console.log(this.paciente);
       try {
         var res = await axios({
           method: "get",
           url:
             `/${process.env.MIX_CARPETA}/api/buscar_persona_citas/` +
-            this.paciente.ci,
+            this.paciente.id,
         }).then(
           (response) => {
             console.log(response);
@@ -829,8 +855,8 @@ export default {
             this.v_agendar = false;
             this.buscar_citas();
             this.open_imprimir()
-            
-            
+
+
           }
         ).catch((error) => {
           console.log(error.response)
@@ -862,6 +888,49 @@ export default {
 
       this.v_imprimir = true;
     },
+    activar(response) {
+      this.close()
+      console.log(response);
+      let res = response
+      if (res["data"]["mensaje"] == "ok") {
+        console.log("inserccion correcta");
+        this.alert("Inserccion Correcta");
+        this.paciente = res["data"]["persona"];
+        this.paciente_edit = structuredClone(this.paciente);
+        this.op1 = 2;
+        return;
+      }
+      if (res["data"]["mensaje"] == "ok update") {
+        console.log("update correcto");
+        this.alert("Actulizacion Correcta");
+        this.paciente = res["data"]["persona"];
+        this.paciente_edit = structuredClone(this.paciente);
+        this.op1 = 2;
+        return;
+      }
+      if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 1) {
+        this.msm_existe = true;
+        this.paciente_existen = structuredClone(res["data"]["persona"]);
+        return;
+        //this.paciente_edit = structuredClone(this.paciente)
+        //this.paciente = res['data']['persona']
+      }
+      if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 2) {
+        this.alert(
+          "No se puede cambiar la cedula de identidad " +
+          this.paciente_edit.ci +
+          " por " +
+          this.paciente.ci +
+          ". Por que esta (" +
+          this.paciente_edit.ci +
+          ") ya existe. Se volvera a la antigua configuracion"
+        );
+        this.paciente = structuredClone(this.paciente_edit);
+
+        this.paciente_existen = {};
+        this.op1 = 2;
+      }
+    }
   },
 };
 </script>

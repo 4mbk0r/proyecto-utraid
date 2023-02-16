@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Exception;
+use Illuminate\Support\Facades\Response;
 
 class PersonaCitaController extends Controller
 {
@@ -108,7 +109,7 @@ class PersonaCitaController extends Controller
     public static function buscar_persona(Request $request)
     {
         $dato = $request['dato'];
-        $data = DB::table('persona_citas')
+        $data = DB::table('personas')
             ->select('*')
             ->whereRaw("unaccent(nombres) ilike unaccent('%" . $dato . "%')")
             ->orWhereRaw("unaccent(ap_materno) ilike unaccent('%" . $dato . "%')")
@@ -118,7 +119,7 @@ class PersonaCitaController extends Controller
     }
     public static function buscar_persona_ci(String $ci)
     {
-        $persona = DB::table('persona_citas')
+        $persona = DB::table('personas')
             ->select('*')
             ->where('ci', '=', $ci)
             ->get();
@@ -135,11 +136,11 @@ class PersonaCitaController extends Controller
         if ($opcion == 1) {
             try {
                 //write your codes here
-                DB::table('persona_citas')->insert($nuevo);
+                DB::table('personas')->insert($nuevo);
             } catch (Exception $e) {
                 $error = explode(' ', $e->getMessage())[0];
                 if ($error == 'SQLSTATE[23505]:') {
-                    $persona = DB::table('persona_citas')->where('ci', $nuevo['ci'])->get();
+                    $persona = DB::table('personas')->where('ci', $nuevo['ci'])->get();
                     $respuesta = [
                         'persona' => $persona[0],
                         'mensaje' => $error,
@@ -149,9 +150,9 @@ class PersonaCitaController extends Controller
                 $respuesta = [
                     'mensaje' => $error,
                 ];
-                return $respuesta;
+                return Response::json(['mensaje' => $e->getMessage(),500], 500);
             }
-            $persona = DB::table('persona_citas')->where('ci', $nuevo['ci'])->get();
+            $persona = DB::table('personas')->where('ci', $nuevo['ci'])->get();
             return ['persona' => $persona[0], 'mensaje' => 'ok'];
         }
         if ($opcion == 2) {
@@ -187,9 +188,10 @@ class PersonaCitaController extends Controller
     }
     public static function buscar_persona_citas(String $ci)
     {
-        $persona = DB::table('agendas')
+        $persona = DB::table('personas')
             ->select('*')
-            ->where('ci_paciente', '=', $ci)
+            ->leftJoin('dar_citas', 'dar_citas.id_persona','=', 'personas.id' )
+            ->where('dar_citas.id_persona', '=', $ci)
             ->get();
         
         return $persona;

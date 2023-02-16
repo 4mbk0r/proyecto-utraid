@@ -80,7 +80,8 @@
                                     <v-icon>mdi-dots-vertical</v-icon>
                                 </v-btn>
                             </v-toolbar>
-                            <v-card-text>
+
+                            <v-card-text v-if="get_datos_ficha(selectedEvent) != null">
                                 <V-row no-gutters>
                                     <v-col>
                                         CI:
@@ -108,6 +109,15 @@
                                 </v-row>
 
                             </v-card-text>
+                            <v-card-text v-else>
+                                <v-btn class="ma-2" color="primary" @click="open_agenda()">
+                                    Dar cita
+                                    <v-icon end icon> mdi-pencil</v-icon>
+                                </v-btn>
+
+
+                            </v-card-text>
+
                             <v-card-actions>
                                 <v-btn text color="secondary" @click="selectedOpen = false">
                                     Cancelar
@@ -368,15 +378,18 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     for (const key in salas_disponibles) {
                         let fichas = salas_disponibles[key];
                         console.log(fichas);
+                        //console.log(typeof ficha.id_oersiba);
                         for (const x in fichas) {
-                            let ficha =  fichas[x];
+                            let ficha = fichas[x];
+                            console.log(ficha.id_persona);
                             this.events.push({
                                 //name: paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
                                 start: new Date(this.fecha_calendario + 'T' + ficha.hora_inicio + '-04:00'),
                                 end: new Date(this.fecha_calendario + 'T' + ficha.hora_final + '-04:00'),
-                                color: 'black',
+                                color: (!ficha.id_persona) ? 'red' : 'blue',
                                 timed: 1,
                                 category: this.categories[key],
+                                fichas: fichas[x]
                                 //paciente: structuredClone(paciente)
                             })
                         }
@@ -638,6 +651,21 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
             //this.events.push(events)
         },
+        get_datos_ficha(X) {
+            console.log('....');
+            if (typeof X.fichas == 'undefined') {
+                return null
+            }
+            console.log(X.fichas.id_persona);
+
+            return X.fichas.id_persona
+        },
+        open_agenda() {
+            this.$refs.dato.op1 = 1;
+            this.$refs.dato.fecha_cita = this.fecha_calendario
+            //this.$refs.dato.consultorio = event.consultorio.sala
+            this.$refs.dato.open()
+        }
     }
 }
 /**

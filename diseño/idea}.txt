@@ -26,3 +26,11 @@ como configuracion diaria
 	
 
 calcular numero de fichas
+
+
+
+tomar en cuenta las configuraciones temporales 
+
+una configuracion temporal puede ser un 
+
+

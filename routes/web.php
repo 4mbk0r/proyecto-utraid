@@ -8,6 +8,7 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\CitaTieneConfiguracionController;
 use App\Http\Controllers\AgendaController;
 
+use App\Http\Controllers\DarCitaController;
 use App\Http\Controllers\CalendariolinealController;
 
 use App\Http\Controllers\Administracion\Registro;
@@ -175,3 +176,5 @@ Route::get('/excel', function () {
 
 
 Route::resource('/equipo2', EquipoController::class)->middleware(['auth:sanctum', 'verified']);
+
+Route::resource('/dar_ficha', DarCitaController::class)->middleware(['auth:sanctum', 'verified']);

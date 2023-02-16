@@ -16,6 +16,7 @@ class CreateFichasTable extends Migration
     public function up()
     {
         Schema::create('fichas', function (Blueprint $table) {
+            $table->increments('id');
             $table->integer('id_sala');
             $table->integer('id_horario');
             $table->integer('id_conf_sala');
