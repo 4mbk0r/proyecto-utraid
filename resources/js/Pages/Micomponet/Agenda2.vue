@@ -113,7 +113,7 @@
                                     <v-col>
                                         <v-select v-model="selectequipo" :rules="nombreRules" persistent-placeholder
                                             placeholder="No se tiene datos" :items="equipos"
-                                            item-text="equipos.nombre_equipo" item-value="equipos.id"
+                                            :item-text="equipos.nombre_equipo" :item-value="equipos.id"
                                             label="Seleccione equipo que atendera">
                                         </v-select>
                                     </v-col>

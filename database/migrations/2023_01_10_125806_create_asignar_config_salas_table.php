@@ -29,6 +29,14 @@ class CreateAsignarConfigSalasTable extends Migration
         DB::statement(
             "ALTER TABLE asignar_config_salas ADD FOREIGN KEY (id_conf_sala) REFERENCES conf_salas(id) ON DELETE CASCADE"
         );
+        for ($i = 1; $i <= 5; $i++) {
+            $hora = [
+                'id_sala' => $i,
+                'id_conf_sala' => 1,
+                'id_conf'=> 1
+            ];
+            DB::table('asignar_config_salas')->insert($hora);
+        }
     }
 
     /**

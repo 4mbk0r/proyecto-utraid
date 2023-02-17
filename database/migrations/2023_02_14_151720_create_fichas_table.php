@@ -22,7 +22,7 @@ class CreateFichasTable extends Migration
             $table->integer('id_conf_sala');
             $table->date('fecha');
             $table->string('institucion');
-            $table->unique(['id_sala', 'id_horario', 'id_conf_sala', 'fecha', 'codigo']);
+            $table->unique(['id_sala', 'id_horario', 'id_conf_sala', 'fecha', 'institucion']);
             //$table->timestamps();
         });
         DB::statement(
@@ -35,7 +35,7 @@ class CreateFichasTable extends Migration
             "ALTER TABLE fichas ADD FOREIGN KEY (id_horario) REFERENCES horarios(id)"
         );
         DB::statement(
-            "ALTER TABLE fichas ADD FOREIGN KEY (codigo) REFERENCES institucions(codigo) ON DELETE CASCADE"
+            "ALTER TABLE fichas ADD FOREIGN KEY (institucion) REFERENCES institucions(codigo) ON DELETE CASCADE"
         );
     }
 

@@ -137,7 +137,6 @@ class CitaTieneConfiguracionController extends Controller
                             ->leftJoin('horarios', 'horarios.id', '=', 'asignar_horarios.id_horario')
                             ->leftJoin('asignar_config_salas', 'asignar_config_salas.id_conf_sala', '=', 'conf_salas.id')
                             ->leftJoin('configuracions', 'configuracions.id', '=', 'asignar_config_salas.id_conf')
-
                             ->where('conf_salas.id', '=', $value->id_conf_sala)
 
                             ->get();
