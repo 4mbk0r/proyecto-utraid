@@ -52,20 +52,19 @@
                     <v-calendar v-if="estado == 'calendario'" ref="calendar" v-model="fecha_calendario" :type="type"
                         color="error" :events="events" :categories="categories" :event-color="getEventColor"
                         @click:event="showEvent" @click:more="viewDay" @click:date="viewDay" @change="updateRange"
-                        :max-days=5 weekdays="1, 2, 3, 4, 5" :weekday-format="getDay" :first-interval=7
-                        :interval-minutes=60 :interval-count=12>
+                        :max-days=5 weekdays="1, 2, 3, 4, 5" :weekday-format="getDay" :first-interval=7 :interval-minutes=60
+                        :interval-count=12>
                     </v-calendar>
                     <v-calendar v-if="estado == 'cita'" ref="calendar" v-model="fecha_calendario" color="error"
                         type="category" category-show-all :categories="categories" :events="events"
-                        :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent"
-                        :interval-minutes=60 :first-interval=7 :interval-count=14></v-calendar>
+                        :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent" :interval-minutes=60
+                        :first-interval=7 :interval-count=14></v-calendar>
 
                     <v-calendar v-if="estado == 'atencion'" ref="calendar" v-model="fecha_calendario" color="error"
                         type="category" category-show-all :categories="categories" :events="events"
-                        :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent"
-                        :interval-minutes=60 :first-interval=7 :interval-count=14></v-calendar>
-                    <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement"
-                        offset-x>
+                        :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent" :interval-minutes=60
+                        :first-interval=7 :interval-count=14></v-calendar>
+                    <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement" offset-x>
                         <v-card color="grey lighten-4" min-width="350px" flat>
                             <v-toolbar :color="selectedEvent.color" dark>
                                 <v-btn icon>
@@ -88,7 +87,7 @@
 
                                     </v-col>
                                     <v-col>
-                                        {{ valores(selectedEvent.paciente, 'ci') }}
+                                        {{ valores(selectedEvent.fichas, 'ci') }}
                                     </v-col>
                                 </v-row>
                                 <v-row no-gutters>
@@ -96,7 +95,9 @@
                                         <span> Nombre Completo:</span>
                                     </v-col>
                                     <v-col>
-                                        {{ selectedEvent.name }}
+                                        {{ valores(selectedEvent.fichas, 'nombres') }}
+                                        {{ valores(selectedEvent.fichas, 'ap_paterno') }}
+                                        {{ valores(selectedEvent.fichas, 'ap_materno') }}
                                     </v-col>
                                 </v-row>
                                 <v-row no-gutters>
@@ -104,10 +105,22 @@
                                         <span> Fecha:</span>
                                     </v-col>
                                     <v-col>
-                                        {{ valores(selectedEvent.paciente, 'fecha') }}
+                                        {{ valores(selectedEvent.fichas, 'fecha') }}
                                     </v-col>
                                 </v-row>
 
+                                <v-row no-gutters>
+                                    <v-col>
+                                        <v-select v-model="selectequipo" :rules="nombreRules" persistent-placeholder
+                                            placeholder="No se tiene datos" :items="equipos"
+                                            item-text="equipos.nombre_equipo" item-value="equipos.id"
+                                            label="Seleccione equipo que atendera">
+                                        </v-select>
+                                    </v-col>
+                                    <v-col>
+                                        {{ equipos }}
+                                    </v-col>
+                                </v-row>
                             </v-card-text>
                             <v-card-text v-else>
                                 <v-btn class="ma-2" color="primary" @click="open_agenda()">
@@ -172,6 +185,14 @@ export default {
         categories: [],
         fecha_min: '',
         lista_equipo: [],
+        salas: [],
+        selectequipo: '',
+        nombreRules: [
+            (v) => !!v || "Dato requerido",
+
+            //v => v.length <= 10 || 'Name must be less than 10 characters',
+        ],
+        equipos: [],
     }),
     created() {
 
@@ -335,10 +356,13 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     console.log(response);
                     let salas = response.data['salas'];
                     let salas_disponibles = response.data['salas_diponibles'];
+                    this.equipos = response.data['equipo'];
+                    console.log('_equipo----');
+                    console.log(this.equipos);
                     console.log(salas_disponibles);
                     //console.log('__'+salas)
 
-
+                    this.salas = salas
                     this.categories = [];
                     let events = [];
                     this.events = [];
@@ -658,12 +682,13 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
             console.log(X.fichas.id_persona);
 
-            return X.fichas.id_persona
+            return X.fichas
         },
         open_agenda() {
             this.$refs.dato.op1 = 1;
             this.$refs.dato.fecha_cita = this.fecha_calendario
-            //this.$refs.dato.consultorio = event.consultorio.sala
+            this.$refs.dato.cita_nueva = this.selectedEvent.fichas
+            //console.log();
             this.$refs.dato.open()
         }
     }

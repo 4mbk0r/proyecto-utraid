@@ -56,9 +56,13 @@ class DarCitaController extends Controller
     {
         //
         $fecha = $request['fecha'];
+        $cita =  $request['cita'];
+        $persona =  $request['paciente'];
+
+
         $validar =  DB::table('fichas')
             ->select('*')
-            ->where('fecha', '=',)
+            ->where('fecha', '=', $fecha)
             ->get();
         if (count($validar) == 0) {
             $list_config = DB::table('calendariolineals')
@@ -72,15 +76,15 @@ class DarCitaController extends Controller
                 ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
                 ->leftJoin('conf_salas', 'conf_salas.id', '=', 'asignar_config_salas.id_conf_sala')
                 ->leftJoin('asignar_horarios', 'asignar_horarios.id_conf_sala', '=', 'conf_salas.id')
-                ->leftJoin('horarios', 'horarios.id', '=', 'asignar_horarios.id_horarios')
-                ->where('id_conf', '=', $list_config[0]->id_configuracion)
+                ->leftJoin('horarios', 'horarios.id', '=', 'asignar_horarios.id_horario')
+                ->where('id_conf', '=', $list_config->id_configuracion)
                 ->get();
 
             foreach ($salas as $key => $value) {
                 # code...
                 $nuevo = [
-                    'id_sala' => $value->id_salas,
-                    'id_horario' => $value->id_horariom,
+                    'id_sala' => $value->id_sala,
+                    'id_horario' => $value->id_horario,
                     'id_conf_sala' => $value->id_conf_sala,
                     'fecha' => $fecha,
                     'codigo' =>  $value->institucion,
@@ -93,8 +97,25 @@ class DarCitaController extends Controller
                 }
             }
         }
+        $validar =  DB::table('fichas')
+            ->where('id_sala', '=', $cita['id_sala'])
+            ->where('id_horario', '=', $cita['id_horario'])
+            ->where('id_conf_sala', '=', $cita['id_conf_sala'])
+            ->where('fecha', '=', $fecha)
+            ->where('codigo', '=',  $cita['institucion'])
+            ->where('fecha', '=', $fecha)
+            ->first();
+
+        try {
+            $respuesta = DB::table('dar_citas')->insert(['id_ficha' => $validar->id, 'id_persona' => $persona['id']]);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+
         return $validar;
     }
+
 
     /**
      * Display the specified resource.
@@ -155,13 +176,13 @@ class DarCitaController extends Controller
                 ->where('fichas.id_sala', '=', $value->id_sala)
                 //->groupBy('id_sala', 'salas.descripcion')
                 ->get();
-            array_push($horarios, $horario);
+            array_push($horarios, (array) $horario);
         }
         return $horarios;
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form    for editing the specified resource.
      *
      * @param  \App\Models\dar_cita  $dar_cita
      * @return \Illuminate\Http\Response

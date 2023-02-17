@@ -7,5 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class dar_cita extends Model
 {
+
     use HasFactory;
+    protected $fillable = [
+        'id_ficha',
+        'id_persona'
+    ];
 }

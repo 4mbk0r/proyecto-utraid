@@ -63,6 +63,32 @@ class CitaTieneConfiguracionController extends Controller
             ->where('fecha', '=', $fecha)
             ->groupBy('id_sala', 'salas.descripcion')
             ->get();
+        $list_config2 = DB::table('calendariolineals')
+            ->select('*')
+            ->where('fecha_inicio', '<=', $fecha)
+            ->where('fecha_final', '>=', $fecha)
+            //->where('tipo', '=', 'permanente')
+            ->get();
+        $equipos = DB::table('equipos')
+            ->select('*')
+            ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_equipo', '=', 'equipos.id')
+            ->where('designar_equipo_lineals.id_conf', '=', $list_config2[0]->id_configuracion)
+            ->get();
+        $r_equipo = [];
+        foreach ($equipos as $key => $value) {
+            $lista_equipos = DB::table('equipos')
+                ->select('*')
+                ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
+                ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
+                ->where('equipos.id', '=', $value->id)
+                ->get();
+            $a =  [
+                'equipo' => $value,
+                'lista' => $lista_equipos
+            ];
+            array_push($r_equipo, $a);
+        }
+
         //return sizeof($list_config) ;
         //return $list_config;
         if (sizeof($list_config) == 0) {
@@ -108,7 +134,9 @@ class CitaTieneConfiguracionController extends Controller
                         $h = DB::table('conf_salas')
                             ->select('*')
                             ->leftJoin('asignar_horarios', 'asignar_horarios.id_conf_sala', '=', 'conf_salas.id')
-                            ->leftJoin('horarios', 'horarios.id', '=', 'asignar_horarios.id_horarios')
+                            ->leftJoin('horarios', 'horarios.id', '=', 'asignar_horarios.id_horario')
+                            ->leftJoin('asignar_config_salas', 'asignar_config_salas.id_conf_sala', '=', 'conf_salas.id')
+                            ->leftJoin('configuracions', 'configuracions.id', '=', 'asignar_config_salas.id_conf')
 
                             ->where('conf_salas.id', '=', $value->id_conf_sala)
 
@@ -138,6 +166,7 @@ class CitaTieneConfiguracionController extends Controller
                     $resp = [
                         'salas' => $salas,
                         'salas_diponibles' => $horario,
+                        'equipo' => $r_equipo,
                         //'lista_conf' => $list_config,
                         //'casa0' => $list_config[0]->id_configuracion
                     ];
@@ -167,6 +196,8 @@ class CitaTieneConfiguracionController extends Controller
             $resp = [
                 'salas' => $list_config,
                 'salas_diponibles' => $horarios,
+                'equipo' => $r_equipo,
+
 
             ];
             return $resp;
@@ -176,6 +207,7 @@ class CitaTieneConfiguracionController extends Controller
         $resp = [
             'salas' => [],
             'salas_diponibles' => [],
+            'equipo' => $r_equipo
 
         ];
         return $resp;

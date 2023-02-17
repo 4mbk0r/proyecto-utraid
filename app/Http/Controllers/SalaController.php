@@ -63,7 +63,7 @@ class SalaController extends Controller
                 $sala['id_sala'] =  $busqueda_sala[0]->id;
             }
         } catch (\Throwable $th) {
-           
+
             $rrr = Response::json([
                 'error' => $th
             ], 404);
@@ -72,10 +72,9 @@ class SalaController extends Controller
         //return $sala;
         try {
             //return $sala;
-            if ( ! isset($sala['tiempo_descanso'])) {
-                 $sala['tiempo_descanso'] = null;
-            }
-            elseif($sala['tiempo_descanso']  == 'Fecha inválida') {
+            if (!isset($sala['tiempo_descanso'])) {
+                $sala['tiempo_descanso'] = null;
+            } elseif ($sala['tiempo_descanso']  == 'Fecha inválida') {
                 $sala['tiempo_descanso']  = null;
             }
 
@@ -85,7 +84,7 @@ class SalaController extends Controller
                 ->where('tiempo_descanso', '=', isset($sala['tiempo_descanso']) ? $sala['tiempo_descanso'] : null)
                 ->where('min_promedio_atencion', '=', $sala['min_promedio_atencion'])
                 ->get();
-                 
+
             if (count($busqueda_configuracion) == 0) {
                 $datos = [
                     'tiempo_apertura' => $sala['tiempo_apertura'],
@@ -94,8 +93,8 @@ class SalaController extends Controller
                     'min_promedio_atencion' => $sala['min_promedio_atencion'],
 
                 ];
-                
-                        
+
+
                 $id_conf = DB::table('conf_salas')
                     ->insertGetId($datos);
 
@@ -104,29 +103,27 @@ class SalaController extends Controller
                 foreach ($horario as $key => $value) {
                     $b =  (array) $value;
                     $horario_busqueda = DB::table('horarios')
-                    ->where('hora_inicio', '=', $b['hora_inicio'])
-                    ->where('hora_final', '=', $b['hora_final'])
-                    ->get();
-                    if(count($horario_busqueda) == 0 ){
+                        ->where('hora_inicio', '=', $b['hora_inicio'])
+                        ->where('hora_final', '=', $b['hora_final'])
+                        ->get();
+                    if (count($horario_busqueda) == 0) {
                         $id_horario = DB::table('horarios')
-                        ->insertGetId($value);
-                    
-                    }else{
+                            ->insertGetId($value);
+                    } else {
                         $b = (array) $horario_busqueda[0];
                         $id_horario = $b['id'];
                     }
                     $hora = [
-                        'id_horarios' => $id_horario,
+                        'id_horario' => $id_horario,
                         'id_conf_sala' => $id_conf
                     ];
                     DB::table('asignar_horarios')->insert($hora);
-                }    
+                }
             } elseif (count($busqueda_configuracion) >= 1) {
                 $b =  (array) $busqueda_configuracion[0];
                 //return $busqueda_configuracion[0];
                 $id_conf = $b['id'];
-            }
-            else{
+            } else {
                 return  Response::json([
                     'error' => 'esete es un errore'
                 ], 401);
@@ -138,13 +135,13 @@ class SalaController extends Controller
             $sala['id_conf_sala'] = $id_conf;
             DB::table('asignar_salas')->insert($configuracion);
         } catch (\Throwable $th) {
-            
+
             return Response::json([
                 'error' => $th
             ], 404);
             //new Response(['message' => 'th'], 400);
         }
-     
+
 
         //$salas = DB::table('salas')->get();
         return $sala;

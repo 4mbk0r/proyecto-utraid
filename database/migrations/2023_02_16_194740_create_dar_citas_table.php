@@ -15,7 +15,7 @@ class CreateDarCitasTable extends Migration
     public function up()
     {
         Schema::create('dar_citas', function (Blueprint $table) {
-            $table->integer('id_ficha');
+            $table->integer('id_ficha')->unique();
             $table->integer('id_persona');
         });
         DB::statement(
@@ -24,7 +24,6 @@ class CreateDarCitasTable extends Migration
         DB::statement(
             "ALTER TABLE dar_citas ADD FOREIGN KEY (id_persona) REFERENCES personas(id)"
         );
-
     }
 
     /**

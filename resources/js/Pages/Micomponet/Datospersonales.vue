@@ -96,6 +96,11 @@
                       Guardar Datos
                     </v-btn>
                   </v-col>
+                  <v-col cols="12" sm="6">
+                    <v-btn v-if="op1 == 2" color="primary" class="mr-4" @click="dar_cita()">
+                      dar_cita
+                    </v-btn>
+                  </v-col>
                 </v-row>
                 <v-card v-if="buscador == true"> buscar datos </v-card>
               </v-container>
@@ -143,15 +148,14 @@
             <v-container>
               <v-row no-gutters>
                 <v-col cols="12" sm="4" md="4">
-                  <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40"
-                    transition="scale-transition" offset-y min-width="auto">
+                  <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
+                    offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <!--<v-text-field v-model="date" label="Picker without buttons"
-                                                        prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
-                                                    </v-text-field>-->
-                      <v-text-field v-model="cita_nueva.fecha" :rules="nombreRules"
-                        placeholder="Selecione fecha de cita" required prepend-icon="mdi-calendar" readonly
-                        v-bind="attrs" v-on="on">
+                                                                  prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
+                                                              </v-text-field>-->
+                      <v-text-field v-model="cita_nueva.fecha" :rules="nombreRules" placeholder="Selecione fecha de cita"
+                        required prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
                       </v-text-field>
                     </template>
                     <v-date-picker v-model="cita_nueva.fecha" :allowed-dates="allowedDates" @input="menu2 = false"
@@ -167,17 +171,16 @@
                   </v-select>
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
-                  <v-select v-model="cita_nueva.horario" :item-text="(item) => ver_horario(item)"
-                    item-value="id_horario" :items="horario" :rules="nombreRules" persistent-placeholder
-                    placeholder="Selecione hora de cita" color="purple darken-3" label="Hora de inicio" required>
+                  <v-select v-model="cita_nueva.horario" :item-text="(item) => ver_horario(item)" item-value="id_horario"
+                    :items="horario" :rules="nombreRules" persistent-placeholder placeholder="Selecione hora de cita"
+                    color="purple darken-3" label="Hora de inicio" required>
                   </v-select>
                 </v-col>
               </v-row>
               <v-row no-gutters>
                 <v-col cols="12" sm="4" md="6">
                   <v-select v-model="cita_nueva.tipo_cita" :items="tipo_cita" color="purple darken-3"
-                    persistent-placeholder :rules="nombreRules" placeholder="Selecione tipo de cita"
-                    label="Tipo de cita">
+                    persistent-placeholder :rules="nombreRules" placeholder="Selecione tipo de cita" label="Tipo de cita">
                   </v-select>
                 </v-col>
                 <v-col cols="12" sm="4" md="6">
@@ -930,6 +933,29 @@ export default {
         this.paciente_existen = {};
         this.op1 = 2;
       }
+    },
+    async dar_cita() {
+      console.log(this.cita_nueva);
+      var res = await axios({
+        method: "post",
+        url: `/${process.env.MIX_CARPETA}/dar_ficha`,
+        data: {
+          cita: this.cita_nueva,
+          paciente: this.paciente,
+          fecha: this.fecha_cita
+        },
+      }).then(
+        (response) => {
+          console.log(response);
+
+
+
+        }
+      ).catch((error) => {
+        console.log(error.response)
+        this.alert("occurio un error")
+        return;
+      });
     }
   },
 };

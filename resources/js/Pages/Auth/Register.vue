@@ -1,5 +1,4 @@
-<template>
-    <!--<app-layout>-->
+<template><!--<app-layout>-->
     <v-card class="pa-2 justify-center">
 
 
@@ -32,14 +31,14 @@
                         @input="(val) => (form.nombre = val.toUpperCase())" pattern="[a-zA-Z]+" />
                 </v-col>
                 <v-col>
-                    <v-text-field dense outlined id="paterno" label="Apellido Paterno" type="text"
-                        v-model="form.ap_paterno" :rules="[v => !!v || 'Se requiere Completar Apellido Paterno']"
+                    <v-text-field dense outlined id="paterno" label="Apellido Paterno" type="text" v-model="form.ap_paterno"
+                        :rules="[v => !!v || 'Se requiere Completar Apellido Paterno']"
                         prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0"
                         @input="(val) => (form.ap_paterno = val.toUpperCase())" pattern="[a-zA-Z]+" />
                 </v-col>
                 <v-col>
-                    <v-text-field dense outlined id="materno" label="Apellido Materno" type="text"
-                        v-model="form.ap_materno" :rules="[v => !!v || 'Se requiere Completar Apellido Materno']"
+                    <v-text-field dense outlined id="materno" label="Apellido Materno" type="text" v-model="form.ap_materno"
+                        :rules="[v => !!v || 'Se requiere Completar Apellido Materno']"
                         @input="(val) => (form.ap_materno = val.toUpperCase())"
                         prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0"
                         pattern="[a-zA-Z]+" />
@@ -53,19 +52,20 @@
                 </v-col>
                 <v-col>
                     <!---<v-text-field dense outlined id="item" label="Item" type="text" v-model="form.item"
-                        :rules="[v => !!v || 'Se requiere completar Item']" required class="mb-n4 pa-0"
-                        prepend-inner-icon="mdi-account-key" />
-                    --->
-                    <v-select dense outlined item-value="departamento" item-text="departamento" :items="departamentos" v-model="form.expedido"
-                    :rules="[v => !!v || 'Se requiere seleccionar departamento expedicion']" filled label="Seleccione departemento de expacion" class="mb-n4 pa-0"
-                    required prepend-inner-icon="mdi-clipboard-account">
-                </v-select>
+                            :rules="[v => !!v || 'Se requiere completar Item']" required class="mb-n4 pa-0"
+                            prepend-inner-icon="mdi-account-key" />
+                        --->
+                    <v-select dense outlined item-value="departamento" item-text="departamento" :items="departamentos"
+                        v-model="form.expedido" :rules="[v => !!v || 'Se requiere seleccionar departamento expedicion']"
+                        filled label="Seleccione departemento de expacion" class="mb-n4 pa-0" required
+                        prepend-inner-icon="mdi-clipboard-account">
+                    </v-select>
                 </v-col>
             </v-row>
             <v-row>
                 <v-select dense outlined item-value="cargo" item-text="cargo" :items="cargos" v-model="form.cargo"
-                    :rules="[v => !!v || 'Se requiere el Cargo']" filled label="Asigne un cargo" class="mb-n4 pa-0"
-                    required prepend-inner-icon="mdi-clipboard-account">
+                    :rules="[v => !!v || 'Se requiere el Cargo']" filled label="Asigne un cargo" class="mb-n4 pa-0" required
+                    prepend-inner-icon="mdi-clipboard-account">
                 </v-select>
             </v-row>
             <v-row>
@@ -91,26 +91,26 @@
 
 
             <!--
-                <div class="mt-4" v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature">
-                    <jet-label for="terms">
-                        <div >
-                            <jet-checkbox name="terms" id="terms" v-model="form.terms" />
-                            <div class="ml-2">
-                                I agree to the <a target="_blank" :href="route('terms.show')"
-                                    class="underline text-sm text-gray-600 hover:text-gray-900">Terms of Service</a> and
-                                <a target="_blank" :href="route('policy.show')"
-                                    class="underline text-sm text-gray-600 hover:text-gray-900">Privacy Policy</a>
+                    <div class="mt-4" v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature">
+                        <jet-label for="terms">
+                            <div >
+                                <jet-checkbox name="terms" id="terms" v-model="form.terms" />
+                                <div class="ml-2">
+                                    I agree to the <a target="_blank" :href="route('terms.show')"
+                                        class="underline text-sm text-gray-600 hover:text-gray-900">Terms of Service</a> and
+                                    <a target="_blank" :href="route('policy.show')"
+                                        class="underline text-sm text-gray-600 hover:text-gray-900">Privacy Policy</a>
+                                </div>
                             </div>
-                        </div>
-                    </jet-label>
-                </div>
-                -->
+                        </jet-label>
+                    </div>
+                    -->
             <v-row class="flex items-center justify-center mt-4">
                 <!--<inertia-link :href="route('login')"
-                            class="underline text-sm text-gray-600 hover:text-gray-900">
-                            Already registered?
-                        </inertia-link>
-                        -->
+                                class="underline text-sm text-gray-600 hover:text-gray-900">
+                                Already registered?
+                            </inertia-link>
+                            -->
                 <v-btn class="ml-4" color="primary" type="sumbit" :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing">
                     Registrar
@@ -140,8 +140,7 @@
             </v-card>
         </v-dialog>
     </v-card>
-    <!--</app-layout>-->
-</template>
+<!--</app-layout>--></template>
 
 <script>
 import AppLayout from '@/Layouts/AppLayout'
@@ -244,7 +243,7 @@ export default {
                             password_confirmation: '',
                             terms: false,
                         }),
-                        this.alert('Se registro de forma correcta')
+                            this.alert('Se registro de forma correcta')
                         this.$refs.form.resetValidation()
                         //this.$inertia.get(route('regitrar'))
 
@@ -254,7 +253,7 @@ export default {
         },
         async save($event) {
             //console.log($event);
-            
+
             var res = await this.axios({
                 method: 'post',
                 url: `/${process.env.MIX_CARPETA}/api/subir_personal`,
@@ -268,7 +267,7 @@ export default {
                     //this.headers = response.data
                     //console.log('Responder');
                     console.log(response.data)
-                    
+
                 }).catch((error) => {
                     console.log(error.data);
 

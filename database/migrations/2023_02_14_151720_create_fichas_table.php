@@ -21,7 +21,7 @@ class CreateFichasTable extends Migration
             $table->integer('id_horario');
             $table->integer('id_conf_sala');
             $table->date('fecha');
-            $table->string('codigo');
+            $table->string('institucion');
             $table->unique(['id_sala', 'id_horario', 'id_conf_sala', 'fecha', 'codigo']);
             //$table->timestamps();
         });

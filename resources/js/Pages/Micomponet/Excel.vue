@@ -1,6 +1,6 @@
 <!-- Use preprocessors via the lang attribute! e.g. <template lang="pug"> -->
 <template>
-    <v-app>
+    <v-container>
         <div id="app">
             <h1>Importar</h1>
             <div>
@@ -15,8 +15,8 @@
             <div class="wrapper-dgxl">
                 <div ref="dgxl" class="grid"></div>
                 <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
-                <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
-                -->
+                                                                                                                                                            <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
+                                                                                                                                                            -->
             </div>
 
         </div>
@@ -26,7 +26,13 @@
             </v-icon>
             Guardar
         </v-btn>
-    </v-app>
+        <v-btn tile color="info" @click="save2">
+            <v-icon left>
+                mdi-content-save-settings
+            </v-icon>
+            Seleccion
+        </v-btn>
+    </v-container>
 </template>
 
 <script>
@@ -115,7 +121,7 @@ export default {
                             return obj;
                         }, {})
                     );
-                    
+
                 console.log(rowObj)
                 this.excelData = JSON.stringify(rowObj)
                 console.log('__________')
@@ -133,6 +139,13 @@ export default {
                     data: JSON.parse(this.excelData),
                     locale: this.dgxl_nl_NL
                 });
+                var eventHandler = function (gridEvent) {
+                    console.log(gridEvent);
+
+                };
+
+                // add event handler
+                this.DataGridXL.events.on('setselection', eventHandler);
                 //console.log(this.$attrssheetList)
                 /*wb.SheetNames.forEach((sheetName) => {
                     console.log(sheetName);
@@ -171,8 +184,19 @@ export default {
             //adicionamos a datagridxl o la vista en excel 
             this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                 data: JSON.parse(this.excelData),
-                locale: this.dgxl_nl_NL
+                locale: this.dgxl_nl_NL,
+
             });
+            var eventHandler = function (gridEvent) {
+                console.log(gridEvent);
+
+            };
+
+            // add event handler
+            this.DataGridXL.events.on('setselection', eventHandler);
+            // remove event handler
+
+            //grid.events.off, eventHandler);
 
 
         },
@@ -192,6 +216,7 @@ export default {
                 data: event,
                 locale: this.dgxl_nl_NL
             });
+            this.DataGridXL.events.on('setselection', eventHandler);
         },
         addSheet() {
 
@@ -201,26 +226,26 @@ export default {
             this.sheetName = null;
         },
         save() {
-            console.log(typeof this.DataGridXL.data);
+
+            console.log('...s');
+            console.log(this.DataGridXL.getData());
             var objetos = {
-                'datos': this.DataGridXL.data,
+                'datos': this.DataGridXL.getData(),
                 'header': this.header
             }
 
             this.$emit('guardar_datos', objetos)
+        },
+        save2() {
+            console.log("________________");
+            console.log(this.DataGridXL.getSelection());
+            return;
         }
     },
     computed: {
 
     },
-    mounted: function () {
 
-        this.DataGridXL =  new DataGridXL(this.$refs.dgxl, {
-            data: this.excelData,
-            locale: this.dgxl_nl_NL
-        });
-        //Object.assign(this, { dgxlObj }); // tucks all methods under dgxlObj object in component instance
-    },
 };
 </script>
 

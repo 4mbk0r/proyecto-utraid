@@ -112,17 +112,18 @@ class PersonalController extends Controller
     {
 
         $personal  = $request['datos'];
-       
+        $fallos = [];
         //return  $personal;//gettype($personal);
         foreach ($personal as $key => $i) {
-            
+
             //return $input;
             //return $input;
-           $input =  (array) $i;
+            $input =  (array) $i;
+
             # code...
             try {
                 //$select = DB::table('users')->where('ci','==', $input['ci'] )->get();
-                if(! User::where('ci', $input['ci'])->exists() ){
+                if (!User::where('ci', $input['ci'])->exists()) {
                     $reps = User::create([
                         'nombre' => $input['nombres'],
                         'ap_paterno' => $input['ap_paterno'],
@@ -134,34 +135,36 @@ class PersonalController extends Controller
                         'password' => Hash::make($input['ci']),
                     ]);
                     if ($reps) {
-                        $dato = [
-                            'id_usuario' => $input['ci'],
-                            
-                            'id_establecimiento' => $input['establecimiento'],
-                        ];
-                        DB::table('contratos')->insert($dato);
+                        if (establecimiento::where('nombre', $input['establecimiento'])->exists()) {
+                            $dato = [
+                                'id_usuario' => $input['ci'],
+
+                                'id_establecimiento' => $input['establecimiento'],
+                            ];
+                            DB::table('contratos')->insert($dato);
+                        } else {
+                            array_push($fallos, $input);
+                            User::where('ci', $input['ci'])->delete();
+                        }
                     }
-                }   
-                
+                }
             } catch (QueryExecuted $e) {
                 //return $e; 
 
                 //User::where('ci', $input['ci'])->delete();
-                $i['error']= $e;
-                
+                $i['error'] = $e;
             }
         }
-        return $personal;
+        return $fallos;
         /**/
     }
     public static function personal_servicio()
     {
         $cargo = DB::table('users')
-        ->leftJoin('cargos', 'cargos.cargo', '=', 'users.cargo')
-        ->where('cargos.servicio', '=', 'true')
-        //->where('cargo', '=','recepcionista')
-        ->get();
+            ->leftJoin('cargos', 'cargos.cargo', '=', 'users.cargo')
+            ->where('cargos.servicio', '=', 'true')
+            //->where('cargo', '=','recepcionista')
+            ->get();
         return $cargo;
-        
     }
 }
