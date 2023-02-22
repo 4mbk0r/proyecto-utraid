@@ -131,15 +131,25 @@ class CitaTieneConfiguracionController extends Controller
 
 
                         //->where('salas.id', '=', $value->id_conf_sala)
-                        $h = DB::table('conf_salas')
-                            ->select('*')
-                            ->leftJoin('asignar_horarios', 'asignar_horarios.id_conf_sala', '=', 'conf_salas.id')
-                            ->leftJoin('horarios', 'horarios.id', '=', 'asignar_horarios.id_horario')
-                            ->leftJoin('asignar_config_salas', 'asignar_config_salas.id_conf_sala', '=', 'conf_salas.id')
-                            ->leftJoin('configuracions', 'configuracions.id', '=', 'asignar_config_salas.id_conf')
-                            ->where('conf_salas.id', '=', $value->id_conf_sala)
+                        $h =
 
+                            DB::table("salas")
+                            ->leftJoin("asignar_salas", function ($join) {
+                                $join->on("asignar_salas.id_sala", "=", "salas.id");
+                            })
+                            ->leftJoin("conf_salas", function ($join) {
+                                $join->on("conf_salas.id", "=","asignar_salas.id_conf_sala" );
+                            })
+                            ->leftJoin("asignar_horarios", function ($join) {
+                                $join->on("asignar_horarios.id_conf_sala", "=", "conf_salas.id");
+                            })
+                            ->leftJoin("horarios", function ($join) {
+                                $join->on("horarios.id", "=", "asignar_horarios.id_horario");
+                            })
+                            ->where("salas.id", "=", $value->id_sala)
                             ->get();
+
+
                         array_push($horario, $h);
                     }
                     /*

@@ -102,24 +102,38 @@
                                 </v-row>
                                 <v-row no-gutters>
                                     <v-col>
-                                        <span> Fecha:</span>
+                                        <span> Fecha:--</span>
                                     </v-col>
                                     <v-col>
+                                        {{ $store.getters.getfecha_server }}
                                         {{ valores(selectedEvent.fichas, 'fecha') }}
                                     </v-col>
                                 </v-row>
 
-                                <v-row no-gutters>
+                                <v-row v-if="selectedEvent.id_persona == null && fecha_calendario == $store.getters.getfecha_server" no-gutters>
                                     <v-col>
                                         <v-select v-model="selectequipo" :rules="nombreRules" persistent-placeholder
                                             placeholder="No se tiene datos" :items="equipos"
-                                            :item-text="equipos.nombre_equipo" :item-value="equipos.id"
+                                            :item-text="item => get_nombre_equipo(item)"
+                                            :item-value="item => select_nombre_equipo(item)"
                                             label="Seleccione equipo que atendera">
                                         </v-select>
+                                        <v-btn color="success">
+                                            Guardar
+                                        </v-btn>
+                                        
                                     </v-col>
                                     <v-col>
-                                        {{ equipos }}
-                                    </v-col>
+                                        <v-data-table :headers="encabezado" :items="selectequipo.lista"
+                                              hide-default-footer
+                                             disable-pagination>
+ 
+                                         </v-data-table>
+                                     </v-col>
+
+                                </v-row>
+                                <v-row>
+                                    
                                 </v-row>
                             </v-card-text>
                             <v-card-text v-else>
@@ -130,6 +144,7 @@
 
 
                             </v-card-text>
+                            
 
                             <v-card-actions>
                                 <v-btn text color="secondary" @click="selectedOpen = false">
@@ -186,13 +201,38 @@ export default {
         fecha_min: '',
         lista_equipo: [],
         salas: [],
-        selectequipo: '',
+        selectequipo: 'Equipo 1',
         nombreRules: [
             (v) => !!v || "Dato requerido",
 
             //v => v.length <= 10 || 'Name must be less than 10 characters',
         ],
         equipos: [],
+        encabezado: [
+            {
+                text: "Nombres",
+                align: "start",
+                value: "nombre",
+            },
+            {
+                text: "Apellido Paterno",
+                value: "ap_paterno",
+            },
+            {
+                text: "Apellido Materno",
+                value: "ap_materno",
+            },
+            {
+                text: "Cargo",
+                value: "cargo",
+            },
+            
+            /*
+                          { text: 'Fat (g)', value: 'fat' },
+                          { text: 'Carbs (g)', value: 'carbs' },
+                          { text: 'Protein (g)', value: 'protein' },
+                          { text: 'Iron (%)', value: 'iron' },*/
+        ],
     }),
     created() {
 
@@ -268,17 +308,17 @@ export default {
                         let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
                         let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
                         this.fecha_min = fecha_server.format('YYYY-MM-DD')
-                        let salas = response.data['equipos']
+                        let salas = response.data
 
                         for (const key in salas) {
                             //console.log(start);
                             //console.log(end);
                             //console.log(response.data[key]['descripcion'])
                             //if()
-                            console.log(salas[key]);
-                            this.categories.push(salas[key]['equipo']['nombre_equipo'])
-
-                            this.events.push({
+                            console.log(salas[key]['equipo'][0]['nombre_equipo']);
+                            this.categories.push(salas[key]['equipo'][0]['nombre_equipo'])
+                            1
+                            /*this.events.push({
                                 name: 'Atencion',
                                 start: start2,
                                 end: end,
@@ -286,8 +326,8 @@ export default {
                                 timed: 0,
                                 category: this.categories[key],
                                 //consultorio: response.data[key],
-                                integrantes: salas[key]['integrantes']
-                            })
+                                //integrantes: salas[key]['integrantes']
+                            })*/
 
 
 
@@ -597,9 +637,12 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 }
                 if (this.selectedOpen) {
                     this.selectedOpen = false
+                    this.selectequipo = ''
                     requestAnimationFrame(() => requestAnimationFrame(() => open()))
                 } else {
                     open()
+                    this.selectedOpen = false
+                    this.selectequipo = ''
                 }
                 nativeEvent.stopPropagation()
             }
@@ -690,6 +733,16 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             this.$refs.dato.cita_nueva = this.selectedEvent.fichas
             //console.log();
             this.$refs.dato.open()
+        },
+        get_nombre_equipo($value) {
+            console.log("------");
+            console.log($value)
+            return $value.equipo.nombre_equipo
+        },
+        select_nombre_equipo($value) {
+            console.log("--slect ----");
+            console.log($value)
+            return $value
         }
     }
 }
