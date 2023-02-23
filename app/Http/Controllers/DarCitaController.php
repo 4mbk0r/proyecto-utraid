@@ -58,7 +58,7 @@ class DarCitaController extends Controller
         $fecha = $request['fecha'];
         $cita =  $request['cita'];
         $persona =  $request['paciente'];
-        $conf
+        
 
         $validar =  DB::table('calendarios')
 
