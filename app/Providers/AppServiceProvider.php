@@ -29,10 +29,8 @@ class AppServiceProvider extends ServiceProvider
         config(['app.locale' => 'es']);
         Carbon::setLocale('es');
         date_default_timezone_set('America/La_Paz');
-        /*if(env('APP_ENV') !== 'local') {
-            URL::forceScheme('https');
-        }*/
+        if (env('APP_ENV') == 'local') {
+            URL::forceScheme('http');
+        }
     }
 }
-
-

@@ -87,7 +87,7 @@ class DarCitaController extends Controller
                     'id_horario' => $value->id_horario,
                     'id_conf_sala' => $value->id_conf_sala,
                     'fecha' => $fecha,
-                    'codigo' =>  $value->institucion,
+                    'institucion' =>  $value->institucion,
 
                 ];
                 try {
@@ -102,7 +102,7 @@ class DarCitaController extends Controller
             ->where('id_horario', '=', $cita['id_horario'])
             ->where('id_conf_sala', '=', $cita['id_conf_sala'])
             ->where('fecha', '=', $fecha)
-            ->where('codigo', '=',  $cita['institucion'])
+            ->where('institucion', '=',  $cita['institucion'])
             ->where('fecha', '=', $fecha)
             ->first();
 

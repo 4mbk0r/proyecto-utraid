@@ -152,8 +152,8 @@
                     offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <!--<v-text-field v-model="date" label="Picker without buttons"
-                                                                  prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
-                                                              </v-text-field>-->
+                                                                    prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
+                                                                </v-text-field>-->
                       <v-text-field v-model="cita_nueva.fecha" :rules="nombreRules" placeholder="Selecione fecha de cita"
                         required prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
                       </v-text-field>
@@ -556,7 +556,7 @@ export default {
       return fecha;
     },
     openAgendar() {
-      this.fecha_cita;
+      //this.fecha_cita;
       this.v_agendar = true;
       this.cita_nueva.fecha = this.fecha_cita;
       this.cita_nueva.consultorio = this.consultorio;
@@ -689,10 +689,8 @@ export default {
     close(event) {
       console.log(this.cita_nueva.fecha);
       console.log("----");
-      if (typeof this.cita_nueva.fecha != "undefined") {
-        this.$emit("pedir", this.cita_nueva.fecha);
-        //console.log('aaaa',this.$emit('actulizar', 'dato'))
-      }
+      this.$emit("pedir", this.fecha_cita);
+
       this.dialog = false;
       this.cita_nueva = {};
       this.paciente = {};

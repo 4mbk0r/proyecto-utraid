@@ -6,7 +6,7 @@
 /*@import '~material-design-icons/iconfont/material-icons.css';
 */
 @import "vuetify/dist/vuetify.min.css";
-
+/*
 @media print {
   body * {
     visibility: hidden;
@@ -29,7 +29,7 @@
   color: white !important;
 }
 
-
+*/
 
 /*.orange {
   --color: #f49764;

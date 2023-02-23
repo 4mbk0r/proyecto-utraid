@@ -214,8 +214,9 @@ export default {
     methods: {
         actualizador(fecha) {
             console.log('.+.+.+.+')
-            this.fecha_calendario = fecha
-            this.pedir_datos(fecha)
+            //this.fecha_calendario =
+            console.log(this.fecha_calendario)
+            this.pedir_datos(this.fecha_calendario)
         },
         changeType(nombre) {
             if (nombre == 'category2') {
@@ -246,6 +247,7 @@ export default {
 
         },
         async pedir_doctores(date) {
+
             try {
                 var res = await axios({
                     method: 'get',
@@ -347,10 +349,11 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
 }*/
         },
         async pedir_datos(date) {
+            console.log(this.fecha_calendario);
 
             var res = await axios({
                 method: 'get',
-                url: `/${process.env.MIX_CARPETA}/lista_configuracion/` + date,
+                url: `/${process.env.MIX_CARPETA}/lista_configuracion/` + this.fecha_calendario,
             }).then(
                 (response) => {
                     console.log(response);
@@ -583,6 +586,8 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 console.log('datos');
                 console.log(event.consultorio)
 
+                console.log(this.fecha_calendario);
+
                 this.$refs.dato.op1 = 1;
                 this.$refs.dato.fecha_cita = this.fecha_calendario
                 this.$refs.dato.consultorio = event.consultorio.sala
@@ -682,7 +687,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
             console.log(X.fichas.id_persona);
 
-            return X.fichas
+            return X.fichas.id_persona
         },
         open_agenda() {
             this.$refs.dato.op1 = 1;
