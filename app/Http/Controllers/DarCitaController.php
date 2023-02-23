@@ -58,9 +58,10 @@ class DarCitaController extends Controller
         $fecha = $request['fecha'];
         $cita =  $request['cita'];
         $persona =  $request['paciente'];
+        $conf
 
+        $validar =  DB::table('calendarios')
 
-        $validar =  DB::table('fichas')
             ->select('*')
             ->where('fecha', '=', $fecha)
             ->get();
@@ -79,7 +80,10 @@ class DarCitaController extends Controller
                 ->leftJoin('horarios', 'horarios.id', '=', 'asignar_horarios.id_horario')
                 ->where('id_conf', '=', $list_config->id_configuracion)
                 ->get();
-
+            $i = [
+                'fecha' => $fecha,
+            ];
+            DB::table('calendarios')->insert($i);
             foreach ($salas as $key => $value) {
                 # code...
                 $nuevo = [

@@ -148,6 +148,44 @@ class EquipoController extends Controller
     }
     public static function listar_equipo(string  $fecha)
     {
+        $conf = DB::table('calendariolineals')
+                ->select('*')
+                ->where('fecha_inicio', '<=', $fecha)
+                ->where('fecha_final', '>=', $fecha)
+                //->where('tipo', '=', 'permanente')
+                ->get();
+
+        $equipo = DB::table('designar_equipo_lineals')
+        ->select('*')
+        ->where('designar_equipo_lineals.id_conf', '=', $conf[0]->id_configuracion)
+        //->where('fecha_final', '>=', $fecha)
+        //->where('tipo', '=', 'permanente')
+        ->get();
+        //return $equipo;
+        $equipo_lista = [];
+        foreach ($equipo as $key => $value) {
+            $x = DB::table('equipos')
+            ->select('*')
+            //->leftJoin('equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
+            ->where('equipos.id', '=', $value->id_equipo)
+            //->where('tipo', '=', 'permanente')
+            ->get();
+            # code...
+            $y = DB::table('asignar_equipos')
+            ->select('*')
+            ->leftJoin('users', 'asignar_equipos.id_usuario', '=', 'users.id')
+            ->where('asignar_equipos.id_equipo', '=', $value->id_equipo)
+            //->where('tipo', '=', 'permanente')
+            ->get();
+            $a = [
+                'equipo'=> $x,
+                'lista' => $y,
+                //'s' => $value->id_equipo
+            ];
+            array_push($equipo_lista, $a);
+
+        } 
+        return $equipo_lista;
         //
         $date = date_create(date($fecha), timezone_open('America/La_Paz'));
         $date = date_format($date, 'Y-m-d');

@@ -24,7 +24,7 @@ class CreateCitasTable extends Migration
             $table->text('observacion')->nullable();;
             $table->integer('consultorio');
             $table->integer('horario');
-            $table->integer('calendario');
+            $table->date('calendario');
             $table->text('lugar')->nullable();;
             //$table->primary(['fecha', 'hora_inicio', 'equipo']);
             //$table->foreign('ci')->references('ci')->on('persona_citas')->onDelete('cascade')->onUpdate('cascade');
@@ -37,7 +37,7 @@ class CreateCitasTable extends Migration
             "ALTER TABLE citas ADD FOREIGN KEY (consultorio) REFERENCES salas(id) ON DELETE CASCADE"
         );
         DB::statement(
-            "ALTER TABLE citas ADD FOREIGN KEY (calendario) REFERENCES calendarios(id) ON DELETE CASCADE"
+            "ALTER TABLE citas ADD FOREIGN KEY (calendario) REFERENCES calendarios(fecha) ON DELETE CASCADE"
         );
         /*$base  = array(
             0 => array(

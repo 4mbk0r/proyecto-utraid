@@ -109,21 +109,32 @@
                                     </v-col>
                                 </v-row>
 
-                                <v-row no-gutters>
+
+                                <v-row v-if="fecha_calendario == $store.getters.getfecha_server" no-gutters>
                                     <v-col>
                                         <v-select v-model="selectequipo" :rules="nombreRules" persistent-placeholder
                                             placeholder="No se tiene datos" :items="equipos"
-                                            :item-text="equipos.nombre_equipo" :item-value="equipos.id"
+                                            :item-text="item => get_nombre_equipo(item)"
+                                            :item-value="item => select_nombre_equipo(item)"
                                             label="Seleccione equipo que atendera">
                                         </v-select>
+                                        <v-btn color="success">
+                                            Guardar
+                                        </v-btn>
+
                                     </v-col>
                                     <v-col>
-                                        {{ equipos }}
+                                        <v-data-table :headers="encabezado" :items="selectequipo.lista" hide-default-footer
+                                            disable-pagination>
+
+                                        </v-data-table>
                                     </v-col>
+
                                 </v-row>
                             </v-card-text>
                             <v-card-text v-else>
-                                <v-btn class="ma-2" color="primary" @click="open_agenda()">
+
+                                <v-btn  v-if="fecha_calendario >= $store.getters.getfecha_server" class="ma-2" color="primary" @click="open_agenda()">
                                     Dar cita
                                     <v-icon end icon> mdi-pencil</v-icon>
                                 </v-btn>
@@ -193,6 +204,27 @@ export default {
             //v => v.length <= 10 || 'Name must be less than 10 characters',
         ],
         equipos: [],
+        selectequipo: 'Equipo 1',
+        encabezado: [
+            {
+                text: "Nombres",
+                align: "start",
+                value: "nombre",
+            },
+            {
+                text: "Apellido Paterno",
+                value: "ap_paterno",
+            },
+            {
+                text: "Apellido Materno",
+                value: "ap_materno",
+            },
+            {
+                text: "Cargo",
+                value: "cargo",
+            },
+
+        ],
     }),
     created() {
 
@@ -270,16 +302,15 @@ export default {
                         let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
                         let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
                         this.fecha_min = fecha_server.format('YYYY-MM-DD')
-                        let salas = response.data['equipos']
-
+                        let salas = response.data
                         for (const key in salas) {
                             //console.log(start);
                             //console.log(end);
                             //console.log(response.data[key]['descripcion'])
                             //if()
-                            console.log(salas[key]);
-                            this.categories.push(salas[key]['equipo']['nombre_equipo'])
-
+                            console.log(salas[key]['equipo'][0]['nombre_equipo']);
+                            this.categories.push(salas[key]['equipo'][0]['nombre_equipo'])
+                            /*
                             this.events.push({
                                 name: 'Atencion',
                                 start: start2,
@@ -291,7 +322,7 @@ export default {
                                 integrantes: salas[key]['integrantes']
                             })
 
-
+                            */
 
                             /*this.events.push({
                                 name: 'Cita',
@@ -417,6 +448,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                                 timed: 1,
                                 category: this.categories[key],
                                 fichas: fichas[x]
+                                //atencion: fichas[atencion]
                                 //paciente: structuredClone(paciente)
                             })
                         }
@@ -598,10 +630,12 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 const open = () => {
                     this.selectedEvent = structuredClone(event)
                     this.selectedElement = nativeEvent.target
+                    this.selectequipo = ''
                     requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
                 }
                 if (this.selectedOpen) {
                     this.selectedOpen = false
+                    this.selectequipo = ''
                     requestAnimationFrame(() => requestAnimationFrame(() => open()))
                 } else {
                     open()
@@ -695,34 +729,20 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             this.$refs.dato.cita_nueva = this.selectedEvent.fichas
             //console.log();
             this.$refs.dato.open()
+        },
+        get_nombre_equipo($value) {
+            console.log("------");
+            console.log($value)
+            return $value.equipo.nombre_equipo
+        },
+        select_nombre_equipo($value) {
+            console.log("--slect ----");
+            console.log($value)
+            return $value
         }
     }
 }
-/**
- * 
- * 
- * 
- * FROM generate_series
-        ( CURRENT_DATE::timestamp 
-        , (CURRENT_DATE+INTERVAL'3 year')::timestamp
-        , '1 day'::interval) dd
-left join cita_tiene_configuracions on 
 
-
-TO_CHAR(dd::date, 'dd/mm')=TO_CHAR(cita_tiene_configuracions.fecha::date, 'dd/mm')
-OR CASE
-           WHEN TO_CHAR((DD)::DATE,'D')='2'
-                    and cita_tiene_configuracions.fecha = (DD-INTERVAL'1 DAY')::DATE
-           THEN
-                        TRUE
-           WHEN TO_CHAR((DD)::DATE,'D')='2'
-                    and cita_tiene_configuracions.fecha = (DD-INTERVAL'2 DAY')::DATE
-           THEN
-                         true
-           else false
-       END 
-
-left join configuracions on configuracions.id = cita_tiene_configuracions.id and  configuracions.tipo = 'temporal' and configuracions.atencion = false and configuracions.repeticion = 'Year'--(configuracions.fecha_inicio <= dd  and configuracions.fecha_final >= dd) 
-where not configuracions.id is null
- */
 </script>
+
+

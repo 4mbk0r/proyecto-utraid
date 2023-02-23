@@ -37,6 +37,9 @@ class CreateFichasTable extends Migration
         DB::statement(
             "ALTER TABLE fichas ADD FOREIGN KEY (institucion) REFERENCES institucions(codigo) ON DELETE CASCADE"
         );
+        DB::statement(
+            "ALTER TABLE fichas ADD FOREIGN KEY (fecha) REFERENCES calendarios(fecha) ON DELETE CASCADE"
+        );
     }
 
     /**

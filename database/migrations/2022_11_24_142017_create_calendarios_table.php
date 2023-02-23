@@ -15,12 +15,12 @@ class CreateCalendariosTable extends Migration
     public function up()
     {
         Schema::create('calendarios', function (Blueprint $table) {
-            $table->increments('id');
-            $table->date('fecha');
-            $table->string('codigo');
-            $table->string('clase');
-            $table->string('repeticion');
-            $table->unique(['fecha', 'codigo']);
+            //$table->increments('id');
+            $table->date('fecha')->primary();
+            $table->string('codigo')->default('01');
+            $table->string('atencion')->default('atencion');
+            $table->string('repeticion')->nullable();
+            //$table->unique(['fecha', 'codigo']);
         });
         DB::statement(
             "ALTER TABLE calendarios ADD FOREIGN KEY (codigo) REFERENCES institucions(codigo) ON DELETE CASCADE"
