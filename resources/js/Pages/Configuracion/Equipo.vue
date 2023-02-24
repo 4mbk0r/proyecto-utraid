@@ -32,7 +32,7 @@
                     <v-list two-line>
                         <v-list-item-group v-model="selected_equipo" active-class="pink--text">
                             <template v-for="(item, index) in equipo">
-                                <v-list-item :key="item.title" @click="seleccion_equipo">
+                                <v-list-item :key="item.title" @click="seleccion_equipo(item)">
                                     <template v-slot:default="{ active }">
                                         <v-list-item-content>
                                             <v-list-item-title v-text="item.equipo"></v-list-item-title>
@@ -46,12 +46,12 @@
                                         <v-list-item-action>
                                             <v-list-item-action-text v-text="item.action"></v-list-item-action-text>
 
-                                            <v-icon v-if="!active" color="grey lighten-1">
-                                                mdi-star-outline {{ getnumero_por_equipo }}
+                                            <v-icon v-if="item.lista.length >= 1" color="grey lighten-1">
+                                                {{ item.lista.length }}
                                             </v-icon>
 
                                             <v-icon v-else color="yello w darken-3">
-                                                mdi-star
+
                                             </v-icon>
                                         </v-list-item-action>
                                     </template>
@@ -119,11 +119,11 @@
             <v-card-title>
 
             </v-card-title>
-            <v-data-table :headers="headers" :items="eventos" item-key="ci" :search="search"
-                @click:row="addequipo($event)" class="elevation-1 pa-6">
+            <v-data-table :headers="headers" :items="eventos" item-key="ci" :search="search" @click:row="addequipo($event)"
+                class="elevation-1 pa-6">
                 <template v-slot:top>
                     <!-- v-container, v-col and v-row are just for decoration purposes. -->
-                    <v-container fluid>
+                    <v-container>
                         <v-row>
 
                             <v-col cols="6">
@@ -135,13 +135,7 @@
                                 </v-row>
                             </v-col>
 
-                            <v-col cols="6">
-                                <v-row class="pa-6">
-                                    <!-- Filter for calories -->
-                                    <v-select :items="caloriesList" item-text="cargo" v-model="caloriesFilterValue"
-                                        label="Cargos"></v-select>
-                                </v-row>
-                            </v-col>
+                           
 
                         </v-row>
                     </v-container>
@@ -154,7 +148,6 @@
 
         </v-card>
     </v-app>
-
 </template>
 
 <script>
@@ -270,6 +263,7 @@ export default {
                 {
                     text: 'Cedula de identidad',
                     value: 'ci',
+                    //filter: this.esta_en_equipo
                     //filter: this.caloriesFilter,
                 },
 
@@ -283,7 +277,8 @@ export default {
                 {
                     text: 'Equipo',
                     value: 'equipo',
-                    //filter: this.cargoFilter
+                    filter: this.esta_en_equipo,
+                    show: false,
                     //filter: this.caloriesFilter,
                 },
 
@@ -370,12 +365,17 @@ export default {
             //this.update_item()
 
         },
-        seleccion_equipo() {
+        seleccion_equipo(dato) {
+            console.log(dato.lista);
+
+            return
             //console.log(i);
             this.selected_medico = ''
             this.selected_psicologo = ''
             this.selected_trabajo = ''
-
+            console.log('-------');
+            console.log(this.selected_equipo)
+            console.log(this.equipo[this.selected_equipo]);
 
         },
         addequipo(item) {
@@ -432,6 +432,9 @@ export default {
 
             for (let i = 0; i < this.items.length; i++) {
                 this.selected_delete(this.items[i]);
+            }
+            for (const key in this.equipo) {
+               this.equipo[key].lista = []
             }
             this.selected_medico = ''
             this.selected_psicologo = ''
@@ -507,8 +510,19 @@ export default {
          * @param value Value to be tested.
          * @returns {boolean}
          */
-        cargoFilter(value) {
 
+        cargoFilter(value) {
+            
+            try {
+                var e  = this.equipo[this.selected_equipo].lista
+            } catch (error) {
+                return true
+            }
+            for (const key in e ) {
+                if(value == e[key].cargo)
+                    return false
+            }
+            return true
             // If this filter has no value we just skip the entire filter.
             if (!this.caloriesFilterValue) {
                 return true;
@@ -517,6 +531,10 @@ export default {
             // Check if the current loop value (The calories value)
             // equals to the selected value at the <v-select>.
             return value === this.caloriesFilterValue;
+        },
+        esta_en_equipo(value) {
+            if(typeof value == 'undefined') return true
+            return !(value >= 0)
         }
     },
 }

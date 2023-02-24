@@ -110,6 +110,7 @@ class CitaTieneConfiguracionController extends Controller
                         ->select('*')
                         ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
                         ->where('id_conf', '=', $list_config[0]->id_configuracion)
+                        
                         ->get();
                     $horario = [];
                     foreach ($salas as $key => $value) {
@@ -133,6 +134,7 @@ class CitaTieneConfiguracionController extends Controller
                         ->leftJoin("horarios", function ($join) {
                             $join->on("horarios.id", "=", "asignar_horarios.id_horario");
                         })
+                        ->orderBy('salas.descripcion', 'asc')
                         //->leftJoin('asignar_config_salas',  "asignar_config_salas.id_sala", "=", "salas.id" )
                         //->where("salas.id", "=", $value->id_sala)
                         //->where("conf_salas.id", "=", $value->id_conf_sala)
@@ -187,6 +189,7 @@ class CitaTieneConfiguracionController extends Controller
                     ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
                     ->where('fecha', '=', $fecha)
                     ->where('fichas.id_sala', '=', $value->id_sala)
+                    ->orderBy('salas.descripcion', 'asc')
                     //->groupBy('id_sala', 'salas.descripcion')
                     ->get();
                 array_push($horarios, $horario);

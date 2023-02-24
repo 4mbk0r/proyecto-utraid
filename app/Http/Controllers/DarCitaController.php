@@ -79,6 +79,7 @@ class DarCitaController extends Controller
                 ->leftJoin('asignar_horarios', 'asignar_horarios.id_conf_sala', '=', 'conf_salas.id')
                 ->leftJoin('horarios', 'horarios.id', '=', 'asignar_horarios.id_horario')
                 ->where('id_conf', '=', $list_config->id_configuracion)
+                ->orderBy('salas.descripcion')
                 ->get();
             $i = [
                 'fecha' => $fecha,
@@ -100,6 +101,24 @@ class DarCitaController extends Controller
                     return $th;
                 }
             }
+            /*
+            select * from designar_equipo_lineals
+            where id_conf
+
+            */
+            $e = DB::table('designar_equipo_lineals')
+            ->select('*')
+            ->where('id_conf', '=', $list_config->id_configuracion)
+            ->get();
+            foreach ($e as $key => $value) {
+                # code...
+                $nuevo = [
+                    'fecha' => $fecha,
+                    'id_equipo' => $value->id_equipo
+                ];
+                DB::table('designar_equipos')->insert($nuevo);
+            }
+
         }
         $validar =  DB::table('fichas')
             ->where('id_sala', '=', $cita['id_sala'])
