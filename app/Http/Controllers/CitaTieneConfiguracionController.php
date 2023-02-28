@@ -136,6 +136,7 @@ class CitaTieneConfiguracionController extends Controller
                             $join->on("horarios.id", "=", "asignar_horarios.id_horario");
                         })
                         ->orderBy('salas.descripcion', 'asc')
+                        ->whereNotNull('conf_salas.id')
                         //->leftJoin('asignar_config_salas',  "asignar_config_salas.id_sala", "=", "salas.id" )
                         //->where("salas.id", "=", $value->id_sala)
                         //->where("conf_salas.id", "=", $value->id_conf_sala)

@@ -17,7 +17,7 @@ class CreateAsignarSalasTable extends Migration
         Schema::create('asignar_salas', function (Blueprint $table) {
             $table->integer('id_sala');
             $table->integer('id_conf_sala');
-            
+            $table->unique(['id_sala', 'id_conf_sala']);            
         });
         DB::statement(
             "ALTER TABLE asignar_salas ADD FOREIGN KEY (id_sala) REFERENCES salas(id) ON DELETE CASCADE"

@@ -127,15 +127,36 @@ class AtenderController extends Controller
         if (count($equipos) == 0) {
             $equipos =
 
-            DB::table("fichas")
+                DB::table("fichas")
                 ->select('*')
-                ->join("atenders", function ($join)  use ($request)  {
+                ->join("atenders", function ($join)  use ($request) {
                     $join->on("atenders.id_ficha", "=", "fichas.id")
-                        ->where("fichas.id_horario", "=",  $request['id_horario'])
+                        //->where("fichas.id_horario", "=",  $request['id_horario'])
                         ->where("fichas.fecha", "=",  $request['fecha']);
                 })
-                ->join("horarios", function ($join) {
-                    $join->on("horarios.id", "=", "fichas.id_horario");
+                ->join("horarios", function ($join) use ($request) {
+                    $join->on("horarios.id", "=", "fichas.id_horario")
+                        ->where(
+                            function ($query) use ($request) {
+                                return $query
+                                    ->where(
+                                        function ($query) use ($request) {
+                                            return $query
+                                                ->where('horarios.hora_inicio', '>=', $request['hora_inicio'])
+                                                ->where('horarios.hora_inicio', '<', $request['hora_final']);
+                                        }
+                                    )
+                                    ->orwhere(
+                                        function ($query) use ($request) {
+                                            return $query
+                                                ->where('horarios.hora_final', '>', $request['hora_inicio'])
+                                                ->where('horarios.hora_final', '<', $request['hora_final']);
+                                        }
+                                    );
+
+                                //->where('that_too', '=', 1);
+                            }
+                        );
                 })
                 ->rightJoin("equipos", function ($join) {
                     $join->on("equipos.id", "=", "atenders.id_designado");
@@ -146,6 +167,7 @@ class AtenderController extends Controller
                 ->whereNull("fichas.id")
                 ->where("designar_equipos.fecha", "=",  $request['fecha'])
                 ->get();
+            //return $equipos;
 
 
 
