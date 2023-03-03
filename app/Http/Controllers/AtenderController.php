@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\atender;
 use App\Http\Controllers\Controller;
+use App\Models\Horario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -38,6 +39,7 @@ class AtenderController extends Controller
     public function store(Request $request)
     {
         //$DB::table('atenders')->insert()
+        //return $request;
         $equipo = $request['equipo'];
         $ficha = $request['ficha'];
         $id_ficha = $ficha['id_ficha'];
@@ -50,7 +52,23 @@ class AtenderController extends Controller
                 //throw $th;
                 return $th;
             }
-            return 'OK';
+
+            $horario = DB::table('fichas')
+            ->select(['fichas.*','horarios.*','dar_citas.*','personas.*', 'atenders.id_designado'])
+            ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+            ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_sala')
+            ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
+            ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
+            ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
+            //->rigthJoin('atenders', 'atenders.id_ficha', 'fichas.id')
+            ->leftJoin('atenders', 'fichas.id', '=', 'atenders.id_ficha')
+            ->where('fecha', '=', $ficha['fecha'])
+            ->where('fichas.id', '=', $ficha['id_ficha'])
+            ->orderBy('salas.descripcion', 'asc')
+            
+            //->groupBy('id_sala', 'salas.descripcion')
+            ->get();
+            return $horario;
         }
         return 'error';
     }
@@ -143,7 +161,7 @@ class AtenderController extends Controller
                                         function ($query) use ($request) {
                                             return $query
                                                 ->where('horarios.hora_inicio', '>=', $request['hora_inicio'])
-                                                ->where('horarios.hora_inicio', '<', $request['hora_final']);
+                                                ->where('horarios.hora_inicio', '<=', $request['hora_final']);
                                         }
                                     )
                                     ->orwhere(
@@ -152,7 +170,7 @@ class AtenderController extends Controller
                                                 ->where('horarios.hora_final', '>', $request['hora_inicio'])
                                                 ->where('horarios.hora_final', '<', $request['hora_final']);
                                         }
-                                    );
+                                    );  
 
                                 //->where('that_too', '=', 1);
                             }

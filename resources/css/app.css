@@ -6,6 +6,26 @@
 /*@import '~material-design-icons/iconfont/material-icons.css';
 */
 @import "vuetify/dist/vuetify.min.css";
+
+.v-current-time {
+  height: 2px;
+  background-color: #ea4335;
+  position: absolute;
+  left: -1px;
+  right: 0;
+  pointer-events: none;
+  &.first::before {
+    content: '';
+    position: absolute;
+    background-color: #ea4335;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-top: -5px;
+    margin-left: -6.5px;
+  }
+}
+
 /*
 @media print {
   body * {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\cita_tiene_configuracion;
 use App\Http\Controllers\Controller;
+use App\Models\atender;
 use App\Models\Horario;
 use Illuminate\Http\Request;
 use Exception;
@@ -183,13 +184,14 @@ class CitaTieneConfiguracionController extends Controller
             foreach ($list_config as $key => $value) {
                 # code...
                 $horario = DB::table('fichas')
-                    ->select('*')
+                    ->select(['fichas.*','horarios.*','dar_citas.*','personas.*', 'atenders.id_designado'])
                     ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
                     ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_sala')
                     ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
                     ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
                     ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
-                    //->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
+                    //->rigthJoin('atenders', 'atenders.id_ficha', 'fichas.id')
+                    ->leftJoin('atenders', 'fichas.id', '=', 'atenders.id_ficha')
                     ->where('fecha', '=', $fecha)
                     ->where('fichas.id_sala', '=', $value->id_sala)
 

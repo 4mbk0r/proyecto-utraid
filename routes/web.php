@@ -175,6 +175,11 @@ Route::get('/excel', function () {
 })->name('excelss');
 
 
+Route::get('/prrr', function () {
+    return Inertia::render('Micomponet/prueba');
+})->name('excelss');
+
+
 
 Route::resource('/equipo2', EquipoController::class)->middleware(['auth:sanctum', 'verified']);
 
@@ -183,3 +188,5 @@ Route::resource('/dar_ficha', DarCitaController::class)->middleware(['auth:sanct
 
 
 Route::resource('/atender', AtenderController::class)->middleware(['auth:sanctum', 'verified']);
+
+

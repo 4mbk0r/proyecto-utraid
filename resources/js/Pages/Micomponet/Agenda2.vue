@@ -54,11 +54,20 @@
                         @click:event="showEvent" @click:more="viewDay" @click:date="viewDay" @change="updateRange"
                         :max-days=5 weekdays="1, 2, 3, 4, 5" :weekday-format="getDay" :first-interval=7 :interval-minutes=60
                         :interval-count=12>
+                        <template #day-body="{ date, category }">
+                            <div class="v-current-time" :class="{ first: true }" :style="{ top: nowY }">
+                            </div>
+                        </template>
                     </v-calendar>
                     <v-calendar v-if="estado == 'cita'" ref="calendar" v-model="fecha_calendario" color="error"
                         type="category" category-show-all :categories="categories" :events="events"
                         :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent" :interval-minutes=60
-                        :first-interval=7 :interval-count=14></v-calendar>
+                        :first-interval=7 :interval-count=14>
+                        <template #day-body="{ date, category }">
+                            <div class="v-current-time" :class="{ first: true }" :style="{ top: nowY }">
+                            </div>
+                        </template>
+                    </v-calendar>
 
                     <v-calendar v-if="estado == 'atencion'" ref="calendar" v-model="fecha_calendario" color="error"
                         type="category" category-show-all :categories="categories" :events="events"
@@ -171,6 +180,7 @@ import datos from '@/Pages/Micomponet/Datospersonales'
 import atencion from '@/Pages/Micomponet/Atencion'
 
 
+
 export default {
     components: {
         buscar,
@@ -178,6 +188,10 @@ export default {
         atencion,
     },
     data: () => ({
+
+        value: '',
+        ready: false,
+
         dialog: false,
         estado: 'calendario',
         fecha_calendario: new Date().toISOString().substr(0, 10),
@@ -245,7 +259,14 @@ export default {
         //console.log();
     },
     computed: {
-
+        cal() {
+            return this.ready ? this.$refs.calendar : null
+        },
+        nowY() {
+            console.log('sss');
+            console.log(this.cal.times.now);
+            return this.cal ? this.cal.timeToY(this.cal.times.now) + 'px' : '-10px'
+        }
     },
     methods: {
         actualizador(fecha) {
@@ -254,32 +275,41 @@ export default {
             console.log(this.fecha_calendario)
             this.pedir_datos(this.fecha_calendario)
         },
-        changeType(nombre) {
+        async changeType(nombre) {
+            this.ready = false
             if (nombre == 'category2') {
                 this.estado = 'atencion'
-                this.type = nombre
-                this.categories = ['Doctor 1', 'Doctor 2']
+                this.type = 'category'
+                //this.categories = ['Doctor 1', 'Doctor 2']
                 this.pedir_doctores(this.fecha_calendario)
                 //this.pedir_datos(this.fecha_calendario)
                 return;
             }
             if (nombre == 'category') {
                 this.estado = 'cita'
+                console.log(this.$refs)
+
                 this.type = nombre
-                this.categories = ['Salas 1', 'Doctor 2']
+                //this.categories = ['Salas 1', 'Doctor 2']
                 this.pedir_datos(this.fecha_calendario)
+
+
             } else {
                 this.estado = 'calendario'
                 this.type = nombre
 
             }
         },
-        async viewDay({ date }) {
+        viewDay({ date }) {
             this.fecha_calendario = date
             //alert(date)
-
+            this.estado = ''
             this.type = 'category'
-            this.pedir_datos(date);
+            this.changeType(this.type)
+            /*//this.pedir_datos(date);
+            this.ready = true
+            this.scrollToTime()
+            this.updateTime()*/
 
         },
         async pedir_doctores(date) {
@@ -307,7 +337,7 @@ export default {
                         let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
                         this.fecha_min = fecha_server.format('YYYY-MM-DD')
                         let salas = response.data['equipo_lista']
-                        let fichas =  response.data['fichas']
+                        let fichas = response.data['fichas']
                         console.log('-------------------');
                         console.log(fichas);
                         for (const key in salas) {
@@ -328,7 +358,7 @@ export default {
                                 //consultorio: response.data[key],
                                 integrantes: salas[key]['integrantes']
                             })
-
+ 
                             */
 
                             /*this.events.push({
@@ -344,8 +374,8 @@ export default {
                             var r = fichas
                             this.events.push({
                                 //name: 'Atencion',
-                                start: new Date(this.fecha_calendario + 'T'+fichas[key].hora_inicio+'-04:00'),
-                                end: new Date(this.fecha_calendario + 'T'+fichas[key].hora_final+'-04:00'),
+                                start: new Date(this.fecha_calendario + 'T' + fichas[key].hora_inicio + '-04:00'),
+                                end: new Date(this.fecha_calendario + 'T' + fichas[key].hora_final + '-04:00'),
                                 color: 'green',
                                 timed: 1,
                                 category: fichas[key].nombre_equipo,
@@ -461,10 +491,11 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                             let ficha = fichas[x];
                             console.log(ficha.id_persona);
                             this.events.push({
-                                //name: paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
+                                name: (!ficha.id_designado) ? 'blue' : ficha.id_designado,
+                                //paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
                                 start: new Date(this.fecha_calendario + 'T' + ficha.hora_inicio + '-04:00'),
                                 end: new Date(this.fecha_calendario + 'T' + ficha.hora_final + '-04:00'),
-                                color: (!ficha.id_persona) ? 'red' : 'blue',
+                                color: (!ficha.id_persona) ? 'red' : (!ficha.id_designado) ? 'blue' : 'green',
                                 timed: 1,
                                 category: this.categories[key],
                                 fichas: fichas[x]
@@ -479,6 +510,9 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                             
                         }**/
                     }
+                    this.ready = true
+                    this.scrollToTime()
+                    this.updateTime()
 
                     //console.log(this.type);
 
@@ -517,7 +551,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                                 
                             }***
                         }
-
+ 
                     }, (error) => {
                         console.log(error);
                     }
@@ -539,6 +573,8 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 }).then(
                     (response) => {
                         console.log(response.data);
+                        this.selectedEvent.fichas = structuredClone(response.data);
+                        this.selectedEvent.color = getcolor(response.data)
                     }
                 ).catch(err => {
                     console.log(err)
@@ -551,25 +587,25 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             var res = await axios({
                 method: 'post',
                 url: `/${process.env.MIX_CARPETA}/api/equipos_elegidos`,
-                data: 
+                data:
                     this.selectedEvent.fichas,
-                    //equipo: this.selectequipo.equipo
-                
+                //equipo: this.selectequipo.equipo
+
             }).then(
                 (response) => {
-                    var  r = response.data.seleccion
+                    var r = response.data.seleccion
                     console.log(response.data.equipo);
                     try {
                         this.equipos = response.data.equipo
-                        if( r ){
+                        if (r) {
                             this.selectequipo = response.data.equipo[0]
                         }
-                        
-                        
+
+
                     } catch (error) {
-                        
+
                     }
-                    
+
                 }
             ).catch(err => {
                 console.log(err)
@@ -577,7 +613,9 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             });
 
         },
-
+        getcolor(ficha) {
+            return (!ficha.id_persona) ? 'red' : (!ficha.id_designado) ? 'blue' : 'green'
+        },
         valores(objecto, x) {
             if (typeof objecto == "undefined") return
             //console.log(objecto)
@@ -727,14 +765,14 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             console.log(max)
             const days = (max.getTime() - min.getTime()) / 86400000
             const eventCount = this.rnd(days, days + 20)
-
+ 
             for (let i = 0; i < eventCount; i++) {
                 const allDay = this.rnd(1, 3) === 0
                 const firstTimestamp = this.rnd(min.getTime(), max.getTime())
                 const first = new Date(firstTimestamp - (firstTimestamp % 900000))
                 const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
                 const second = new Date(first.getTime() + secondTimestamp)
-
+ 
                 events.push({
                     name: this.names[this.rnd(0, this.names.length - 1)],
                     start: first,
@@ -744,7 +782,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     category: this.categories[this.rnd(0, this.categories.length - 1)],
                 })
             }
-
+ 
             this.events = events
             console.log(this.events)*/
 
@@ -810,7 +848,22 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             /*console.log("--slect ----");
             console.log($value)*/
             return $value
-        }
+        },
+        getCurrentTime() {
+            return this.cal ? this.cal.times.now.hour * 60 + this.cal.times.now.minute : 0
+        },
+        scrollToTime() {
+            const time = this.getCurrentTime()
+            const first = Math.max(0, time - (time % 30) - 30)
+            console.log("11111111111111");
+            console.log(first);
+            this.cal.scrollToTime(first)
+        },
+        updateTime() {
+            console.log('2222222222222');
+            console.log(this.cal.updateTimes());
+            setInterval(() => this.cal.updateTimes(), 60 * 2000)
+        },
     }
 }
 
