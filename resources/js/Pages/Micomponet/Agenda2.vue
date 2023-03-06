@@ -109,32 +109,34 @@
                                     </v-col>
                                 </v-row>
 
+                                <v-form ref="seleccion_equipo">
+                                    <v-row v-if="fecha_calendario == $store.getters.getfecha_server" no-gutters>
+                                        <v-col>
+                                            <v-select v-model="selectequipo" persistent-placeholder
+                                                placeholder="No se tiene datos" :items="equipos"
+                                                :item-text="item => get_nombre_equipo(item)"
+                                                :item-value="item => select_nombre_equipo(item)" :rules="selecionRules"
+                                                label="Seleccione equipo que atendera" required>
+                                            </v-select>
+                                            <v-btn color="success" @click="save_atender">
+                                                Guardar
+                                            </v-btn>
 
-                                <v-row v-if="fecha_calendario == $store.getters.getfecha_server" no-gutters>
-                                    <v-col>
-                                        <v-select v-model="selectequipo" :rules="nombreRules" persistent-placeholder
-                                            placeholder="No se tiene datos" :items="equipos"
-                                            :item-text="item => get_nombre_equipo(item)"
-                                            :item-value="item => select_nombre_equipo(item)"
-                                            label="Seleccione equipo que atendera">
-                                        </v-select>
-                                        <v-btn color="success">
-                                            Guardar
-                                        </v-btn>
+                                        </v-col>
+                                        <v-col>
+                                            <v-data-table :headers="encabezado" :items="selectequipo.lista"
+                                                hide-default-footer disable-pagination>
 
-                                    </v-col>
-                                    <v-col>
-                                        <v-data-table :headers="encabezado" :items="selectequipo.lista" hide-default-footer
-                                            disable-pagination>
+                                            </v-data-table>
+                                        </v-col>
 
-                                        </v-data-table>
-                                    </v-col>
-
-                                </v-row>
+                                    </v-row>
+                                </v-form>
                             </v-card-text>
                             <v-card-text v-else>
 
-                                <v-btn  v-if="fecha_calendario >= $store.getters.getfecha_server" class="ma-2" color="primary" @click="open_agenda()">
+                                <v-btn v-if="fecha_calendario >= $store.getters.getfecha_server" class="ma-2"
+                                    color="primary" @click="open_agenda()">
                                     Dar cita
                                     <v-icon end icon> mdi-pencil</v-icon>
                                 </v-btn>
@@ -225,6 +227,8 @@ export default {
             },
 
         ],
+        selecionRules: [
+            v => !!v || "Se requiere seleccion"],
     }),
     created() {
 
@@ -302,7 +306,10 @@ export default {
                         let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
                         let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
                         this.fecha_min = fecha_server.format('YYYY-MM-DD')
-                        let salas = response.data
+                        let salas = response.data['equipo_lista']
+                        let fichas =  response.data['fichas']
+                        console.log('-------------------');
+                        console.log(fichas);
                         for (const key in salas) {
                             //console.log(start);
                             //console.log(end);
@@ -332,6 +339,19 @@ export default {
                                 timed: 1,
                                 category: this.categories[key],
                             })*/
+                        }
+                        for (const key in fichas) {
+                            var r = fichas
+                            this.events.push({
+                                //name: 'Atencion',
+                                start: new Date(this.fecha_calendario + 'T'+fichas[key].hora_inicio+'-04:00'),
+                                end: new Date(this.fecha_calendario + 'T'+fichas[key].hora_final+'-04:00'),
+                                color: 'green',
+                                timed: 1,
+                                category: fichas[key].nombre_equipo,
+                                //consultorio: response.data[key],
+                                //integrantes: salas[key]['integrantes']
+                            })
                         }
                         //console.log(this.type);
 
@@ -507,10 +527,60 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }*/
         },
+        async save_atender() {
+            if (this.$refs.seleccion_equipo.validate()) {
+                var res = await axios({
+                    method: 'post',
+                    url: `/${process.env.MIX_CARPETA}/atender`,
+                    data: {
+                        ficha: this.selectedEvent.fichas,
+                        equipo: this.selectequipo.equipo
+                    }
+                }).then(
+                    (response) => {
+                        console.log(response.data);
+                    }
+                ).catch(err => {
+                    console.log(err)
+
+                });
+            }
+
+        },
+        async atencion_equipos() {
+            var res = await axios({
+                method: 'post',
+                url: `/${process.env.MIX_CARPETA}/api/equipos_elegidos`,
+                data: 
+                    this.selectedEvent.fichas,
+                    //equipo: this.selectequipo.equipo
+                
+            }).then(
+                (response) => {
+                    var  r = response.data.seleccion
+                    console.log(response.data.equipo);
+                    try {
+                        this.equipos = response.data.equipo
+                        if( r ){
+                            this.selectequipo = response.data.equipo[0]
+                        }
+                        
+                        
+                    } catch (error) {
+                        
+                    }
+                    
+                }
+            ).catch(err => {
+                console.log(err)
+
+            });
+
+        },
 
         valores(objecto, x) {
             if (typeof objecto == "undefined") return
-            console.log(objecto)
+            //console.log(objecto)
             return objecto['' + x]
         },
         getEventColor(event) {
@@ -631,6 +701,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     this.selectedEvent = structuredClone(event)
                     this.selectedElement = nativeEvent.target
                     this.selectequipo = ''
+                    this.atencion_equipos()
                     requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
                 }
                 if (this.selectedOpen) {
@@ -719,7 +790,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             if (typeof X.fichas == 'undefined') {
                 return null
             }
-            console.log(X.fichas.id_persona);
+            //console.log(X.fichas.id_persona);
 
             return X.fichas.id_persona
         },
@@ -731,13 +802,13 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             this.$refs.dato.open()
         },
         get_nombre_equipo($value) {
-            console.log("------");
-            console.log($value)
+            /*console.log("------");
+            console.log($value)*/
             return $value.equipo.nombre_equipo
         },
         select_nombre_equipo($value) {
-            console.log("--slect ----");
-            console.log($value)
+            /*console.log("--slect ----");
+            console.log($value)*/
             return $value
         }
     }

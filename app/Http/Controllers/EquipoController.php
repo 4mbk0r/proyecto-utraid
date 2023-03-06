@@ -99,6 +99,7 @@ class EquipoController extends Controller
         }
 
 
+
         return $total;
     }
 
@@ -149,43 +150,62 @@ class EquipoController extends Controller
     public static function listar_equipo(string  $fecha)
     {
         $conf = DB::table('calendariolineals')
-                ->select('*')
-                ->where('fecha_inicio', '<=', $fecha)
-                ->where('fecha_final', '>=', $fecha)
-                //->where('tipo', '=', 'permanente')
-                ->get();
+            ->select('*')
+            ->where('fecha_inicio', '<=', $fecha)
+            ->where('fecha_final', '>=', $fecha)
+            //->where('tipo', '=', 'permanente')
+            ->get();
 
         $equipo = DB::table('designar_equipo_lineals')
-        ->select('*')
-        ->where('designar_equipo_lineals.id_conf', '=', $conf[0]->id_configuracion)
-        //->where('fecha_final', '>=', $fecha)
-        //->where('tipo', '=', 'permanente')
-        ->get();
+            ->select('*')
+            ->where('designar_equipo_lineals.id_conf', '=', $conf[0]->id_configuracion)
+            //->where('fecha_final', '>=', $fecha)
+            //->where('tipo', '=', 'permanente')
+            ->get();
         //return $equipo;
         $equipo_lista = [];
         foreach ($equipo as $key => $value) {
             $x = DB::table('equipos')
-            ->select('*')
-            //->leftJoin('equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
-            ->where('equipos.id', '=', $value->id_equipo)
-            //->where('tipo', '=', 'permanente')
-            ->get();
+                ->select('*')
+                //->leftJoin('equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
+                ->where('equipos.id', '=', $value->id_equipo)
+                //->where('tipo', '=', 'permanente')
+                ->get();
             # code...
             $y = DB::table('asignar_equipos')
-            ->select('*')
-            ->leftJoin('users', 'asignar_equipos.id_usuario', '=', 'users.id')
-            ->where('asignar_equipos.id_equipo', '=', $value->id_equipo)
-            //->where('tipo', '=', 'permanente')
-            ->get();
+                ->select('*')
+                ->leftJoin('users', 'asignar_equipos.id_usuario', '=', 'users.id')
+                ->where('asignar_equipos.id_equipo', '=', $value->id_equipo)
+                //->where('tipo', '=', 'permanente')
+                ->get();
             $a = [
-                'equipo'=> $x,
+                'equipo' => $x,
                 'lista' => $y,
                 //'s' => $value->id_equipo
             ];
             array_push($equipo_lista, $a);
+        }
 
-        } 
-        return $equipo_lista;
+        $fichas = DB::table("fichas")
+            ->leftJoin("atenders", function ($join) use ($fecha) {
+                $join->on("atenders.id_ficha", "=", "fichas.id")
+                    ->where("fichas.fecha", "=", $fecha);
+            })
+            ->leftJoin("equipos", function ($join) {
+                $join->on("equipos.id", "=", "atenders.id_designado");
+            })
+            ->leftJoin("horarios", function ($join) {
+                $join->on("horarios.id", "=", "fichas.id_horario");
+            })
+            ->whereNotNull("atenders.id_designado")
+            ->get();
+
+
+
+        return [
+            'equipo_lista' => $equipo_lista,
+            'fichas' => $fichas
+        ];
         //
         $date = date_create(date($fecha), timezone_open('America/La_Paz'));
         $date = date_format($date, 'Y-m-d');
@@ -235,10 +255,10 @@ class EquipoController extends Controller
                     ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipo_lineals.id_equipo')
                     ->where('designar_equipo_lineals.id_conf', '=', $list_config[0]->id_configuracion)
                     ->get();
-                    /*->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
+                /*->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
                     ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
                     ->where('designar_equipo_lineals.id_conf', '=', $list_config[0]->id_configuracion)*/
-                    /*
+                /*
                     select * from asignar_equipos
                     left join users on users.id = asignar_equipos.id_usuario
                     where asignar_equipos.id_equipo = 44
@@ -246,15 +266,15 @@ class EquipoController extends Controller
                     */
                 foreach ($equipo as $key => $value) {
                     $integrantes = DB::table('asignar_equipos')
-                    ->select( 'nombre', 'id', 'id_establecimiento','users.ap_paterno', 'users.ap_materno', 'users.ci', 'users.expedido', 'users.email', 'users.celular', 'users.cargo', 'users.username')
-                    ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
-                    ->leftJoin('contratos', 'users.ci', '=', 'contratos.id_usuario')
-                    
-                    ->where('asignar_equipos.id_equipo', '=', $value->id_equipo)
-                    ->get();
-                    array_push($equipo_lista,['equipo'=>$value, 'integrantes'=>  $integrantes ]);
+                        ->select('nombre', 'id', 'id_establecimiento', 'users.ap_paterno', 'users.ap_materno', 'users.ci', 'users.expedido', 'users.email', 'users.celular', 'users.cargo', 'users.username')
+                        ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
+                        ->leftJoin('contratos', 'users.ci', '=', 'contratos.id_usuario')
+
+                        ->where('asignar_equipos.id_equipo', '=', $value->id_equipo)
+                        ->get();
+                    array_push($equipo_lista, ['equipo' => $value, 'integrantes' =>  $integrantes]);
                 }
-                
+
 
                 /*
                 *          

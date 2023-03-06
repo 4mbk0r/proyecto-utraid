@@ -1,0 +1,5 @@
+1 atender
+2 configuracion atender
+3 viajes
+4 boletas
+5 configuracion citas

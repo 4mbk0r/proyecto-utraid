@@ -18,6 +18,8 @@ use App\Models\personas_antiguo;
 use App\Http\Controllers\CitaTieneConfiguracionController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\HorarioController;
+
+use App\Http\Controllers\AtenderController;
 use App\Http\Controllers\PersonalController;
 use App\Models\Asignar_config_sala;
 use App\Models\Configuracion;
@@ -203,4 +205,11 @@ Route::post('/subir_personal', function (Request $request) {
 Route::get('/lista_equipo/{ci}', function (string $fecha) {
 
     return EquipoController::listar_equipo($fecha);
+});
+
+
+
+Route::post('/equipos_elegidos', function (Request $request) {
+
+    return AtenderController::ver_equipos($request);
 });

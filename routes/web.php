@@ -12,6 +12,7 @@ use App\Http\Controllers\DarCitaController;
 use App\Http\Controllers\CalendariolinealController;
 
 use App\Http\Controllers\Administracion\Registro;
+use App\Http\Controllers\AtenderController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\UserController;
 
@@ -178,3 +179,7 @@ Route::get('/excel', function () {
 Route::resource('/equipo2', EquipoController::class)->middleware(['auth:sanctum', 'verified']);
 
 Route::resource('/dar_ficha', DarCitaController::class)->middleware(['auth:sanctum', 'verified']);
+
+
+
+Route::resource('/atender', AtenderController::class)->middleware(['auth:sanctum', 'verified']);

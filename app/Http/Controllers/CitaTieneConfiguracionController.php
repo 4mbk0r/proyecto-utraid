@@ -62,6 +62,7 @@ class CitaTieneConfiguracionController extends Controller
             ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
             ->where('fecha', '=', $fecha)
             ->groupBy('id_sala', 'salas.descripcion')
+            ->orderBy('salas.descripcion', 'asc')
             ->get();
         $list_config2 = DB::table('calendariolineals')
             ->select('*')
@@ -187,12 +188,18 @@ class CitaTieneConfiguracionController extends Controller
                     ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
                     ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
                     ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
+                    //->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
                     ->where('fecha', '=', $fecha)
                     ->where('fichas.id_sala', '=', $value->id_sala)
+
                     ->orderBy('salas.descripcion', 'asc')
+                    
                     //->groupBy('id_sala', 'salas.descripcion')
                     ->get();
+                
                 array_push($horarios, $horario);
+
+                
             }
             $resp = [
                 'salas' => $list_config,

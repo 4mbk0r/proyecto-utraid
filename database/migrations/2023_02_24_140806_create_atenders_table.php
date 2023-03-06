@@ -22,7 +22,7 @@ class CreateAtendersTable extends Migration
             "ALTER TABLE atenders ADD FOREIGN KEY (id_ficha) REFERENCES fichas(id)"
         );
         DB::statement(
-            "ALTER TABLE atenders ADD FOREIGN KEY (id_designado) REFERENCES designar_equipos(id)"
+            "ALTER TABLE atenders ADD FOREIGN KEY (id_designado) REFERENCES equipos(id)"
         );
         
     }
