@@ -17,6 +17,7 @@ class CreateAtendersTable extends Migration
         Schema::create('atenders', function (Blueprint $table) {
             $table->integer('id_designado');
             $table->integer('id_ficha');
+            //$table->integer('id_sala');
         });
         DB::statement(
             "ALTER TABLE atenders ADD FOREIGN KEY (id_ficha) REFERENCES fichas(id)"
@@ -24,6 +25,9 @@ class CreateAtendersTable extends Migration
         DB::statement(
             "ALTER TABLE atenders ADD FOREIGN KEY (id_designado) REFERENCES equipos(id)"
         );
+        /*DB::statement(
+            "ALTER TABLE atenders ADD FOREIGN KEY (id_sala) REFERENCES salas(id)"
+        );*/
         
     }
 

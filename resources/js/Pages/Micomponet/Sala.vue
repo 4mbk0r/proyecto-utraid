@@ -13,6 +13,23 @@
             @eliminar="eliminarsalas($event)" @cerrar="cerrar($event)" :editedIndex="editedIndex"
             :editedItem="editedItem"></salaespera>
         </v-dialog>
+        <v-dialog v-if="editgrupo" v-model="editgrupo" max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5"> 
+              {{ elemento.descripcion }}</v-card-title>
+
+            <v-card-text>
+              <equipos_seleccion :datos="elemento"></equipos_seleccion>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="">Cancelar</v-btn>
+              <v-btn color="blue darken-1" text @click="">Aceptar</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+          
+        </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">Deseas Eliminar la Consulta</v-card-title>
@@ -30,6 +47,10 @@
       <v-icon small class="mr-2" @click="editItem(item)">
         mdi-pencil
       </v-icon>
+      <v-icon small class="mr-2" @click="opengrupo(item)">
+        mdi-account-group
+      </v-icon>
+      
       <v-icon v-if="editar_consulta" small @click="deleteItem(item)">
         mdi-delete
       </v-icon>
@@ -49,6 +70,8 @@ import Welcome from '@/Jetstream/Welcome'
 import Barrasu from '@/Pages/Micomponet/Barrasu'
 import moment from 'moment'
 import salaespera from '@/Pages/Micomponet/SalaEspera'
+
+import equipos_seleccion from '@/Pages/Configuracion/Equipos_seleccion'
 export default {
   props: {
 
@@ -60,6 +83,7 @@ export default {
     addconfiguracion: '',
     dialog: false,
     dialogDelete: false,
+    editgrupo:  false,
     headers: [
 
 
@@ -95,9 +119,11 @@ export default {
       },
     ],
     horario: [],
+    elemento: {},
   }),
   components: {
-    salaespera
+    salaespera,
+    equipos_seleccion
   },
   computed: {
     formTitle() {
@@ -124,6 +150,10 @@ export default {
     this.initialize()
   },
   methods: {
+    opengrupo(item){
+      this.editgrupo =  true
+      this.elemento = item
+    },  
     async initialize() {
 
       console.log("----", this.configuracion);

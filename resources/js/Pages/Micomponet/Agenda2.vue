@@ -498,7 +498,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                                 color: (!ficha.id_persona) ? 'red' : (!ficha.id_designado) ? 'blue' : 'green',
                                 timed: 1,
                                 category: this.categories[key],
-                                fichas: fichas[x]
+                                fichas: fichas[x],
                                 //atencion: fichas[atencion]
                                 //paciente: structuredClone(paciente)
                             })
@@ -572,9 +572,10 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     }
                 }).then(
                     (response) => {
-                        console.log(response.data);
+                        console.log(this.selectedEvent );
                         this.selectedEvent.fichas = structuredClone(response.data);
-                        this.selectedEvent.color = getcolor(response.data)
+                        //this.selectedEvent.color = 'yellow'
+                        
                     }
                 ).catch(err => {
                     console.log(err)
@@ -833,6 +834,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             return X.fichas.id_persona
         },
         open_agenda() {
+            this.selectedOpen = false
             this.$refs.dato.op1 = 1;
             this.$refs.dato.fecha_cita = this.fecha_calendario
             this.$refs.dato.cita_nueva = this.selectedEvent.fichas

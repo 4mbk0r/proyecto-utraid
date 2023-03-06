@@ -17,12 +17,16 @@ class CreateDesignarEquipoLinealsTable extends Migration
         Schema::create('designar_equipo_lineals', function (Blueprint $table) {
             $table->integer('id_equipo');
             $table->integer('id_conf');
+            $table->integer('id_sala');
         });
         DB::statement(
             "ALTER TABLE designar_equipo_lineals ADD FOREIGN KEY (id_equipo) REFERENCES equipos(id) ON DELETE CASCADE"
         );
         DB::statement(
             "ALTER TABLE designar_equipo_lineals ADD FOREIGN KEY (id_conf) REFERENCES configuracions(id) ON DELETE CASCADE"
+        );
+        DB::statement(
+            "ALTER TABLE designar_equipo_lineals ADD FOREIGN KEY (id_sala) REFERENCES salas(id) ON DELETE CASCADE"
         );
     }
 

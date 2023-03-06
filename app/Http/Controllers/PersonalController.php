@@ -160,6 +160,7 @@ class PersonalController extends Controller
     }
     public static function personal_servicio()
     {
+        //return $request;
         $cargo = DB::table('users')
             ->leftJoin('cargos', 'cargos.cargo', '=', 'users.cargo')
             ->where('cargos.servicio', '=', 'true')

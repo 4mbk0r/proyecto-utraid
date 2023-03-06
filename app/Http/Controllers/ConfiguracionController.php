@@ -215,7 +215,8 @@ group by configuracions.id
                 DB::table('designar_equipo_lineals')->insert(
                     [
                         'id_equipo'=> $value['id_equipo'],
-                        'id_conf'=> $id_config
+                        'id_conf'=> $id_config,
+                        'id_sala' => $salas[$key]['id_sala']
                     ]
                 );
 

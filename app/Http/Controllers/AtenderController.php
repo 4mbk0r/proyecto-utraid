@@ -42,12 +42,22 @@ class AtenderController extends Controller
         //return $request;
         $equipo = $request['equipo'];
         $ficha = $request['ficha'];
+        //return $request;
         $id_ficha = $ficha['id_ficha'];
+        $id_sala =  $ficha['id_sala'];
         $id_equipo = $equipo['id_equipo'];
         $r = DB::table('atenders')->where('id_ficha', '=', $id_ficha)->get();
+        
         if (count($r) == 0) {
             try {
-                DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_equipo]);
+                DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_equipo ]);
+                $s = DB::table('atender_salas')->select('*')->where('id_sala', '=', $id_sala)->get();
+                if (count($s) == 0 ) {
+                    # code...
+                    DB::table('atender_salas')->insert(['id_designado' => $id_equipo, 'id_sala' => $id_sala, 'fecha'=> $ficha['fecha']]);
+                }
+
+
             } catch (\Throwable $th) {
                 //throw $th;
                 return $th;
@@ -161,7 +171,7 @@ class AtenderController extends Controller
                                         function ($query) use ($request) {
                                             return $query
                                                 ->where('horarios.hora_inicio', '>=', $request['hora_inicio'])
-                                                ->where('horarios.hora_inicio', '<=', $request['hora_final']);
+                                                ->where('horarios.hora_inicio', '<', $request['hora_final']);
                                         }
                                     )
                                     ->orwhere(
