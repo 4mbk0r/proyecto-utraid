@@ -572,9 +572,12 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     }
                 }).then(
                     (response) => {
-                        console.log(this.selectedEvent );
+                        console.log("---_:.-.-.-.-.-.-.::::::::----");
+                        console.log(response.data );
                         this.selectedEvent.fichas = structuredClone(response.data);
                         //this.selectedEvent.color = 'yellow'
+                        this.pedir_datos()
+                        this.selectedOpen = false
                         
                     }
                 ).catch(err => {

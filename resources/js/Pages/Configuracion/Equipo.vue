@@ -35,7 +35,7 @@
                                 <v-list-item :key="item.title" @click="seleccion_equipo(item)">
                                     <template v-slot:default="{ active }">
                                         <v-list-item-content>
-                                            <v-list-item-title v-text="item.equipo"></v-list-item-title>
+                                            <v-list-item-title v-text="item.descripcion"></v-list-item-title>
 
                                             <v-list-item-subtitle class="text--primary"
                                                 v-text="item.headline"></v-list-item-subtitle>

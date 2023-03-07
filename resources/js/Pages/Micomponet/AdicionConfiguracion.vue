@@ -344,15 +344,17 @@ export default {
             /*setTimeout(() => {
                 
             }, 30);*/
+            console.log(this.salas
+            );
             this.$refs.sala.generar_horario()
             this.salas = structuredClone(this.$refs.sala.desserts)
 
             if (!(this.salas.length > 0)) {
-                alert('no se puede crear confuguracion con salas 0')
+                alert('no se puede crear configuracion con salas 0')
                 return
             }
             let k = 1
-            this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo ' + (k++), lista: [] }))]
+            this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo ' + (k), descripcion: this.salas[k-1].descripcion+' => Equipo ' + (k++), lista: [] }))]
             this.paso = 4
 
             /*

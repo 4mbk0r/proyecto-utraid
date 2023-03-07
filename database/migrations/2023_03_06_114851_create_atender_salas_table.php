@@ -20,13 +20,13 @@ class CreateAtenderSalasTable extends Migration
             $table->date('fecha');
 
         });
+       
         DB::statement(
-            "ALTER TABLE atenders ADD FOREIGN KEY (id_ficha) REFERENCES fichas(id)"
+            "ALTER TABLE atender_salas ADD FOREIGN KEY (id_designado) REFERENCES equipos(id)"
         );
         DB::statement(
-            "ALTER TABLE atenders ADD FOREIGN KEY (id_designado) REFERENCES salas(id)"
-        );
-        
+            "ALTER TABLE atender_salas ADD FOREIGN KEY (id_sala) REFERENCES salas(id)"
+        );       
         
     }
 

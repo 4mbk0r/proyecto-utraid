@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\cita_tiene_configuracion;
 use App\Http\Controllers\Controller;
 use App\Models\atender;
+use App\Models\equipo;
 use App\Models\Horario;
 use Illuminate\Http\Request;
 use Exception;
@@ -90,10 +91,10 @@ class CitaTieneConfiguracionController extends Controller
             ];
             array_push($r_equipo, $a);
         }
-
         //return sizeof($list_config) ;
         //return $list_config;
-        if (sizeof($list_config) == 0) {
+        // si el dia x no tiene confuracion craamos una configuracion 
+        if (sizeof($list_config) == 0 ) {
             /*
             select * from calendariolineals
             where fecha_inicio <= '2023-02-22' and

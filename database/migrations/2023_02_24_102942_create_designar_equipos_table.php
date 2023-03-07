@@ -18,13 +18,17 @@ class CreateDesignarEquiposTable extends Migration
             $table->increments('id');
             $table->date('fecha');
             $table->integer('id_equipo');
-            $table->unique(['fecha', 'id_equipo']);
+            $table->integer('id_sala');
+            $table->unique(['fecha', 'id_equipo', 'id_sala']);
         });
         DB::statement(
             "ALTER TABLE designar_equipos ADD FOREIGN KEY (fecha) REFERENCES calendarios(fecha)"
         );
         DB::statement(
             "ALTER TABLE designar_equipos ADD FOREIGN KEY (id_equipo) REFERENCES equipos(id)"
+        );
+        DB::statement(
+            "ALTER TABLE designar_equipos ADD FOREIGN KEY (id_sala) REFERENCES salas(id)"
         );
     }
 
