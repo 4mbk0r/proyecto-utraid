@@ -462,7 +462,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                         console.log(salas_disponibles)
                         this.categories.push(salas[key]['descripcion'])
                         this.events.push({
-                            name: 'Agendar',
+                            name: salas[key]['nombre_equipo'],
                             start: start2,
                             end: end,
                             color: 'red',
@@ -487,21 +487,33 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                         let fichas = salas_disponibles[key];
                         console.log(fichas);
                         //console.log(typeof ficha.id_oersiba);
+
                         for (const x in fichas) {
                             let ficha = fichas[x];
                             console.log(ficha.id_persona);
-                            this.events.push({
-                                name: (!ficha.id_designado) ? 'blue' : ficha.id_designado,
-                                //paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
-                                start: new Date(this.fecha_calendario + 'T' + ficha.hora_inicio + '-04:00'),
-                                end: new Date(this.fecha_calendario + 'T' + ficha.hora_final + '-04:00'),
-                                color: (!ficha.id_persona) ? 'red' : (!ficha.id_designado) ? 'blue' : 'green',
-                                timed: 1,
-                                category: this.categories[key],
-                                fichas: fichas[x],
-                                //atencion: fichas[atencion]
-                                //paciente: structuredClone(paciente)
-                            })
+                            let categoria = ''
+                            for (const key in this.salas) {
+                                console.log('------');
+                                console.log(this.salas[key]);
+                                console.log(this.salas[key].id_equipo, ' ', ficha.id_equipo);
+                                if (this.salas[key].id_equipo == ficha.id_equipo) {
+                                    console.log('si');
+                                    //categoria=this.categories[key]
+                                    this.events.push({
+                                        name: (!ficha.id_designado) ? 'blue' : ficha.id_designado,
+                                        //paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
+                                        start: new Date(this.fecha_calendario + 'T' + ficha.hora_inicio + '-04:00'),
+                                        end: new Date(this.fecha_calendario + 'T' + ficha.hora_final + '-04:00'),
+                                        color: (!ficha.id_persona) ? 'red' : (!ficha.id_designado) ? 'blue' : 'green',
+                                        timed: 1,
+                                        category: this.categories[key],
+                                        fichas: fichas[x],
+                                        //atencion: fichas[atencion]
+                                        //paciente: structuredClone(paciente)
+                                    })
+                                }
+                            }
+
                         }
                         //console.log(paciente.fecha + 'T'+paciente.hora_inicio+'-04:00')//new Date(),);
 
@@ -572,13 +584,13 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     }
                 }).then(
                     (response) => {
-                        console.log("---_:.-.-.-.-.-.-.::::::::----");
-                        console.log(response.data );
+                        //console.log("---_:.-.-.-.-.-.-.::::::::----");
+                        //console.log(response.data);
                         this.selectedEvent.fichas = structuredClone(response.data);
                         //this.selectedEvent.color = 'yellow'
                         this.pedir_datos()
                         this.selectedOpen = false
-                        
+
                     }
                 ).catch(err => {
                     console.log(err)

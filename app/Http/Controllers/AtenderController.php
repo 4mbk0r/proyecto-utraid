@@ -39,7 +39,7 @@ class AtenderController extends Controller
     public function store(Request $request)
     {
         //$DB::table('atenders')->insert()
-        //return $request;
+        return $request;
         $equipo = $request['equipo'];
         $ficha = $request['ficha'];
         //return $request;

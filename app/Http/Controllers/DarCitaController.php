@@ -57,14 +57,15 @@ class DarCitaController extends Controller
         //
         $fecha = $request['fecha'];
         $cita =  $request['cita'];
+        //return $cita;
         $persona =  $request['paciente'];
         
-
+        //verificamos que no tenemos un fecha 
         $validar =  DB::table('calendarios')
-
             ->select('*')
             ->where('fecha', '=', $fecha)
             ->get();
+
         if (count($validar) == 0) {
             $list_config = DB::table('calendariolineals')
                 ->select('*')
@@ -114,7 +115,8 @@ class DarCitaController extends Controller
                 # code...
                 $nuevo = [
                     'fecha' => $fecha,
-                    'id_equipo' => $value->id_equipo
+                    'id_equipo' => $value->id_equipo,
+                    'id_sala' => $value->id_sala 
                 ];
                 DB::table('designar_equipos')->insert($nuevo);
             }
@@ -122,6 +124,7 @@ class DarCitaController extends Controller
         }
         $validar =  DB::table('fichas')
             ->where('id_sala', '=', $cita['id_sala'])
+            
             ->where('id_horario', '=', $cita['id_horario'])
             ->where('id_conf_sala', '=', $cita['id_conf_sala'])
             ->where('fecha', '=', $fecha)
@@ -130,6 +133,7 @@ class DarCitaController extends Controller
             ->first();
 
         try {
+
             $respuesta = DB::table('dar_citas')->insert(['id_ficha' => $validar->id, 'id_persona' => $persona['id']]);
         } catch (\Throwable $th) {
             return $th;

@@ -144,8 +144,6 @@
 
             </v-data-table>
 
-
-
         </v-card>
     </v-app>
 </template>

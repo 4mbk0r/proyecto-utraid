@@ -60,46 +60,54 @@ class CitaTieneConfiguracionController extends Controller
         */
 
         $list_config = DB::table('fichas')
-            ->select('id_sala', 'salas.descripcion')
+            ->select(['fichas.id_sala', 'salas.descripcion', 'designar_equipos.id_equipo', 'equipos.nombre_equipo'])
             ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
-            ->where('fecha', '=', $fecha)
-            ->groupBy('id_sala', 'salas.descripcion')
+            ->leftJoin('designar_equipos', 'designar_equipos.id', '=', 'salas.id')
+            ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipos.id')
+            
+            ->where('fichas.fecha', '=', $fecha)
+            ->where('designar_equipos.fecha', '=', $fecha)
+            ->groupBy('fichas.id_sala', 'salas.descripcion', 'designar_equipos.id_equipo', 'equipos.nombre_equipo')
             ->orderBy('salas.descripcion', 'asc')
-            ->get();
-        $list_config2 = DB::table('calendariolineals')
-            ->select('*')
-            ->where('fecha_inicio', '<=', $fecha)
-            ->where('fecha_final', '>=', $fecha)
-            //->where('tipo', '=', 'permanente')
-            ->get();
-        $equipos = DB::table('equipos')
-            ->select('*')
-            ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_equipo', '=', 'equipos.id')
-            ->where('designar_equipo_lineals.id_conf', '=', $list_config2[0]->id_configuracion)
+            
+
+
             ->get();
         $r_equipo = [];
-        foreach ($equipos as $key => $value) {
-            $lista_equipos = DB::table('equipos')
-                ->select('*')
-                ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
-                ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
-                ->where('equipos.id', '=', $value->id)
-                ->get();
-            $a =  [
-                'equipo' => $value,
-                'lista' => $lista_equipos
-            ];
-            array_push($r_equipo, $a);
-        }
         //return sizeof($list_config) ;
         //return $list_config;
         // si el dia x no tiene confuracion craamos una configuracion 
-        if (sizeof($list_config) == 0 ) {
+        if (sizeof($list_config) == 0) {
             /*
             select * from calendariolineals
             where fecha_inicio <= '2023-02-22' and
             fecha_final >= '2023-02-22';
             */
+            $list_config2 = DB::table('calendariolineals')
+                ->select('*')
+                ->where('fecha_inicio', '<=', $fecha)
+                ->where('fecha_final', '>=', $fecha)
+                //->where('tipo', '=', 'permanente')
+                ->get();
+            $equipos = DB::table('equipos')
+                ->select('*')
+                ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_equipo', '=', 'equipos.id')
+                ->where('designar_equipo_lineals.id_conf', '=', $list_config2[0]->id_configuracion)
+                ->get();
+            $r_equipo = [];
+            foreach ($equipos as $key => $value) {
+                $lista_equipos = DB::table('equipos')
+                    ->select('*')
+                    ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
+                    ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
+                    ->where('equipos.id', '=', $value->id)
+                    ->get();
+                $a =  [
+                    'equipo' => $value,
+                    'lista' => $lista_equipos
+                ];
+                array_push($r_equipo, $a);
+            }
 
             $list_config = DB::table('calendariolineals')
                 ->select('*')
@@ -112,8 +120,9 @@ class CitaTieneConfiguracionController extends Controller
                     $salas = DB::table('asignar_config_salas')
                         ->select('*')
                         ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
-                        ->where('id_conf', '=', $list_config[0]->id_configuracion)
                         
+                        ->leftJoin('designar_equipos', 'designar_equipos.id', '=', 'salas.id')
+                        ->where('id_conf', '=', $list_config[0]->id_configuracion)
                         ->get();
                     $horario = [];
                     foreach ($salas as $key => $value) {
@@ -121,29 +130,30 @@ class CitaTieneConfiguracionController extends Controller
                         
                         */
                         $h =
-                        DB::table("salas")
-                        ->leftJoin("asignar_salas", function ($join) use ($value) {
-                            $join->on("asignar_salas.id_sala", "=", "salas.id");
-                            $join->where("asignar_salas.id_sala", "=",  $value->id_sala);
-                        })
-                        ->leftJoin("conf_salas", function ($join)  use ($value) {
-                            $join->on("conf_salas.id", "=","asignar_salas.id_conf_sala" );
-                            $join->where("conf_salas.id", "=", $value->id_conf_sala);
-                            
-                        })
-                        ->leftJoin("asignar_horarios", function ($join) {
-                            $join->on("asignar_horarios.id_conf_sala", "=", "conf_salas.id");
-                        })
-                        ->leftJoin("horarios", function ($join) {
-                            $join->on("horarios.id", "=", "asignar_horarios.id_horario");
-                        })
-                        ->orderBy('salas.descripcion', 'asc')
-                        ->whereNotNull('conf_salas.id')
-                        //->leftJoin('asignar_config_salas',  "asignar_config_salas.id_sala", "=", "salas.id" )
-                        //->where("salas.id", "=", $value->id_sala)
-                        //->where("conf_salas.id", "=", $value->id_conf_sala)
-                        //->where('asignar_config_salas.id_conf', '=', $list_config[0]->id_configuracion)
-                        ->get();
+                            DB::table("salas")
+                            ->leftJoin('designar_equipos', 'designar_equipos.id', '=', 'salas.id')
+    
+                            ->leftJoin("asignar_salas", function ($join) use ($value) {
+                                $join->on("asignar_salas.id_sala", "=", "salas.id");
+                                $join->where("asignar_salas.id_sala", "=",  $value->id_sala);
+                            })
+                            ->leftJoin("conf_salas", function ($join)  use ($value) {
+                                $join->on("conf_salas.id", "=", "asignar_salas.id_conf_sala");
+                                $join->where("conf_salas.id", "=", $value->id_conf_sala);
+                            })
+                            ->leftJoin("asignar_horarios", function ($join) {
+                                $join->on("asignar_horarios.id_conf_sala", "=", "conf_salas.id");
+                            })
+                            ->leftJoin("horarios", function ($join) {
+                                $join->on("horarios.id", "=", "asignar_horarios.id_horario");
+                            })
+                            ->orderBy('salas.descripcion', 'asc')
+                            ->whereNotNull('conf_salas.id')
+                            //->leftJoin('asignar_config_salas',  "asignar_config_salas.id_sala", "=", "salas.id" )
+                            //->where("salas.id", "=", $value->id_sala)
+                            //->where("conf_salas.id", "=", $value->id_conf_sala)
+                            //->where('asignar_config_salas.id_conf', '=', $list_config[0]->id_configuracion)
+                            ->get();
                         array_push($horario, $h);
                     }
                     /*
@@ -181,29 +191,33 @@ class CitaTieneConfiguracionController extends Controller
         } else {
             //$salas;
             $horarios =  [];
-            $sql = '';
+            
             foreach ($list_config as $key => $value) {
                 # code...
+                /*
+                
+                */
                 $horario = DB::table('fichas')
-                    ->select(['fichas.*','horarios.*','dar_citas.*','personas.*', 'atenders.id_designado'])
+                    ->select(['fichas.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'designar_equipos.id_equipo', 'designar_equipos.id_sala as id_sala_asig', 'equipos.nombre_equipo', 'salas.descripcion'])
                     ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+                    ->leftJoin('designar_equipos', 'designar_equipos.id', '=', 'salas.id')
+                    ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipos.id_equipo')
                     ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_sala')
                     ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
+                    
                     ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
                     ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
                     //->rigthJoin('atenders', 'atenders.id_ficha', 'fichas.id')
-                    ->leftJoin('atenders', 'fichas.id', '=', 'atenders.id_ficha')
-                    ->where('fecha', '=', $fecha)
+                    //->leftJoin('atenders', 'fichas.id', '=', 'atenders.id_ficha')
+                    ->where('fichas.fecha', '=', $fecha)
                     ->where('fichas.id_sala', '=', $value->id_sala)
-
+                    ->where('designar_equipos.fecha', '=', $fecha)
                     ->orderBy('salas.descripcion', 'asc')
-                    
+
                     //->groupBy('id_sala', 'salas.descripcion')
                     ->get();
-                
-                array_push($horarios, $horario);
 
-                
+                array_push($horarios, $horario);
             }
             $resp = [
                 'salas' => $list_config,
@@ -262,25 +276,25 @@ class CitaTieneConfiguracionController extends Controller
     {
         /*
         select cita_tiene_configuracions.fecha, 
-SUM(CASE WHEN  not agendas.consultorio IS NULL  THEN 1 ELSE 0 END) as uso, 
-SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END) AS disponibles, 
-count(salas.id) as total
---, horarios.id_horario, horarios.hora_inicio, horarios.sala, agendas.codigo_cita 
-from cita_tiene_configuracions
-left join salas on salas.id = cita_tiene_configuracions.id
-left join horarios on horarios.sala = salas.sala
-LEFT join agendas on  agendas.fecha = cita_tiene_configuracions.fecha and agendas.consultorio = salas.sala and agendas.horario = horarios.id_horario
---where not salas.id is null and 
---where cita_tiene_configuracions.fecha >= '2022-11-29'
-GROUP by cita_tiene_configuracions.fecha
---having SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END)> 0
-order by cita_tiene_configuracions.fecha
+        SUM(CASE WHEN  not agendas.consultorio IS NULL  THEN 1 ELSE 0 END) as uso, 
+        SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END) AS disponibles, 
+        count(salas.id) as total
+        --, horarios.id_horario, horarios.hora_inicio, horarios.sala, agendas.codigo_cita 
+        from cita_tiene_configuracions
+        left join salas on salas.id = cita_tiene_configuracions.id
+        left join horarios on horarios.sala = salas.sala
+        LEFT join agendas on  agendas.fecha = cita_tiene_configuracions.fecha and agendas.consultorio = salas.sala and agendas.horario = horarios.id_horario
+        --where not salas.id is null and 
+        --where cita_tiene_configuracions.fecha >= '2022-11-29'
+        GROUP by cita_tiene_configuracions.fecha
+        --having SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END)> 0
+        order by cita_tiene_configuracions.fecha
 
-select *
---cita_tiene_configuracions.fecha, 
-from cita_tiene_configuracions
-left join configuracions ON configuracions.id = cita_tiene_configuracions.id
-where atencion != true
+        select *
+        --cita_tiene_configuracions.fecha, 
+        from cita_tiene_configuracions
+        left join configuracions ON configuracions.id = cita_tiene_configuracions.id
+        where atencion != true
         
         
         
