@@ -1,0 +1,36 @@
+
+@startuml
+
+actor "Administrador" as AD2
+
+left to right direction
+rectangle Registrar_Personal {
+  usecase "Ingresa datos del Personal" as F1
+  usecase "Validar datos" as F2
+  usecase "Visualizacion Formulario" as F0
+  usecase "Guardar datos" as F3
+  
+  (F1) <. (F0) : extends
+  (F1) <.. (F2) : extends  
+  (F1) .left.> (F3) : include
+  
+}
+AD2 --> F1
+
+
+actor "Administrador" as AD1
+rectangle Administrar {
+  usecase "Registra Personal" as UC1
+  usecase "Listar Personal" as UC3
+  usecase "Configuracion" as UC2
+  
+}
+AD1 --> UC1
+AD1 --> UC2
+AD1 --> UC3
+
+
+
+@enduml
+
+
