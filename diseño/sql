@@ -1,0 +1,47 @@
+select * from fichas
+left join salas on salas.id = fichas.id_sala
+left join designar_equipos ON designar_equipos.id_sala = salas.id
+left join equipos ON equipos.id = designar_equipos.id_equipo
+where fichas.fecha = '09-03-2023' and designar_equipos.fecha = '09-03-2023'
+
+
+select * from designar_equipos
+
+
+select *--"fichas"."id_sala", "salas"."descripcion", "designar_equipos"."id_equipo", "equipos"."nombre_equipo" 
+from "fichas" 
+left join "salas" on "salas"."id" = "fichas"."id_sala" 
+left join "designar_equipos" on "designar_equipos"."id_sala" = "salas"."id" 
+left join "equipos" on "equipos"."id" = "designar_equipos"."id" 
+where "fichas"."fecha" = '09-03-2023' and "designar_equipos"."fecha" = '09-03-2023' 
+--group by "fichas"."id_sala", "salas"."descripcion", "designar_equipos"."id_equipo", "equipos"."nombre_equipo" 
+order by "salas"."descripcion" asc
+
+
+select * from asignar_config_salas
+left join salas on salas.id = asignar_config_salas.id_sala
+left join designar_equipo_lineals ON designar_equipo_lineals.id_sala = salas.id
+
+
+select * from salas
+left join designar_equipo_lineals designar_equipo_lineals2 ON designar_equipo_lineals2.id_sala = salas.id
+left join asignar_salas ON asignar_salas.id_sala = salas.id and asignar_salas.id_sala =  1
+left join conf_salas ON conf_salas.
+
+id = asignar_salas.id_conf_sala and conf_salas.id = 1
+left join asignar_horarios ON asignar_horarios.id_conf_sala = conf_salas.id
+left join horarios ON horarios.id = asignar_horarios.id_horario
+where conf_salas.id is null
+
+
+
+select * from fichas
+
+
+
+select * from "salas" left join "designar_equipo_lineals" on "designar_equipo_lineals"."id_sala" = "salas"."id" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = 1 left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = 1 left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null order by "salas"."descripcion" asc
+
+
+select * from fichas
+left join atenders on  atenders.id_ficha = fichas.id and fichas.fecha = '09-03-2023'
+left join horarios on horarios.id = fichas.id_horario

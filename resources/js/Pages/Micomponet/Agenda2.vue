@@ -441,9 +441,10 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     let salas = response.data['salas'];
                     let salas_disponibles = response.data['salas_diponibles'];
                     this.equipos = response.data['equipo'];
-                    console.log('_equipo----');
+                    /*console.log('_equipo----');
                     console.log(this.equipos);
                     console.log(salas_disponibles);
+                    */
                     //console.log('__'+salas)
 
                     this.salas = salas
@@ -457,9 +458,10 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     for (const key in salas) {
                         //console.log(start);
                         //console.log(end);
-                        console.log('----')
+                        /*console.log('----')
                         console.log(salas)
                         console.log(salas_disponibles)
+                        */
                         this.categories.push(salas[key]['descripcion'])
                         this.events.push({
                             name: salas[key]['nombre_equipo'],
@@ -485,20 +487,22 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     console.log(this.fecha_calendario)
                     for (const key in salas_disponibles) {
                         let fichas = salas_disponibles[key];
-                        console.log(fichas);
+                        //console.log(fichas);
                         //console.log(typeof ficha.id_oersiba);
 
                         for (const x in fichas) {
                             let ficha = fichas[x];
-                            console.log(ficha.id_persona);
+                            //console.log(ficha.id_persona);
                             let categoria = ''
                             for (const key in this.salas) {
-                                console.log('------');
+                                /*console.log('------');
                                 console.log(this.salas[key]);
                                 console.log(this.salas[key].id_equipo, ' ', ficha.id_equipo);
-                                if (this.salas[key].id_equipo == ficha.id_equipo) {
-                                    console.log('si');
+                                */
+                               if (this.salas[key].id_equipo == ficha.id_equipo) {
+                                    //console.log('si');
                                     //categoria=this.categories[key]
+                                    
                                     this.events.push({
                                         name: (!ficha.id_designado) ? 'blue' : ficha.id_designado,
                                         //paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
@@ -585,7 +589,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 }).then(
                     (response) => {
                         //console.log("---_:.-.-.-.-.-.-.::::::::----");
-                        //console.log(response.data);
+                        console.log(response);
                         this.selectedEvent.fichas = structuredClone(response.data);
                         //this.selectedEvent.color = 'yellow'
                         this.pedir_datos()
@@ -610,7 +614,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }).then(
                 (response) => {
                     var r = response.data.seleccion
-                    console.log(response.data.equipo);
+                    console.log(response.data);
                     try {
                         this.equipos = response.data.equipo
                         if (r) {

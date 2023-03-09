@@ -62,16 +62,12 @@ class CitaTieneConfiguracionController extends Controller
         $list_config = DB::table('fichas')
             ->select(['fichas.id_sala', 'salas.descripcion', 'designar_equipos.id_equipo', 'equipos.nombre_equipo'])
             ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
-            ->leftJoin('designar_equipos', 'designar_equipos.id', '=', 'salas.id')
+            ->leftJoin('designar_equipos', 'designar_equipos.id_sala', '=', 'salas.id')
             ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipos.id')
-            
             ->where('fichas.fecha', '=', $fecha)
             ->where('designar_equipos.fecha', '=', $fecha)
             ->groupBy('fichas.id_sala', 'salas.descripcion', 'designar_equipos.id_equipo', 'equipos.nombre_equipo')
             ->orderBy('salas.descripcion', 'asc')
-            
-
-
             ->get();
         $r_equipo = [];
         //return sizeof($list_config) ;
@@ -120,9 +116,8 @@ class CitaTieneConfiguracionController extends Controller
                     $salas = DB::table('asignar_config_salas')
                         ->select('*')
                         ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
-                        
-                        ->leftJoin('designar_equipos', 'designar_equipos.id', '=', 'salas.id')
-                        ->where('id_conf', '=', $list_config[0]->id_configuracion)
+                        ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
+                        ->where('asignar_config_salas.id_conf', '=', $list_config[0]->id_configuracion)
                         ->get();
                     $horario = [];
                     foreach ($salas as $key => $value) {
@@ -131,7 +126,8 @@ class CitaTieneConfiguracionController extends Controller
                         */
                         $h =
                             DB::table("salas")
-                            ->leftJoin('designar_equipos', 'designar_equipos.id', '=', 'salas.id')
+                            //->select(['*', 'fichas.id_ficha as id_fichas'])
+                            ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
     
                             ->leftJoin("asignar_salas", function ($join) use ($value) {
                                 $join->on("asignar_salas.id_sala", "=", "salas.id");
@@ -198,13 +194,13 @@ class CitaTieneConfiguracionController extends Controller
                 
                 */
                 $horario = DB::table('fichas')
-                    ->select(['fichas.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'designar_equipos.id_equipo', 'designar_equipos.id_sala as id_sala_asig', 'equipos.nombre_equipo', 'salas.descripcion'])
+                    ->select(['fichas.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'designar_equipos.id_equipo', 'designar_equipos.id_sala as id_sala_asig', 'equipos.nombre_equipo', 'salas.descripcion', 'atenders.id_designado'])
                     ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
-                    ->leftJoin('designar_equipos', 'designar_equipos.id', '=', 'salas.id')
+                    ->leftJoin('designar_equipos', 'designar_equipos.id_sala', '=', 'salas.id')
                     ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipos.id_equipo')
                     ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_sala')
                     ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
-                    
+                    ->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
                     ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
                     ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
                     //->rigthJoin('atenders', 'atenders.id_ficha', 'fichas.id')

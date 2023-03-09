@@ -39,45 +39,64 @@ class AtenderController extends Controller
     public function store(Request $request)
     {
         //$DB::table('atenders')->insert()
-        return $request;
+        //return $request;
         $equipo = $request['equipo'];
         $ficha = $request['ficha'];
         //return $request;
         $id_ficha = $ficha['id_ficha'];
         $id_sala =  $ficha['id_sala'];
-        $id_equipo = $equipo['id_equipo'];
+        $id_equipo = $ficha['id_equipo'];
         $r = DB::table('atenders')->where('id_ficha', '=', $id_ficha)->get();
-        
+
         if (count($r) == 0) {
             try {
-                DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_equipo ]);
-                $s = DB::table('atender_salas')->select('*')->where('id_sala', '=', $id_sala)->get();
-                if (count($s) == 0 ) {
-                    # code...
-                    DB::table('atender_salas')->insert(['id_designado' => $id_equipo, 'id_sala' => $id_sala, 'fecha'=> $ficha['fecha']]);
-                }
+                $ficha = $request['ficha'];
+
+                $id_antiguo = $equipo['id_ficha'];
+                $id_nuevo = $ficha['id_ficha'];
+
+                $id_ficha = $ficha['id_ficha'];
+                //$id_sala =  $ficha['id_sala'];
+                $id_equipo = $equipo['id_equipo'];
 
 
+                $antiguo = (array) DB::table('dar_citas')->where('id_ficha', '=', $id_antiguo)->first(); //->update(['id_ficha'=>$nuevo] );
+
+                $nuevo = (array) DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->first(); //->update(['id_ficha'=>$antiguo] );
+
+
+                DB::table('dar_citas')->where('id_ficha', '=', $id_antiguo)->update(['id_persona' => $antiguo['id_persona']]);
+                DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->update(['id_persona' => $nuevo['id_persona']]);
+
+
+                DB::table('atenders')->insert(['id_ficha' => $id_antiguo, 'id_designado' => $id_equipo]);
+
+                //DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_equipo]);
+
+                //DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_equipo]);
+        
+                //$s = DB::table('atender_salas')->select('*')->where('id_sala', '=', $id_sala)->get();
+                
             } catch (\Throwable $th) {
                 //throw $th;
                 return $th;
             }
 
             $horario = DB::table('fichas')
-            ->select(['fichas.*','horarios.*','dar_citas.*','personas.*', 'atenders.id_designado'])
-            ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
-            ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_sala')
-            ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
-            ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
-            ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
-            //->rigthJoin('atenders', 'atenders.id_ficha', 'fichas.id')
-            ->leftJoin('atenders', 'fichas.id', '=', 'atenders.id_ficha')
-            ->where('fecha', '=', $ficha['fecha'])
-            ->where('fichas.id', '=', $ficha['id_ficha'])
-            ->orderBy('salas.descripcion', 'asc')
-            
-            //->groupBy('id_sala', 'salas.descripcion')
-            ->get();
+                ->select(['fichas.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'atenders.id_designado'])
+                ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+                ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_sala')
+                ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
+                ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
+                ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
+                //->rigthJoin('atenders', 'atenders.id_ficha', 'fichas.id')
+                ->leftJoin('atenders', 'fichas.id', '=', 'atenders.id_ficha')
+                ->where('fecha', '=', $ficha['fecha'])
+                ->where('fichas.id', '=', $ficha['id_ficha'])
+                ->orderBy('salas.descripcion', 'asc')
+
+                //->groupBy('id_sala', 'salas.descripcion')
+                ->get();
             return $horario;
         }
         return 'error';
@@ -130,8 +149,91 @@ class AtenderController extends Controller
     }
     public static function ver_equipos(Request $request)
     {
-        $request;
+
+
         $equipos = DB::table('fichas')
+            ->leftJoin('horarios', function ($join) {
+                $join->on('horarios.id', '=', 'fichas.id_horario');
+            })
+            ->leftJoin('designar_equipos', function ($join) {
+                $join->on('designar_equipos.fecha', '=', 'fichas.fecha');
+                $join->on('designar_equipos.id_sala', '=', 'fichas.id_sala');
+
+                //DB::raw("(designar_equipos.fecha = fichas.fecha and designar_equipos.id_sala = 'fichas'.id_sala)"));
+            })
+            ->leftJoin('equipos', function ($join) {
+                $join->on('equipos.id', '=', 'designar_equipos.id_equipo');
+            })
+            ->select(['fichas.id as id_ficha', '*'])
+            ->where('fichas.fecha', '=', $request['fecha'])
+            ->where(
+                function ($query) use ($request) {
+                    return $query
+                        ->where(
+                            function ($query) use ($request) {
+                                return $query
+                                    ->where('horarios.hora_inicio', '>=', $request['hora_inicio'])
+                                    ->where('horarios.hora_inicio', '<', $request['hora_final']);
+                            }
+                        )
+                        ->orwhere(
+                            function ($query) use ($request) {
+                                return $query
+                                    ->where('horarios.hora_final', '>', $request['hora_inicio'])
+                                    ->where('horarios.hora_final', '<', $request['hora_final']);
+                            }
+                        );
+
+                    //->where('that_too', '=', 1);
+                }
+            )
+            ->get();
+
+        $seleccion = false;
+        $r_equipo = [];
+        foreach ($equipos as $key => $value) {
+            $lista_equipos = DB::table('equipos')
+                ->select('*')
+                ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
+                ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
+                ->where('equipos.id', '=', $value->id_equipo)
+                ->get();
+            $a =  [
+                'equipo' => $value,
+                'lista' => $lista_equipos
+            ];
+            array_push($r_equipo, $a);
+        }
+        $r = [
+            'seleccion' => $seleccion,
+            'equipo' => $r_equipo
+        ];
+        return $r;
+        /*$equipo = $request['equipo'];
+        $ficha = $request['ficha'];
+        
+        $id_antiguo = $equipo['id_ficha'];
+        $id_nuevo = $ficha['id_ficha'];
+        
+        $id_ficha = $ficha['id_ficha'];
+        //$id_sala =  $ficha['id_sala'];
+        $id_equipo = $ficha['id_equipo'];
+
+        
+        /*$antiguo =(array) DB::table('dar_citas')->where('id_ficha', '=', $id_antiguo)->get()[0];//->update(['id_ficha'=>$nuevo] );
+        
+        $nuevo =(array) DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->get()[0];//->update(['id_ficha'=>$antiguo] );
+       
+        
+        DB::table('dar_citas')->where('id_ficha', '=', $id_antiguo)->update(['id_persona' => $antiguo['id_persona']]);
+        DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->update(['id_persona' => $nuevo['id_persona']]);
+
+
+        DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_equipo]);
+          */
+        //return $request;
+        //$request;
+        /*$equipos = DB::table('fichas')
             ->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
             ->leftJoin('equipos', 'equipos.id', '=', 'atenders.id_designado')
             ->where('fichas.id', '=', $request['id_ficha'])
@@ -153,7 +255,32 @@ class AtenderController extends Controller
         }
         $seleccion =  true;
         if (count($equipos) == 0) {
-            $equipos =
+
+            $equipo = $request['equipo'];
+            $ficha = $request['ficha'];
+
+            $id_antiguo = $equipo['id_ficha'];
+            $id_nuevo = $ficha['id_ficha'];
+
+            $id_ficha = $ficha['id_ficha'];
+            //$id_sala =  $ficha['id_sala'];
+            $id_equipo = $ficha['id_equipo'];
+
+
+            $antiguo = (array) DB::table('dar_citas')->where('id_ficha', '=', $id_antiguo)->get()[0]; //->update(['id_ficha'=>$nuevo] );
+
+            $nuevo = (array) DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->get()[0]; //->update(['id_ficha'=>$antiguo] );
+
+
+            DB::table('dar_citas')->where('id_ficha', '=', $id_antiguo)->update(['id_persona' => $antiguo['id_persona']]);
+            DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->update(['id_persona' => $nuevo['id_persona']]);
+
+
+            DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_equipo]);
+
+            return $request;
+            */
+        /*$equipos =
 
                 DB::table("fichas")
                 ->select('*')
@@ -214,19 +341,23 @@ class AtenderController extends Controller
                 ];
                 array_push($r_equipo, $a);
             }
+            $r = [
+            'seleccion' => $seleccion,
+            'equipo' => $r_equipo
+        ];
             /*$equipos = DB::table('equipos')
                 ->select('*')
                 ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_equipo', '=', 'equipos.id')
                 ->where('designar_equipo_lineals.id_conf', '=', $list_config2[0]->id_configuracion)
                 ->get();*/
-        }
+        /*}
 
         $r = [
             'seleccion' => $seleccion,
             'equipo' => $r_equipo
         ];
 
-        return $r;
+        return $r;*/
         //->where('fichas.fecha','=', $fecha);
     }
 }
