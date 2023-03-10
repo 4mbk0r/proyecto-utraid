@@ -60,14 +60,18 @@ class AtenderController extends Controller
                 $id_equipo = $equipo['id_equipo'];
 
 
-                $antiguo = (array) DB::table('dar_citas')->where('id_ficha', '=', $id_antiguo)->first(); //->update(['id_ficha'=>$nuevo] );
+                $antiguo = (array) DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->first(); //->update(['id_ficha'=>$nuevo] );
 
-                $nuevo = (array) DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->first(); //->update(['id_ficha'=>$antiguo] );
-
-
+                //if id equipó. 
+                       
+                $nuevo = (array) DB::table('dar_citas')->where('id_ficha', '=', $id_antiguo)->get(); //->update(['id_ficha'=>$antiguo] );
+                if(count($nuevo)>0){
+                    DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->update(['id_persona' => $nuevo['id_persona']]);
+    
+                }
+                //return $antiguo;
                 DB::table('dar_citas')->where('id_ficha', '=', $id_antiguo)->update(['id_persona' => $antiguo['id_persona']]);
-                DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->update(['id_persona' => $nuevo['id_persona']]);
-
+                
 
                 DB::table('atenders')->insert(['id_ficha' => $id_antiguo, 'id_designado' => $id_equipo]);
 
@@ -161,10 +165,12 @@ class AtenderController extends Controller
 
                 //DB::raw("(designar_equipos.fecha = fichas.fecha and designar_equipos.id_sala = 'fichas'.id_sala)"));
             })
+            ->leftJoin('atenders','atenders.id_ficha', '=', 'fichas.id')
             ->leftJoin('equipos', function ($join) {
                 $join->on('equipos.id', '=', 'designar_equipos.id_equipo');
             })
-            ->select(['fichas.id as id_ficha', '*'])
+            ->select([ '*', 'fichas.id as id_ficha'])
+            ->whereNull('id_designado')
             ->where('fichas.fecha', '=', $request['fecha'])
             ->where(
                 function ($query) use ($request) {

@@ -504,7 +504,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                                     //categoria=this.categories[key]
                                     
                                     this.events.push({
-                                        name: (!ficha.id_designado) ? 'blue' : ficha.id_designado,
+                                        name: (!ficha.id_persona) ? 'Sin asignar' : ficha.nombres,
                                         //paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
                                         start: new Date(this.fecha_calendario + 'T' + ficha.hora_inicio + '-04:00'),
                                         end: new Date(this.fecha_calendario + 'T' + ficha.hora_final + '-04:00'),

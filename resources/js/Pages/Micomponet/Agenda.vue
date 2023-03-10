@@ -8,7 +8,7 @@
                         <v-sheet height="64">
                             <v-toolbar>
                                 <v-btn outlined class="mr-4" color="grey darken-2" @click="setToday">
-                                    Hoysss
+                                    Hoy
                                 </v-btn>
                                 <!--onkeydown="return false"-->
                                 <!--<v-text-field v-model="fecha_uso"  :min="fechacitaMin" :rules="[ fechaValida ]" type="date" label="Fecha De Cita" >
