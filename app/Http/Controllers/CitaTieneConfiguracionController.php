@@ -58,7 +58,7 @@ class CitaTieneConfiguracionController extends Controller
         select * from calendarios
         where fecha = '14-02-2023';
         */
-
+    
         $list_config = DB::table('fichas')
             ->select(['fichas.id_sala', 'salas.descripcion', 'designar_equipos.id_equipo', 'equipos.nombre_equipo'])
             ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
