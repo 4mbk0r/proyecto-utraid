@@ -29,7 +29,7 @@
                 <v-row no-gutters>
                   <v-col cols="12" sm="8" class="pr-4">
                     <v-text-field v-model="paciente.ci" :rules="nombreRules" :color="op1 === 1 ? 'green' : 'blue'"
-                      label="Cedula de Identidad" @change="buscadorporci()" required>
+                      label="Cedula de Identidad" @keydown.enter="buscadorporci()" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4">
@@ -100,6 +100,46 @@
                     <v-btn v-if="op1 == 2" color="primary" class="mr-4" @click="dar_cita()">
                       dar_cita
                     </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-data-table v-if="op1 == 1"  :headers="headers" 
+                    :footer-props="{
+                      itemsPerPageText: 'Pacientes por pagina',
+                      'items-per-page-options':[15, 30, 50, 100, -1], 'items-per-page-all-text':'Todos'}"
+                    :items="persona" item-key="ci" :search="search"
+                    :header-props='{
+                      sortByText: "Ordenar por"
+                    }'
+                      @click:row="seleccion_paciente($event)" 
+                      class="elevation-1">
+                      <template v-slot:no-results>
+                        <span>No existen datos</span>
+                    </template>
+                      <!--
+                    <template v-slot:top>
+                       v-container, v-col and v-row are just for decoration purposes
+                      <v-container>
+                        <v-row>
+
+                          <v-col cols="6">
+                            <v-row class="pa-6">
+                              Filter for dessert name
+                              <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+                                hide-details></v-text-field>
+
+                            </v-row>
+                          </v-col>
+
+
+
+                        </v-row>
+                      </v-container>
+
+                    </template>
+                    -->
+                    </v-data-table>
                   </v-col>
                 </v-row>
                 <v-card v-if="buscador == true"> buscar datos </v-card>
@@ -196,12 +236,21 @@
                   </v-text-field>
                 </v-col>
               </v-row>
-              <v-btn color="primary" class="mr-4" @click="guardar_cita">
-                Guardar Cita
-              </v-btn>
-              <v-btn color="primary" class="mr-4" @click="imprimir_directo" @click.stop="v_agendar = false">
-                Boleta
-              </v-btn>
+              <v-row>
+                <v-col>
+
+                  <v-btn color="primary" class="mr-4" @click="guardar_cita">
+                    Guardar Cita
+                  </v-btn>
+
+                </v-col>
+                <v-col>
+                  <v-btn color="primary" class="mr-4" @click="imprimir_directo" @click.stop="v_agendar = false">
+                    Boleta
+                  </v-btn>
+                </v-col>
+              </v-row>
+
             </v-container>
           </v-form>
         </v-card>
@@ -309,7 +358,8 @@ export default {
   },
   data: () => ({
     validacion: false,
-
+    items: [],
+    search: '',
     paciente: {},
     paciente_existen: {},
     icon_ci: "mdi-account",
@@ -484,7 +534,11 @@ export default {
     maxFechaNac: day1,
     ssexo: ["MASCULINO", "FEMENINO"],
   }),
-  unmounted() { },
+
+  beforeMount() {
+    this.datos_filtrado();
+
+  },
   created() {
     //this.paciente_edit = structuredClone(this.paciente);
     //console.log("++++" + moment(this.fechacitaMin).add(1, 'd').format('YYYY-MM-DD')
@@ -495,10 +549,131 @@ export default {
     this.fechacitaMax = moment(this.$store.getters.getfecha_server)
       .add(1, "Y")
       .format("YYYY-MM-DD");
-  },
 
+  },
+  computed: {
+    persona() { return this.items },
+    headers() {
+      return [
+        {
+          text: 'Nombres',
+          align: 'left',
+          //sortable: false,
+          value: 'nombres',
+          
+          filter: this.nombreFilter,
+          //filter: this.nombre_,
+          //filter: this.nameFilter,
+        },
+        {
+          text: 'Apellido Paterno',
+          value: 'ap_paterno',
+          filter: this.paternoFilter,
+        },
+        {
+          text: 'Apellido Materno',
+          value: 'ap_materno',
+          filter: this.maternoFilter,
+          //filter: this.caloriesFilter,
+        },
+        {
+          text: 'Cedula de identidad',
+          value: 'ci',
+          filter: this.ciFilter,
+          //filter: this.esta_en_equipo
+          //filter: this.caloriesFilter,
+        },
+        {
+          text: 'Expedido',
+          value: 'expedido',
+          //filter: this.ciFilter,
+          //filter: this.esta_en_equipo
+          //filter: this.caloriesFilter,
+        },
+        
+
+        
+
+        /*{
+            text: 'Cargo',
+            value: 'cargo',
+            filter: this.cargoFilter
+            //filter: this.caloriesFilter,
+        },
+
+        {
+            text: 'Equipo',
+            value: 'equipo',
+            filter: this.esta_en_equipo,
+            show: false,
+            //filter: this.caloriesFilter,
+        },*/
+
+
+      ]
+    }
+
+  },
   methods: {
+    seleccion_paciente(value){
+      this.paciente_existen = value
+      this.msm_existe = true
+    },
+    ciFilter(value) {
+      //console.log(this.paciente.nombres);
+      if( typeof this.paciente.ci == 'undefined') return true
+      if(this.paciente.ci == '') return true
+      if(value.includes(this.paciente.ci)) return true;
+      return false;
+    },
+
+    nombreFilter(value) {
+      //console.log(this.paciente.nombres);
+      if( typeof this.paciente.nombres == 'undefined') return true
+      if(this.paciente.nombres == '') return true
+      if(value.includes(this.paciente.nombres)) return true;
+      return false;
+    },
+    paternoFilter(value) {
+      //console.log(this.paciente.ap_paterno);
+      if( typeof this.paciente.ap_paterno == 'undefined') return true
+      if(this.paciente.ap_paterno == '') return true
+      if(value.includes(this.paciente.ap_paterno)) return true;
+      return false;
+    },
+    maternoFilter(value) {
+      console.log(this.paciente.ap_materno);
+      if( typeof this.paciente.ap_materno == 'undefined') return true
+      if(this.paciente.ap_materno == '') return true
+      if(value.includes( this.paciente.ap_materno)) return true;
+      return false;
+    },
     /*  inicialiazar fecha minima*/
+    async datos_filtrado() {
+      var res = await axios({
+        method: 'get',
+        url: `/${process.env.MIX_CARPETA}/persona`,
+        /*data: {
+          ficha: this.selectedEvent.fichas,
+          equipo: this.selectequipo.equipo
+        }*/
+      }).then(
+        (response) => {
+          console.log("---_:.-.-.-.-.-.-.::::::::----");
+          console.log(response);
+          this.items = response.data
+          /*this.selectedEvent.fichas = structuredClone(response.data);
+          //this.selectedEvent.color = 'yellow'
+          this.pedir_datos()
+          this.selectedOpen = false
+          */
+        }
+      ).catch(err => {
+        console.log(err)
+
+      });
+
+    },
     validar_seleccion() {
       /*console.log("___________");
       console.log(this.consultorios);
@@ -681,6 +856,7 @@ export default {
     },
     open() {
       this.dialog = true;
+      this.datos_filtrado()
     },
     async tabselect(a) {
       this.datos_informacion = a;

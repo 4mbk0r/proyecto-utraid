@@ -198,7 +198,7 @@ class CitaTieneConfiguracionController extends Controller
                     ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
                     ->leftJoin('designar_equipos', 'designar_equipos.id_sala', '=', 'salas.id')
                     ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipos.id_equipo')
-                    ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_sala')
+                    ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_conf_sala')
                     ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
                     ->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
                     ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')

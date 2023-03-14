@@ -158,7 +158,7 @@ class PersonaCitaController extends Controller
         if ($opcion == 2) {
             try {
 
-                DB::table('persona_citas')->where('ci', $antiguo['ci'])->update($nuevo);
+                DB::table('personas')->where('ci', $antiguo['ci'])->update($nuevo);
                 $citas = DB::table('citas')->where('ci', $nuevo['ci'])->get();
                 foreach ($citas as $date) {
                     Cache::forget('citas' . $date->fecha);
@@ -172,7 +172,7 @@ class PersonaCitaController extends Controller
             } catch (Exception $e) {
                 $error = explode(' ', $e->getMessage());
                 if ($error[0] == 'SQLSTATE[23505]:') {
-                    $persona = DB::table('persona_citas')->where('ci', $nuevo['ci'])->get();
+                    $persona = DB::table('personas')->where('ci', $nuevo['ci'])->get();
                     $respuesta = [
                         'persona' => $persona[0],
                         'mensaje' => $error[0],

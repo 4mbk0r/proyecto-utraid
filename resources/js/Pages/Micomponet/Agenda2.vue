@@ -75,7 +75,7 @@
                         :first-interval=7 :interval-count=14></v-calendar>
                     <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement" offset-x>
                         <v-card color="grey lighten-4" min-width="350px" flat>
-                            <v-toolbar :color="selectedEvent.color" dark>
+                            <v-toolbar :color="selectedEvent.color">
                                 <v-btn icon>
                                     <v-icon>mdi-pencil</v-icon>
                                 </v-btn>
@@ -135,7 +135,9 @@
                                         <v-col>
                                             <v-data-table :headers="encabezado" :items="selectequipo.lista"
                                                 hide-default-footer disable-pagination>
-
+                                                <template v-slot:no-results>
+                                                    <span>No existen datos</span>
+                                                </template>
                                             </v-data-table>
                                         </v-col>
 
@@ -462,6 +464,9 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                         console.log(salas)
                         console.log(salas_disponibles)
                         */
+                        console.log('-000000---');
+                        console.log(salas
+                        );
                         this.categories.push(salas[key]['descripcion'])
                         this.events.push({
                             name: salas[key]['nombre_equipo'],
@@ -499,16 +504,16 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                                 console.log(this.salas[key]);
                                 console.log(this.salas[key].id_equipo, ' ', ficha.id_equipo);
                                 */
-                               if (this.salas[key].id_equipo == ficha.id_equipo) {
+                                if (this.salas[key].id_equipo == ficha.id_equipo) {
                                     //console.log('si');
                                     //categoria=this.categories[key]
-                                    
+
                                     this.events.push({
                                         name: (!ficha.id_persona) ? 'Sin asignar' : ficha.nombres,
                                         //paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
                                         start: new Date(this.fecha_calendario + 'T' + ficha.hora_inicio + '-04:00'),
                                         end: new Date(this.fecha_calendario + 'T' + ficha.hora_final + '-04:00'),
-                                        color: (!ficha.id_persona) ? 'red' : (!ficha.id_designado) ? 'blue' : 'green',
+                                        color: (!ficha.id_persona) ? 'grey' : (!ficha.id_designado) ? 'blue' : 'green',
                                         timed: 1,
                                         category: this.categories[key],
                                         fichas: fichas[x],
@@ -634,7 +639,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
 
         },
         getcolor(ficha) {
-            return (!ficha.id_persona) ? 'red' : (!ficha.id_designado) ? 'blue' : 'green'
+            return (!ficha.id_persona) ? 'white' : (!ficha.id_designado) ? 'blue' : 'green'
         },
         valores(objecto, x) {
             if (typeof objecto == "undefined") return
@@ -859,6 +864,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             this.$refs.dato.cita_nueva = this.selectedEvent.fichas
             //console.log();
             this.$refs.dato.open()
+
         },
         get_nombre_equipo($value) {
             /*console.log("------");

@@ -23,13 +23,14 @@ class CreateCalendariolinealsTable extends Migration
             $table->integer('id_configuracion');
             //$table->unique(['fecha_inicio', 'fecha_final']);
             $table->boolean('principal')->default(false);
+            $table->boolean('activo')->default(true);
         });
         DB::statement(
             "ALTER TABLE " . $base . " ADD FOREIGN KEY (id_configuracion) REFERENCES configuracions(id) ON DELETE CASCADE"
         );
         $datos = [
             'fecha_inicio' => '01-11-2022',
-            'fecha_final' => '30-12-9999',
+            'fecha_final' => '01-12-9999',
             'historial' => '0',
             'id_configuracion' => 1,
             'principal' => true

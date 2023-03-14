@@ -16,6 +16,8 @@ use App\Http\Controllers\AtenderController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\UserController;
 
+
+use App\Http\Controllers\PersonaController;
 //personal
 
 use App\Http\Controllers\PersonalController;
@@ -188,5 +190,8 @@ Route::resource('/dar_ficha', DarCitaController::class)->middleware(['auth:sanct
 
 
 Route::resource('/atender', AtenderController::class)->middleware(['auth:sanctum', 'verified']);
+
+
+Route::resource('/persona', PersonaController::class)->middleware(['auth:sanctum', 'verified']);
 
 

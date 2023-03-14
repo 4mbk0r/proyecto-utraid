@@ -1,7 +1,7 @@
 <template>
 <div id="app">
     <v-app id="inspire">
-        <v-data-table :headers="headers" :footer-props="{itemsPerPageText: 'Pacientes por pagina'}" :items="desserts" :search="search" sort-by="calories" class="elevation-1 cyan lighten-3">
+        <v-data-table :headers="headers" :footer-props="{itemsPerPageText: 'Pacientes por pagina', }" :items="desserts" :search="search" sort-by="calories" class="elevation-1 cyan lighten-3">
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title>My CRUD</v-toolbar-title>

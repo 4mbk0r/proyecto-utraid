@@ -52,8 +52,8 @@
                   </v-tooltip>
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn class="ma-2" small :color="item.color" @click="opendeleteconfig(i)" v-bind="attrs"
-                        v-on="on" dark>
+                      <v-btn class="ma-2" small :color="item.color" @click="opendeleteconfig(i)" v-bind="attrs" v-on="on"
+                        dark>
                         <v-icon dark>
                           mdi-delete
                         </v-icon>
@@ -75,7 +75,26 @@
         @respuesta="deleteconfig_respuesta">
       </deleteconfig>
     </div>
-
+    <v-row>
+      <v-col cols="12">
+          <v-menu ref="menu" v-model="menu" :close-on-content-click="false" :return-value.sync="dates"
+              transition="scale-transition" offset-y min-width="auto">
+              <template v-slot:activator="{ on, attrs }">
+                  <v-combobox v-model="dates" mutiple  chips small-chips label="Fecha por rango"
+                      prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-combobox>
+              </template>
+              <v-date-picker v-model="dates" @input="probar" range no-title scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu = false">
+                      Cancel
+                  </v-btn>
+                  <v-btn text color="primary" @click="$refs.menu.save(dates)">
+                      OK
+                  </v-btn>
+              </v-date-picker>
+          </v-menu>
+      </v-col>
+  </v-row>
   </app-layout>
 </template>
     
@@ -114,6 +133,22 @@ export default {
       configuracion: [],
       calendario: [],
       mensaje: {},
+      drawer: null,
+      items: [{
+        title: 'Home',
+        icon: 'mdi-view-dashboard'
+      },
+      {
+        title: 'About',
+        icon: 'mdi-forum'
+      },
+      ],
+      cita: {},
+      range: [],
+      multiple: [],
+      dates: [],
+      config: [],
+      menu: false,
     }
   },
   computed: {
@@ -206,6 +241,14 @@ export default {
 
     },
 
+    probar() {
+      //alert(this.dates[this.dates.length - 1])
+      var ult = this.dates[this.dates.length - 1]
+      /*for (x in this.dates) {
+        ///var f = this.dates[x]
+
+      }*/
+    },
 
     paso1() {
 

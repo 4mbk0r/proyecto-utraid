@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\persona;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PersonaController extends Controller
 {
@@ -16,6 +17,9 @@ class PersonaController extends Controller
     public function index()
     {
         //
+        return DB::table('personas')
+        ->select('*')->get();
+
     }
 
     /**

@@ -18,8 +18,9 @@ class CreatePersonasTable extends Migration
             $table->text('ci');
             //$table->foreignId('nombre')->nullable()->index();
             $table->text('nombres');
-            $table->text('ap_paterno', 100);
+            $table->text('ap_paterno', 100)->nullable();
             $table->text('ap_materno', 100)->nullable();
+            $table->text('ap_casada', 100)->nullable();
             $table->text('celular', 100)->nullable();
             $table->text('correo', 100)->nullable();
             $table->text('expedido', 100)->nullable();
