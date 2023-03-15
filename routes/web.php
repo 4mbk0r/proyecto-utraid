@@ -27,6 +27,7 @@ use App\Http\Controllers\Controllgeneral;
 
 use App\Http\Controllers\CuentaController;
 use App\Http\Controllers\EquipoController;
+use App\Http\Controllers\HistorialController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,6 +35,7 @@ use App\Http\Controllers\PersonaAntiguoController;
 use App\Http\Controllers\PersonaCitaController;
 use App\Http\Controllers\PermisoController;
 use App\Models\agenda;
+use Sabberworm\CSS\Property\Import;
 
 /*
 |--------------------------------------------------------------------------
@@ -194,4 +196,6 @@ Route::resource('/atender', AtenderController::class)->middleware(['auth:sanctum
 
 Route::resource('/persona', PersonaController::class)->middleware(['auth:sanctum', 'verified']);
 
+//use App\Http\Controllers\HistorialController;
+Route::resource('/conf_prueba', HistorialController::class)->middleware(['auth:sanctum', 'verified']);
 

@@ -4,9 +4,18 @@
       <div>
         {{ fecha_server }}
       </div>
+      <v-card>
+        <v-card-title>
+          Configuracion el linea
+          <v-spacer></v-spacer>
+          <v-btn @click="opennuevaconfig">
+            Fecha proximas
+          </v-btn>
+        </v-card-title>
 
+      </v-card>
       <v-expansion-panels v-model="panel" focusable>
-        <v-expansion-panel v-for="(item, i) in calendario" :key="i">
+        <v-expansion-panel v-for="(item, i) in calendario" :key="i" @click="mostrar(item)">
           <v-expansion-panel-header class="d-flex align-center" :color="item.color">
             <v-card>
               <v-form ref="calendario_lineal">
@@ -65,36 +74,58 @@
                 </v-col>
 
               </v-row>
-            </v-card>
 
+            </v-card>
+            <v-row>
+
+              <!--{{ item }}-->
+              <v-col>
+                <v-data-table :headers="headers" :footer-props="{
+                  itemsPerPageText: 'Fechas con configuracion',
+                  'items-per-page-options': [15, 30, 50, 100, -1], 'items-per-page-all-text': 'Todos'
+                }" :items="fechas"
+                  item-key="ci" :header-props='{
+                    sortByText: "Ordenar por"
+                  }' 
+                  class="elevation-1">
+                  <template v-slot:no-results>
+                    <span>No existen datos</span>
+                  </template>
+                  <!--
+                    <template v-slot:top>
+                       v-container, v-col and v-row are just for decoration purposes
+                      <v-container>
+                        <v-row>
+
+                          <v-col cols="6">
+                            <v-row class="pa-6">
+                              Filter for dessert name
+                              <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+                                hide-details></v-text-field>
+
+                            </v-row>
+                          </v-col>
+
+
+
+                        </v-row>
+                      </v-container>
+
+                    </template>
+                    -->
+                </v-data-table>
+              </v-col>
+            </v-row>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
       <editconfig v-if='editarConfig' :dialog="editarConfig" :item="edit" @cerrar="closeeditconfig"></editconfig>
+      <nuevaconfig v-if='nuevaConfig' :dialog="nuevaConfig"  @cerrar="closeeditconfig" ></nuevaconfig>
       <deleteconfig v-if='deleteConfig' :dialog="deleteConfig" :datos="edit" :mensaje="mensaje"
         @respuesta="deleteconfig_respuesta">
       </deleteconfig>
     </div>
-    <v-row>
-      <v-col cols="12">
-          <v-menu ref="menu" v-model="menu" :close-on-content-click="false" :return-value.sync="dates"
-              transition="scale-transition" offset-y min-width="auto">
-              <template v-slot:activator="{ on, attrs }">
-                  <v-combobox v-model="dates" mutiple  chips small-chips label="Fecha por rango"
-                      prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-combobox>
-              </template>
-              <v-date-picker v-model="dates" @input="probar" range no-title scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="menu = false">
-                      Cancel
-                  </v-btn>
-                  <v-btn text color="primary" @click="$refs.menu.save(dates)">
-                      OK
-                  </v-btn>
-              </v-date-picker>
-          </v-menu>
-      </v-col>
-  </v-row>
+
   </app-layout>
 </template>
     
@@ -102,6 +133,7 @@
 import AppLayout from '@/Layouts/AppLayout'
 import Welcome from '@/Jetstream/Welcome'
 import Editconfig from '@/Pages/Micomponet/AdicionConfiguracion'
+import nuevaconfig from '@/Pages/Micomponet/nuevaConfiguracion'
 import deleteconfig from '@/Pages/Micomponet/eleminarConfiguracion'
 
 import moment from 'moment'
@@ -109,7 +141,8 @@ export default {
   components: {
     Editconfig,
     deleteconfig,
-    AppLayout
+    AppLayout,
+    nuevaconfig
   },
   props: {
 
@@ -128,6 +161,8 @@ export default {
       panel: [],
       items: 5,
       editarConfig: false,
+      
+      nuevaConfig: false,
       deleteConfig: false,
       edit: {},
       configuracion: [],
@@ -149,12 +184,51 @@ export default {
       dates: [],
       config: [],
       menu: false,
+      datos_conf: [],
+      fechas: [],
     }
   },
   computed: {
+    headers() {
+      return [
+        {
+          text: 'Fecha',
+          align: 'left',
+          //sortable: false,
+          value: 'fecha',
+          
+          //filter: this.nombreFilter,
+          //filter: this.nombre_,
+          //filter: this.nameFilter,
+        }
+      ]
+    }
 
   },
   methods: {
+    async mostrar($c) {
+      console.log($c);
+      var res = await axios({
+        method: 'post',
+        url: `/${process.env.MIX_CARPETA}/conf_prueba`,
+        data: {
+          fechas: $c,
+        }//equipo: this.selectequipo.equipo
+
+      }).then(
+        (response) => {
+          //var r = response.data.seleccion
+          console.log(response.data);
+          this.fechas = response.data
+          //this.calendario = response.data
+
+
+        }
+      ).catch(err => {
+        console.log(err)
+
+      });
+    },
     async pedir_calendarioslineal() {
       var res = await axios({
         method: "get",
@@ -184,6 +258,19 @@ export default {
 
 
     },
+    opennuevaconfig() {
+      ////console.log();
+      //console.log(this.panel);
+      //console.log(this.calendario);
+      //this.edit = structuredClone(this.calendario[this.panel])
+      //console.log(this.edit);
+      setTimeout(() => {
+
+      }, 0);
+      this.nuevaConfig = true
+
+
+    },
     opendeleteconfig(item) {
       ////console.log();
       //console.log(this.panel);
@@ -208,6 +295,7 @@ export default {
       this.editarConfig = value
       this.pedir_calendarioslineal()
     },
+    
     delete_config() {
       this.deletcConfig = true
     },
@@ -249,11 +337,27 @@ export default {
 
       }*/
     },
+    async subir_datos() {
+      var res = await axios({
+        method: 'post',
+        url: `/${process.env.MIX_CARPETA}/conf_prueba`,
+        data: {
+          fechas: this.dates.sort(),
+        }//equipo: this.selectequipo.equipo
 
-    paso1() {
+      }).then(
+        (response) => {
+          //var r = response.data.seleccion
+          console.log(response.data);
+          this.calendario = response.data
 
+
+        }
+      ).catch(err => {
+        console.log(err)
+
+      });
     }
-
   },
 }
 </script>
