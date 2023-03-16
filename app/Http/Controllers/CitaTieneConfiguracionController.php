@@ -116,7 +116,7 @@ class CitaTieneConfiguracionController extends Controller
                     $salas = DB::table('asignar_config_salas')
                         ->select('*')
                         ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
-                        ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
+                        //->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
                         ->where('asignar_config_salas.id_conf', '=', $list_config[0]->id_configuracion)
                         ->get();
                     $horario = [];
@@ -127,7 +127,7 @@ class CitaTieneConfiguracionController extends Controller
                         $h =
                             DB::table("salas")
                             //->select(['*', 'fichas.id_ficha as id_fichas'])
-                            ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
+                            //->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
     
                             ->leftJoin("asignar_salas", function ($join) use ($value) {
                                 $join->on("asignar_salas.id_sala", "=", "salas.id");
@@ -143,8 +143,10 @@ class CitaTieneConfiguracionController extends Controller
                             ->leftJoin("horarios", function ($join) {
                                 $join->on("horarios.id", "=", "asignar_horarios.id_horario");
                             })
-                            ->orderBy('salas.descripcion', 'asc')
                             ->whereNotNull('conf_salas.id')
+                            //->where('conf_salas.id','=',$value->id_conf)
+                            ->where('salas.id','=',$value->id_sala)
+                            ->orderBy('salas.descripcion', 'asc')
                             //->leftJoin('asignar_config_salas',  "asignar_config_salas.id_sala", "=", "salas.id" )
                             //->where("salas.id", "=", $value->id_sala)
                             //->where("conf_salas.id", "=", $value->id_conf_sala)
@@ -153,6 +155,33 @@ class CitaTieneConfiguracionController extends Controller
                         array_push($horario, $h);
                     }
                     /*
+
+select Object { data: {…}, status: 200, statusText: "OK", headers: {…}, config: {…}, request: XMLHttpRequest }
+​
+config: Object { url: "/main/lista_configuracion/2023-03-16", method: "get", timeout: 0, … }
+​
+data: Object { salas: (4) […], salas_diponibles: (4) […], equipo: (2) […] }
+​​
+equipo: Array [ {…}, {…} ]
+​​
+salas: Array(4) [ {…}, {…}, {…}, … ]
+​​
+salas_diponibles: Array(4) [ 'select * from "salas" left join "designar_equipo_lineals" on "designar_equipo_lineals"."id_sala" = "salas"."id" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = ? left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = ? left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null order by "salas"."descripcion" asc', 'select * from "salas" left join "designar_equipo_lineals" on "designar_equipo_lineals"."id_sala" = "salas"."id" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = ? left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = ? left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null order by "salas"."descripcion" asc', 'select * from "salas" left join "designar_equipo_lineals" on "designar_equipo_lineals"."id_sala" = "salas"."id" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = ? left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = ? left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null order by "salas"."descripcion" asc', … ]
+​​
+<prototype>: Object { … }
+​
+headers: Object { "cache-control": "no-cache, private", connection: "Keep-Alive", "content-type": "application/json", … }
+​
+request: XMLHttpRequest { readyState: 4, timeout: 0, withCredentials: false, … }
+​
+status: 200
+​
+statusText: "OK"
+​
+<prototype>: Object { … }
+Agenda2.vue:442
+
+                    
                         *          
                         */
                     //$salas_disponibles =[];

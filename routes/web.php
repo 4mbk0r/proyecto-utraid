@@ -199,3 +199,6 @@ Route::resource('/persona', PersonaController::class)->middleware(['auth:sanctum
 //use App\Http\Controllers\HistorialController;
 Route::resource('/conf_prueba', HistorialController::class)->middleware(['auth:sanctum', 'verified']);
 
+
+use App\Http\Controllers\NuevaConfigController;
+Route::resource('/configuracion_rango', NuevaConfigController::class)->middleware(['auth:sanctum', 'verified']);

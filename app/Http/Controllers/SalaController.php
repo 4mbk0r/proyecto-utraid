@@ -43,7 +43,7 @@ class SalaController extends Controller
 
         $sala =  $request['sala'];
         $horario = $request['horario'];
-        //return $sala;
+        //return $request;
         //
         try {
             //se debe de poner la institucion en consulta
@@ -182,6 +182,7 @@ class SalaController extends Controller
         //
         $consultorio = $request['datos'];
         $horario = $request['horario'];
+        return $request;
         //return $horario;
         try {
 

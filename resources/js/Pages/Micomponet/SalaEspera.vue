@@ -161,9 +161,14 @@ export default {
       //console.log("editar " + this.editar_consulta);
       //console.log("editar " + this.editedIndex);
       //console.log(this.editedItem);
-      if (!this.$refs.salas.validate()) {
+      if ( this.horario.length === 0) {
+          alert('no se tiene horarios')
+          return;
+        }
+      if (!this.$refs.salas.validate() ) {
+        
         //console.log("razones");
-        this.horario = []
+        //this.horario = []
         return
       }
       var res = await this.axios({
@@ -229,17 +234,24 @@ export default {
 
           while (tiempo_i.isBefore(tiempo_f)) {
             let op = {}
+          
+            let a = moment(tiempo_i.format('HH:mm'), 'hh:mm')
+            let s = a.add(this.editedItem.min_promedio_atencion, 'minutes')
+            //console.log(tiempo_i.format('HH:mm'));
+            //console.log(s.format('HH:mm'));
+            if(a.isAfter(tiempo_f)){
+              alert('existe un tiempo libre que no encaja con tu configuracion')
+              break}
+            
             op.hora_inicio = tiempo_i.format('HH:mm')
-
-            let s = tiempo_i.add(this.editedItem.min_promedio_atencion, 'minutes')
             op.hora_final = s.format('HH:mm')
             op.sala = this.editedItem.sala
             this.horario.push(op);
             
-            if (tiempo_i.isSameOrAfter(moment(this.editedItem.tiempo_descanso, 'HH:mm')) && tiempo_descanso == true) {
-              let mensaje = 'hora de descanso sera ' + tiempo_i.format('HH:mm')
+            if (s.isSameOrAfter(moment(this.editedItem.tiempo_descanso, 'HH:mm')) && tiempo_descanso == true) {
+              let mensaje = 'hora de descanso sera ' + s.format('HH:mm')
               tiempo_i = tiempo_i.add(30, 'minutes')
-              mensaje += ' - ' + tiempo_i.format('HH:mm')
+              mensaje += ' - ' + s.format('HH:mm')
               //alert(mensaje)
               tiempo_descanso = false
             } else {

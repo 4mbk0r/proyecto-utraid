@@ -49,7 +49,7 @@
                             <span class="text-h5">Fecha de vigencia</span>
                         </v-card-title>
                         <v-card-text>
-                            <v-form ref="calendario_linar">
+                            <v-form ref="fecha_rango">
                                 <v-row>
                                     <v-col cols="12">
                                         <v-menu ref="menu" v-model="menu" :close-on-content-click="false"
@@ -58,10 +58,10 @@
                                             <template v-slot:activator="{ on, attrs }">
                                                 <v-combobox v-model="dates" multiple chips small-chips
                                                     label="Seleccione el Rango" prepend-icon="mdi-account" v-bind="attrs"
-                                                    autofocus
-                                                    v-on="on"></v-combobox>
+                                                    autofocus v-on="on"></v-combobox>
                                             </template>
-                                            <v-date-picker v-model="dates" range no-title scrollable>
+                                            <v-date-picker v-model="dates" :min="minfecha()"
+                                            :max="maxfecha()"  range no-title scrollable>
                                                 <v-spacer></v-spacer>
                                                 <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
                                                 <v-btn text color="primary" @click="$refs.menu.save(dates)">OK</v-btn>
@@ -141,15 +141,7 @@
 
                 <v-stepper-content step="4">
 
-                    <v-card-actions>
-                        <v-btn color="primary" @click="paso5">
-                            Continuar
-                        </v-btn>
-                        <v-divider></v-divider>
-                        <v-btn text @click="cancelar">
-                            Cancelar
-                        </v-btn>
-                    </v-card-actions>
+                    
                     <equipo @update="equipo_update($emit)" @next="paso5" :equipo="equipo" ref="equipo"></equipo>
 
                 </v-stepper-content>
@@ -277,22 +269,45 @@ export default {
             }
             this.$emit('cerrar', false)
         },
+        
+        paso2() {
+            if (this.$refs.fecha_rango.validate()) {
+                this.paso = 2
+            }
+
+        },
+
+        async paso3() {
+
+            if (this.$refs.form_configuracion.validate()) {
+                this.paso = 3
+                //this.validar_configuracion()
+                //console.log("_________")
+                //console.log(this.item)
+
+
+            }
+
+
+
+        },
         minfecha() {
 
             ////console.log(item)
             /*moment('2010-10-20').isBefore('2010-12-31', 'year'); // false <
-    
+            
             moment('2010-10-20').isBefore('2011-01-01', 'year'); // true    <
             moment('2010-10-20').isSame('2009-12-31', 'year');  // false =
             moment('2010-10-20').isSame('2010-01-01', 'year');  // true
             moment('2010-10-20').isSame('2010-12-31', 'year');  // true
             moment('2010-10-20').isSame('2011-01-01', 'year');  // false
-    
+            
             moment('2010-10-20').isAfter('2010-01-01', 'year'); // false >
             moment('2010-10-20').isAfter('2009-12-31', 'year'); // true>*/
             ////console.log(this.item);
             ////console.log(this.item)
             let f = this.$store.getters.gethoy
+            return f
             if (moment(f).isSameOrAfter(this.item.fecha_inicio)) {
                 return f
             }
@@ -314,32 +329,13 @@ export default {
             moment('2010-10-20').isAfter('2009-12-31', 'year'); // true>*/
             ////console.log(this.item);
             ////console.log(this.item)
-            let t_year = moment(this.$store.getters.fecha_inicio).add(3, 'year')
+            let t_year = moment(this.$store.getters.gethoy).add(3, 'year')
+            return t_year.format('yyyy-mm-dd')
             ////console.log(t_year);
             if (t_year.isSameOrAfter(this.item.fecha_final)) {//>
                 return this.item.fecha_final
             }
             return t_year.format('yyyy-mm-dd')
-
-        },
-        paso2() {
-            if (this.$refs.calendario_linar.validate()) {
-                this.paso = 2
-            }
-
-        },
-        async paso3() {
-
-            if (this.$refs.form_configuracion.validate()) {
-                this.paso = 3
-                //this.validar_configuracion()
-                //console.log("_________")
-                //console.log(this.item)
-
-
-            }
-
-
 
         },
         paso4() {
@@ -432,10 +428,10 @@ export default {
             this.configuracion.institucion = '01'
             var res = await axios({
                 method: "post",
-                url: `/${process.env.MIX_CARPETA}/configuracion`,
+                url: `/${process.env.MIX_CARPETA}/configuracion_rango`,
                 data: {
 
-                    fecha_nueva: this.date,
+                    fecha_nueva: this.dates.sort(),
                     configuracion: this.configuracion,
                     configuracion_antigua: this.item,
                     salas: this.salas,

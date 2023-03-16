@@ -120,7 +120,7 @@
         </v-expansion-panel>
       </v-expansion-panels>
       <editconfig v-if='editarConfig' :dialog="editarConfig" :item="edit" @cerrar="closeeditconfig"></editconfig>
-      <nuevaconfig v-if='nuevaConfig' :dialog="nuevaConfig"  @cerrar="closeeditconfig" ></nuevaconfig>
+      <nuevaconfig v-if='nuevaConfig' :dialog="nuevaConfig"  @cerrar="closenuevaconfig" ></nuevaconfig>
       <deleteconfig v-if='deleteConfig' :dialog="deleteConfig" :datos="edit" :mensaje="mensaje"
         @respuesta="deleteconfig_respuesta">
       </deleteconfig>
@@ -293,6 +293,14 @@ export default {
       //console.log(value)
       */
       this.editarConfig = value
+      this.pedir_calendarioslineal()
+    },
+    closenuevaconfig(value) {
+      /*
+      //console.log(this.panel[this.items])
+      //console.log(value)
+      */
+      this.nuevaConfig = value
       this.pedir_calendarioslineal()
     },
     

@@ -504,7 +504,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                                 console.log(this.salas[key]);
                                 console.log(this.salas[key].id_equipo, ' ', ficha.id_equipo);
                                 */
-                                if (this.salas[key].id_equipo == ficha.id_equipo) {
+                                if (this.salas[key].id_equipo == ficha.id_equipo && this.salas[key].id_sala == ficha.id_sala) {
                                     //console.log('si');
                                     //categoria=this.categories[key]
 
@@ -520,6 +520,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                                         //atencion: fichas[atencion]
                                         //paciente: structuredClone(paciente)
                                     })
+                                
                                 }
                             }
 
