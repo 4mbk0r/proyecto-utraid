@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-if="dialog" v-model="dialog" class="text-left" persistent>
 
-
+        
     </v-dialog>
 </template>
 
@@ -85,7 +85,7 @@ export default {
         },
         close() {
             //this.dialog = false
-                       ////console.log(this.date);
+            ////console.log(this.date);
             this.$emit('cerrar', false)
         },
         async crear() {
