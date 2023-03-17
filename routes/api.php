@@ -22,6 +22,7 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\AtenderController;
 use App\Http\Controllers\PersonalController;
 use App\Models\Asignar_config_sala;
+use App\Models\Calendario;
 use App\Models\Configuracion;
 use App\Models\Horario;
 
@@ -212,4 +213,9 @@ Route::get('/lista_equipo/{ci}', function (string $fecha) {
 Route::post('/equipos_elegidos', function (Request $request) {
 
     return AtenderController::ver_equipos($request);
+});
+
+Route::get('/fechas_vigentes', function () {
+
+    return CalendarioController::fechas_vigentes();
 });

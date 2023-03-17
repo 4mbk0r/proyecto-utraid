@@ -64,10 +64,8 @@ class SalaController extends Controller
             }
         } catch (\Throwable $th) {
 
-            $rrr = Response::json([
-                'error' => $th
-            ], 404);
-            return $rrr;
+            
+            return $th;
         }
         //return $sala;
         try {
@@ -117,7 +115,14 @@ class SalaController extends Controller
                         'id_horario' => $id_horario,
                         'id_conf_sala' => $id_conf
                     ];
-                    DB::table('asignar_horarios')->insert($hora);
+                    $f = DB::table('asignar_horarios')
+                    ->where('id_horario','=', $id_horario)
+                    ->where('id_conf_sala', '=', $id_conf)
+                    ->get();
+                    if(count($f) == 0){
+                        DB::table('asignar_horarios')->insert($hora);    
+                    } 
+                    
                 }
             } elseif (count($busqueda_configuracion) >= 1) {
                 $b =  (array) $busqueda_configuracion[0];
@@ -132,14 +137,18 @@ class SalaController extends Controller
                 'id_conf_sala' => $id_conf,
                 'id_sala' => $sala['id_sala']
             ];
+            $t =DB::table('asignar_salas')
+            ->where('id_conf_sala', '=', $id_conf) 
+            ->where('id_sala', '=', $sala['id_sala'])
+            ->get();
+            if(count($t)==0){
+                DB::table('asignar_salas')->insert($configuracion);
+            
+            }
             $sala['id_conf_sala'] = $id_conf;
-            DB::table('asignar_salas')->insert($configuracion);
         } catch (\Throwable $th) {
 
-            return Response::json([
-                'error' => $th
-            ], 404);
-            //new Response(['message' => 'th'], 400);
+            return new Response(['message' => $th], 400);
         }
 
 

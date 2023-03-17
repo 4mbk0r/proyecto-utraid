@@ -95,7 +95,7 @@ class CalendarioController extends Controller
                 ->get();
             $verificar = false;
             $n = count($fecha_valida);
-            if ( $n == 0) {
+            if ($n == 0) {
                 $verificar = true;
             }
             $resp = [
@@ -108,5 +108,25 @@ class CalendarioController extends Controller
         }
 
         return $resp;
+    }
+    public static function fechas_vigentes()
+    {
+
+
+        $sql = DB::table("calendarios")
+            ->select(["fichas.fecha", DB::raw("count(dar_citas.id_ficha) as nro_citas")])
+            ->leftJoin("fichas", function ($join) {
+                $join->on("fichas.fecha", "=", "calendarios.fecha");
+            })
+            ->leftJoin("dar_citas", function ($join) {
+                $join->on("dar_citas.id_ficha", "=", "fichas.id");
+            })
+            ->where('calendarios.fecha','>=',date('d-m-Y'))
+
+            ->groupBy("fichas.fecha")
+            ->get();
+        return $sql;
+
+        //return $resp;
     }
 }

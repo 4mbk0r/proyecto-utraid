@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -40,46 +41,66 @@ class NuevaConfigController extends Controller
         //return $request;
         $fechas = $request['fecha_nueva'];
         $salas = $request['salas'];
-        foreach ($fechas as $k => $fecha) {
-            
-            foreach ($salas as $key => $value) {
-                # code...
-                $s = DB::table("salas")
-                    ->leftJoin("asignar_salas", function ($join) {
-                        $join->on("asignar_salas.id_sala", "=", "salas.id");
-                    })
-                    ->leftJoin("conf_salas", function ($join) {
-                        $join->on("conf_salas.id", "=", "asignar_salas.id_conf_sala");
-                    })
-                    ->leftJoin("asignar_horarios", function ($join) {
-                        $join->on("asignar_horarios.id_conf_sala", "=", "conf_salas.id");
-                    })
-                    ->leftJoin("horarios", function ($join) {
-                        $join->on("horarios.id", "=", "asignar_horarios.id_horario");
-                    })
-                    ->where("salas.id", "=", $value['id_sala'])
-                    ->where("conf_salas.id", "=", $value['id_conf_sala'])
-                    ->get();
-                //return $s;
-                foreach ($s as $i => $val) {
+        $equipos = $request['equipo'];
+        //return $request;
+        $fecha_inicio = new DateTime($fechas[0]);
+        $fecha_final = new DateTime($fechas[1]);
+
+        //echo $date->format('Y-m-d') . "\n";
+        while ($fecha_inicio <= $fecha_final) {
+
+            $t = [
+                'fecha' => $fecha_inicio,
+                'codigo' => '01',
+                'atencion' => 'atencion'
+            ];
+
+            $cal = DB::table('calendarios')->where('fecha', '=', $fecha_inicio)->get();
+            if (count($cal) > 0) continue;
+            else {
+                DB::table('calendarios')->insert($t);
+                foreach ($salas as $key => $value) {
                     # code...
+                    $s = DB::table("salas")
+                        ->leftJoin("asignar_salas", function ($join) {
+                            $join->on("asignar_salas.id_sala", "=", "salas.id");
+                        })
+                        ->leftJoin("conf_salas", function ($join) {
+                            $join->on("conf_salas.id", "=", "asignar_salas.id_conf_sala");
+                        })
+                        ->leftJoin("asignar_horarios", function ($join) {
+                            $join->on("asignar_horarios.id_conf_sala", "=", "conf_salas.id");
+                        })
+                        ->leftJoin("horarios", function ($join) {
+                            $join->on("horarios.id", "=", "asignar_horarios.id_horario");
+                        })
+                        ->where("salas.id", "=", $value['id_sala'])
+                        ->where("conf_salas.id", "=", $value['id_conf_sala'])
+                        ->get();
+                    //return $s;
                     $nuevo = [
-                        'id_sala' => $val->id_sala,
-                        'id_horario' => $val->id_horario,
-                        'id_conf_sala' => $val->id_conf_sala,
-                        'fecha' => $fecha,
-                        'institucion' =>  '01',
-    
+                        'fecha' => $fecha_inicio,
+                        'id_equipo' => $equipos[$key]['id_equipo'],
+                        'id_sala' => $value['id_sala']
                     ];
+                    DB::table('designar_equipos')->insert($nuevo);
+                    foreach ($s as $i => $val) {
+                        # code...
+                        $nuevo = [
+                            'id_sala' => $val->id_sala,
+                            'id_horario' => $val->id_horario,
+                            'id_conf_sala' => $val->id_conf_sala,
+                            'fecha' => $fecha_inicio,
+                            'institucion' =>  '01',
+
+                        ];
+                        DB::table('fichas')->insert($nuevo);
+                    }
+
+
+
                 }
-                DB::table('calendarios')->insert($fecha);
-                    
-                
-                try {
-                    DB::table('fichas')->insert($nuevo);
-                } catch (\Throwable $th) {
-                    return $th;
-                }
+                $fecha_inicio = $fecha_inicio->modify('+1 day');
             }
         }
 

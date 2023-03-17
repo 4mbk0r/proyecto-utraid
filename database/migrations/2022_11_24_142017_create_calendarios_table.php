@@ -19,6 +19,7 @@ class CreateCalendariosTable extends Migration
             $table->date('fecha')->primary();
             $table->string('codigo')->default('01');
             $table->string('atencion')->default('atencion');
+            $table->string('descripcion')->default('');
             $table->string('repeticion')->nullable();
             //$table->unique(['fecha', 'codigo']);
         });

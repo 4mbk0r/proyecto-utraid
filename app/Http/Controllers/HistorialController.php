@@ -58,7 +58,7 @@ class HistorialController extends Controller
         $r = $request['fechas'];
         $q = DB::table('calendarios')
         ->where('calendarios.fecha', '>=', $r['fecha_inicio'])
-        ->where('calendarios.fecha', '>=', $r['fecha_final'])
+        ->where('calendarios.fecha', '<=', $r['fecha_final'])
         ->get();
         return $q;
         /*

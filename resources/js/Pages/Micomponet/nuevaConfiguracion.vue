@@ -60,11 +60,13 @@
                                                     label="Seleccione el Rango" prepend-icon="mdi-account" v-bind="attrs"
                                                     autofocus v-on="on"></v-combobox>
                                             </template>
-                                            <v-date-picker v-model="dates" :min="minfecha()"
-                                            :max="maxfecha()"  range no-title scrollable>
+                                            <v-date-picker v-model="dates" :min="minfecha()" :max="maxfecha()"
+                                                :events="arrayEvents" event-color="green lighten-1" range no-title
+                                                :allowed-dates="desavilitarFecha" 
+                                                scrollable>
                                                 <v-spacer></v-spacer>
-                                                <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-                                                <v-btn text color="primary" @click="$refs.menu.save(dates)">OK</v-btn>
+                                                <v-btn text color="primary" @click="menu = false">Cancelar</v-btn>
+                                                <v-btn text color="primary" @click="$refs.menu.save(dates)">Aceptar</v-btn>
                                             </v-date-picker>
                                         </v-menu>
                                     </v-col>
@@ -141,7 +143,7 @@
 
                 <v-stepper-content step="4">
 
-                    
+
                     <equipo @update="equipo_update($emit)" @next="paso5" :equipo="equipo" ref="equipo"></equipo>
 
                 </v-stepper-content>
@@ -202,9 +204,20 @@ export default {
         equipo: [],
         salas: [],
         dates: [],
+        arrayEvents: [],
+        fechas_vigentes: [],
 
     }),
-
+    created() {
+        console.log('inicio');
+        this.get_fechas();
+    },
+    mounted() {
+        console.log('sdfasdklfjasf');
+    },
+    beforeMount() {
+       
+    },
     computed: {
         computedDateFormattedMomentjs() {
             moment.locale('es');
@@ -230,6 +243,7 @@ export default {
     },
 
     methods: {
+
         limpiar_errors() {
             this.errors_descripcion = []
         },
@@ -269,7 +283,7 @@ export default {
             }
             this.$emit('cerrar', false)
         },
-        
+
         paso2() {
             if (this.$refs.fecha_rango.validate()) {
                 this.paso = 2
@@ -337,6 +351,20 @@ export default {
             }
             return t_year.format('yyyy-mm-dd')
 
+        },
+        desavilitarFecha(val) {
+            //return true
+            console.log('desavilitar');
+            console.log(this.fechas_vigentes)
+            for (const key in this.fechas_vigentes) {
+                let element =this.fechas_vigentes[key];
+                console.log(val, '=', element.fe
+                );
+                if(val ==  element.fecha  && element.nro_citas > 0){
+                    return false
+                }
+            }
+            return true
         },
         paso4() {
             //this.paso+=1
@@ -513,6 +541,27 @@ export default {
         },
         equipo_update(valor) {
             this.equipo = valor
+        },
+        async get_fechas() {
+            var res = await axios({
+                method: 'get',
+                url: `/${process.env.MIX_CARPETA}/api/fechas_vigentes`,
+            }).then(
+                (response) => {
+                    console.log(response);
+                    this.fechas_vigentes = response.data
+                    this.arrayEvents = [];
+                    for (const key in response.data) {
+                        let element = response.data[key];
+                        this.arrayEvents.push(element.fecha)
+                    }
+
+                }
+            ).catch(err => {
+                console.log(err)
+                console.log("err->", err.response.data)
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            });
         }
 
     }

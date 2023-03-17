@@ -1,0 +1,32 @@
+Object { data: {…}, status: 200, statusText: "OK", headers: {…}, config: {…}, request: XMLHttpRequest }
+​
+config: Object { url: "/main/lista_configuracion/2023-03-20", method: "get", timeout: 0, … }
+​
+data: Object { salas: (2) […], salas_diponibles: (2) […], equipo: (2) […] }
+​​
+equipo: Array [ {…}, {…} ]
+​​
+salas: Array [ {…}, {…} ]
+​​
+salas_diponibles: Array [ 'select * from "salas" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = ? left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = ? left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null and "salas"."id" = ? order by "salas"."descripcion" asc', 'select * from "salas" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = ? left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = ? left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null and "salas"."id" = ? order by "salas"."descripcion" asc' ]
+​​​
+0: 'select * from "salas" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = ? left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = ? left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null and "salas"."id" = ? order by "salas"."descripcion" asc'
+​​​
+1: 'select * from "salas" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = ? left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = ? left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null and "salas"."id" = ? order by "salas"."descripcion" asc'
+​​​
+length: 2
+​​​
+<prototype>: Array []
+​​
+<prototype>: Object { … }
+​
+headers: Object { "cache-control": "no-cache, private", connection: "Keep-Alive", "content-type": "application/json", … }
+​
+request: XMLHttpRequest { readyState: 4, timeout: 0, withCredentials: false, … }
+​
+status: 200
+​
+statusText: "OK"
+​
+<prototype>: Object { … }
+Agenda2.vue:442
