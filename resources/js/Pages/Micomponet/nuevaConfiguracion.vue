@@ -467,7 +467,7 @@ export default {
                 },
             }).then(
                 (response) => {
-                    console.log(response);
+                    console.log(response.errorMessages);
                     ////console.log('validat');
                     ////console.log(response);
                     //console.log('__configuracion ___');
@@ -477,7 +477,7 @@ export default {
 
                 },
             ).catch((error) => {
-                //console.log(error.response.data.mensaje);
+                console.log(error.response.data);
 
             });
 

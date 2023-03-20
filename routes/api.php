@@ -20,6 +20,7 @@ use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\HorarioController;
 
 use App\Http\Controllers\AtenderController;
+use App\Http\Controllers\DarCitaController;
 use App\Http\Controllers\PersonalController;
 use App\Models\Asignar_config_sala;
 use App\Models\Calendario;
@@ -218,4 +219,9 @@ Route::post('/equipos_elegidos', function (Request $request) {
 Route::get('/fechas_vigentes', function () {
 
     return CalendarioController::fechas_vigentes();
+});
+
+Route::post('/cambiar_cita', function (Request $request) {
+
+    return DarCitaController::cambiar_cita($request);
 });

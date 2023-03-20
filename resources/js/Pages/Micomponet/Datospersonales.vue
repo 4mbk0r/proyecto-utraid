@@ -48,7 +48,7 @@
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.ap_paterno" :rules="nombreRules" @input="
+                    <v-text-field v-model="paciente.ap_paterno" @input="
                       (v) => {
                         paciente.ap_paterno = v.toUpperCase();
                       }
@@ -56,7 +56,7 @@
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.ap_materno" :rules="nombreRules" @input="
+                    <v-text-field v-model="paciente.ap_materno" @input="
                       (v) => {
                         paciente.ap_materno = v.toUpperCase();
                       }
@@ -84,11 +84,17 @@
                       label="Fecha de nacimiento">
                     </v-text-field>
                   </v-col>
-                  <v-col cols="12" sm="6">
-                    <v-select v-model="paciente.sexo" persistent-placeholder placeholder="No se tiene datos"
+                  <v-col cols="12"  class="d-flex justify-center" sm="6">
+                    <!--<v-select v-model="paciente.sexo" persistent-placeholder placeholder="No se tiene datos"
                       :items="ssexo" color="purple darken-3" label="Sexo" pa-0 solo>
-                    </v-select>
+                    </v-select>-->
+                    
+                  <v-radio-group v-model="paciente.sexo" row>
+                    <v-radio label="Masculino" value="Masculino"></v-radio>
+                    <v-radio label="Femenino" value="Femenino"></v-radio>
+                  </v-radio-group>
                   </v-col>
+
                 </v-row>
                 <v-row no-gutters>
                   <v-col cols="12" sm="6">
@@ -104,19 +110,15 @@
                 </v-row>
                 <v-row>
                   <v-col cols="12">
-                    <v-data-table v-if="op1 == 1"  :headers="headers" 
-                    :footer-props="{
+                    <v-data-table v-if="op1 == 1" :headers="headers" :footer-props="{
                       itemsPerPageText: 'Pacientes por pagina',
-                      'items-per-page-options':[15, 30, 50, 100, -1], 'items-per-page-all-text':'Todos'}"
-                    :items="persona" item-key="ci" :search="search"
-                    :header-props='{
-                      sortByText: "Ordenar por"
-                    }'
-                      @click:row="seleccion_paciente($event)" 
-                      class="elevation-1">
+                      'items-per-page-options': [15, 30, 50, 100, -1], 'items-per-page-all-text': 'Todos'
+                    }" :items="persona" item-key="ci" :search="search" :header-props='{
+  sortByText: "Ordenar por"
+}' @click:row="seleccion_paciente($event)" class="elevation-1">
                       <template v-slot:no-results>
                         <span>No existen datos</span>
-                    </template>
+                      </template>
                       <!--
                     <template v-slot:top>
                        v-container, v-col and v-row are just for decoration purposes
@@ -560,7 +562,7 @@ export default {
           align: 'left',
           //sortable: false,
           value: 'nombres',
-          
+
           filter: this.nombreFilter,
           //filter: this.nombre_,
           //filter: this.nameFilter,
@@ -590,9 +592,9 @@ export default {
           //filter: this.esta_en_equipo
           //filter: this.caloriesFilter,
         },
-        
 
-        
+
+
 
         /*{
             text: 'Cargo',
@@ -615,37 +617,37 @@ export default {
 
   },
   methods: {
-    seleccion_paciente(value){
+    seleccion_paciente(value) {
       this.paciente_existen = value
       this.msm_existe = true
     },
     ciFilter(value) {
       //console.log(this.paciente.nombres);
-      if( typeof this.paciente.ci == 'undefined') return true
-      if(this.paciente.ci == '') return true
-      if(value.includes(this.paciente.ci)) return true;
+      if (typeof this.paciente.ci == 'undefined') return true
+      if (this.paciente.ci == '') return true
+      if (value.includes(this.paciente.ci)) return true;
       return false;
     },
 
     nombreFilter(value) {
       //console.log(this.paciente.nombres);
-      if( typeof this.paciente.nombres == 'undefined') return true
-      if(this.paciente.nombres == '') return true
-      if(value.includes(this.paciente.nombres)) return true;
+      if (typeof this.paciente.nombres == 'undefined') return true
+      if (this.paciente.nombres == '') return true
+      if (value.includes(this.paciente.nombres)) return true;
       return false;
     },
     paternoFilter(value) {
       //console.log(this.paciente.ap_paterno);
-      if( typeof this.paciente.ap_paterno == 'undefined') return true
-      if(this.paciente.ap_paterno == '') return true
-      if(value.includes(this.paciente.ap_paterno)) return true;
+      if (typeof this.paciente.ap_paterno == 'undefined') return true
+      if (this.paciente.ap_paterno == '') return true
+      if (value.includes(this.paciente.ap_paterno)) return true;
       return false;
     },
     maternoFilter(value) {
       console.log(this.paciente.ap_materno);
-      if( typeof this.paciente.ap_materno == 'undefined') return true
-      if(this.paciente.ap_materno == '') return true
-      if(value.includes( this.paciente.ap_materno)) return true;
+      if (typeof this.paciente.ap_materno == 'undefined') return true
+      if (this.paciente.ap_materno == '') return true
+      if (value.includes(this.paciente.ap_materno)) return true;
       return false;
     },
     /*  inicialiazar fecha minima*/

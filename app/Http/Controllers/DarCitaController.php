@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\dar_cita;
 use App\Http\Controllers\Controller;
+use App\Models\Ficha;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -59,7 +60,7 @@ class DarCitaController extends Controller
         $cita =  $request['cita'];
         //return $cita;
         $persona =  $request['paciente'];
-        
+
         //verificamos que no tenemos un fecha 
         $validar =  DB::table('calendarios')
             ->select('*')
@@ -108,23 +109,22 @@ class DarCitaController extends Controller
 
             */
             $e = DB::table('designar_equipo_lineals')
-            ->select('*')
-            ->where('id_conf', '=', $list_config->id_configuracion)
-            ->get();
+                ->select('*')
+                ->where('id_conf', '=', $list_config->id_configuracion)
+                ->get();
             foreach ($e as $key => $value) {
                 # code...
                 $nuevo = [
                     'fecha' => $fecha,
                     'id_equipo' => $value->id_equipo,
-                    'id_sala' => $value->id_sala 
+                    'id_sala' => $value->id_sala
                 ];
                 DB::table('designar_equipos')->insert($nuevo);
             }
-
         }
         $validar =  DB::table('fichas')
             ->where('id_sala', '=', $cita['id_sala'])
-            
+
             ->where('id_horario', '=', $cita['id_horario'])
             ->where('id_conf_sala', '=', $cita['id_conf_sala'])
             ->where('fecha', '=', $fecha)
@@ -237,8 +237,38 @@ class DarCitaController extends Controller
      * @param  \App\Models\dar_cita  $dar_cita
      * @return \Illuminate\Http\Response
      */
-    public function destroy(dar_cita $dar_cita)
+    public function destroy(int $dar_cita)
     {
         //
+        DB::table('dar_citas')
+        ->where('id_ficha', '=', $dar_cita)
+        ->delete();
+    }
+    public static function cambiar_cita(Request $request)
+    {
+        //
+        //return $request;
+
+
+
+        $ficha1 =  $request['ficha1'];
+        $ficha2 =  $request['ficha2'];
+     
+        DB::table('dar_citas')
+            ->where('id_ficha', '=', $ficha2['id_ficha'])
+            ->delete();
+        //return $request;    
+        if (isset($ficha2['id_persona'])) {
+            DB::table('dar_citas')
+                ->updateOrInsert(['id_ficha' => $ficha1['id_ficha'], 'id_persona' => $ficha2['id_persona']]);
+        }
+        if (isset($ficha1['id_persona'])) {
+            DB::table('dar_citas')
+                ->updateOrInsert(['id_ficha' => $ficha2['id_ficha'], 'id_persona' => $ficha1['id_persona']]);
+        }
+        return $request;
+
+
+        return $ficha1;
     }
 }

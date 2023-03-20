@@ -223,7 +223,7 @@ Agenda2.vue:442
                 
                 */
                 $horario = DB::table('fichas')
-                    ->select(['fichas.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'designar_equipos.id_equipo', 'designar_equipos.id_sala as id_sala_asig', 'equipos.nombre_equipo', 'salas.descripcion', 'atenders.id_designado'])
+                    ->select(['fichas.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'designar_equipos.id_equipo', 'designar_equipos.id_sala as id_sala_asig', 'equipos.nombre_equipo', 'salas.descripcion', 'atenders.id_designado', 'fichas.id as id_ficha'])
                     ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
                     ->leftJoin('designar_equipos', 'designar_equipos.id_sala', '=', 'salas.id')
                     ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipos.id_equipo')

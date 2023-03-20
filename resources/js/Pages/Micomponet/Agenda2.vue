@@ -76,16 +76,17 @@
                     <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement" offset-x>
                         <v-card color="grey lighten-4" min-width="350px" flat>
                             <v-toolbar :color="selectedEvent.color">
-                                <v-btn icon>
-                                    <v-icon>mdi-pencil</v-icon>
-                                </v-btn>
+                                
                                 <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
                                 <v-spacer></v-spacer>
-                                <v-btn icon>
-                                    <v-icon>mdi-heart</v-icon>
+                                <v-btn v-if="get_datos_ficha(selectedEvent) != null  && !getvalores(selectedEvent.fichas, 'id_designado')"  @click="cambiar_ficha($event)" icon>
+                                    <v-icon>mdi-account-convert</v-icon>
                                 </v-btn>
-                                <v-btn icon>
-                                    <v-icon>mdi-dots-vertical</v-icon>
+                                <v-btn v-if="get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')" @click="eliminar_ficha($event)" icon>
+                                    <v-icon>mdi-account-remove-outline</v-icon>
+                                </v-btn>
+                                <v-btn v-if=" get_datos_ficha(selectedEvent) != null && getvalores(selectedEvent.fichas, 'id_designado')" @click="eliminar_atender($event)" icon>
+                                    <v-icon>mdi-home-remove-outline</v-icon>
                                 </v-btn>
                             </v-toolbar>
 
@@ -107,6 +108,7 @@
                                         {{ valores(selectedEvent.fichas, 'nombres') }}
                                         {{ valores(selectedEvent.fichas, 'ap_paterno') }}
                                         {{ valores(selectedEvent.fichas, 'ap_materno') }}
+                                   
                                     </v-col>
                                 </v-row>
                                 <v-row no-gutters>
@@ -127,7 +129,7 @@
                                                 :item-value="item => select_nombre_equipo(item)" :rules="selecionRules"
                                                 label="Seleccione equipo que atendera" required>
                                             </v-select>
-                                            <v-btn color="success" @click="save_atender">
+                                            <v-btn color="success" v-if="!getvalores(selectedEvent.fichas, 'id_designado')" @click="save_atender">
                                                 Guardar
                                             </v-btn>
 
@@ -245,6 +247,8 @@ export default {
         ],
         selecionRules: [
             v => !!v || "Se requiere seleccion"],
+        cambiar_datos: {},
+        cambio_ficha: false
     }),
     created() {
 
@@ -609,6 +613,35 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
 
         },
+
+        cambiar_ficha(){
+            this.selectedOpen =  false
+            alert('seleccione usuario a cambiar');
+            this.cambio_ficha = true
+            this.cambia_datos = structuredClone(this.selectedEvent)
+            
+        },
+        async eliminar_ficha(event){
+            //console.log(this.selectedEvent.fichas.id_ficha);
+            //return;
+            var res = await axios({
+                method: 'delete',
+                url: `/${process.env.MIX_CARPETA}/dar_ficha/`+this.selectedEvent.fichas.id_ficha,
+                data:
+                    this.selectedEvent.fichas,
+                //equipo: this.selectequipo.equipo
+
+            }).then(
+                (response) => {
+                
+                    this.pedir_datos()
+                    this.selectedOpen =false
+                }
+            ).catch(err => {
+                console.log(err)
+
+            });
+        },
         async atencion_equipos() {
             var res = await axios({
                 method: 'post',
@@ -641,6 +674,16 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
         },
         getcolor(ficha) {
             return (!ficha.id_persona) ? 'white' : (!ficha.id_designado) ? 'blue' : 'green'
+        },
+        getvalores(objecto, x) {
+            console.log('---------------s-s--s-s');
+            console.log(objecto['' + x] );
+            if (typeof objecto == "undefined" ) return false
+            //console.log(objecto)
+            console.log(objecto['' + x] === null);
+            if(  objecto['' + x] === null ) return false
+            return true
+            return objecto['' + x]
         },
         valores(objecto, x) {
             if (typeof objecto == "undefined") return
@@ -727,7 +770,40 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             this.fecha_calendario = f.toISOString().substr(0, 10);
             return contador;
         },
-        showEvent({ nativeEvent, event }) {
+        async api_cambiar(dato1, dato2){
+            var res = await axios({
+                method: 'post',
+                url: `/${process.env.MIX_CARPETA}/api/cambiar_cita`,
+                data:{
+                    ficha1: dato1.fichas,
+                    ficha2: dato2.fichas,
+                }
+                //this.selectedEvent.fichas,
+                //equipo: this.selectequipo.equipo
+
+            }).then(
+                (response) => {
+                    console.log(response);
+                    this.pedir_datos()
+
+                }
+            ).catch(err => {
+                console.log(err)
+
+            });
+        },
+        async showEvent({ nativeEvent, event }) {
+
+            if(this.cambio_ficha){
+                console.log(event)
+                console.log('cambiar por')
+                console.log(this.cambiar_datos) 
+                this.api_cambiar(event, this.cambia_datos)
+                
+                this.selectedOpen = false
+                this.cambio_ficha = false;
+                return;
+            }
 
             console.log(event);
             if (event.name == 'Atencion') {

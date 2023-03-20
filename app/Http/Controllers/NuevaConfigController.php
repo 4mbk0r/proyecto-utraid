@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class NuevaConfigController extends Controller
 {
@@ -39,6 +41,7 @@ class NuevaConfigController extends Controller
     {
         //
         //return $request;
+        //try {
         $fechas = $request['fecha_nueva'];
         $salas = $request['salas'];
         $equipos = $request['equipo'];
@@ -55,9 +58,21 @@ class NuevaConfigController extends Controller
                 'atencion' => 'atencion'
             ];
 
-            $cal = DB::table('calendarios')->where('fecha', '=', $fecha_inicio)->get();
-            if (count($cal) > 0) continue;
-            else {
+
+
+            $cal  =  DB::table("calendarios")
+                ->leftJoin("fichas", function ($join) {
+                    $join->on("fichas.fecha", "=", "calendarios.fecha");
+                })
+                ->leftJoin("dar_citas", function ($join) {
+                    $join->on("dar_citas.id_ficha", "=", "fichas.id");
+                })
+                ->select(["calendarios.fecha", "calendarios.atencion", DB::raw("count (fichas.id) as nro_fichas"), DB::raw("count (dar_citas.id_ficha) as nro_citas")])
+                ->where("calendarios.fecha", "=", $fecha_inicio)
+                ->groupBy(["calendarios.fecha", "calendarios.atencion"])
+                ->get();
+
+            if (count($cal) == 0) {
                 DB::table('calendarios')->insert($t);
                 foreach ($salas as $key => $value) {
                     # code...
@@ -96,15 +111,69 @@ class NuevaConfigController extends Controller
                         ];
                         DB::table('fichas')->insert($nuevo);
                     }
-
-
-
                 }
                 $fecha_inicio = $fecha_inicio->modify('+1 day');
+            } else {
+                $cal  = $cal[0];
+                if ($cal->atencion != 'atencion') continue;
+                if ($cal->nro_citas > 0) continue;
+                else {
+
+                    DB::table('designar_equipos')->where('fecha', '=', $fecha_inicio)->delete();
+
+                    DB::table('calendarios')->where('fecha', '=', $fecha_inicio)->delete();
+                    DB::table('fichas')->where('fecha', '=', $fecha_inicio)->delete();
+                    DB::table('calendarios')->insert($t);
+                    foreach ($salas as $key => $value) {
+                        # code...
+                        $s = DB::table("salas")
+                            ->leftJoin("asignar_salas", function ($join) {
+                                $join->on("asignar_salas.id_sala", "=", "salas.id");
+                            })
+                            ->leftJoin("conf_salas", function ($join) {
+                                $join->on("conf_salas.id", "=", "asignar_salas.id_conf_sala");
+                            })
+                            ->leftJoin("asignar_horarios", function ($join) {
+                                $join->on("asignar_horarios.id_conf_sala", "=", "conf_salas.id");
+                            })
+                            ->leftJoin("horarios", function ($join) {
+                                $join->on("horarios.id", "=", "asignar_horarios.id_horario");
+                            })
+                            ->where("salas.id", "=", $value['id_sala'])
+                            ->where("conf_salas.id", "=", $value['id_conf_sala'])
+                            ->get();
+                        //return $s;
+                        $nuevo = [
+                            'fecha' => $fecha_inicio,
+                            'id_equipo' => $equipos[$key]['id_equipo'],
+                            'id_sala' => $value['id_sala']
+                        ];
+                        DB::table('designar_equipos')->insert($nuevo);
+                        foreach ($s as $i => $val) {
+                            # code...
+                            $nuevo = [
+                                'id_sala' => $val->id_sala,
+                                'id_horario' => $val->id_horario,
+                                'id_conf_sala' => $val->id_conf_sala,
+                                'fecha' => $fecha_inicio,
+                                'institucion' =>  '01',
+
+                            ];
+                            DB::table('fichas')->insert($nuevo);
+                        }
+                    }
+                    $fecha_inicio = $fecha_inicio->modify('+1 day');
+                }
             }
         }
-
-
+        /*} catch (\Throwable $th) {
+            //throw $th;
+            return $th;
+            return response()->json([
+                'message' => $th
+            ], 400);
+            
+        }*/
 
 
         return $request;
@@ -189,6 +258,9 @@ class NuevaConfigController extends Controller
             $respuesta = DB::table('dar_citas')->insert(['id_ficha' => $validar->id, 'id_persona' => $persona['id']]);
         } catch (\Throwable $th) {
             return $th;
+            return response()->json([
+                'message' => $th
+            ], 404);
         }
 
 
