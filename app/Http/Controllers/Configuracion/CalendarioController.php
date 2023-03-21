@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Configuracion;
 use App\Models\Calendario;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class CalendarioController extends Controller
 {
@@ -128,5 +131,76 @@ class CalendarioController extends Controller
         return $sql;
 
         //return $resp;
+    }
+    public static function fechas_feriados()
+    {
+
+
+        $sql = DB::table("calendarios")
+            ->where('calendarios.fecha','>=',date('d-m-Y'))
+            ->where('atencion', '=', 'feriado')
+            ->get();
+        return $sql;
+
+        //return $resp;
+    }
+    public static function add_feriados($request)
+    {
+
+        //return $request;
+        if(DB::table("calendarios")->where('fecha', '=', $request['feriado']['fecha'])->exists()){
+            return new Response(['message' => 'Datos dupliacados' ], 400);
+        }else{
+            $datos = (array)$request['feriado'];
+            //return $datos;
+            DB::table("calendarios")->insert($datos);
+        }
+
+
+        $sql = DB::table("calendarios")
+            ->where('calendarios.fecha','>=',date('d-m-Y'))
+            ->where('atencion', '=', 'feriado')
+            ->get();
+        return $sql;
+
+        //return $resp;
+    }
+    public static function update_feriados($request)
+    {
+
+        return $request;
+        if(DB::table("calendarios")->where('fecha', '=', $request['feriado']['fecha'])->exists()){
+            return new Response(['message' => 'Datos dupliacados' ], 400);
+        }else{
+            $datos = (array)$request['feriado'];
+            //return $datos;
+            DB::table("calendarios")->insert($datos);
+        }
+
+
+        $sql = DB::table("calendarios")
+            ->where('calendarios.fecha','>=',date('d-m-Y'))
+            ->where('atencion', '=', 'feriado')
+            ->get();
+        return $sql;
+
+        //return $resp;
+    }
+    public static function delete_feriados($request)
+    {
+        if(DB::table("calendarios")->where('fecha', '=', $request['fecha']['fecha'])->exists()){
+            DB::table("calendarios")->where('fecha', '=', $request['fecha']['fecha'])
+            ->delete();
+            
+            
+        }else{
+            return new Response(['message' => 'no se lo tiene registrado' ], 400);
+            /*
+            $datos = (array)$request['fecha'];
+            //return $datos;
+            DB::table("calendarios")->insert($datos);*/
+        }
+       
+        return $request;
     }
 }

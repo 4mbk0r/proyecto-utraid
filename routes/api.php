@@ -225,3 +225,22 @@ Route::post('/cambiar_cita', function (Request $request) {
 
     return DarCitaController::cambiar_cita($request);
 });
+Route::get('/fechas_feriados', function () {
+
+    return CalendarioController::fechas_feriados();
+});
+Route::post('/fechas_feriados', function (Request $request) {
+
+    return CalendarioController::add_feriados($request);
+});
+
+Route::post('/fechas_update', function (Request $request) {
+
+    return CalendarioController::update_feriados($request);
+});
+
+
+Route::post('/fechas_delete', function (Request $request) {
+
+    return CalendarioController::delete_feriados($request);
+});

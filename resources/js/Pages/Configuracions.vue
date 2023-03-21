@@ -11,6 +11,9 @@
           <v-btn @click="opennuevaconfig">
             Fecha proximas
           </v-btn>
+          <v-btn @click="openferiado">
+            Feriados
+          </v-btn>
         </v-card-title>
 
       </v-card>
@@ -25,7 +28,7 @@
                     {{ item.descripcion }}
                   </v-col>
                   <v-col align="left" class="d-flex align-center">
-                    {{ item.fecha_inicio }} - <span class="d-flex align-center" v-if="item.fecha_final == '9999-12-30'">
+                    {{ item.fecha_inicio }} - <span class="d-flex align-center" v-if="item.fecha_final == '9999-12-01'">
                       Indefinido </span>
                     <span v-else class="d-flex align-center"> {{ item.fecha_final }}</span>
                   </v-col>
@@ -121,6 +124,8 @@
       </v-expansion-panels>
       <editconfig v-if='editarConfig' :dialog="editarConfig" :item="edit" @cerrar="closeeditconfig"></editconfig>
       <nuevaconfig v-if='nuevaConfig' :dialog="nuevaConfig"  @cerrar="closenuevaconfig" ></nuevaconfig>
+      <feriado v-if='feriadoconf' :dialog="feriadoconf"  @cerrar="closeferiadoconfig" ></feriado>
+      
       <deleteconfig v-if='deleteConfig' :dialog="deleteConfig" :datos="edit" :mensaje="mensaje"
         @respuesta="deleteconfig_respuesta">
       </deleteconfig>
@@ -135,6 +140,7 @@ import Welcome from '@/Jetstream/Welcome'
 import Editconfig from '@/Pages/Micomponet/AdicionConfiguracion'
 import nuevaconfig from '@/Pages/Micomponet/nuevaConfiguracion'
 import deleteconfig from '@/Pages/Micomponet/eleminarConfiguracion'
+import feriado from '@/Pages/Micomponet/feriadoConfiguracion'
 
 import moment from 'moment'
 export default {
@@ -142,7 +148,8 @@ export default {
     Editconfig,
     deleteconfig,
     AppLayout,
-    nuevaconfig
+    nuevaconfig,
+    feriado
   },
   props: {
 
@@ -161,7 +168,7 @@ export default {
       panel: [],
       items: 5,
       editarConfig: false,
-      
+      feriadoconf: false,
       nuevaConfig: false,
       deleteConfig: false,
       edit: {},
@@ -245,6 +252,19 @@ export default {
 
       );
     },
+    openferiado(item) {
+      ////console.log();
+      //console.log(this.panel);
+      //console.log(this.calendario);
+      this.edit = structuredClone(this.calendario[this.panel])
+      //console.log(this.edit);
+      setTimeout(() => {
+
+      }, 0);
+      this.feriadoconf = true
+
+
+    },
     openeditconfig(item) {
       ////console.log();
       //console.log(this.panel);
@@ -293,6 +313,14 @@ export default {
       //console.log(value)
       */
       this.editarConfig = value
+      this.pedir_calendarioslineal()
+    },
+    closeferiadoconfig(value) {
+      /*
+      //console.log(this.panel[this.items])
+      //console.log(value)
+      */
+      this.feriadoconf = value
       this.pedir_calendarioslineal()
     },
     closenuevaconfig(value) {
