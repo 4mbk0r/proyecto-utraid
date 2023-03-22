@@ -358,9 +358,11 @@ export default {
             console.log(this.fechas_vigentes)
             for (const key in this.fechas_vigentes) {
                 let element =this.fechas_vigentes[key];
-                console.log(val, '=', element.fe
-                );
+                console.log(val, '=', element.atencion);
                 if(val ==  element.fecha  && element.nro_citas > 0){
+                    return false
+                }
+                if(val ==  element.fecha  && element.atencion == "feriado"){
                     return false
                 }
             }
@@ -553,7 +555,10 @@ export default {
                     this.arrayEvents = [];
                     for (const key in response.data) {
                         let element = response.data[key];
-                        this.arrayEvents.push(element.fecha)
+                        if(element.atencion !=  'feriado'){
+                            this.arrayEvents.push(element.fecha)
+                        }
+                        
                     }
 
                 }

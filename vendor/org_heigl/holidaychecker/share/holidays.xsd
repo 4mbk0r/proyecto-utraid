@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="https://www.heigl.org"
+           xmlns="https://www.heigl.org"
+           elementFormDefault="qualified">
+    <xs:simpleType name="monthInt">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="12"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="dayInt">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="31"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="daynames">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="sunday"/>
+            <xs:enumeration value="monday"/>
+            <xs:enumeration value="tuesday"/>
+            <xs:enumeration value="wednesday"/>
+            <xs:enumeration value="thursday"/>
+            <xs:enumeration value="friday"/>
+            <xs:enumeration value="saturday"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="calendars">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="buddhist"/>
+            <xs:enumeration value="chinese"/>
+            <xs:enumeration value="coptic"/>
+            <xs:enumeration value="ethiopian"/>
+            <xs:enumeration value="gregorian"/>
+            <xs:enumeration value="hebrew"/>
+            <xs:enumeration value="indian"/>
+            <xs:enumeration value="islamic"/>
+            <xs:enumeration value="japanese"/>
+            <xs:enumeration value="persian"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:attributeGroup name="easterAttributes">
+        <xs:attribute name="offset" type="xs:integer" use="required"/>
+        <xs:attribute name="free" type="xs:boolean" use="required"/>
+        <xs:attribute name="comment" type="xs:string"/>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="dateAttributes">
+        <xs:attribute name="day" type="dayInt" use="required"/>
+        <xs:attribute name="month" type="monthInt" use="required"/>
+        <xs:attribute name="year" type="xs:integer" />
+        <xs:attribute name="free" type="xs:boolean" use="required"/>
+        <xs:attribute name="comment" type="xs:string"/>
+        <xs:attribute name="calendar" type="calendars"/>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="dateFollowUpAttributes">
+        <xs:attribute name="day" type="dayInt" use="required"/>
+        <xs:attribute name="month" type="monthInt" use="required"/>
+        <xs:attribute name="followup" type="daynames" use="required" />
+        <xs:attribute name="free" type="xs:boolean" use="required"/>
+        <xs:attribute name="comment" type="xs:string"/>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="relativeAttributes">
+        <xs:attribute name="day" type="dayInt" use="required"/>
+        <xs:attribute name="month" type="monthInt" use="required"/>
+        <xs:attribute name="relation" type="xs:string" use="required"/>
+        <xs:attribute name="free" type="xs:boolean" use="required"/>
+        <xs:attribute name="comment" type="xs:string"/>
+    </xs:attributeGroup>
+    <xs:element name="holidays">
+        <!--
+        All elements have to be within the root element "holidays".
+
+        Within this root element we expect a list of entries of type
+        "easter", "easterorthodox", "date", "dateFollowUp" or "relative"
+
+        Explanations follow on the respective elements
+        -->
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="easter" minOccurs="0" maxOccurs="unbounded">
+                    <!--
+                    Days that are relative to the Easter date as calculated for the
+                    Western christian churches. The actual day is referenced by an
+                    offset from easter-sunday. Days before easter sunday have a
+                    negative offset, days after have a positive offset
+                    -->
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attributeGroup ref="easterAttributes"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="easterorthodox" minOccurs="0" maxOccurs="unbounded">
+                    <!--
+                    Days that are relative to the Easter date as calculated for the
+                    Eastern Chsristian churches. The actual day is referenced by an
+                    offset from easter-sunday. Days before easter sunday have a
+                    negative offset, days after have a positive offset
+                    -->
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attributeGroup ref="easterAttributes"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="date" minOccurs="0" maxOccurs="unbounded">
+                    <!--
+                    Days that are defined by their actual date like the 4th of July
+                    or 25th of December.
+
+                    The actual day is referenced by at least a day and a month attribute.
+                    For special occasions where a day is only a holiday in a certain year
+                    it can also have a year attribute. Note that you will need multiple
+                    entries for multiple years.
+                    -->
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attributeGroup ref="dateAttributes"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="dateFollowUp" minOccurs="0" maxOccurs="unbounded">
+                    <!--
+                    Days that are defined by a certain weekday after a fixed date
+
+                    The actual day is referenced by the day and month the weekday
+                    follows as well as the weekday. So the first sunday after the
+                    21st of March would be referenced as follows:
+
+                    day="21" month="3" followup="sunday"
+                    -->
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attributeGroup ref="dateFollowUpAttributes"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="relative" minOccurs="0" maxOccurs="unbounded">
+                    <!--
+                    This is similar to the dateFollowUp but the relation can be
+                    more complext.
+
+                    Again the date the relation is referenced from is given via
+                    day and month attributes but the relation itself is given in
+                    the relation attribute and can be anything that
+                    http://php.net/manual/de/datetimeimmutable.modify.php
+                    can handle. Like "last sunday -3 weeks" from 25th of december
+                    would be the 1st sunday in advent
+                    -->
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attributeGroup ref="relativeAttributes"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

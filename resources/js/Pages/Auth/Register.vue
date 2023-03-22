@@ -129,12 +129,12 @@
                     <v-toolbar-title>Settings</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
-                        <v-btn dark text @click="excel_dialog = false">
+                        <v-btn dark text @click="closeexcel()">
                             Save
                         </v-btn>
                     </v-toolbar-items>
                 </v-toolbar>
-                <excel @guardar_datos="save($event)">
+                <excel  v-if="excel_dialog" refs="" @guardar_datos="save($event)">
 
                 </excel>
             </v-card>
@@ -213,6 +213,12 @@ export default {
 
     },
     methods: {
+
+
+        closeexcel(){
+
+            this.excel_dialog = false
+        },
         alert(text) {
             this.$alert(text).then(res => this.$inform("Cambios guardados!"));
         },

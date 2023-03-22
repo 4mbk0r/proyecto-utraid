@@ -7,16 +7,16 @@
                 <input type="file" ref="excelFile" @change="excelExport"
                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
             </div>
-            <div>
+            <div >
                 {{ mostrar(this.excelData) }}
                 <v-select v-model="selectedSheet" :items="sheetList" label="Selecione Hoja" @change="onchangeSheet"
                     outlined></v-select>
             </div>
             <div class="wrapper-dgxl">
                 <div ref="dgxl" class="grid"></div>
-                <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
+            <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
                                                                                                                                                             <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
-                                                                                                                                                            -->
+                                                                                                                                                                    -->
             </div>
 
         </div>
@@ -80,7 +80,17 @@ export default {
             DataGridXL: null,
         };
     },
+    destroyed() {
+        console.log('destroy');
+        this.$destroy();
+        this.$destroy();
+        this.input = null
+        this.excelData = null
+    },
     methods: {
+        close() {
+
+        },
         excelExport(event) {
 
             var input = this.$refs.excelFile
@@ -97,9 +107,25 @@ export default {
 
 
                 this.selectedSheet = this.sheetList[0];
-                console.log(this.selectedSheet);
+                //console.log(this.selectedSheet);
+                //console.log(this.Workerbook)
+                //this.excelFile = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet]
+                const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1 });
+                this.header = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 })[0];
+                var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" })
+                    .map(row =>
+                        Object.keys(row).reduce((obj, key) => {
+                            obj[key.trim()] = row[key];
+                            return obj;
+                        }, {})
+                    );
+                console.log(rowObj);
+                this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
+                    data: rowObj,
+                    locale: this.dgxl_nl_NL,
 
-
+                });
+                /*  
                 //obtenermo los encabezados del archivo
                 const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1 });
                 this.WorkerHeader = structuredClone(workbookHeaders)
@@ -169,6 +195,12 @@ export default {
 
         },
         onchangeSheet(event) {
+            location. reload(true)
+            delete(this.Workerbook)
+            
+            
+            
+            /*
             var wb = this.Workerbook
             var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" });
             this.excelData = JSON.stringify(rowObj)
@@ -197,6 +229,7 @@ export default {
             // remove event handler
 
             //grid.events.off, eventHandler);
+            */
 
 
         },

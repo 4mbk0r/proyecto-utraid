@@ -172,9 +172,13 @@ class AtenderController extends Controller
      * @param  \App\Models\atender  $atender
      * @return \Illuminate\Http\Response
      */
-    public function destroy(atender $atender)
+    public function destroy(int $id_ficha)
     {
         //
+        DB::table('atenders')->where('id_ficha', '=', $id_ficha)->delete();
+        return $id_ficha;
+        //DB::table('atenders')->where('id_ficha', '=', $id_nuevo)->delete();
+            
     }
     public static function ver_equipos(Request $request)
     {
