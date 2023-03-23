@@ -1,38 +1,39 @@
 <!-- Use preprocessors via the lang attribute! e.g. <template lang="pug"> -->
 <template>
-    <v-container>
-        <div id="app">
+    <v-app>
+        <v-container>
             <h1>Importar</h1>
             <div>
                 <input type="file" ref="excelFile" @change="excelExport"
                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
             </div>
-            <div >
+            <div>
                 {{ mostrar(this.excelData) }}
                 <v-select v-model="selectedSheet" :items="sheetList" label="Selecione Hoja" @change="onchangeSheet"
                     outlined></v-select>
             </div>
+            {{ this.rowObj }}
             <div class="wrapper-dgxl">
                 <div ref="dgxl" class="grid"></div>
             <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
                                                                                                                                                             <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
-                                                                                                                                                                    -->
+                                s                                                                                                                                                -->
             </div>
 
-        </div>
-        <v-btn tile color="success" @click="save">
-            <v-icon left>
-                mdi-content-save-settings
-            </v-icon>
-            Guardar
-        </v-btn>
-        <v-btn tile color="info" @click="save2">
-            <v-icon left>
-                mdi-content-save-settings
-            </v-icon>
-            Seleccion
-        </v-btn>
-    </v-container>
+            <v-btn tile color="success" @click="save">
+                <v-icon left>
+                    mdi-content-save-settings
+                </v-icon>
+                Guardar
+            </v-btn>
+            <v-btn tile color="info" @click="save2">
+                <v-icon left>
+                    mdi-content-save-settings
+                </v-icon>
+                Seleccion
+            </v-btn>
+        </v-container>
+    </v-app>
 </template>
 
 <script>
@@ -62,7 +63,7 @@ export default {
                 "Insert Row (down)": "Insertar Fila por  Debajo",
                 "Delete Column(s)": "Eliminar Columna(s)",
                 "Insert Column (left)": "Insertar Columna Derecha",
-                "Insert Column (right)": "Insertar Columna Izquierda",
+                "Insert Column (right)": "Insertar Columna Izqu0ierda",
                 "Deselect": "Deseleccionar",
                 "Search": "Buscar",
                 'Hide Column': 'Ocultar columna',
@@ -78,30 +79,116 @@ export default {
             WorkerHeader: null,
             header: [],
             DataGridXL: null,
+            input: null,
+            reader: null,
+            fileData: null,
+            rowObj: null,
+            wb: null,
+            rowObj: null,
         };
     },
     destroyed() {
         console.log('destroy');
+
         this.$destroy();
-        this.$destroy();
+        //this.input = null
+        //this.excelData = null
+        this.$refs = null
+        delete (this.DataGridXL)
+        delete (this.excelData)
+        delete (this.file)
+        delete (this.input)
+        delete (this.selectedSheet)
+        delete (this.sheetName)
+        delete (this.sheetList)
+        delete (this.sheets)
+        delete (this.collection)
+        delete (this.dgxl_nl_NL)
+        delete (this.$refs)
+        this.Workerbook = null,
+            this.WorkerHeader = null,
+            this.header = null,
+            this.DataGridXL = null,
+            delete this.Workerbook
+        delete this.WorkerHeader
+        delete this.header
+        delete this.DataGridXL
+        delete this.input
+        delete this.reader
+        delete this.fileData
+        delete this.rowObj
+
+        delete this.wb
+        this.rowObj = null
+
+        this.DataGridXL = null
         this.input = null
-        this.excelData = null
+        this.reader = null
+        this.fileData = null
+        this.rowObj = null
+        this.wb = null
+        this.rowObj = null
+        location.reload(true)
     },
     methods: {
         close() {
 
         },
+        limpiar() {
+            console.log('destroy');
+
+            //this.$destroy();
+            //this.input = null
+            //this.excelData = null
+            this.$refs = null
+            delete (this.DataGridXL)
+            delete (this.excelData)
+            delete (this.file)
+            delete (this.input)
+            delete (this.selectedSheet)
+            delete (this.sheetName)
+            delete (this.sheetList)
+            delete (this.sheets)
+            delete (this.collection)
+            delete (this.dgxl_nl_NL)
+            delete (this.$refs)
+            this.Workerbook = null,
+                this.WorkerHeader = null,
+                this.header = null,
+                this.DataGridXL = null,
+                delete this.Workerbook
+            delete this.WorkerHeader
+            delete this.header
+            delete this.DataGridXL
+            delete this.input
+            delete this.reader
+            delete this.fileData
+            delete this.rowObj
+
+            delete this.wb
+            this.rowObj = null
+
+            this.DataGridXL = null
+            this.input = null
+            this.reader = null
+            this.fileData = null
+            this.rowObj = null
+            this.wb = null
+            this.rowObj = null
+        },
         excelExport(event) {
 
             var input = this.$refs.excelFile
-            var reader = new FileReader();
-            reader.onload = () => {
+
+            this.reader = new FileReader();
+
+            this.reader.onload = () => {
                 //leemos todo el archivo 
-                var fileData = reader.result;
-                var wb = XLSX.read(fileData, { type: 'binary' });
-                this.Workerbook = wb
+                this.fileData = this.reader.result;
+                this.wb = XLSX.read(this.fileData, { type: 'binary' });
+                this.Workerbook = this.wb
                 //obtenemos las hojas o sheetnames
-                this.sheetList = wb.SheetNames; //Array of sheet names.
+                this.sheetList = this.wb.SheetNames; //Array of sheet names.
                 //console.log(this.sheetList[0]);
 
 
@@ -110,21 +197,21 @@ export default {
                 //console.log(this.selectedSheet);
                 //console.log(this.Workerbook)
                 //this.excelFile = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet]
-                const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1 });
+                const workbookHeaders = XLSX.read(this.fileData, { type: 'binary', sheetRows: 1 });
                 this.header = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 })[0];
-                var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" })
+                this.rowObj = XLSX.utils.sheet_to_json(this.wb.Sheets[this.selectedSheet], { defval: "" })
                     .map(row =>
                         Object.keys(row).reduce((obj, key) => {
                             obj[key.trim()] = row[key];
                             return obj;
                         }, {})
                     );
-                console.log(rowObj);
-                this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
-                    data: rowObj,
+                console.log(this.rowObj);
+                /*this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
+                    data: this.rowObj,
                     locale: this.dgxl_nl_NL,
 
-                });
+                });*/
                 /*  
                 //obtenermo los encabezados del archivo
                 const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1 });
@@ -189,17 +276,38 @@ export default {
 
                 })*/
             };
-            console.log(input.files)
-            reader.readAsBinaryString(input.files[0]);
-
+            //console.log(input.files)
+            this.reader.readAsBinaryString(input.files[0]);
+            /*reader = null
+            input = null
+            fileData = null
+            rowObj = null
+            */
 
         },
         onchangeSheet(event) {
-            location. reload(true)
-            delete(this.Workerbook)
+            //location.reload(true)
+            delete (this.Workerbook)
+            //this.limpiar()
+            this.rowObj = null
+            this.DataGridXL = null
+            this.rowObj = XLSX.utils.sheet_to_json(this.wb.Sheets[this.selectedSheet], { defval: "" })
+                .map(row =>
+                    Object.keys(row).reduce((obj, key) => {
+                        obj[key.trim()] = row[key];
+                        return obj;
+                    }, {})
+                );
+            console.log(this.rowObj);
             
-            
-            
+            //console.log(Object.keys(this.rowObj).length)
+            /*this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
+                data: this.rowObj,
+                locale: this.dgxl_nl_NL,
+
+            });*/
+
+
             /*
             var wb = this.Workerbook
             var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" });
