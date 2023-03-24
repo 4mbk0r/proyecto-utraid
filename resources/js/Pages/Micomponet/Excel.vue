@@ -8,11 +8,11 @@
                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
             </div>
             <div>
-                {{ mostrar(this.excelData) }}
+                <!--{{ mostrar(this.excelData) }}-->
                 <v-select v-model="selectedSheet" :items="sheetList" label="Selecione Hoja" @change="onchangeSheet"
                     outlined></v-select>
             </div>
-            {{ this.rowObj }}
+            <!--{{ this.rowObj }}-->
             <div class="wrapper-dgxl">
                 <div ref="dgxl" class="grid"></div>
             <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
@@ -185,8 +185,8 @@ export default {
             this.reader.onload = () => {
                 //leemos todo el archivo 
                 this.fileData = this.reader.result;
-                this.wb = XLSX.read(this.fileData, { type: 'binary' });
-                this.Workerbook = this.wb
+                this.wb = XLSX.read(this.fileData, { type: 'binary', dense: true });
+                
                 //obtenemos las hojas o sheetnames
                 this.sheetList = this.wb.SheetNames; //Array of sheet names.
                 //console.log(this.sheetList[0]);
@@ -199,7 +199,7 @@ export default {
                 //this.excelFile = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet]
                 const workbookHeaders = XLSX.read(this.fileData, { type: 'binary', sheetRows: 1 });
                 this.header = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 })[0];
-                this.rowObj = XLSX.utils.sheet_to_json(this.wb.Sheets[this.selectedSheet], { defval: "" })
+                this.rowObj = XLSX.utils.sheet_to_json(this.wb.Sheets[this.selectedSheet], { defval: "", dense: true })
                     .map(row =>
                         Object.keys(row).reduce((obj, key) => {
                             obj[key.trim()] = row[key];
@@ -207,11 +207,11 @@ export default {
                         }, {})
                     );
                 console.log(this.rowObj);
-                /*this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
+                this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                     data: this.rowObj,
                     locale: this.dgxl_nl_NL,
 
-                });*/
+                });
                 /*  
                 //obtenermo los encabezados del archivo
                 const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1 });
@@ -301,11 +301,11 @@ export default {
             console.log(this.rowObj);
             
             //console.log(Object.keys(this.rowObj).length)
-            /*this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
+            this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                 data: this.rowObj,
                 locale: this.dgxl_nl_NL,
 
-            });*/
+            });
 
 
             /*
