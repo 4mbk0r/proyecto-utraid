@@ -244,3 +244,9 @@ Route::post('/fechas_delete', function (Request $request) {
 
     return CalendarioController::delete_feriados($request);
 });
+
+
+Route::post('/abrir_excel', function (Request $request) {
+
+    return CalendarioController::archivo_excel($request);
+});

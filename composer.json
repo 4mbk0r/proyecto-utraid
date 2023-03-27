@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.5",
         "nascent-africa/jetstrap": "^2.5",
         "org_heigl/holidaychecker": "^0.3.0",
+        "phpoffice/phpspreadsheet": "^1.28",
         "tightenco/ziggy": "^1.0"
     },
     "require-dev": {

@@ -4,8 +4,16 @@
         <v-container>
             <h1>Importar</h1>
             <div>
-                <input type="file" ref="excelFile" @change="excelExport"
-                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                <form method="POST" enctype="multipart/form-data">
+                    <!--@change="excelExport"-->
+                    <input type="file" ref="excelFile"
+                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                    <v-btn @click="excelExport">Enviar</v-btn>
+                </form>
+                <form @submit.prevent="uploadFile">
+                    <input type="file" ref="fileInput">
+                    <button type="submit">Enviar archivo</button>
+                </form>
             </div>
             <div>
                 <!--{{ mostrar(this.excelData) }}-->
@@ -17,7 +25,7 @@
                 <div ref="dgxl" class="grid"></div>
             <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
                                                                                                                                                             <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
-                                s                                                                                                                                                -->
+                                        s                                                                                                                                                -->
             </div>
 
             <v-btn tile color="success" @click="save">
@@ -40,6 +48,8 @@
 
 import XLSX from 'xlsx'
 import DataGridXL from "@datagridxl/datagridxl2";
+import FormData from 'form-data';
+//import fs from 'fs';
 export default {
     data() {
         return {
@@ -131,6 +141,29 @@ export default {
         location.reload(true)
     },
     methods: {
+        async uploadFile() {
+            const file = this.$refs.fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append('file', file);
+            console.log(formData);
+            try {
+                let r=  await axios.post(`/${process.env.MIX_CARPETA}/api/abrir_excel`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                console.log(r.data);    
+                console.log(r.data['file'])
+                this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
+                    data: r.data['file'],
+                    locale: this.dgxl_nl_NL,
+
+                });
+            } catch (error) {
+                alert('Error al subir archivo');
+            }
+        },
         close() {
 
         },
@@ -176,9 +209,39 @@ export default {
             this.wb = null
             this.rowObj = null
         },
-        excelExport(event) {
+        async excelExport(event) {
 
             var input = this.$refs.excelFile
+            const file = input.files[0]
+            const formData = new FormData();
+            formData.append("file", file)
+            console.log(formData);
+
+            var res = await this.axios({
+                method: 'post',
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                url: `/${process.env.MIX_CARPETA}/api/abrir_excel`,
+                data: {
+                    archivo: formData,
+                },
+
+            }).then(
+                (response) => {
+                    //this.headers = response.data
+                    //console.log('Responder');
+                    console.log(response.data)
+                    /*input = null
+                    file = null
+                    formData = null*/
+
+                }).catch((error) => {
+                    console.log(error.data);
+
+                });
+
+            /*
 
             this.reader = new FileReader();
 
@@ -198,8 +261,10 @@ export default {
                 //console.log(this.Workerbook)
                 //this.excelFile = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet]
                 const workbookHeaders = XLSX.read(this.fileData, { type: 'binary', sheetRows: 1 });
-                this.header = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 })[0];
-                this.rowObj = XLSX.utils.sheet_to_json(this.wb.Sheets[this.selectedSheet], { defval: "", dense: true })
+                console.log(workbookHeaders);
+                /*this.header = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1, ram: true })[0];
+                const range = {s:{c:0, r:0}, e:{c:2, r:100}}; 
+                this.rowObj = XLSX.utils.sheet_to_json(this.wb.Sheets[this.selectedSheet], { defval: "", dense: true, ram: true, range })
                     .map(row =>
                         Object.keys(row).reduce((obj, key) => {
                             obj[key.trim()] = row[key];
@@ -275,9 +340,9 @@ export default {
                     });
 
                 })*/
-            };
+            //};
             //console.log(input.files)
-            this.reader.readAsBinaryString(input.files[0]);
+            //this.reader.readAsBinaryString(input.files[0]);
             /*reader = null
             input = null
             fileData = null
@@ -291,7 +356,7 @@ export default {
             //this.limpiar()
             this.rowObj = null
             this.DataGridXL = null
-            this.rowObj = XLSX.utils.sheet_to_json(this.wb.Sheets[this.selectedSheet], { defval: "" })
+            this.rowObj = XLSX.utils.sheet_to_json(this.wb.Sheets[this.selectedSheet], { defval: "", raw: true })
                 .map(row =>
                     Object.keys(row).reduce((obj, key) => {
                         obj[key.trim()] = row[key];
@@ -299,7 +364,7 @@ export default {
                     }, {})
                 );
             console.log(this.rowObj);
-            
+
             //console.log(Object.keys(this.rowObj).length)
             this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                 data: this.rowObj,

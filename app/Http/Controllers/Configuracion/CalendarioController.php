@@ -4,17 +4,19 @@ namespace App\Http\Controllers\Configuracion;
 
 use App\Models\Calendario;
 use App\Http\Controllers\Controller;
+use App\Models\persona;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\VarDumper\Cloner\Data;
 
 
 use Org_Heigl\Holidaychecker\Holidaychecker;
 use Org_Heigl\Holidaychecker\HolidayIteratorFactory;
-
-
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use stdClass;
 
 class CalendarioController extends Controller
 {
@@ -224,5 +226,88 @@ class CalendarioController extends Controller
         }
 
         return $request;
+    }
+    public static function archivo_excel($request)
+    {
+
+
+        $hearder_personas =
+            DB::table("information_schema.columns")
+            ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
+            ->where("table_name", "=", "personas")
+            ->get();
+
+        $hearder_nonull =
+            DB::table("information_schema.columns")
+            ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
+            ->where("table_name", "=", "personas")
+            ->where("is_nullable", "=", "YES")
+            
+            ->get();
+
+
+
+        //return $hearder_personas;
+        //return $request->file('file');
+        if ($request->hasFile('file')) {
+
+
+            $file = $request->file('file');
+
+            // Use IOFactory to load the Excel file
+            $spreadsheet = IOFactory::load($file);
+
+            $r = [];
+            // Get the first sheet in the workbook
+            $sheet = $spreadsheet->getActiveSheet();
+
+
+            //return $sheet[0];
+            $i = 0;
+            $hearder = [];
+            foreach ($sheet->getRowIterator() as $row) {
+
+
+                $f = new stdClass();
+                $j = 0;
+                foreach ($row->getCellIterator() as $cell) {
+
+                    if ($i == 0) {
+                        $valor_buscar = $cell->getValue();
+                        foreach ($hearder_nonull as $x) {
+                            if ($x === $valor_buscar) {
+
+                            }
+                        }
+                        array_push($hearder,  $cell->getValue() . trim(' '));
+                        
+                    } else {
+                        $key = $hearder[$j];
+                        $f->$key = $cell->getValue() . trim(' ');
+                        $value = $cell->getValue() . trim(' ');
+                    }
+                    $j++;
+                    // Do something with the value
+                }
+               
+                if ($i > 0  ) {
+                    $validator = Validator::make(json_decode(json_encode($f), true), [
+                        'ci' => 'required|string',
+                        
+                     ]);
+                    
+                    array_push($r, $f);
+                }
+                $i++;
+            }
+            // Do something with the data in the sheet
+            // ...
+            return response()->json(['file' => $r, 'header' => $hearder, 'success' => true]);
+            return $file;
+            // guardar el archivo o hacer lo que sea necesario con él
+            return response()->json(['message' => 'Archivo subido exitosamente']);
+        } else {
+            return response()->json(['message' => 'No se encontró ningún archivo'], 400);
+        }
     }
 }
