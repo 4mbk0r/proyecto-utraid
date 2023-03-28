@@ -360,7 +360,7 @@
 </template>
 
 <script>
-import { thisTypeAnnotation } from "@babel/types";
+//import { thisTypeAnnotation } from "@babel/types";
 import axios from "axios";
 import moment from "moment";
 const day1 =

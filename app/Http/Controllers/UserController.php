@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -82,4 +84,18 @@ class UserController extends Controller
     {
         //
     }
+    
+    public static function change_password(Request $request)
+    {
+
+        return $request;
+        $request->validate([
+            'nuevo_password' => ['required'],
+        ]);
+
+        User::find($request->id)->update(['password' => Hash::make($request->nuevo_password)]);
+
+        return redirect()->back()->with('success', 'La contraseña se ha cambiado correctamente');
+    }
+    
 }

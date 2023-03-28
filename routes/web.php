@@ -185,6 +185,8 @@ Route::get('/prrr', function () {
 
 
 
+
+
 Route::resource('/equipo2', EquipoController::class)->middleware(['auth:sanctum', 'verified']);
 
 Route::resource('/dar_ficha', DarCitaController::class)->middleware(['auth:sanctum', 'verified']);
@@ -201,4 +203,12 @@ Route::resource('/conf_prueba', HistorialController::class)->middleware(['auth:s
 
 
 use App\Http\Controllers\NuevaConfigController;
+use Illuminate\Http\Request;
+
 Route::resource('/configuracion_rango', NuevaConfigController::class)->middleware(['auth:sanctum', 'verified']);
+
+
+Route::post('/change_password', function (Request $request) {
+
+    return UserController::change_password($request);
+});
