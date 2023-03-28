@@ -118,7 +118,10 @@
                         </inertia-link>
                         -->
                     <v-btn class="ml-4" color="primary" type="sumbit" :class="{ 'opacity-25': form.processing }"
-                        :disabled="form.processing">
+                        :disabled="form.processing" 
+                        @click="ff("
+                        
+                        >
                         Cambiar Contraseña
                     </v-btn>
                 </v-col>
