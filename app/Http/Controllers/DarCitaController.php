@@ -257,15 +257,21 @@ class DarCitaController extends Controller
         DB::table('dar_citas')
             ->where('id_ficha', '=', $ficha2['id_ficha'])
             ->delete();
-        //return $request;    
+        
+            
+        //return $request;   
+        if (isset($ficha1['id_persona'])) {
+            DB::table('dar_citas')
+            ->where('id_ficha', '=', $ficha1['id_ficha'])
+            ->delete();
+            DB::table('dar_citas')
+                ->updateOrInsert(['id_ficha' => $ficha2['id_ficha'], 'id_persona' => $ficha1['id_persona']]);
+        } 
         if (isset($ficha2['id_persona'])) {
             DB::table('dar_citas')
                 ->updateOrInsert(['id_ficha' => $ficha1['id_ficha'], 'id_persona' => $ficha2['id_persona']]);
         }
-        if (isset($ficha1['id_persona'])) {
-            DB::table('dar_citas')
-                ->updateOrInsert(['id_ficha' => $ficha2['id_ficha'], 'id_persona' => $ficha1['id_persona']]);
-        }
+        
         return $request;
 
 

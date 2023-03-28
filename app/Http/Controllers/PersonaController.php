@@ -6,6 +6,8 @@ use App\Models\persona;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use stdClass;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class PersonaController extends Controller
 {
@@ -86,5 +88,36 @@ class PersonaController extends Controller
     public function destroy(persona $persona)
     {
         //
+    }
+    public static function buscar_valor(Request $request)
+    {
+        
+        $persona =(array) $request['paciente'];
+        
+        $r =[];
+        foreach ($persona as $key => $value) {
+            # code...
+            //array_push($r, $key);
+            if(!empty($value)){
+                $p = 'unaccent(lower('.strval($key).')) like '.$value; 
+                /*if(!empty($r)){
+                    $r .= $r.' and '.$p;
+                }else{
+                    $r = $p;
+                }*/
+                $p =  [DB::raw("unaccent(lower(".strval($key)."))"), 'like', '%'.strtolower($value).'%'];
+                array_push($r, $p);
+            }
+        }
+        //return $r;
+        $t = [];
+        if(count($r)>0){
+            $t =db::table('personas')
+            ->where($r)
+            ->get();
+        }
+        return $t;
+
+
     }
 }

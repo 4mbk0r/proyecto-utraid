@@ -242,7 +242,7 @@ class CalendarioController extends Controller
             ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
             ->where("table_name", "=", "personas")
             ->where("is_nullable", "=", "YES")
-            
+
             ->get();
 
 
@@ -276,33 +276,63 @@ class CalendarioController extends Controller
                         $valor_buscar = $cell->getValue();
                         foreach ($hearder_nonull as $x) {
                             if ($x === $valor_buscar) {
-
                             }
                         }
-                        array_push($hearder,  $cell->getValue() . trim(' '));
-                        
+                        array_push($hearder,  trim($cell->getValue()));
                     } else {
                         $key = $hearder[$j];
-                        $f->$key = $cell->getValue() . trim(' ');
-                        $value = $cell->getValue() . trim(' ');
+                        $f->$key =  trim($cell->getValue());
+                        $value =  trim($cell->getValue());
                     }
                     $j++;
                     // Do something with the value
                 }
-               
-                if ($i > 0  ) {
-                    $validator = Validator::make(json_decode(json_encode($f), true), [
-                        'ci' => 'required|string',
-                        
-                     ]);
-                    
-                    array_push($r, $f);
+
+                if ($i > 0) {
+                    $rules = [
+                        'nombres' => 'required',
+                        'ci' => 'required'
+                    ];
+                    //$resp = new Request((array)$f);
+                    $validator = Validator::make((array)$f, $rules);
+                    if ($validator->passes()) {
+                        // La validación fue exitosa
+                        $query = db::table('personas')
+                            ->where('ci', '=', $f->ci)
+                            ->where('expedido', '=', $f->expedido);
+
+
+                        if (!($query && $query->exists())) {
+                            $insertar = new stdClass();
+                            foreach ($hearder_personas as $key => $value) {
+                                # code...
+                                $vk = ($value->nombre);
+
+                                if (property_exists($f, $vk)) {
+                                    $insertar->$vk = $f->$vk;
+                                } else {
+                                    $insertar->$vk = null;
+                                }
+                            }
+                            $u = (array)$insertar;
+                            unset($u['id']);
+                            unset($u['register']);
+                            $query = db::table('personas')
+                                ->insert($u);
+                        }
+                        //array_push($r, $f);
+
+
+                    } else {
+                        array_push($r, $f);
+                        // La validación falló, manejar el error
+                    }
                 }
                 $i++;
             }
             // Do something with the data in the sheet
             // ...
-            return response()->json(['file' => $r, 'header' => $hearder, 'success' => true]);
+            return response()->json(['file' => $hearder_personas, 'header' => $hearder, 'success' => true]);
             return $file;
             // guardar el archivo o hacer lo que sea necesario con él
             return response()->json(['message' => 'Archivo subido exitosamente']);

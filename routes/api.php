@@ -21,6 +21,7 @@ use App\Http\Controllers\HorarioController;
 
 use App\Http\Controllers\AtenderController;
 use App\Http\Controllers\DarCitaController;
+use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\PersonalController;
 use App\Models\Asignar_config_sala;
 use App\Models\Calendario;
@@ -249,4 +250,11 @@ Route::post('/fechas_delete', function (Request $request) {
 Route::post('/abrir_excel', function (Request $request) {
 
     return CalendarioController::archivo_excel($request);
+});
+
+
+
+Route::post('/buscar_valor', function (Request $request) {
+
+    return PersonaController::buscar_valor($request);
 });

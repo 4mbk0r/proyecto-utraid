@@ -176,7 +176,7 @@
             </v-col>
 
         </v-row>
-        <datos @pedir='actualizador' ref="dato">
+        <datos v-if="dialog_persona" @pedir='actualizador' ref="dato">
         </datos>
         <atencion ref="atender" :equipo="lista_equipo"></atencion>
 
@@ -202,6 +202,7 @@ export default {
 
         value: '',
         ready: false,
+        dialog_persona: false,
 
         dialog: false,
         estado: 'calendario',
@@ -286,7 +287,7 @@ export default {
             let f = this.selectedEvent.fichas.id_ficha
             var res = await axios({
                 method: 'delete',
-                url: `/${process.env.MIX_CARPETA}/atender/` +f,
+                url: `/${process.env.MIX_CARPETA}/atender/` + f,
             }).then(
                 (response) => {
                     console.log(response);
@@ -962,11 +963,15 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
         },
         open_agenda() {
             this.selectedOpen = false
-            this.$refs.dato.op1 = 1;
-            this.$refs.dato.fecha_cita = this.fecha_calendario
-            this.$refs.dato.cita_nueva = this.selectedEvent.fichas
-            //console.log();
-            this.$refs.dato.open()
+            this.dialog_persona = true
+            setTimeout(() => {
+                this.$refs.dato.op1 = 1;
+                this.$refs.dato.fecha_cita = this.fecha_calendario
+                this.$refs.dato.cita_nueva = this.selectedEvent.fichas
+                //console.log();
+                this.$refs.dato.open()
+            }, 1);
+
 
         },
         get_nombre_equipo($value) {

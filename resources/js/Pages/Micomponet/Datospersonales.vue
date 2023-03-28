@@ -1,5 +1,8 @@
 <template>
-  <v-dialog v-model="dialog" ref="ventana" fullscreen hide-overlay class="fill-height" color="blue"
+  <v-dialog v-model="dialog" ref="ventana" fullscreen hide-overlay 
+  
+  @keydown.enter.stop.prevent="onEnter"
+  persistent class="fill-height" color="blue"
     transition="dialog-bottom-transition">
     <v-toolbar :color="op1 === 1 ? 'green' : 'blue'">
       <v-btn icon @click="close">
@@ -28,8 +31,11 @@
               <v-container>
                 <v-row no-gutters>
                   <v-col cols="12" sm="8" class="pr-4">
-                    <v-text-field v-model="paciente.ci" :rules="nombreRules" :color="op1 === 1 ? 'green' : 'blue'"
-                      label="Cedula de Identidad" @keydown.enter="buscadorporci()" required>
+                    <v-text-field v-model="paciente.ci" :rules="ciRules" :color="op1 === 1 ? 'green' : 'blue'"
+                      label="Cedula de Identidad" @keydown.enter="buscadorporvalor()"
+                      @change = "buscadorporci()"
+                      
+                      required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4">
@@ -44,7 +50,9 @@
                       (v) => {
                         paciente.nombres = v.toUpperCase();
                       }
-                    " required>
+                    " 
+                    @keydown.enter="buscadorporvalor()"
+                    required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
@@ -52,7 +60,9 @@
                       (v) => {
                         paciente.ap_paterno = v.toUpperCase();
                       }
-                    " label="Apellido Paterno" required>
+                    " 
+                    @keydown.enter="buscadorporvalor()"
+                    label="Apellido Paterno" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
@@ -60,7 +70,9 @@
                       (v) => {
                         paciente.ap_materno = v.toUpperCase();
                       }
-                    " label="Apellido Materno" required>
+                    " 
+                    @keydown.enter="buscadorporvalor()"
+                    label="Apellido Materno" required>
                     </v-text-field>
                   </v-col>
                 </v-row>
@@ -84,28 +96,36 @@
                       label="Fecha de nacimiento">
                     </v-text-field>
                   </v-col>
-                  <v-col cols="12"  class="d-flex justify-center" sm="6">
+                  <v-col cols="12" class="d-flex justify-center" sm="6">
                     <!--<v-select v-model="paciente.sexo" persistent-placeholder placeholder="No se tiene datos"
                       :items="ssexo" color="purple darken-3" label="Sexo" pa-0 solo>
                     </v-select>-->
-                    
-                  <v-radio-group v-model="paciente.sexo" row>
-                    <v-radio label="Masculino" value="Masculino"></v-radio>
-                    <v-radio label="Femenino" value="Femenino"></v-radio>
-                  </v-radio-group>
+
+                    <v-radio-group v-model="paciente.sexo" row>
+                      <v-radio label="Masculino" value="Masculino"></v-radio>
+                      <v-radio label="Femenino" value="Femenino"></v-radio>
+                    </v-radio-group>
                   </v-col>
 
                 </v-row>
                 <v-row no-gutters>
-                  <v-col cols="12" sm="6">
+                  <v-col cols="12" sm="4">
                     <v-btn color="primary" class="mr-4" @click="cambiar_datos">
                       Guardar Datos
                     </v-btn>
                   </v-col>
-                  <v-col cols="12" sm="6">
-                    <v-btn v-if="op1 == 2" color="primary" class="mr-4" @click="dar_cita()">
-                      dar_cita
+                  <v-col cols="12" sm="4">
+                    <v-btn  v-if="op1 == 2" color="primary" class="mr-4" @click="dar_cita()">
+                      Dar cita
+                      <v-icon end icon>mdi-calendar</v-icon>
                     </v-btn>
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <v-btn  class="ma-2"
+                      color="primary">
+                      Imprimir
+                      <v-icon end icon> mdi-printer</v-icon>
+                  </v-btn>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -508,8 +528,13 @@ export default {
     ],
     nombreRules: [
       (v) => !!v || "Dato requerido",
-
-      //v => v.length <= 10 || 'Name must be less than 10 characters',
+      //(v) => (v.length >= 6) || "CI debe de tener mas de 6 caracteres",
+      //v => v.length <= 10 || 'CI debe de tener mas de 10 caracteres',
+    ],
+    ciRules: [
+      (v) => !!v || "Dato requerido",
+      (v) => (v.length >= 6) || "CI debe de tener mas de 6 caracteres",
+      //v => v.length <= 10 || 'CI debe de tener mas de 10 caracteres',
     ],
     rules: {
       select: [(v) => !!v || "Item is required"],
@@ -538,8 +563,11 @@ export default {
   }),
 
   beforeMount() {
-    this.datos_filtrado();
 
+
+  },
+  destroyed(){
+    this.items = []
   },
   created() {
     //this.paciente_edit = structuredClone(this.paciente);
@@ -551,7 +579,7 @@ export default {
     this.fechacitaMax = moment(this.$store.getters.getfecha_server)
       .add(1, "Y")
       .format("YYYY-MM-DD");
-
+    //this.datos_filtrado();
   },
   computed: {
     persona() { return this.items },
@@ -652,7 +680,8 @@ export default {
     },
     /*  inicialiazar fecha minima*/
     async datos_filtrado() {
-      var res = await axios({
+      if(this.op1 == 1){
+        var res = await axios({
         method: 'get',
         url: `/${process.env.MIX_CARPETA}/persona`,
         /*data: {
@@ -673,7 +702,9 @@ export default {
       ).catch(err => {
         console.log(err)
 
-      });
+      });  
+      }
+      
 
     },
     validar_seleccion() {
@@ -806,6 +837,7 @@ export default {
           .send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
       }
     },
+    
     async buscadorporci() {
       if (this.paciente.ci == "") {
         return;
@@ -837,6 +869,32 @@ export default {
         this.msm_update = true;
       }
     },
+    async buscadorporvalor(valor) {
+      console.log('--------');
+      console.log(this.paciente);
+      if (this.op1 == 1) {
+        console.log(this.paciente.ci);
+        var res = await axios({
+          method: "post",
+          url:
+            `/${process.env.MIX_CARPETA}/api/buscar_valor`,
+          data: {
+            paciente: this.paciente},
+        }).then(
+          (response) => {
+            console.log(response);
+            this.items = response.data
+            /*if (response["data"]["mensaje"] == "SQLSTATE[23505]:") {
+              //let rep = response['data']['persona']
+              this.msm_existe = true;
+              this.paciente_existen = response["data"]["persona"];
+            }*/
+          },).catch((error) => {
+          //console.log(error.response.data.mensaje);
+
+        });
+      } 
+    },
     persona_existente() {
       this.paciente = this.paciente_existen;
       this.paciente_existen = {};
@@ -858,7 +916,7 @@ export default {
     },
     open() {
       this.dialog = true;
-      this.datos_filtrado()
+      //this.datos_filtrado()
     },
     async tabselect(a) {
       this.datos_informacion = a;
@@ -868,7 +926,7 @@ export default {
       console.log(this.cita_nueva.fecha);
       console.log("----");
       this.$emit("pedir", this.fecha_cita);
-
+      this.items = []
       this.dialog = false;
       this.cita_nueva = {};
       this.paciente = {};
@@ -962,7 +1020,7 @@ export default {
       }
     },
     async buscar_citas() {
-      console.log('......');
+      /*console.log('......');
       console.log(this.paciente);
       try {
         var res = await axios({
@@ -979,7 +1037,7 @@ export default {
             console.log(error);
           }
         );
-      } catch (error) { }
+      } catch (error) { }*/
     },
     async valorar() { },
     allowedDates(val) {
@@ -1109,6 +1167,10 @@ export default {
         this.paciente_existen = {};
         this.op1 = 2;
       }
+    },
+    onEnter(event) {
+      // evitar que la tecla Enter haga algo dentro del diálogo
+      event.preventDefault();
     },
     async dar_cita() {
       console.log(this.cita_nueva);

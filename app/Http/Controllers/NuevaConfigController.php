@@ -115,8 +115,14 @@ class NuevaConfigController extends Controller
                 $fecha_inicio = $fecha_inicio->modify('+1 day');
             } else {
                 $cal  = $cal[0];
-                if ($cal->atencion != 'atencion') continue;
-                if ($cal->nro_citas > 0) continue;
+                if ($cal->atencion != 'atencion') {
+                    $fecha_inicio = $fecha_inicio->modify('+1 day');
+                    continue;
+                }
+                if ($cal->nro_citas > 0){
+                    $fecha_inicio = $fecha_inicio->modify('+1 day');
+                    continue;
+                } 
                 else {
 
                     DB::table('designar_equipos')->where('fecha', '=', $fecha_inicio)->delete();
