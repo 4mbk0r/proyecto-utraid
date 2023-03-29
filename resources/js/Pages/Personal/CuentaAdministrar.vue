@@ -116,17 +116,21 @@
                         </inertia-link>
                         -->
                     <v-btn class="ml-4" color="primary" type="sumbit" :class="{ 'opacity-25': form.processing }"
-                        :disabled="form.processing">
+                        :disabled="form.processing"
+                        @click="change_password"
+                        >
                         Cambiar Contraseña
                     </v-btn>
                 </v-col>
             </v-row>
         </v-form>
+        <cambiar_password v-if="dialog_cambio" @close="close_dialog($event)" :paciente="form"></cambiar_password>
     </v-card>
 </template>
 
 <script>
 import AppLayout from '@/Layouts/AppLayout'
+import Cambiar_password from './Cambiar_password.vue'
 /*
 import JetAuthenticationCard from '@/Jetstream/AuthenticationCard'
 import JetAuthenticationCardLogo from '@/Jetstream/AuthenticationCardLogo'
@@ -147,7 +151,8 @@ export default {
     data() {
         return {
             cargos: ['assa'],
-            form_edit: {}
+            form_edit: {}, 
+            dialog_cambio: false
             //roles: [] 
             //['Admin', 'Medico General', 'Trabajo Social', 'Operador Terapético', 'Psicologo', 'Psicologo', 'Secretaria', 'recepcionista'],
         }
@@ -161,6 +166,7 @@ export default {
     },
     components: {
         AppLayout,
+        Cambiar_password
 
 
     },
@@ -266,6 +272,12 @@ export default {
                     .status(500)
                     .send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
+        },
+        close_dialog($e) {
+            this.dialog_cambio = false
+        },
+        async change_password() {
+            this.dialog_cambio = true
         }
     }
 

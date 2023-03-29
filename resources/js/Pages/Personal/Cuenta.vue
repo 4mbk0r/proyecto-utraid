@@ -120,7 +120,7 @@
                 </v-row>
             </v-form>
         </v-card>
-        <cambiar_password v-if="dialog_cambio" @close="close_dialog($event)"></cambiar_password>
+        <cambiar_password v-if="dialog_cambio" @close="close_dialog($event)" :paciente="form"></cambiar_password>
     </app-layout>
 </template>
 

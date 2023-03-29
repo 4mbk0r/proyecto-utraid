@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -88,14 +89,34 @@ class UserController extends Controller
     public static function change_password(Request $request)
     {
 
-        return $request;
-        $request->validate([
-            'nuevo_password' => ['required'],
-        ]);
+        $password = $request['password'];
+        $paciente = $request['paciente'];
+        //return $request['password'];
+        
+        
+        $r = strval(auth()->user()->id) == $paciente['id'];
+        User::find($paciente['id'])->update(['password' => Hash::make($password['password'])]);
+         
+        $res = [
+            'redireccionar' => $r,
 
-        User::find($request->id)->update(['password' => Hash::make($request->nuevo_password)]);
+        ];
+
+        return $res;
+    }
+    public static function default_password(Request $request)
+    {
+
+        $password = $request['password'];
+        $paciente = $request['paciente'];  
+        //return $request['password'];
+
+
+        User::find($paciente['id'])->update(['password' => Hash::make($password['password'])]);
 
         return redirect()->back()->with('success', 'La contraseña se ha cambiado correctamente');
     }
+    
+
     
 }

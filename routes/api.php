@@ -258,3 +258,9 @@ Route::post('/buscar_valor', function (Request $request) {
 
     return PersonaController::buscar_valor($request);
 });
+
+
+Route::get('/feria/{s}', function (string $s) {
+
+    return CitaController::feriado($s);
+});

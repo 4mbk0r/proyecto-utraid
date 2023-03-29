@@ -45,7 +45,13 @@
                             </v-btn>
                         </v-col>
                     </v-row>
-
+                    <v-row>
+                        <v-col>
+                            <v-select v-model="selectedYear" :items="yearOptions" label="Select a year"
+                                @change="seleccionYear($event)"
+                            ></v-select>
+                        </v-col>
+                    </v-row>
                     <v-row>
                         <v-col>
                             <v-data-table :headers="headers_feriado" :footer-props="{
@@ -102,7 +108,7 @@
                                 </v-toolbar>
                             </template>
                             -->
-                                
+
                                 <template v-slot:item.fecha="{ item }">
                                     <span>{{ cambiar_texto(item.fecha) }}</span>
                                 </template>
@@ -141,8 +147,8 @@
                     <v-container>
                         <v-row>
                             <v-col cols="12" md="6">
-                                <v-menu v-model="menu6" :close-on-content-click="false" transition="scale-transition" offset-y
-                                    max-width="290px" min-width="auto">
+                                <v-menu v-model="menu6" :close-on-content-click="false" transition="scale-transition"
+                                    offset-y max-width="290px" min-width="auto">
                                     <template v-slot:activator="{ on, attrs }">
                                         <v-text-field v-model="editedItem.fecha" label="Fecha feriado" persistent-hint
                                             prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" required
@@ -154,14 +160,14 @@
                                     </v-date-picker>
                                 </v-menu>
                             </v-col>
-    
+
                             <v-col cols="12" md="6">
                                 <v-text-field v-model="editedItem.descripcion" label="Descripcion" required
                                     :rules="[v => !!v || 'Se requiere completar']">
                                 </v-text-field>
                             </v-col>
-    
-                            
+
+
                         </v-row>
                     </v-container>
                 </v-card-text>
@@ -260,19 +266,60 @@ export default {
                 sortable: false
             },
         ],
+        selectedYear: null,
+        yearOptions: [],
 
     }),
     created() {
         console.log('inicio');
-        this.get_fechas();
+        //this.get_fechas();
     },
     mounted() {
         console.log('sdfasdklfjasf');
+        const currentYear = new Date().getFullYear();
+        const yearEnd = currentYear + 20;
+        const startYear = currentYear - 0; // Change this number to adjust the range of years
+        for (let year = startYear; yearEnd >= year; year++) {
+            this.yearOptions.push(year);
+        }
+        this.selectedYear = currentYear;
+        this.seleccionYear()
     },
     beforeMount() {
 
     },
     computed: {
+        async seleccionYear(){
+            var res = await axios({
+                    method: 'get',
+                    url: `/${process.env.MIX_CARPETA}/api/feria/`+this.selectedYear,
+                    
+                }).then(
+                    (response) => {
+                        console.log(response);
+                        this.feriado = response.data
+                        /*if (response.data.redireccionar) {
+                            alert('Se cambio la contraseña correctamente. Se cerra la sesión para verificar que este correctamente. ')
+                            window.location.href = `/${process.env.MIX_CARPETA}/login`
+                        }
+
+                        this.$alert('Se a cambiado la contraseña correctamente.').then(res => this.$inform("Cambiar contraseña!"));*/
+                    }
+                ).catch(err => {
+                    if (err.response.status == 401) {
+                        window.location.href = `/${process.env.MIX_CARPETA}/login`
+
+                    }
+                    if (err.response.status == 419) {
+                        window.location.href = `/${process.env.MIX_CARPETA}/login`
+
+                    }
+                    console.log(err)
+                    console.log("err->", err.response.data)
+                    //this.$alert('Se fallo en cambio.').then(res => this.$err("Cambiar contraseña!"));
+                    return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+                });
+        },
         computedDateFormattedMomentjs() {
             moment.locale('es');
             this.calendario.fecha_inicio = this.date
@@ -424,7 +471,7 @@ export default {
         },
 
         async editItem(item) {
-            
+
             this.editedIndex = 1
             this.editedItem = Object.assign({}, item)
             this.dialogEdit = true
@@ -457,7 +504,7 @@ export default {
             });
             this.closeDelete2()
         },
-        async actulizar(){
+        async actulizar() {
             console.log(this.editedItem);
             var res = await axios({
                 method: 'post',
@@ -477,7 +524,7 @@ export default {
                 //return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             });
         },
-        
+
 
         close2() {
             this.dialogEdit = false

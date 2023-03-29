@@ -54,11 +54,32 @@ class CitaTieneConfiguracionController extends Controller
      */
     public function show(string $fecha)
     {
+
+        /*$query = DB::table("calendarios")
+        ->select(DB::raw("case when to_char (fecha, 'day') = 'saturday' then date (fecha::date + interval '1 days') when trim (to_char(fecha, 'day')) = 'sunday' then date (fecha::date + interval '2 days') else fecha end as fecha"))
+        ->where("atencion", "=", 'feriado')
+        ->where(DB::raw("TRIM(to_char(fecha, 'yyyy'))"),'=', db::raw("TRIM('".$year."')"))
+        ->get();*/
+        $results = DB::table(DB::raw("(select  CASE WHEN to_char(fecha, 'day') = 'saturday' THEN  DATE(fecha::date + INTERVAL '1 days') WHEN TRIM(to_char(fecha, 'day')) = 'sunday' THEN  DATE(fecha::date + INTERVAL '2 days')
+        ELSE fecha END as fechaf
+        from calendarios
+where atencion = 'feriado' and TRIM(to_char(fecha, 'yyyy')) = TRIM(to_char('" . $fecha . "'::date, 'yyyy'))  ) AS subquery"))
+            ->where('subquery.fechaf', '=', $fecha)
+            ->get();
+        if (count($results) > 0) {
+            $resp = [
+                'salas' => [],
+                'salas_diponibles' => [],
+                'equipo' => [],
+                //'lista_conf' => $list_config,
+                //'casa0' => $list_config[0]->id_configuracion
+            ];
+            return $resp;
+        }
         /*
         select * from calendarios
         where fecha = '14-02-2023';
         */
-    
         $list_config = DB::table('fichas')
             ->select(['fichas.id_sala', 'salas.descripcion', 'designar_equipos.id_equipo', 'equipos.nombre_equipo'])
             ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
@@ -128,7 +149,7 @@ class CitaTieneConfiguracionController extends Controller
                             DB::table("salas")
                             //->select(['*', 'fichas.id_ficha as id_fichas'])
                             //->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
-    
+
                             ->leftJoin("asignar_salas", function ($join) use ($value) {
                                 $join->on("asignar_salas.id_sala", "=", "salas.id");
                                 $join->where("asignar_salas.id_sala", "=",  $value->id_sala);
@@ -145,7 +166,7 @@ class CitaTieneConfiguracionController extends Controller
                             })
                             ->whereNotNull('conf_salas.id')
                             //->where('conf_salas.id','=',$value->id_conf)
-                            ->where('salas.id','=',$value->id_sala)
+                            ->where('salas.id', '=', $value->id_sala)
                             ->orderBy('salas.descripcion', 'asc')
                             //->leftJoin('asignar_config_salas',  "asignar_config_salas.id_sala", "=", "salas.id" )
                             //->where("salas.id", "=", $value->id_sala)
@@ -216,7 +237,7 @@ Agenda2.vue:442
         } else {
             //$salas;
             $horarios =  [];
-            
+
             foreach ($list_config as $key => $value) {
                 # code...
                 /*

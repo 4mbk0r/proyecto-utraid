@@ -169,6 +169,9 @@ class CalendarioController extends Controller
             DB::table('fichas')
                 ->where('fecha', '=', $request['feriado']['fecha'])
                 ->delete();
+            $datos = (array)$request['feriado'];
+            //return $datos;
+            DB::table("calendarios")->insert($datos);
         } else {
             $datos = (array)$request['feriado'];
             //return $datos;

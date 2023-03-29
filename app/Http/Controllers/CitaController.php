@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\citas;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -28,11 +29,11 @@ class CitaController extends Controller
         /*if (Cache::has('citas' . $date)) {
             $cita_fecha =  Cache::get('citas' . $date);
         } else {*/
-            /*$agenda = DB::table('agendas')
+        /*$agenda = DB::table('agendas')
                 ->join('persona_citas', 'agendas.ci_paciente', '=', 'persona_citas.ci')
                 ->where('fecha', $date)
                 ->get();*/
-           // Cache::put('citas' . $date, $cita_fecha);
+        // Cache::put('citas' . $date, $cita_fecha);
         //}
         $config = DB::table('configuracions')->select('*')->get();
         return inertia('Comenzar', ['fecha_server' => $date, 'agenda' => []]);
@@ -129,7 +130,7 @@ class CitaController extends Controller
                 ->get();
             Cache::put('citas' . $date, $cita_fecha);
         }*/
-        
+
 
         return $date;
     }
@@ -255,7 +256,7 @@ class CitaController extends Controller
             $resp = DB::table('citas')
                 ->insert($cita);
         } catch (\Throwable $th) {
-            return  Response::json(['hello' => $th],500);
+            return  Response::json(['hello' => $th], 500);
         }
         if (Cache::has('citas' . $date)) {
             Cache::forget('citas' . $date);
@@ -367,5 +368,83 @@ class CitaController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public static function feriado(string $s)
+    {    //
+        
+        //$date = new DateTime(''.$s);
+        //$format= date_format($date, 'Y-m-d');
+        
+        $year =  $s;
+        
+        try {
+            //code...
+            $query = DB::table("calendarios")
+                ->select(DB::raw("TRIM(to_char (fecha, 'day'))"), DB::raw("case when to_char (fecha, 'day') = 'saturday' then date (fecha::date + interval '1 days') when trim (to_char(fecha, 'day')) = 'sunday' then date (fecha::date + interval '2 days') else fecha end"))
+                ->where("atencion", "=", 'feriado')
+                ->where(DB::raw("TRIM(to_char(fecha, 'yyyy'))"), '=', db::raw("TRIM('".$year."')"))
+                ->get();
+            if (count($query) == 0) {
+                
+                $feriados = [
+                    [
+                        'fecha' => '01-01-' . $year,
+                        'codigo' => '01',
+                        'atencion' => 'feriado',
+                        'descripcion' => 'Año nuevo',
+                    ],
+                    [
+                        'fecha' => '22-01-' . $year,
+                        'codigo' => '01',
+                        'atencion' => 'feriado',
+                        'descripcion' => 'Estado Plurinacional de Bolivia',
+                    ],
+                    [
+                        'fecha' => '01-05-' . $year,
+                        'codigo' => '01',
+                        'atencion' => 'feriado',
+                        'descripcion' => 'Día del Trabajador'
+                    ],
+                    [
+                        'fecha' => '06-08-' . $year,
+                        'codigo' => '01',
+                        'atencion' => 'feriado',
+                        'descripcion' => 'Día de la Independencia de Bolivia'
+                    ],
+                    [
+                        'fecha' => '02-11-' . $year,
+                        'codigo' => '01',
+                        'atencion' => 'feriado',
+                        'descripcion' => 'Día de los Difuntos'
+                    ],
+                    [
+                        'fecha' => '25-12-' . $year,
+                        'codigo' => '01',
+                        'atencion' => 'feriado',
+                        'descripcion' => 'Navidad'
+                    ],
+
+                ];
+                foreach ($feriados as $key => $value) {
+                    # code...
+                    try {
+                        //code...
+                        db::table('calendarios')->insert($value);
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+                }
+                
+            }
+            $query = DB::table("calendarios")
+                    ->select('*',DB::raw("case when to_char (fecha, 'day') = 'saturday' then date (fecha::date + interval '1 days') when trim (to_char(fecha, 'day')) = 'sunday' then date (fecha::date + interval '2 days') else fecha end as fecha"))
+                    ->where("atencion", "=", 'feriado')
+                    ->where(DB::raw("TRIM(to_char(fecha, 'yyyy'))"),'=', db::raw("TRIM('".$year."')"))
+                    ->get();
+            return $query;
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+        return $s;
     }
 }

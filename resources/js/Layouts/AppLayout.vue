@@ -46,7 +46,7 @@
                                 <v-hover>
                                     <jet-responsive-nav-link as="button">
 
-                                        <v-list-item-title>Cerrar Secion</v-list-item-title>
+                                        <v-list-item-title>Cerrar Sesión</v-list-item-title>
                                     </jet-responsive-nav-link>
                                 </v-hover>
                             </form>

@@ -82,7 +82,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return 'ddd';
 })->name('Dashboard');
 
-Route::middleware(['auth:sanctum', 'verified', 'permiso'])->get('/inicio', [CuentaController::class, 'index'],)->name('inicio');
+Route::middleware(['auth:sanctum', 'auth', 'verified', 'permiso'])->get('/inicio', [CuentaController::class, 'index'],)->name('inicio');
 
 
 Route::resource('/agendar', AgendaController::class)->middleware(['auth:sanctum', 'verified']);
@@ -211,4 +211,9 @@ Route::resource('/configuracion_rango', NuevaConfigController::class)->middlewar
 Route::post('/change_password', function (Request $request) {
 
     return UserController::change_password($request);
+});
+
+Route::post('/default_password', function (Request $request) {
+
+    return UserController::default_password($request);
 });
