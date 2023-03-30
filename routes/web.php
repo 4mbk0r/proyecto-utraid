@@ -61,7 +61,9 @@ Route::get('/', function () {
 /*Administracion */
 Route::get('/registrar', [Registro::class, 'index'])->name('registro');
 
-
+Route::middleware(['auth:sanctum', 'verified'])->get('/pacientes', function () {
+    return Inertia::render('Micomponet/Excelcopy');
+})->name('agragar_paciente');
 
 /*SALAS*/
 
@@ -216,4 +218,11 @@ Route::post('/change_password', function (Request $request) {
 Route::post('/default_password', function (Request $request) {
 
     return UserController::default_password($request);
+});
+
+
+
+Route::get('/default_prueba', function (Request $request) {
+    return Inertia::render('Micomponet/Excelcopy');
+    //return UserController::default_password($request);
 });

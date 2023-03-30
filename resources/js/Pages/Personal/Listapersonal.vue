@@ -150,7 +150,7 @@ export default {
         text: 'Nombre',
         align: 'start',
         //sortable: false,
-        value: 'nombre',
+        value: 'nombres',
       },
       {
         text: 'Apellido Paterno',

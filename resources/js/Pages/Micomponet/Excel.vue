@@ -2,17 +2,17 @@
 <template>
     <v-app>
         <v-container>
-            <h1>Importar</h1>
+            <h1>Importar Personal</h1>
             <div>
-                <form method="POST" enctype="multipart/form-data">
-                    <!--@change="excelExport"-->
+            <!--<form method="POST" enctype="multipart/form-data">
+                    <!--@change="excelExport"
                     <input type="file" ref="excelFile"
                         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
                     <v-btn @click="excelExport">Enviar</v-btn>
-                </form>
+                        </form>-->
                 <form @submit.prevent="uploadFile">
-                    <input type="file" ref="fileInput">
-                    <button type="submit">Enviar archivo</button>
+                    <input type="file" ref="fileInput" @change="uploadFile">
+                    <!--<button type="submit">Enviar archivo</button>-->
                 </form>
             </div>
             <div>
@@ -25,7 +25,7 @@
                 <div ref="dgxl" class="grid"></div>
             <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
                                                                                                                                                             <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
-                                        s                                                                                                                                                -->
+                                                s                                                                                                                                                -->
             </div>
 
             <v-btn tile color="success" @click="save">
@@ -148,18 +148,23 @@ export default {
             formData.append('file', file);
             console.log(formData);
             try {
-                let r=  await axios.post(`/${process.env.MIX_CARPETA}/api/abrir_excel`, formData, {
+                let r = await axios.post(`/${process.env.MIX_CARPETA}/api/personal_excel`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-                console.log(r.data);    
+                console.log(r.data);
                 console.log(r.data['file'])
                 this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                     data: r.data['file'],
                     locale: this.dgxl_nl_NL,
 
                 });
+                if (r.data['header']) {
+                    this.$alert('Todos los datos fueron ingresados correctamente').then((res) => this.$inform("Cambios guardados!"));
+                } else {
+                    this.$alert('Existen errores en cargar los datos').then((res) => this.$error("Datos no guardados!"));
+                }
             } catch (error) {
                 alert('Error al subir archivo');
             }
@@ -232,6 +237,16 @@ export default {
                     //this.headers = response.data
                     //console.log('Responder');
                     console.log(response.data)
+                    this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
+                        data: r.data['file'],
+                        locale: this.dgxl_nl_NL,
+
+                    });
+                    if (r.data['verificar']) {
+                        this.$alert('Todos los datos fueron ingresados correctamente').then((res) => this.$inform("Cambios guardados!"));
+                    } else {
+                        this.$alert('Existen errores en cargar los datos').then((res) => this.$error("Datos no guardados!"));
+                    }
                     /*input = null
                     file = null
                     formData = null*/
@@ -431,16 +446,38 @@ export default {
 
             this.sheetName = null;
         },
-        save() {
+        async save() {
+            var res = await this.axios({
+                method: 'post',
 
-            console.log('...s');
-            console.log(this.DataGridXL.getData());
-            var objetos = {
-                'datos': this.DataGridXL.getData(),
-                'header': this.header
-            }
+                url: `/${process.env.MIX_CARPETA}/api/personal_excel_json`,
+                data: {
+                    archivo: this.DataGridXL.getData(),
+                },
 
-            this.$emit('guardar_datos', objetos)
+            }).then(
+                (response) => {
+                    //this.headers = response.data
+                    //console.log('Responder');
+                    console.log(response.data)
+                    this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
+                        data: response.data['datos'],
+                        locale: this.dgxl_nl_NL,
+
+                    });
+                    if (response.data['verificar']) {
+                        this.$alert('Todos los datos fueron ingresados correctamente').then((res) => this.$inform("Cambios guardados!"));
+                    } else {
+                        this.$alert('Existen errores en cargar los datos').then((res) => this.$error("Datos no guardados!"));
+                    }
+                    /*input = null
+                    file = null
+                    formData = null*/
+
+                }).catch((error) => {
+                    console.log(error.data);
+
+                });
         },
         save2() {
             console.log("________________");

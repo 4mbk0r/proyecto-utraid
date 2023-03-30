@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\VarDumper\Cloner\Data;
 
@@ -16,6 +17,7 @@ use Symfony\Component\VarDumper\Cloner\Data;
 use Org_Heigl\Holidaychecker\Holidaychecker;
 use Org_Heigl\Holidaychecker\HolidayIteratorFactory;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpParser\Node\Expr\Cast\Object_;
 use stdClass;
 
 class CalendarioController extends Controller
@@ -342,5 +344,210 @@ class CalendarioController extends Controller
         } else {
             return response()->json(['message' => 'No se encontró ningún archivo'], 400);
         }
+    }
+    public static function excel_personal($request)
+    {
+
+        //return $request;
+        $hearder_personas =
+            DB::table("information_schema.columns")
+            ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
+            ->where("table_name", "=", "users")
+            ->get();
+
+        $hearder_nonull =
+            DB::table("information_schema.columns")
+            ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
+            ->where("table_name", "=", "users")
+            ->where("is_nullable", "=", "YES")
+
+            ->get();
+
+
+
+        //return $hearder_personas;
+        //return $request->file('file');
+        if ($request->hasFile('file')) {
+
+
+            $file = $request->file('file');
+
+            // Use IOFactory to load the Excel file
+            $spreadsheet = IOFactory::load($file);
+
+            $r = [];
+            // Get the first sheet in the workbook
+            $sheet = $spreadsheet->getActiveSheet();
+
+
+            //return $sheet[0];
+            $i = 0;
+            $verificar_datos = true;
+            $valores = [];
+            $hearder = [];
+            foreach ($sheet->getRowIterator() as $row) {
+
+
+                $f = new stdClass();
+                $j = 0;
+                //$error = false;
+                foreach ($row->getCellIterator() as $cell) {
+
+                    if ($i == 0) {
+                        $valor_buscar = $cell->getValue();
+                        //$verificar_datos = true;
+                        /*foreach ($hearder_nonull as $x) {
+                            if ($x === $valor_buscar) {
+                            }
+                        }*/
+                        array_push($hearder,  trim($cell->getValue()));
+                    } else {
+                        $key = trim($hearder[$j]);
+
+                        $f->$key =  trim($cell->getValue());
+                        $value =  trim($cell->getValue());
+                        if ($key ==  'establecimiento') {
+                            $estableciento = DB::table('establecimientos')->where('nombre', '=', trim($f->establecimiento));
+                            //$f->error = false;
+                            $f->error_detalle = "";
+                            if (!$estableciento->exists()) {
+                                $verificar_datos = false;
+                                //$f->error = true;
+                                $f->error_detalle = 'no existe el estableciento';
+                            }
+                        }
+                    }
+
+                    $j++;
+                    // Do something with the value
+                }
+
+
+                if ($i > 0) {
+
+                    $rules = [
+                        'nombres' => 'required',
+                        'ci' => 'required'
+                    ];
+                    $messages = [
+                        'nombres.required' => 'Se requiere nombres',
+                        'ci.required' => 'Se requiere cedula de identidad',
+                        /*'email.email' => 'Please enter a valid email address.',
+                        'password.required' => 'Please enter a password.',
+                        'password.min' => 'Your password must be at least 8 characters long.',*/
+                    ];
+                    //$resp = new Request((array)$f);
+                    $validator = Validator::make(json_decode(json_encode($f), true), $rules);
+                    if (!$validator->passes()) {
+                        # code...
+                        $verificar_datos = false;
+                        $f->error_detalle = 'Se requieren datos';
+                    }
+
+                    $usuario_existen = db::table('users')
+                        ->where('ci', '=', $f->ci)
+                        ->where('expedido', '=', $f->expedido);
+                        if (($usuario_existen && $usuario_existen->exists())) {
+                            $verificar_datos = false;
+                            $f->error_detalle = 'El Usuario ya existe editar de manera uniataria unitaria';
+                        }
+                    array_push($valores, $f);
+                }
+                $i++;
+            }
+            if ($verificar_datos) {
+                foreach ($valores as $key => $value) {
+                    # code...
+
+                    // La validación fue exitosa
+                    $query = db::table('users')
+                        ->where('ci', '=', $value->ci)
+                        ->where('expedido', '=', $value->expedido);
+
+
+                    if (!($query && $query->exists())) {
+                        $insertar = new stdClass();
+                        foreach ($hearder_personas as $key => $valor) {
+                            # code...
+                            $vk = ($valor->nombre);
+
+                            if (property_exists($value, $vk)) {
+                                $insertar->$vk = $value->$vk;
+                            } else {
+                                $insertar->$vk = null;
+                            }
+                        }
+                        $insertar->username = $insertar->ci;
+                        $insertar->password = Hash::make($insertar->ci);
+                        $u = (array)$insertar;
+                        unset($u['id']);
+                        unset($u['error']);
+                        unset($u['error_detalle']);
+
+                        //unset($u['register']);
+                        $id = db::table('users')
+                            ->insertGetId($u);
+                        db::table('contratos')
+                            ->insert(['id_usuario' => $u['username'], 'id_establecimiento' => $value->establecimiento]);
+                    }
+
+                    //array_push($r, $f);
+
+
+
+                }
+            }
+            // Do something with the data in the sheet
+            // ...
+            return response()->json(['file' => $valores, 'header' => $verificar_datos, 'ca' => $validator->passes(),  'success' => true]);
+            return $file;
+            // guardar el archivo o hacer lo que sea necesario con él
+            return response()->json(['message' => 'Archivo subido exitosamente']);
+        } else {
+            return response()->json(['message' => 'No se encontró ningún archivo'], 400);
+        }
+    }
+    public static function personal_json(Request $request)
+    {
+
+        return CalendarioController::validar_personal($request['archivo']);
+        //return $request;
+    }
+    public static function validar_personal(array $query)
+    {
+
+        $verificar_datos = true;
+        foreach ($query as $key => $value) {
+            # code...
+            //$value = json_encode($value);
+            $estableciento = DB::table('establecimientos')->where('nombre', '=', $value['establecimiento']);
+            //$value['error'] = false;
+            //$value->error_detalle = '';
+            $query[$key]['error_detalle'] = '';
+            if (!$estableciento->exists()) {
+                $verificar_datos = false;
+                //$value->error = true;
+                $value['error_detalle'] = 'no existe el estableciento';
+            }
+            $rules = [
+                'nombres' => 'required',
+                'ci' => 'required'
+            ];
+            $messages = [
+                'nombres.required' => 'Se requiere nombres',
+                'ci.required' => 'Se requiere cedula de identidad',
+                /*'email.email' => 'Please enter a valid email address.',
+                    'password.required' => 'Please enter a password.',
+                    'password.min' => 'Your password must be at least 8 characters long.',*/
+            ];
+            //$resp = new Request((array)$f);
+            $validator = Validator::make((array)$value, $rules, $messages);
+            if ($validator->fails()) {
+                # code...
+                $verificar_datos = false;
+                $value['error_detalle'] = 'Se requieren datos';
+            }
+        }
+        return ['verificar' => $verificar_datos, 'datos' => $query];
     }
 }

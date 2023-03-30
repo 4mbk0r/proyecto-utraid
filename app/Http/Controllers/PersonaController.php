@@ -120,4 +120,11 @@ class PersonaController extends Controller
 
 
     }
+    public function indexView()
+    {
+        //
+        return DB::table('personas')
+        ->select('*')->get();
+
+    }
 }

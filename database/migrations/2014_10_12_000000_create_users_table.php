@@ -16,7 +16,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
+            $table->string('nombres');
             $table->string('ap_materno');
             $table->string('ap_paterno');
             $table->string('ci');
@@ -42,7 +42,7 @@ class CreateUsersTable extends Migration
         );
         $datos = [
             'username' => '8340024',
-            'nombre' => 'Erick',
+            'nombres' => 'Erick',
             'ap_materno' => 'Condori',
             'ap_paterno' => 'Quispe',
             'ci' => '8340024',

@@ -252,6 +252,10 @@ Route::post('/abrir_excel', function (Request $request) {
     return CalendarioController::archivo_excel($request);
 });
 
+Route::post('/personal_excel', function (Request $request) {
+
+    return CalendarioController::excel_personal($request);
+});
 
 
 Route::post('/buscar_valor', function (Request $request) {
@@ -263,4 +267,11 @@ Route::post('/buscar_valor', function (Request $request) {
 Route::get('/feria/{s}', function (string $s) {
 
     return CitaController::feriado($s);
+});
+
+
+
+Route::post('/personal_excel_json', function (Request $request) {
+
+    return CalendarioController::personal_json($request);
 });
