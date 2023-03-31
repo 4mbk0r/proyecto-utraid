@@ -155,13 +155,13 @@ class ExcelPaciente extends Controller
                             ->where('ci', '=', $f->ci)
                             ->where('expedido', '=', $f->expedido)
                             ->get();
-                        array_push($r, count($query));
+                        //array_push($r, $query);
 
                         if (count($query) == 0) {
                             $insertar = new stdClass();
-                            foreach ($hearder as $key => $value) {
+                            foreach ($hearder as $key => $ui) {
                                 # code...
-                                $vk = ($value->nombre);
+                                $vk = ($ui->nombre);
 
                                 if (property_exists($f, $vk)) {
                                     $insertar->$vk = $f->$vk;
@@ -174,6 +174,7 @@ class ExcelPaciente extends Controller
                             unset($u['register']);
                             $query = db::table('personas')
                                 ->insert($u);
+                            array_push($r, $insertar);
                         }
                         //array_push($r, $f);
 
