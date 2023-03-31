@@ -210,6 +210,9 @@ use Illuminate\Http\Request;
 Route::resource('/configuracion_rango', NuevaConfigController::class)->middleware(['auth:sanctum', 'verified']);
 
 
+Route::resource('/excel_paciente', NuevaConfigController::class)->middleware(['auth:sanctum', 'verified']);
+
+
 Route::post('/change_password', function (Request $request) {
 
     return UserController::change_password($request);

@@ -23,6 +23,7 @@ use App\Http\Controllers\AtenderController;
 use App\Http\Controllers\DarCitaController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\ExcelPaciente;
 use App\Models\Asignar_config_sala;
 use App\Models\Calendario;
 use App\Models\Configuracion;
@@ -274,4 +275,14 @@ Route::get('/feria/{s}', function (string $s) {
 Route::post('/personal_excel_json', function (Request $request) {
 
     return CalendarioController::personal_json($request);
+});
+
+Route::post('/get_sheet_excel', function (Request $request) {
+
+    return ExcelPaciente::get_sheet($request);
+});
+
+Route::post('/update_sheet_excel', function (Request $request) {
+
+    return ExcelPaciente::validate_date($request);
 });

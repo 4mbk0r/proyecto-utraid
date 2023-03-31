@@ -447,10 +447,10 @@ class CalendarioController extends Controller
                     $usuario_existen = db::table('users')
                         ->where('ci', '=', $f->ci)
                         ->where('expedido', '=', $f->expedido);
-                        if (($usuario_existen && $usuario_existen->exists())) {
-                            $verificar_datos = false;
-                            $f->error_detalle = 'El Usuario ya existe editar de manera uniataria unitaria';
-                        }
+                    if (($usuario_existen && $usuario_existen->exists())) {
+                        $verificar_datos = false;
+                        $f->error_detalle = 'El Usuario ya existe editar de manera uniataria unitaria';
+                    }
                     array_push($valores, $f);
                 }
                 $i++;
@@ -510,7 +510,60 @@ class CalendarioController extends Controller
     public static function personal_json(Request $request)
     {
 
-        return CalendarioController::validar_personal($request['archivo']);
+        $resp = CalendarioController::validar_personal($request['archivo']);
+        $verificar_datos =  $resp['verificar'];
+        $valores =  $resp['datos'];
+        if ($verificar_datos) {
+            $hearder_personas =
+                DB::table("information_schema.columns")
+                ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
+                ->where("table_name", "=", "users")
+                ->get();
+            foreach ($valores as $key => $value) {
+                # code...
+                $value = (object) $value;
+                // La validación fue exitosa
+                $query = db::table('users')
+                    ->where('ci', '=', $value->ci)
+                    ->where('expedido', '=', $value->expedido);
+
+
+                if (!($query && $query->exists())) {
+                    $insertar = new stdClass();
+                    foreach ($hearder_personas as $key => $valor) {
+                        # code...
+                        $vk = ($valor->nombre);
+
+                        if (property_exists($value, $vk)) {
+                            $insertar->$vk = $value->$vk;
+                        } else {
+                            $insertar->$vk = null;
+                        }
+                    }
+                    $insertar->username = $insertar->ci;
+                    $insertar->password = Hash::make($insertar->ci);
+                    $u = (array)$insertar;
+                    unset($u['id']);
+                    unset($u['error']);
+                    unset($u['error_detalle']);
+
+                    //unset($u['register']);
+                    $id = db::table('users')
+                        ->insertGetId($u);
+                    db::table('contratos')
+                        ->insert(['id_usuario' => $u['username'], 'id_establecimiento' => $value->establecimiento]);
+                }
+
+                //array_push($r, $f);
+
+
+
+            }
+
+            return ['verificar' => $verificar_datos, 'file' => $query];
+        } else {
+            return $resp;
+        }
         //return $request;
     }
     public static function validar_personal(array $query)
@@ -520,14 +573,14 @@ class CalendarioController extends Controller
         foreach ($query as $key => $value) {
             # code...
             //$value = json_encode($value);
-            $estableciento = DB::table('establecimientos')->where('nombre', '=', $value['establecimiento']);
+            $estableciento = DB::table('establecimientos')->where('nombre', '=', trim($value['establecimiento']));
             //$value['error'] = false;
             //$value->error_detalle = '';
             $query[$key]['error_detalle'] = '';
             if (!$estableciento->exists()) {
                 $verificar_datos = false;
                 //$value->error = true;
-                $value['error_detalle'] = 'no existe el estableciento';
+                $query[$key]['error_detalle']  = 'no existe el estableciento';
             }
             $rules = [
                 'nombres' => 'required',

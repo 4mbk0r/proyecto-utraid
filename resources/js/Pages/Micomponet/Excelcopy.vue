@@ -2,45 +2,62 @@
 <template>
     <app-layout>
         <v-container>
-            <h1>Importar</h1>
-            <div>
-                <form method="POST" enctype="multipart/form-data">
-                    <!--@change="excelExport"-->
-                    <input type="file" ref="excelFile"
-                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
-                    <v-btn @click="excelExport">Enviar</v-btn>
-                </form>
-                <form @submit.prevent="uploadFile">
+            <h1>Importar Pacientes</h1>
+            <v-row>
+                <v-col>
+                    <form method="POST" enctype="multipart/form-data">
+                        <!--@change="excelExport"-->
+                        <input type="file" ref="fileInput" @change="excelExport"
+                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                        <!--<v-btn @click="excelExport">Enviar</v-btn>-->
+                    </form>
+
+                </v-col>
+
+            <!--<form @submit.prevent="uploadFile">
                     <input type="file" ref="fileInput">
                     <button type="submit">Enviar archivo</button>
-                </form>
-            </div>
-            <div>
-                <!--{{ mostrar(this.excelData) }}-->
-                <v-select v-model="selectedSheet" :items="sheetList" label="Selecione Hoja" @change="onchangeSheet"
-                    outlined></v-select>
-            </div>
-            <!--{{ this.rowObj }}-->
-            <div class="wrapper-dgxl">
-                <div ref="dgxl" class="grid"></div>
-            <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
-                                                                                                                                                            <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
-                                                        s                                                                                                                                                -->
-            </div>
+                                                                                                                                                                                                                                                                    </form>-->
+            </v-row>
 
-            <v-btn tile color="success" @click="save">
-                <v-icon left>
-                    mdi-content-save-settings
-                </v-icon>
-                Guardar
-            </v-btn>
-            <v-btn tile color="info" @click="save2">
-                <v-icon left>
-                    mdi-content-save-settings
-                </v-icon>
-                Seleccion
-            </v-btn>
-            <v-btn @click="descargarDatos">Descargar datos</v-btn>
+            <v-row>
+                <v-col>
+                    <v-select v-model="selectedSheet" :items="sheetList" item-text="nombre_sheet" item-value="id"
+                        return-object label="Selecione Hoja" @change="onchangeSheet" outlined></v-select>
+                </v-col>
+            </v-row>
+            <!--{{ mostrar(this.excelData) }}-->
+
+            <!--</div>-->
+            <!--{{ this.rowObj }}-->
+        <!---<div class="wrapper-dgxl">
+                                                                                                            <div ref="dgxl" class="grid"></div>-->
+        <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
+                                                                                                                                                            <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
+                                                                                                                                                                                                                                                                                                                    s                                                                                                                                                -->
+            <v-row v-if="selectedSheet != null">
+                <v-col>
+                    <v-btn tile color="success" @click="save">
+                        <v-icon left>
+                            mdi-content-save-settings
+                        </v-icon>
+                        Subir Datos
+                    </v-btn>
+                </v-col>
+                <v-col>
+                    <v-btn tile color="info" @click="save2">
+                        <v-icon left>
+                            mdi-content-save-settings
+                        </v-icon>
+                        Seleccion
+                    </v-btn>
+                </v-col>
+                <v-col>
+
+                    <v-btn @click="descargarDatos">Descargar datos</v-btn>
+                </v-col>
+            </v-row>
+
 
         </v-container>
     </app-layout>
@@ -151,7 +168,7 @@ export default {
         this.rowObj = null
         this.wb = null
         this.rowObj = null
-        location.reload(true)
+        //location.reload(true)
     },
     methods: {
         descargarDatos() {
@@ -253,14 +270,49 @@ export default {
             this.rowObj = null
         },
         async excelExport(event) {
+            const file = this.$refs.fileInput.files[0];
 
-            var input = this.$refs.excelFile
+            const formData = new FormData();
+            formData.append('file', file);
+            var res = await axios({
+                method: 'post',
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                url: `/${process.env.MIX_CARPETA}/api/get_sheet_excel`,
+                data: formData,
+            }).then(
+                (response) => {
+                    console.log(response);
+                    this.sheetList = response['data']; //Array of sheet names.
+                    //console.log(this.sheetList[0]);
+
+
+
+                    this.selectedSheet = this.sheetList[0];
+                    //this.$alert('Se a cambiado la contraseña correctamente.').then(res => this.$inform("Cambiar contraseña!"));
+                }
+            ).catch(err => {
+                if (err.response.status == 401) {
+                    window.location.href = `/${process.env.MIX_CARPETA}/login`
+
+                }
+                if (err.response.status == 419) {
+                    window.location.href = `/${process.env.MIX_CARPETA}/login`
+
+                }
+                console.log(err)
+                console.log("err->", err.response.data)
+                this.$alert('Se fallo en cambio.').then(res => this.$err("Cambiar contraseña!"));
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            });
+            /*var input = this.$refs.excelFile
             const file = input.files[0]
             const formData = new FormData();
             formData.append("file", file)
             console.log(formData);
-
-            var res = await this.axios({
+     
+            var res = await axios({
                 method: 'post',
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -269,25 +321,31 @@ export default {
                 data: {
                     archivo: formData,
                 },
-
             }).then(
                 (response) => {
-                    //this.headers = response.data
-                    //console.log('Responder');
-                    console.log(response.data)
-                    /*input = null
-                    file = null
-                    formData = null*/
-
-                }).catch((error) => {
-                    console.log(error.data);
-
-                });
-
+                    console.log(response);
+     
+                    //this.$alert('Se a cambiado la contraseña correctamente.').then(res => this.$inform("Cambiar contraseña!"));
+                }
+            ).catch(err => {
+                if (err.response.status == 401) {
+                    window.location.href = `/${process.env.MIX_CARPETA}/login`
+     
+                }
+                if (err.response.status == 419) {
+                    window.location.href = `/${process.env.MIX_CARPETA}/login`
+     
+                }
+                console.log(err)
+                console.log("err->", err.response.data)
+                this.$alert('Se fallo en cambio.').then(res => this.$err("Cambiar contraseña!"));
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            });
+            */
             /*
-
+     
             this.reader = new FileReader();
-
+     
             this.reader.onload = () => {
                 //leemos todo el archivo 
                 this.fileData = this.reader.result;
@@ -296,9 +354,9 @@ export default {
                 //obtenemos las hojas o sheetnames
                 this.sheetList = this.wb.SheetNames; //Array of sheet names.
                 //console.log(this.sheetList[0]);
-
-
-
+     
+     
+     
                 this.selectedSheet = this.sheetList[0];
                 //console.log(this.selectedSheet);
                 //console.log(this.Workerbook)
@@ -318,22 +376,22 @@ export default {
                 this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                     data: this.rowObj,
                     locale: this.dgxl_nl_NL,
-
+     
                 });
                 /*  
                 //obtenermo los encabezados del archivo
                 const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1 });
                 this.WorkerHeader = structuredClone(workbookHeaders)
                 this.header = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 })[0];
-
+     
                 for (let i = 0; i < this.header.length; i++) {
                     this.header[i] = this.header[i].trim();
                 }
-
-
-
-
-
+     
+     
+     
+     
+     
                 //obtenemos los datos en json  de la primiera hoja
                 var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" })
                     .map(row =>
@@ -342,19 +400,19 @@ export default {
                             return obj;
                         }, {})
                     );
-
+     
                 console.log(rowObj)
                 this.excelData = JSON.stringify(rowObj)
                 console.log('__________')
                 console.log(JSON.parse(this.excelData))
-
-
-
-
-
-
-
-
+     
+     
+     
+     
+     
+     
+     
+     
                 //adicionamos a datagridxl o la vista en excel 
                 this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                     data: JSON.parse(this.excelData),
@@ -362,9 +420,9 @@ export default {
                 });
                 var eventHandler = function (gridEvent) {
                     console.log(gridEvent);
-
+     
                 };
-
+     
                 // add event handler
                 this.DataGridXL.events.on('setselection', eventHandler);
                 //console.log(this.$attrssheetList)
@@ -376,12 +434,12 @@ export default {
                     const workbookHeaders = XLSX.read(fileData, { type: 'binary', sheetRows: 1  });
                     const columnsArray = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[sheetName], { header: 1 });
                     console.log(columnsArray);
-
+     
                     const dgxlObj = new DataGridXL(this.$refs.dgxl, {
                         data: JSON.parse(this.excelData),
                         locale: this.dgxl_nl_NL
                     });
-
+     
                 })*/
             //};
             //console.log(input.files)
@@ -395,7 +453,7 @@ export default {
         },
         onchangeSheet(event) {
             //location.reload(true)
-            delete (this.Workerbook)
+            /*delete (this.Workerbook)
             //this.limpiar()
             this.rowObj = null
             this.DataGridXL = null
@@ -407,13 +465,13 @@ export default {
                     }, {})
                 );
             console.log(this.rowObj);
-
+    
             //console.log(Object.keys(this.rowObj).length)
             this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                 data: this.rowObj,
                 locale: this.dgxl_nl_NL,
-
-            });
+    
+            });*/
 
 
             /*
@@ -421,29 +479,29 @@ export default {
             var rowObj = XLSX.utils.sheet_to_json(wb.Sheets[this.selectedSheet], { defval: "" });
             this.excelData = JSON.stringify(rowObj)
             console.log(JSON.parse(this.excelData))
-
+     
             //obtenermo los encabezados del archivo
             const workbookHeaders = this.WorkerHeader
             const columnsArray = XLSX.utils.sheet_to_json(workbookHeaders.Sheets[this.selectedSheet], { header: 1 });
             console.log(columnsArray);
-
-
-
+     
+     
+     
             //adicionamos a datagridxl o la vista en excel 
             this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
                 data: JSON.parse(this.excelData),
                 locale: this.dgxl_nl_NL,
-
+     
             });
             var eventHandler = function (gridEvent) {
                 console.log(gridEvent);
-
+     
             };
-
+     
             // add event handler
             this.DataGridXL.events.on('setselection', eventHandler);
             // remove event handler
-
+     
             //grid.events.off, eventHandler);
             */
 
@@ -474,16 +532,53 @@ export default {
 
             this.sheetName = null;
         },
-        save() {
+        async save() {
+            const file = this.$refs.fileInput.files[0];
 
-            console.log('...s');
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('sheet', JSON.stringify(this.selectedSheet));
+            //console.log(this.selectedSheet);
+            var res = await axios({
+                method: 'post',
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                url: `/${process.env.MIX_CARPETA}/api/update_sheet_excel`,
+                data: formData,
+            }).then(
+                (response) => {
+                    console.log(response);
+                    //this.sheetList = response['data']; //Array of sheet names.
+                    //console.log(this.sheetList[0]);
+
+
+
+                    //this.selectedSheet = this.sheetList[0];
+                    //this.$alert('Se a cambiado la contraseña correctamente.').then(res => this.$inform("Cambiar contraseña!"));
+                }
+            ).catch(err => {
+                if (err.response.status == 401) {
+                    window.location.href = `/${process.env.MIX_CARPETA}/login`
+
+                }
+                if (err.response.status == 419) {
+                    window.location.href = `/${process.env.MIX_CARPETA}/login`
+
+                }
+                console.log(err)
+                console.log("err->", err.response.data)
+                this.$alert('Se fallo en cambio.').then(res => this.$err("Cambiar contraseña!"));
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            });
+            /*console.log('...s');
             console.log(this.DataGridXL.getData());
             var objetos = {
                 'datos': this.DataGridXL.getData(),
                 'header': this.header
             }
 
-            this.$emit('guardar_datos', objetos)
+            this.$emit('guardar_datos', objetos)*/
         },
         save2() {
             console.log("________________");
