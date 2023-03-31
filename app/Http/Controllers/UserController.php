@@ -73,6 +73,9 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $paciente =  $request['paciente'];
+        User::find($paciente['id'])->update($request['paciente']);
+        return $request['paciente'];
     }
 
     /**
@@ -91,6 +94,8 @@ class UserController extends Controller
 
         $password = $request['password'];
         $paciente = $request['paciente'];
+        
+
         //return $request['password'];
         
         

@@ -22,10 +22,11 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input)
     {
+        //return 'hola';
         Validator::make(
             $input,
             [
-                'nombre' => ['required', 'string', 'max:255'],
+                'nombres' => ['required', 'string', 'max:255'],
                 'ap_paterno' => ['required', 'string', 'max:255'],
                 'ap_materno' => ['required', 'string', 'max:255'],
                 'ci' => ['required', 'string', 'max:255', 'unique:users'],
@@ -38,7 +39,7 @@ class CreateNewUser implements CreatesNewUsers
             [
                 'username.unique' => 'Ya existe usuario con estos datos',
                 'ci.unique' => 'Ya existe usuario con esta cedula de identidad datos',
-                'nombre.required' => 'Se requiere nombre',
+                'nombres.required' => 'Se requiere nombre',
                 'email.unique' => 'Email ya existe use otro',
                 'email.required' => 'Se requiere email',
                 'cargo.required' => 'Se require cargo',
@@ -49,7 +50,7 @@ class CreateNewUser implements CreatesNewUsers
 
         try {
             $reps = User::create([
-                'nombre' => $input['nombre'],
+                'nombres' => $input['nombres'],
                 'ap_paterno' => $input['ap_paterno'],
                 'ap_materno' => $input['ap_materno'],
                 'ci' => $input['ci'],

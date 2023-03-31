@@ -19,10 +19,10 @@
                 </v-row>
                 <v-row>
                     <v-col>
-                        <v-text-field dense outlined id="nombre" label="Nombres" type="text"
-                            v-model="$page.props.user.nombre" :rules="[v => !!v || ' Se requiere completar Nombre']"
+                        <v-text-field dense outlined id="nombres" label="Nombres" type="text"
+                            v-model="$page.props.user.nombres" :rules="[v => !!v || ' Se requiere completar Nombre']"
                             required autofocus prepend-inner-icon="mdi-account-arrow-right-outline" class="mb-n5 pa-0"
-                            @input="(val) => (form.nombre = val.toUpperCase())" pattern="[a-zA-Z]+" />
+                            @input="(val) => (form.nombres = val.toUpperCase())" pattern="[a-zA-Z]+" />
                     </v-col>
                     <v-col>
                         <v-text-field dense outlined id="paterno" label="Apellido Paterno" type="text"
@@ -46,9 +46,8 @@
                             prepend-inner-icon="mdi-card-account-details-outline" />
                     </v-col>
                     <v-col>
-                        <v-text-field dense outlined id="item" label="Item" type="text" v-model="form.item"
-                            :rules="[v => !!v || 'Se requiere completar Item']" required class="mb-n4 pa-0"
-                            prepend-inner-icon="mdi-account-key" />
+                        <v-text-field dense outlined id="item" label="Item" type="text" v-model="form.item" required
+                            class="mb-n4 pa-0" prepend-inner-icon="mdi-account-key" />
                     </v-col>
                 </v-row>
                 <v-row>
@@ -101,8 +100,8 @@
                             Already registered?
                         </inertia-link>
                         -->
-                        <v-btn class="ml-4" color="primary" type="sumbit" :class="{ 'opacity-25': form.processing }"
-                            :disabled="form.processing">
+                        <v-btn class="ml-4" color="primary" :class="{ 'opacity-25': form.processing }"
+                            :disabled="form.processing" @click="update_user">
                             Guardar Datos de perfil
                         </v-btn>
                     </v-col>
@@ -146,7 +145,7 @@ export default {
         return {
             dialog_cambio: false,
             form: this.$inertia.form({
-                nombre: '',
+                nombres: '',
                 ap_paterno: '',
                 ap_materno: '',
                 ci: '',
@@ -221,19 +220,19 @@ export default {
             this.$alert(text).then(res => this.$inform("Cambios guardados!"));
         },
         submit() {
-            this.form.nombre = this.form.nombre.trimStart().toUpperCase()
+            this.form.nombres = this.form.nombres.trimStart().toUpperCase()
             this.form.ap_materno = this.form.ap_materno.trimStart().toUpperCase()
             this.form.ap_paterno = this.form.ap_paterno.trimStart().toUpperCase()
             if (this.$refs.form.validate()) {
                 this.form.username = this.form.ci
-                this.form.password = this.form.ci + this.form.nombre[0] + this.form.ap_paterno[0] + this.form.ap_materno[0]
+                this.form.password = this.form.ci + this.form.nombres[0] + this.form.ap_paterno[0] + this.form.ap_materno[0]
                 this.form.password_confirmation = this.form.password
                 console.log(this.form.username)
                 this.form.post(this.route('register'), {
                     onFinish: () => this.form.reset('password', 'password_confirmation'),
                     onSuccess: () => {
                         this.form = this.$inertia.form({
-                            nombre: '',
+                            nombres: '',
                             ap_paterno: '',
                             ap_materno: '',
                             ci: '',
@@ -252,6 +251,39 @@ export default {
 
                     },
                 })
+            }
+
+        }
+        ,
+        async update_user() {
+            if (this.$refs.form.validate()) {
+               
+                var res = await axios({
+                    method: 'put',
+                    url: `/${process.env.MIX_CARPETA}/ususario/`+this.form.id,
+                    data: {
+                        //password: this.dato,
+                        paciente: this.form
+                    }
+                }).then(
+                    (response) => {
+                        console.log(response);
+                        
+                    }
+                ).catch(err => {
+                    if (err.response.status == 401) {
+                        window.location.href = `/${process.env.MIX_CARPETA}/login`
+
+                    }
+                    if (err.response.status == 419) {
+                        window.location.href = `/${process.env.MIX_CARPETA}/login`
+
+                    }
+                    console.log(err)
+                    console.log("err->", err.response.data)
+                    this.$alert('Se fallo en cambio.').then(res => this.$err("Cambiar contraseña!"));
+                    return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+                });
             }
         }
     }

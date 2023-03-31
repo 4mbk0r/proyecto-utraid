@@ -603,4 +603,5 @@ class CalendarioController extends Controller
         }
         return ['verificar' => $verificar_datos, 'datos' => $query];
     }
+    
 }

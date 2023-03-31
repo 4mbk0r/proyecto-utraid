@@ -17,7 +17,7 @@
             <!--<form @submit.prevent="uploadFile">
                     <input type="file" ref="fileInput">
                     <button type="submit">Enviar archivo</button>
-                                                                                                                                                                                                                                                                    </form>-->
+                                                                                                                                                                                                                                                                        </form>-->
             </v-row>
 
             <v-row>
@@ -31,10 +31,10 @@
             <!--</div>-->
             <!--{{ this.rowObj }}-->
         <!---<div class="wrapper-dgxl">
-                                                                                                            <div ref="dgxl" class="grid"></div>-->
+                                                                                                                <div ref="dgxl" class="grid"></div>-->
         <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
                                                                                                                                                             <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
-                                                                                                                                                                                                                                                                                                                    s                                                                                                                                                -->
+                                                                                                                                                                                                                                                                                                                        s                                                                                                                                                -->
             <v-row v-if="selectedSheet != null">
                 <v-col>
                     <v-btn tile color="success" @click="save">
@@ -549,6 +549,71 @@ export default {
             }).then(
                 (response) => {
                     console.log(response);
+                    alert('Se ha insertado correctamente.'+response['data']['nro_insertado']);
+                    
+                    if(response['data']['nro_blancos']>0){
+                        alert('Existen una cantidad de '+response['data']['nro_blancos']+' personas en blanco que no son insertados');
+                        
+                    }
+                    if(response['data']['nro_repetido']>0){
+                        alert('Existen una cantidad de '+response['data']['nro_repetido']+' personas repetidas que no son insertadas');
+                        
+                    }
+                    //this.sheetList = response['data']; //Array of sheet names.
+                    //console.log(this.sheetList[0]);
+
+
+
+                    //this.selectedSheet = this.sheetList[0];
+                    //this.$alert('Se a cambiado la contraseña correctamente.').then(res => this.$inform("Cambiar contraseña!"));
+                }
+            ).catch(err => {
+                if (err.response.status == 401) {
+                    window.location.href = `/${process.env.MIX_CARPETA}/login`
+
+                }
+                if (err.response.status == 419) {
+                    window.location.href = `/${process.env.MIX_CARPETA}/login`
+
+                }
+                console.log(err)
+                console.log("err->", err.response.data.message)
+                this.$alert(err.response.data.message).then(res => this.$err("Cambiar contraseña!"));
+                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+            });
+            /*console.log('...s');
+            console.log(this.DataGridXL.getData());
+            var objetos = {
+                'datos': this.DataGridXL.getData(),
+                'header': this.header
+            }
+
+            this.$emit('guardar_datos', objetos)*/
+        },
+        async save2() {
+            const file = this.$refs.fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('sheet', JSON.stringify(this.selectedSheet));
+            //console.log(this.selectedSheet);
+            var res = await axios({
+                method: 'post',
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                url: `/${process.env.MIX_CARPETA}/api/prueba_excel`,
+                data: formData,
+            }).then(
+                (response) => {
+                    console.log(response);
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    // utilizar window.open para descargar el archivo
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'archivo.xlsx'); // nombre del archivo
+                    document.body.appendChild(link);
+                    link.click();
                     //this.sheetList = response['data']; //Array of sheet names.
                     //console.log(this.sheetList[0]);
 
@@ -580,11 +645,6 @@ export default {
 
             this.$emit('guardar_datos', objetos)*/
         },
-        save2() {
-            console.log("________________");
-            console.log(this.DataGridXL.getSelection());
-            return;
-        }
     },
     computed: {
 

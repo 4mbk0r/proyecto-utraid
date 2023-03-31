@@ -138,7 +138,7 @@ export default {
         this.rowObj = null
         this.wb = null
         this.rowObj = null
-        location.reload(true)
+        //location.reload(true)
     },
     methods: {
         async uploadFile() {

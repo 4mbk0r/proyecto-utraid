@@ -7,7 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use stdClass;
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ExcelPaciente extends Controller
 {
@@ -106,7 +110,7 @@ class ExcelPaciente extends Controller
     public static function validate_date(Request $request)
     {
 
-        $table = 'persona';
+        $table = 'personas';
         $hearder =
             DB::table("information_schema.columns")
             ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
@@ -123,6 +127,9 @@ class ExcelPaciente extends Controller
             $i = 0;
             $hearder_sheet = [];
             $r = [];
+            $nro_blanco = 0;
+            $nro_repetidos = 0;
+            $nro_guardados = 0;
             foreach ($sheet->getRowIterator() as $row) {
 
 
@@ -133,8 +140,12 @@ class ExcelPaciente extends Controller
                     if ($i == 0) {
                         $valor_buscar = $cell->getValue();
                         array_push($hearder_sheet,  trim($cell->getValue()));
+                        if($valor_buscar == ''){
+                            return  throw new HttpException(500, 'Los encabezados del excel son blancos. Este es error.');
+                        }
                     } else {
                         $key = $hearder_sheet[$j];
+                        
                         $f->$key =  trim($cell->getValue());
                         $value =  trim($cell->getValue());
                     }
@@ -158,6 +169,7 @@ class ExcelPaciente extends Controller
                         //array_push($r, $query);
 
                         if (count($query) == 0) {
+                            //array_push($r, $hearder);
                             $insertar = new stdClass();
                             foreach ($hearder as $key => $ui) {
                                 # code...
@@ -174,23 +186,133 @@ class ExcelPaciente extends Controller
                             unset($u['register']);
                             $query = db::table('personas')
                                 ->insert($u);
-                            array_push($r, $insertar);
+                            $nro_guardados++;
+                            //array_push($r, $insertar);
                         }
                         //array_push($r, $f);
-
+                        $nro_repetidos++;
 
                     } else {
+                        $nro_blanco++;
                         //array_push($r, $f);
                         // La validación falló, manejar el error
                     }
                 }
                 $i++;
             }
-
-            return response()->json(['file' => $r, 'header' => $hearder, 'success' => true]);
-            return $file;;
+            unset($request);
+            return response()->json(['file' => $hearder_sheet, 'header' => $hearder, 
+            'nro_repetido'=> $nro_repetidos, 'nro_blancos'=> $nro_blanco,
+            'nro_insertado' => $nro_guardados,
+            
+            'success' => true]);
+            return $file;
         } else {
             return response()->json(['message' => 'No se encontró ningún archivo'], 400);
+        }
+    }
+
+
+    public static function downloadExcel(Request $request)
+    {
+      
+    
+        $file = $request->file('file');
+        $sheet_id = json_decode($request->input('sheet'))->id;
+        $spreadsheet = IOFactory::load($file);
+        //$spreadsheet = IOFactory::load($file->getPathname());
+        $sheet = $spreadsheet->getSheet($sheet_id);
+    
+        // Validar los datos antes de agregarlos al archivo de Excel
+        $data = $sheet->toArray();
+        
+
+        // Validar los datos antes de agregarlos al archivo de Excel
+        $validator = Validator::make($data, [
+            '*.nombre' => 'required',
+            '*.ci' => 'required',
+            //'*.2' => 'email',
+        ], [
+            '*.nombre.required' => 'El campo nombre es obligatorio',
+            '*.ci.required' => 'El campo apellido es obligatorio',
+            //'*.2.email' => 'El correo electrónico no es válido',
+        ]);
+
+        if ($validator->fails()) {
+            //return $validator->failed();
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->fromArray($data, null, 'A1');
+
+
+            // Pintar las celdas con errores de validación
+            $failedRules = $validator->failed();
+            
+            /*$r = [];
+            foreach ($failedRules as $row => $rules) {
+                $fila =  explode(".", $row);
+                array_push($r,$fila);
+            }
+            return $r;*/
+            foreach ($failedRules as $row => $rules) {
+                foreach ($rules as $column => $rule) {
+                    $fila =  explode(".", $row);
+                    $cell = $sheet->getCellByColumnAndRow(intval($fila[1])+1, intval($fila[0]) +1 );
+                    // Definir el estilo de la celda
+                    $style = [
+                        'fill' => [
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'color' => ['rgb' => 'FF0000']
+                        ],
+                        'font' => [
+                            'color' => ['rgb' => 'FFFFFF']
+                        ],
+                        'borders' => [
+                            'allBorders' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                                'color' => ['rgb' => '000000']
+                            ]
+                        ]
+                    ];
+                    $cell->getStyle()->applyFromArray($style);
+                }
+            }
+
+            $writer = new Xlsx($spreadsheet);
+            $filename = 'archivo-de-ejemplo-con-errores.xlsx';
+            $writer->save($filename);
+
+            return response()->download($filename)->deleteFileAfterSend(true);
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray($data, null, 'A1');
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'archivo-de-ejemplo.xlsx';
+        $writer->save($filename);
+
+        return response()->download($filename)->deleteFileAfterSend(true);
+    }
+
+    private static function validateData($data)
+    {
+        $rules = [
+            '*.0' => 'required',
+            '*.1' => 'required',
+            '*.2' => 'email',
+        ];
+
+        $messages = [
+            '*.0.required' => 'El campo nombre es obligatorio',
+            '*.1.required' => 'El campo apellido es obligatorio',
+            '*.2.email' => 'El correo electrónico no es válido',
+        ];
+
+        $validator = validator()->make($data, $rules, $messages);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
         }
     }
 }

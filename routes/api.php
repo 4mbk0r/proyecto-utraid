@@ -286,3 +286,9 @@ Route::post('/update_sheet_excel', function (Request $request) {
 
     return ExcelPaciente::validate_date($request);
 });
+
+
+Route::post('/prueba_excel', function (Request $request) {
+
+    return ExcelPaciente::downloadExcel($request);
+});
