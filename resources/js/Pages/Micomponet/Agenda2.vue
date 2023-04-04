@@ -80,17 +80,17 @@
                                 <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
                                 <v-spacer></v-spacer>
                                 <v-btn
-                                    v-if="get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
+                                    v-if="comparaFechas && get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
                                     @click="cambiar_ficha($event)" icon>
                                     <v-icon>mdi-account-convert</v-icon>
                                 </v-btn>
                                 <v-btn
-                                    v-if="get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
+                                    v-if="comparaFechas && get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
                                     @click="eliminar_ficha($event)" icon>
                                     <v-icon>mdi-account-remove-outline</v-icon>
                                 </v-btn>
                                 <v-btn
-                                    v-if="get_datos_ficha(selectedEvent) != null && getvalores(selectedEvent.fichas, 'id_designado')"
+                                    v-if="comparaFechas && get_datos_ficha(selectedEvent) != null && getvalores(selectedEvent.fichas, 'id_designado')"
                                     @click="eliminar_atender($event)" icon>
                                     <v-icon>mdi-home-remove-outline</v-icon>
                                 </v-btn>
@@ -108,7 +108,7 @@
                                 </v-row>
                                 <v-row no-gutters>
                                     <v-col>
-                                        <span> Nombre Completo:</span>
+                                        <span class="v-btn--large"> Nombre Completo:</span>
                                     </v-col>
                                     <v-col>
                                         {{ valores(selectedEvent.fichas, 'nombres') }}
@@ -126,8 +126,34 @@
                                     </v-col>
                                 </v-row>
 
-                                <v-form ref="seleccion_equipo">
-                                    <v-row v-if="fecha_calendario == $store.getters.getfecha_server" no-gutters>
+                                <v-form v-if="today == $store.getters.getfecha_server" ref="seleccion_equipo">
+                                    <v-row no-gutters>
+                                        <v-col>
+                                            <v-select v-model="selectequipo" persistent-placeholder
+                                                placeholder="No se tiene datos" :items="equipos"
+                                                :item-text="item => get_nombre_equipo(item)"
+                                                :item-value="item => select_nombre_equipo(item)" :rules="selecionRules"
+                                                label="Seleccione equipo que atendera" required>
+                                            </v-select>
+                                            <v-btn color="success" v-if="!getvalores(selectedEvent.fichas, 'id_designado')"
+                                                @click="save_atender">
+                                                Guardar
+                                            </v-btn>
+
+                                        </v-col>
+                                        <v-col>
+                                            <v-data-table :headers="encabezado" :items="selectequipo.lista"
+                                                hide-default-footer disable-pagination>
+                                                <template v-slot:no-results>
+                                                    <span>No existen datos</span>
+                                                </template>
+                                            </v-data-table>
+                                        </v-col>
+
+                                    </v-row>
+                                </v-form>
+                                <v-form v-el se ref="seleccion_equipo">
+                                    <v-row v-if="equipos.length > 0" no-gutters>
                                         <v-col>
                                             <v-select v-model="selectequipo" persistent-placeholder
                                                 placeholder="No se tiene datos" :items="equipos"
@@ -178,7 +204,7 @@
         </v-row>
         <datos v-if="dialog_persona" @pedir='actualizador' ref="dato">
         </datos>
-        <atencion ref="atender" :equipo="lista_equipo"></atencion>
+        <atencion v-if="estado == 'atencion'" ref="atender" :equipo="lista_equipo"></atencion>
 
 
     </v-app>
@@ -203,7 +229,7 @@ export default {
         value: '',
         ready: false,
         dialog_persona: false,
-
+        today: new Date(),
         dialog: false,
         estado: 'calendario',
         fecha_calendario: new Date().toISOString().substr(0, 10),
@@ -237,7 +263,7 @@ export default {
             {
                 text: "Nombres",
                 align: "start",
-                value: "nombre",
+                value: "nombres",
             },
             {
                 text: "Apellido Paterno",
@@ -283,6 +309,11 @@ export default {
         }
     },
     methods: {
+        comparaFechas() {
+            const fechaActual = new Date(this.$store.getfecha_server+'T00:00:00');
+            const fechaCa = new Date(this.fecha_calendario+'T00:00:00');
+            return fechaActua < fechaCa;
+        },
         async eliminar_atender($e) {
             let f = this.selectedEvent.fichas.id_ficha
             var res = await axios({

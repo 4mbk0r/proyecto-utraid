@@ -182,6 +182,10 @@ class AtenderController extends Controller
     }
     public static function ver_equipos(Request $request)
     {
+        $today = date("Y-m-d");
+        
+
+        
         if( $request['id_ficha'] == null) return;
 
         if( $request['id_designado'] != null) {
@@ -215,8 +219,14 @@ class AtenderController extends Controller
             return $r;
 
         }
-        
-        
+        //return $request['fecha'].'='. $today; 
+        if( $request['fecha'] != $today) {
+            return  $r = [
+                'seleccion' => false,
+                
+                'equipo' => []
+            ];
+        } 
         $equipos = DB::table('fichas')
             ->leftJoin('horarios', function ($join) {
                 $join->on('horarios.id', '=', 'fichas.id_horario');

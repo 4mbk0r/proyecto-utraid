@@ -105,7 +105,7 @@ class PersonaController extends Controller
                 }else{
                     $r = $p;
                 }*/
-                $p =  [DB::raw("unaccent(lower(".strval($key)."))"), 'like', '%'.strtolower($value).'%'];
+                $p =  [DB::raw("unaccent(lower(".strval($key)."))"), 'like', strtolower($value).'%'];
                 array_push($r, $p);
             }
         }

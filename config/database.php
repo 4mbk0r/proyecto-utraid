@@ -61,6 +61,7 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
+            
         ],
 
         'pgsql' => [
@@ -76,6 +77,11 @@ return [
             'prefix_indexes' => true,
             'schema' => 'public',
             'sslmode' => 'prefer',
+            'dump_command_path' =>' C:\xampp\mysql\bin',
+
+            'dump' => [
+                'add-inserts' => true,
+            ],
         ],
 
         'sqlsrv' => [

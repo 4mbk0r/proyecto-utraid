@@ -242,7 +242,7 @@ export default {
                     text: 'Nombres',
                     align: 'left',
                     //sortable: false,
-                    value: 'nombre',
+                    value: 'nombres',
                     //filter: this.nameFilter,
                 },
                 {

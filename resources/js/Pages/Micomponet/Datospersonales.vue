@@ -120,7 +120,7 @@
                       <v-icon end icon>mdi-calendar</v-icon>
                     </v-btn>
                   </v-col>
-                  <v-col cols="12" sm="4">
+                  <v-col  v-if="op1 == 2" cols="12" sm="4">
                     <v-btn  class="ma-2"
                       color="primary">
                       Imprimir

@@ -1,0 +1,1 @@
+Artisan::call('backup:run --only-db --only-to-disk=local --database=pgsql --extra-mysqldump-options="--skip-extended-insert --compact --no-create-info"');
