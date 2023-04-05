@@ -51,18 +51,18 @@
                 <v-sheet>
                     <v-calendar v-if="estado == 'calendario'" ref="calendar" v-model="fecha_calendario" :type="type"
                         color="error" :events="events" :categories="categories" :event-color="getEventColor"
-                        @click:event="showEvent" @click:more="viewDay" @click:date="viewDay" @change="updateRange"
-                        :max-days=5 weekdays="1, 2, 3, 4, 5" :weekday-format="getDay" :first-interval=7 :interval-minutes=60
-                        :interval-count=12>
+                        event-overlap-mode="stack" @click:event="showEvent" @click:more="viewDay" @click:date="viewDay"
+                        @change="updateRange" :max-days=5 weekdays="1, 2, 3, 4, 5" :weekday-format="getDay"
+                        :first-interval=7 :interval-minutes=60 :interval-count=12>
                         <template #day-body="{ date, category }">
                             <div class="v-current-time" :class="{ first: true }" :style="{ top: nowY }">
                             </div>
                         </template>
                     </v-calendar>
                     <v-calendar v-if="estado == 'cita'" ref="calendar" v-model="fecha_calendario" color="error"
-                        type="category" category-show-all :categories="categories" :events="events"
-                        :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent" :interval-minutes=60
-                        :first-interval=7 :interval-count=14>
+                        event-overlap-mode="stack" type="category" category-show-all :categories="categories"
+                        :events="events" :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent"
+                        :interval-minutes=60 :first-interval=7 :interval-count=14>
                         <template #day-body="{ date, category }">
                             <div class="v-current-time" :class="{ first: true }" :style="{ top: nowY }">
                             </div>
@@ -71,8 +71,8 @@
 
                     <v-calendar v-if="estado == 'atencion'" ref="calendar" v-model="fecha_calendario" color="error"
                         type="category" category-show-all :categories="categories" :events="events"
-                        :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent" :interval-minutes=60
-                        :first-interval=7 :interval-count=14></v-calendar>
+                        event-overlap-mode="stack" :event-color="getEventColor" :weekday-format="getDay"
+                        @click:event="showEvent" :interval-minutes=60 :first-interval=7 :interval-count=14></v-calendar>
                     <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement" offset-x>
                         <v-card color="grey lighten-4" min-width="350px" flat>
                             <v-toolbar :color="selectedEvent.color">
@@ -141,6 +141,9 @@
                                             </v-btn>
 
                                         </v-col>
+            
+                                    </v-row>
+                                    <V-row>
                                         <v-col>
                                             <v-data-table :headers="encabezado" :items="selectequipo.lista"
                                                 hide-default-footer disable-pagination>
@@ -149,8 +152,7 @@
                                                 </template>
                                             </v-data-table>
                                         </v-col>
-
-                                    </v-row>
+                                    </V-row>
                                 </v-form>
                                 <v-form v-el se ref="seleccion_equipo">
                                     <v-row v-if="equipos.length > 0" no-gutters>
@@ -167,6 +169,8 @@
                                             </v-btn>
 
                                         </v-col>
+                                    </v-row>
+                                    <v-row>
                                         <v-col>
                                             <v-data-table :headers="encabezado" :items="selectequipo.lista"
                                                 hide-default-footer disable-pagination>
@@ -175,7 +179,6 @@
                                                 </template>
                                             </v-data-table>
                                         </v-col>
-
                                     </v-row>
                                 </v-form>
                             </v-card-text>
@@ -202,6 +205,74 @@
             </v-col>
 
         </v-row>
+        <v-dialog v-model="dialog_equipo" fullscreen :scrim="false" transition="dialog-bottom-transition">
+
+            <v-card>
+                <v-toolbar dark color="black">
+                    <v-btn icon dark @click="dialog_equipo = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title>Configuracion Atencion</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn variant="text" @click="dialog_equipo = false">
+                            Guardar
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <v-list three-line subheader>
+                    <v-subheader>Configuracon Sala</v-subheader>
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-list-item-title>{{ selectedEvent.category }}</v-list-item-title>
+                            <!--<v-list-item-subtitle>{{ selectedEvent }}</v-list-item-subtitle>-->
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-list-item-subtitle>Integrantes:</v-list-item-subtitle>
+                            <mequipo v-if="dialog_equipo" :datos="selectedEvent.consultorio"></mequipo>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+                <v-divider></v-divider>
+                <v-list>
+                    <v-subheader>Viaje</v-subheader>
+                    <viaje v-if="dialog_equipo" :datos="selectedEvent.consultorio"></viaje>
+                    <!--{{ selectedEvent }}-->
+                    <!--<v-list-item>
+                        <v-list-item-action>
+                            <v-checkbox v-model="notifications"></v-checkbox>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Notifications</v-list-item-title>
+                            <v-list-item-subtitle>Notify me about updates to apps or games that I
+                                downloaded</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-list-item-action>
+                            <v-checkbox v-model="sound"></v-checkbox>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Sound</v-list-item-title>
+                            <v-list-item-subtitle>Auto-update apps at any time. Data charges may
+                                apply</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-list-item-action>
+                            <v-checkbox v-model="widgets"></v-checkbox>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Auto-add widgets</v-list-item-title>
+                            <v-list-item-subtitle>Automatically add home screen widgets</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                -->
+                </v-list>
+            </v-card>
+        </v-dialog>
         <datos v-if="dialog_persona" @pedir='actualizador' ref="dato">
         </datos>
         <atencion v-if="estado == 'atencion'" ref="atender" :equipo="lista_equipo"></atencion>
@@ -216,6 +287,10 @@ import buscar from '@/Pages/Micomponet/Buscar'
 import datos from '@/Pages/Micomponet/Datospersonales'
 import atencion from '@/Pages/Micomponet/Atencion'
 
+import mequipo from '@/Pages/Configuracion/seleccionequipo'
+
+import viaje from '@/Pages/Configuracion/seleccionequipo'
+
 
 
 export default {
@@ -223,12 +298,15 @@ export default {
         buscar,
         datos,
         atencion,
+        mequipo, 
+        viaje
     },
     data: () => ({
 
         value: '',
         ready: false,
         dialog_persona: false,
+        dialog_equipo: false,
         today: new Date(),
         dialog: false,
         estado: 'calendario',
@@ -310,8 +388,8 @@ export default {
     },
     methods: {
         comparaFechas() {
-            const fechaActual = new Date(this.$store.getfecha_server+'T00:00:00');
-            const fechaCa = new Date(this.fecha_calendario+'T00:00:00');
+            const fechaActual = new Date(this.$store.getfecha_server + 'T00:00:00');
+            const fechaCa = new Date(this.fecha_calendario + 'T00:00:00');
             return fechaActua < fechaCa;
         },
         async eliminar_atender($e) {
@@ -534,10 +612,11 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                             name: salas[key]['nombre_equipo'],
                             start: start2,
                             end: end,
-                            color: 'red',
+                            color: 'black',
                             timed: 0,
                             category: this.categories[key],
                             consultorio: salas[key],
+                            equipo: true
                         })
                         //}
 
@@ -606,7 +685,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             ).catch(err => {
                 console.log(err)
                 console.log("err->", err.response.data)
-                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+                //return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             });
             /*
             try {
@@ -864,6 +943,12 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
 
             console.log(event);
+            if (event.equipo == true) {
+                this.selectedEvent = structuredClone(event)
+                this.dialog_equipo = true;
+                return;
+            }
+
             if (event.name == 'Atencion') {
                 //this.dialog = true
                 //this.selectedEvent = event
@@ -892,6 +977,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 this.$refs.dato.fecha_cita = this.fecha_calendario
                 this.$refs.dato.consultorio = event.consultorio.sala
                 this.$refs.dato.open()
+                return;
                 //this.selectedElement = nativeEvent.target
                 //nativeEvent.stopPropagation()
             } else {

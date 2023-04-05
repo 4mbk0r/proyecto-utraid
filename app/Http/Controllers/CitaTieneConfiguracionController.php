@@ -135,9 +135,10 @@ where atencion = 'feriado' and TRIM(to_char(fecha, 'yyyy')) = TRIM(to_char('" . 
             if (sizeof($list_config) > 0) {
                 try {
                     $salas = DB::table('asignar_config_salas')
-                        ->select('*')
+                        ->select(['asignar_config_salas.*', 'salas.descripcion','equipos.nombre_equipo' ])
                         ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
-                        //->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
+                        ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
+                        ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipo_lineals.id_equipo')
                         ->where('asignar_config_salas.id_conf', '=', $list_config[0]->id_configuracion)
                         ->get();
                     $horario = [];
@@ -235,7 +236,25 @@ Agenda2.vue:442
                 return $resp;
             }
         } else {
-            //$salas;
+            //
+            $salas =
+            DB::table("calendarios")
+            ->select(['designar_equipos.*', 'salas.descripcion','equipos.nombre_equipo' ])
+                        
+            ->leftJoin("designar_equipos", function($join){
+                $join->on("designar_equipos.fecha", "=", "calendarios.fecha");
+            })
+            ->leftJoin("equipos", function($join){
+                $join->on("equipos.id", "=", "designar_equipos.id_equipo");
+            })
+            ->leftJoin("salas", function($join){
+                $join->on("salas.id", "=", "designar_equipos.id_sala");
+            })
+            ->where('calendarios.fecha', '=', $fecha)
+            ->get();
+            
+            
+
             $horarios =  [];
 
             foreach ($list_config as $key => $value) {
@@ -266,7 +285,7 @@ Agenda2.vue:442
                 array_push($horarios, $horario);
             }
             $resp = [
-                'salas' => $list_config,
+                'salas' => $salas,
                 'salas_diponibles' => $horarios,
                 'equipo' => $r_equipo,
 

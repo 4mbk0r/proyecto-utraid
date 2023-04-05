@@ -218,6 +218,11 @@ Route::post('/equipos_elegidos', function (Request $request) {
     return AtenderController::ver_equipos($request);
 });
 
+Route::post('/equipos_sala', function (Request $request) {
+
+    return AtenderController::sala_equipos($request);
+});
+
 Route::get('/fechas_vigentes', function () {
 
     return CalendarioController::fechas_vigentes();

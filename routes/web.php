@@ -16,6 +16,7 @@ use App\Http\Controllers\AtenderController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\UserController;
 
+use App\Http\Controllers\MunicipioController;
 
 use App\Http\Controllers\PersonaController;
 //personal
@@ -229,3 +230,6 @@ Route::get('/default_prueba', function (Request $request) {
     return Inertia::render('Micomponet/Excelcopy');
     //return UserController::default_password($request);
 });
+
+
+Route::resource('/viaje', municipioController::class)->middleware(['auth:sanctum', 'verified']);
