@@ -238,7 +238,7 @@
                 <v-divider></v-divider>
                 <v-list>
                     <v-subheader>Viaje</v-subheader>
-                    <viaje v-if="dialog_equipo" :datos="selectedEvent.consultorio"></viaje>
+                    <viaje v-if="dialog_equipo" :fecha="fecha_calendario" :datos="selectedEvent.consultorio"></viaje>
                     <!--{{ selectedEvent }}-->
                     <!--<v-list-item>
                         <v-list-item-action>

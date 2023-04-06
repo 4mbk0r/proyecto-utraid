@@ -1,10 +1,15 @@
 
 <template>
     <v-card>
-        <v-form ref="seleccion_equipo">
+        <v-form ref="seleccion_municipio">
             <v-row no-gutters>
                 <v-col>
-                    <v-select v-model="selectequipo" persistent-placeholder placeholder="No se tiene datos" :items="municipios"
+                    <v-select v-model="selectMunicipio" 
+                    
+                    
+                    persistent-placeholder placeholder="No se tiene datos" :items="municipios"
+                    item-text="municipio"
+                    item-value="codigo"
                         :rules="selecionRules" label="Seleccione Municipio" required>
                     </v-select>
                 <!--<v-btn color="success" v-if="!getvalores(selectedEvent.fichas, 'id_designado')"
@@ -14,6 +19,13 @@
 
                 </v-col>
 
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-btn @click="guardar">
+                        Designar viaje
+                    </v-btn>
+                </v-col>
             </v-row>
                     </v-form>
         <!--{{ datos }}-->
@@ -31,6 +43,7 @@ export default {
         //dialog: Boolean,
         //mensaje: Object,
         datos: Object,
+        fecha: String,
         //equipo: Array,
         //cargos: Array,
     },
@@ -38,7 +51,7 @@ export default {
         this.pedir_datos();
     },
     data: () => ({
-        selectequipo: '',
+        selectMunicipio: '',
         municipios: [],
         integrantes: [],
         selecionRules: [
@@ -87,12 +100,13 @@ export default {
     },
     methods: {
         async pedir_datos(){
+            this.datos.fecha =  this.fecha
             var res = await axios({
                 method: 'get',
-                url: `/${process.env.MIX_CARPETA}/viaje`,
-                data:
+                url: `/${process.env.MIX_CARPETA}/viaje/`+JSON.stringify(this.datos),
+                /*data:
                     this.datos,
-                //equipo: this.selectequipo.equipo
+                *///equipo: this.selectMunicipio.equipo
 
             }).then(
                 (response) => {
@@ -101,7 +115,35 @@ export default {
                     console.log(response.data);
                     //this.integrantes = response.data
                     this.municipios = response.data['municipios']
-                    this.selectequipo = response.data['municipio']
+                    this.selectMunicipio = response.data['municipio']
+                    
+                }
+            ).catch(err => {
+                console.log(err)
+
+            });
+        },
+        async guardar(){
+            this.datos.fecha =  this.fecha
+            var res = await axios({
+                method: 'post',
+                url: `/${process.env.MIX_CARPETA}/viaje`,
+                data:{
+                    sala: this.datos,
+                    municipio: this.selectMunicipio
+                }
+                    
+            
+               //equipo: this.selectMunicipio.equipo
+
+            }).then(
+                (response) => {
+                    //var r = response.data.seleccion
+                    console.log('municipios de la sala')
+                    console.log(response.data);
+                    //this.integrantes = response.data
+                    this.municipios = response.data['municipios']
+                    this.selectMunicipio = response.data['municipio']
                     
                 }
             ).catch(err => {

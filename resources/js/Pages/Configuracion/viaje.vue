@@ -95,7 +95,7 @@ export default {
             console.log(this.datos)
             var res = await axios({
                 method: 'get',
-                url: `/${process.env.MIX_CARPETA}/viaje/`,
+                url: `/${process.env.MIX_CARPETA}/viaje/21312`,
                 
                 }).then(
                     (response) => {

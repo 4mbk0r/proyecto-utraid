@@ -81,7 +81,7 @@ where atencion = 'feriado' and TRIM(to_char(fecha, 'yyyy')) = TRIM(to_char('" . 
         where fecha = '14-02-2023';
         */
         $list_config = DB::table('fichas')
-            ->select(['fichas.id_sala', 'salas.descripcion', 'designar_equipos.id_equipo', 'equipos.nombre_equipo'])
+            ->select([ 'fichas.id_sala', 'salas.descripcion', 'designar_equipos.id_equipo', 'equipos.nombre_equipo'])
             ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
             ->leftJoin('designar_equipos', 'designar_equipos.id_sala', '=', 'salas.id')
             ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipos.id')

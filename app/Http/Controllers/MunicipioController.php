@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Municipio;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Expr\Cast\String_;
 
 class MunicipioController extends Controller
@@ -39,6 +40,7 @@ class MunicipioController extends Controller
     public function store(Request $request)
     {
         //
+        return $request;
     }
 
     /**
@@ -50,9 +52,40 @@ class MunicipioController extends Controller
     public function show(string $municipio)
     {
         //
+        $datos = json_decode($municipio);
+        //return $datos;
+        $is_calendar = DB::table('calendarios')
+            ->where('fecha', '=', $datos->fecha)
+            ->where('atencion', '=', 'atencion')
+            ->get();
+        if (count($is_calendar) == 0) {
+            $municipio = DB::table('viajes')
+            ->leftJoin('municipios', 'municipios.id', '=', 'viajes.id_municipio')
+            ->where('fecha', '=', $datos->fecha)
+            ->where('id_sala', '=',  $datos->id_sala)
+            
+            //->where('atencion', '=', 'atencion')
+            ->get();
+            $municipios = [];
+            if( count($municipio) == 0){
+                $municipios =   DB::table('municipios')
+                ->select('*')
+                ->get();
+            }else{
+                array_push($municipios, $municipio);
+                    
+            }
 
+            return [
+                'municipio' =>  $municipio,
+                'municipios' => $municipios
+            ];
+        } else {
+            
+        }
+        return $is_calendar;
 
-
+        
         return $municipio;
     }
 
