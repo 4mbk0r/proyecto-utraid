@@ -228,10 +228,18 @@
                             <!--<v-list-item-subtitle>{{ selectedEvent }}</v-list-item-subtitle>-->
                         </v-list-item-content>
                     </v-list-item>
-                    <v-list-item>
+                    <v-subheader>Equipo 
+                        <v-icon aria-hidden="false" @click="ver_equipo = !ver_equipo ">
+                            mdi-eye-outline
+                          </v-icon>
+                        
+
+                    </v-subheader>
+                      
+                    <v-list-item v-if="ver_equipo">
                         <v-list-item-content>
                             <v-list-item-subtitle>Integrantes:</v-list-item-subtitle>
-                            <mequipo v-if="dialog_equipo" :datos="selectedEvent.consultorio"></mequipo>
+                            <mequipo v-if="dialog_equipo" :fecha="fecha_calendario"  :datos="selectedEvent.consultorio"></mequipo>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -289,7 +297,7 @@ import atencion from '@/Pages/Micomponet/Atencion'
 
 import mequipo from '@/Pages/Configuracion/seleccionequipo'
 
-import viaje from '@/Pages/Configuracion/seleccionequipo'
+import viaje from '@/Pages/Configuracion/viaje'
 
 
 
@@ -319,6 +327,7 @@ export default {
             'category': 'Citas',
             'category2': 'Atencion'
         },
+        ver_equipo: false,
         selectedEvent: {},
         selectedElement: null,
         selectedOpen: false,

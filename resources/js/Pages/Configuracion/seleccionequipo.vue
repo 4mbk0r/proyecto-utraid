@@ -4,14 +4,16 @@
         <v-form ref="seleccion_municipio">
             <v-row no-gutters>
                 <v-col>
-                    <v-select v-model="selectMunicipio" 
+                    <v-data-table 
                     
+                    persistent-placeholder placeholder="No se tiene datos" 
+                    :headers="encabezado"
                     
-                    persistent-placeholder placeholder="No se tiene datos" :items="municipios"
+                    :items="integrantes"
                     item-text="municipio"
                     item-value="codigo"
                         :rules="selecionRules" label="Seleccione Municipio" required>
-                    </v-select>
+                    </v-data-table>
                 <!--<v-btn color="success" v-if="!getvalores(selectedEvent.fichas, 'id_designado')"
                             @click="save_atender">
                             Guardar
@@ -23,7 +25,7 @@
             <v-row>
                 <v-col>
                     <v-btn @click="guardar">
-                        Designar viaje
+                       cambiar
                     </v-btn>
                 </v-col>
             </v-row>
@@ -102,20 +104,20 @@ export default {
         async pedir_datos(){
             this.datos.fecha =  this.fecha
             var res = await axios({
-                method: 'get',
-                url: `/${process.env.MIX_CARPETA}/viaje/`+JSON.stringify(this.datos),
-                /*data:
+                method: 'post',
+                url: `/${process.env.MIX_CARPETA}/api/equipos_sala`,
+                data:
                     this.datos,
-                *///equipo: this.selectMunicipio.equipo
+                ///equipo: this.selectMunicipio.equipo
 
             }).then(
                 (response) => {
                     //var r = response.data.seleccion
                     console.log('municipios de la sala')
                     console.log(response.data);
-                    //this.integrantes = response.data
-                    this.municipios = response.data['municipios']
-                    this.selectMunicipio = response.data['municipio']
+                    this.integrantes = response.data
+                    //this.municipios = response.data['municipios']
+                    //this.selectMunicipio = response.data['municipio']
                     
                 }
             ).catch(err => {

@@ -18,7 +18,8 @@ class CreateViajesTable extends Migration
             //$table->id();
             $table->integer('id_municipio');
             $table->integer('id_sala');
-            $table->date('fecha');            
+            $table->date('fecha');   
+            $table->unique(['id_sala', 'id_municipio']);         
         });
         
         DB::statement(

@@ -1,14 +1,15 @@
 
 <template>
     <v-card>
-        {{ datos }}
-        <v-form ref="seleccion_equipo">
+        <v-form ref="municipio">
             <v-row no-gutters>
                 <v-col>
-                    <v-select v-model="selectequipo" persistent-placeholder placeholder="No se tiene datos" :items="viejos"
-                        :rules="selecionRules" label="Seleccione Municipio" required>
+                    <v-select v-model="selectMunicipio" persistent-placeholder placeholder="No se tiene datos" :items="viaje"
+                    item-text="municipio"
+                    item-value="id"    
+                    :rules="selecionRules" label="Seleccione Municipio" required>
                     </v-select>
-                    {{ datos }}
+                    
                 <!--<v-btn color="success" v-if="!getvalores(selectedEvent.fichas, 'id_designado')"
                             @click="save_atender">
                             Guardar
@@ -16,6 +17,13 @@
 
                 </v-col>
 
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-btn @click="guardar">
+                       Guardar
+                    </v-btn>
+                </v-col>
             </v-row>
 
         </v-form>
@@ -34,6 +42,7 @@ export default {
         //dialog: Boolean,
         //mensaje: Object,
         datos: Object,
+        fecha: String
         //equipo: Array,
         //cargos: Array,
     },
@@ -43,7 +52,8 @@ export default {
     },
     data: () => ({
         selectequipo: '',
-        viejos: [],
+        selectMunicipio: '',
+        viaje: [],
         integrantes: [],
         selecionRules: [
             v => !!v || "Se requiere seleccion"],
@@ -91,18 +101,49 @@ export default {
     },
     methods: {
         async pedir_datos() {
-            console.log('opopopop');
-            console.log(this.datos)
+            this.datos.fecha =  this.fecha
             var res = await axios({
                 method: 'get',
-                url: `/${process.env.MIX_CARPETA}/viaje/21312`,
+                url: `/${process.env.MIX_CARPETA}/viaje/`+JSON.stringify(this.datos),
                 
                 }).then(
                     (response) => {
                         //var r = response.data.seleccion
                         console.log('viejo--------------------')
                         console.log(response.data);
+                        this.viaje = response.data['municipios']
                         /*this.integrantes = response.data
+                        
+                        tjh
+                        this.viejos.push(this.datos.nombre_equipo)
+                        this.selectequipo = this.datos.nombre_equipo
+                        */
+
+                    }
+                ).catch(err => {
+                    console.log(err)
+
+                });
+        },
+        async guardar() {
+            if(!this.$refs.municipio.validate()) return;
+            this.datos.fecha =  this.fecha
+            var res = await axios({
+                method: 'post',
+                url: `/${process.env.MIX_CARPETA}/viaje`,
+                data:{
+                    datos: this.datos, 
+                    municipio: this.selectMunicipio
+                }
+                }).then(
+                    (response) => {
+                        //var r = response.data.seleccion
+                        /*console.log('viejo--------------------')
+                        console.log(response.data);
+                        this.viaje = response.data['municipios']
+                        /*this.integrantes = response.data
+                        
+                        tjh
                         this.viejos.push(this.datos.nombre_equipo)
                         this.selectequipo = this.datos.nombre_equipo
                         */

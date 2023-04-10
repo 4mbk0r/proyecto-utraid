@@ -40,6 +40,14 @@ class MunicipioController extends Controller
     public function store(Request $request)
     {
         //
+        $datos = $request['datos'];  
+        $municipio = $request['municipio'];  
+        $query = DB::table('viajes')
+        ->insert([
+            'id_municipio'=>$municipio,
+            'id_sala' => $datos['id_sala'],
+            'fecha' => $datos['fecha']
+        ]);
         return $request;
     }
 
@@ -81,7 +89,13 @@ class MunicipioController extends Controller
                 'municipios' => $municipios
             ];
         } else {
-            
+            $municipios =   DB::table('municipios')
+            ->select('*')
+            ->get();
+            return [
+                'municipio' =>  '',
+                'municipios' => $municipios
+            ];
         }
         return $is_calendar;
 

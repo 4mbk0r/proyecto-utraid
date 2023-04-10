@@ -445,6 +445,30 @@ class AtenderController extends Controller
             ->where('atencion', '=', 'atencion')
             ->get();
         if (count($is_calendar) == 0) {
+
+
+            $query = DB::table("calendariolineals")
+                ->leftJoin("configuracions", function ($join) {
+                    $join->on("configuracions.id", "=", "calendariolineals.id_configuracion");
+                })
+                ->leftJoin("designar_equipo_lineals", function ($join) {
+                    $join->on("designar_equipo_lineals.id_conf", "=", "configuracions.id");
+                })
+                ->leftJoin("equipos", function ($join) {
+                    $join->on("equipos.id", "=", "designar_equipo_lineals.id_equipo");
+                })
+                ->leftJoin("asignar_equipos", function ($join) {
+                    $join->on("asignar_equipos.id_equipo", "=", "equipos.id");
+                })
+                ->leftJoin("users", function ($join) {
+                    $join->on("users.id", "=", "asignar_equipos.id_usuario");
+                })
+                ->where("calendariolineals.fecha_inicio", "<=", $datos['fecha'])
+                ->where("calendariolineals.fecha_final", ">=", $datos['fecha'])
+                ->where("designar_equipo_lineals.id_sala", "=", 1)
+                ->get();
+
+            return $query;
         } else {
 
             $equipo =
@@ -460,7 +484,7 @@ class AtenderController extends Controller
                     $join->on("users.id", "=", "asignar_equipos.id_usuario");
                 })
                 ->select(["equipos.nombre_equipo", 'users.*'])
-                ->where("designar_equipos.fecha", "=",$datos['fecha'])
+                ->where("designar_equipos.fecha", "=", $datos['fecha'])
                 ->where("designar_equipos.id_equipo", "=", $datos['id_equipo'])
                 ->where("designar_equipos.id_sala", "=", $datos['id_sala'])
                 ->get();
