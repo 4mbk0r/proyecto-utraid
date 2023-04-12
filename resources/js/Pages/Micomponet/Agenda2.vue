@@ -73,8 +73,9 @@
                         type="category" category-show-all :categories="categories" :events="events"
                         event-overlap-mode="stack" :event-color="getEventColor" :weekday-format="getDay"
                         @click:event="showEvent" :interval-minutes=60 :first-interval=7 :interval-count=14></v-calendar>
-                    <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement" offset-x>
-                        <v-card color="grey lighten-4" min-width="350px" flat>
+                    <v-menu v-if="selectedOpen" v-model="selectedOpen" :close-on-content-click="false"
+                        :activator="selectedElement" offset-x>
+                        <v-card  min-width="350px" flat>
                             <v-toolbar :color="selectedEvent.color">
 
                                 <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
@@ -93,6 +94,11 @@
                                     v-if="comparaFechas() && get_datos_ficha(selectedEvent) != null && getvalores(selectedEvent.fichas, 'id_designado')"
                                     @click="eliminar_atender($event)" icon>
                                     <v-icon>mdi-home-remove-outline</v-icon>
+                                </v-btn>
+                                <v-btn
+                                    v-if="comparaFechas() && get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
+                                    @click="imprimir($event)" icon>
+                                    <v-icon>mdi-printer</v-icon>
                                 </v-btn>
                             </v-toolbar>
 
@@ -282,6 +288,85 @@
                 </v-list>
             </v-card>
         </v-dialog>
+        <v-dialog v-model="dialog_imprimir" fullscreen :scrim="false" transition="dialog-bottom-transition">
+
+            <v-card>
+                <v-toolbar dark color="black">
+                    <v-btn icon dark @click="dialog_imprimir = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title>Imprimir</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn variant="text" @click="dialog_equipo = false">
+                            Guardar
+                        </v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
+                <imprimir v-if="dialog_imprimir" ref="print">
+                </imprimir>
+                <!--<v-list three-line subheader>
+                    <v-subheader>Imprimir</v-subheader>
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-list-item-title>{{ selectedEvent.category }}</v-list-item-title>
+                            <!--<v-list-item-subtitle>{{ selectedEvent }}</v-list-item-subtitle>-->
+                <!--</v-list-item-content>
+                    </v-list-item>
+                    <v-subheader>Equipo
+                        <v-icon aria-hidden="false" @click="ver_equipo = !ver_equipo">
+                            mdi-eye-outline
+                        </v-icon>
+
+
+                    </v-subheader>
+
+                    <v-list-item v-if="ver_equipo">
+                        <v-list-item-content>
+                            <v-list-item-subtitle>Integrantes:</v-list-item-subtitle>
+                            <imprimir v-if="dialog_imprimir" ref="imprimir" >
+                            </imprimir>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>-->
+                <v-divider></v-divider>
+                <!--<v-list>
+                    <v-subheader>Viaje</v-subheader>
+                    <viaje v-if="dialog_equipo" :fecha="fecha_calendario" :datos="selectedEvent.consultorio"></viaje>
+                    {{ selectedEvent }}-->
+                <!--<v-list-item>
+                        <v-list-item-action>
+                            <v-checkbox v-model="notifications"></v-checkbox>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Notifications</v-list-item-title>
+                            <v-list-item-subtitle>Notify me about updates to apps or games that I
+                                downloaded</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-list-item-action>
+                            <v-checkbox v-model="sound"></v-checkbox>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Sound</v-list-item-title>
+                            <v-list-item-subtitle>Auto-update apps at any time. Data charges may
+                                apply</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-list-item-action>
+                            <v-checkbox v-model="widgets"></v-checkbox>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Auto-add widgets</v-list-item-title>
+                            <v-list-item-subtitle>Automatically add home screen widgets</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+               
+                </v-list> -->
+            </v-card>
+        </v-dialog>
         <datos v-if="dialog_persona" @pedir='actualizador' ref="dato">
         </datos>
         <atencion v-if="estado == 'atencion'" ref="atender" :equipo="lista_equipo"></atencion>
@@ -295,6 +380,7 @@ import moment from 'moment'
 import buscar from '@/Pages/Micomponet/Buscar'
 import datos from '@/Pages/Micomponet/Datospersonales'
 import atencion from '@/Pages/Micomponet/Atencion'
+import imprimir from '@/Pages/Micomponet/imprimir'
 
 import mequipo from '@/Pages/Configuracion/seleccionequipo'
 
@@ -308,12 +394,14 @@ export default {
         datos,
         atencion,
         mequipo,
-        viaje
+        viaje,
+        imprimir
     },
     data: () => ({
 
         value: '',
         ready: false,
+        dialog_imprimir: false,
         dialog_persona: false,
         dialog_equipo: false,
         today: new Date(),
@@ -397,6 +485,16 @@ export default {
         }
     },
     methods: {
+        imprimir() {
+            this.dialog_imprimir = true;
+            setTimeout(() => {
+
+            }, 1);
+            this.$refs.print.cita = this.selectedEvent.fichas;
+
+
+            //console.log(this.selectedEvent.fichas);
+        },
         comparaFechas() {
             const fechaActual = new Date(this.$store.getters.getfecha_server + 'T00:00:00');
             const fechaCa = new Date(this.fecha_calendario + 'T00:00:00');
@@ -604,7 +702,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
 
                     this.salas = salas
                     this.categories = [];
-                    let events = [];
+                    //let events = [];
                     this.events = [];
                     let start2 = new Date(this.fecha_calendario + 'T01:01:00-04:00')
                     let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
@@ -939,6 +1037,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
 
             });
         },
+
         async showEvent({ nativeEvent, event }) {
 
             if (this.cambio_ficha) {

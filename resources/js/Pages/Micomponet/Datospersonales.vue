@@ -315,7 +315,7 @@
           <p>cedula de identidad: {{ paciente_existen.ci }}</p>
           <p>Nombres:{{ paciente_existen.nombres }}</p>
           <p>Apellido Paterno:{{ paciente_existen.ap_paterno }}</p>
-          <p>Apellido Materno:{{ paciente_existen.ap_materno }}</p> 
+          <p>Apellido Materno:{{ paciente_existen.ap_materno }}</p > 
           Puedes user los datos ya tienes </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
