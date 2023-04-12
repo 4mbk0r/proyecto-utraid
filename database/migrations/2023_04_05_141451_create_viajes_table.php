@@ -12,6 +12,7 @@ class CreateViajesTable extends Migration
      *
      * @return void
      */
+    
     public function up()
     {
         Schema::create('viajes', function (Blueprint $table) {
@@ -28,6 +29,7 @@ class CreateViajesTable extends Migration
         DB::statement(
             "ALTER TABLE viajes ADD FOREIGN KEY (id_sala) REFERENCES salas(id)"
         );
+       
            
     }
 

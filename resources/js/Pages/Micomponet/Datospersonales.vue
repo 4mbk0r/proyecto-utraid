@@ -48,31 +48,57 @@
                   <v-col cols="12" sm="4" md="4">
                     <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombre" @input="
                       (v) => {
-                        paciente.nombres = v.toUpperCase();
+                        paciente.nombres = v.toUpperCase().trim();
                       }
                     " 
-                    @keydown.enter="buscadorporvalor()"
+                    @change="buscadorporvalor()"
+
                     required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
                     <v-text-field v-model="paciente.ap_paterno" @input="
                       (v) => {
-                        paciente.ap_paterno = v.toUpperCase();
+                        paciente.ap_paterno = v.toUpperCase().trim();
                       }
                     " 
                     @keydown.enter="buscadorporvalor()"
+                    @change="buscadorporvalor()"
+
                     label="Apellido Paterno" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
                     <v-text-field v-model="paciente.ap_materno" @input="
                       (v) => {
-                        paciente.ap_materno = v.toUpperCase();
+                        paciente.ap_materno = v.toUpperCase().trim();
                       }
                     " 
                     @keydown.enter="buscadorporvalor()"
+                    @change="buscadorporvalor()"
+                    
                     label="Apellido Materno" required>
+                    </v-text-field>
+                  </v-col>
+                  
+                </v-row>
+                <v-row  no-gutters>
+                  <v-col cols="12" sm="1" md="1">
+                    <v-icon @click="ver_apellido_casada =  !ver_apellido_casada">
+                      mdi-human-male-female
+                    </v-icon>
+                    
+                  </v-col>
+                  <v-col v-show="ver_apellido_casada" cols="12" sm="4" md="4">
+                    <v-text-field v-model="paciente.ap_casada" @input="
+                      (v) => {
+                        paciente.ap_casada = v.toUpperCase();
+                      }
+                    " 
+                    @keydown.enter="buscadorporvalor()"
+                    @change="buscadorporvalor()"
+                    
+                    label="Apellido Casado" required>
                     </v-text-field>
                   </v-col>
                 </v-row>
@@ -282,9 +308,15 @@
     <v-dialog v-model="msm_existe" persistent max-width="290">
       <v-card>
         <v-card-title class="text-h5">
-          El usuario con cedula de identidad {{ paciente.ci }} ya existe
+          Usuario existe
         </v-card-title>
-        <v-card-text> Puedes user los datos ya tienes </v-card-text>
+        <v-card-text> 
+          El usuario con 
+          <p>cedula de identidad: {{ paciente_existen.ci }}</p>
+          <p>Nombres:{{ paciente_existen.nombres }}</p>
+          <p>Apellido Paterno:{{ paciente_existen.ap_paterno }}</p>
+          <p>Apellido Materno:{{ paciente_existen.ap_materno }}</p> 
+          Puedes user los datos ya tienes </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="msm_existe = false">
@@ -400,6 +432,7 @@ export default {
     msm_existe: false,
     msm_update: false,
     msm_imprimir: false,
+    ver_apellido_casada: false,
     paciente_edit: {},
     las_citas: [],
     cita_nueva: {},

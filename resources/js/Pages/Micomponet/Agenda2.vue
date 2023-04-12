@@ -80,17 +80,17 @@
                                 <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
                                 <v-spacer></v-spacer>
                                 <v-btn
-                                    v-if="comparaFechas && get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
+                                    v-if="comparaFechas() && get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
                                     @click="cambiar_ficha($event)" icon>
                                     <v-icon>mdi-account-convert</v-icon>
                                 </v-btn>
                                 <v-btn
-                                    v-if="comparaFechas && get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
+                                    v-if="comparaFechas() && get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
                                     @click="eliminar_ficha($event)" icon>
                                     <v-icon>mdi-account-remove-outline</v-icon>
                                 </v-btn>
                                 <v-btn
-                                    v-if="comparaFechas && get_datos_ficha(selectedEvent) != null && getvalores(selectedEvent.fichas, 'id_designado')"
+                                    v-if="comparaFechas() && get_datos_ficha(selectedEvent) != null && getvalores(selectedEvent.fichas, 'id_designado')"
                                     @click="eliminar_atender($event)" icon>
                                     <v-icon>mdi-home-remove-outline</v-icon>
                                 </v-btn>
@@ -141,7 +141,7 @@
                                             </v-btn>
 
                                         </v-col>
-            
+
                                     </v-row>
                                     <V-row>
                                         <v-col>
@@ -228,18 +228,19 @@
                             <!--<v-list-item-subtitle>{{ selectedEvent }}</v-list-item-subtitle>-->
                         </v-list-item-content>
                     </v-list-item>
-                    <v-subheader>Equipo 
-                        <v-icon aria-hidden="false" @click="ver_equipo = !ver_equipo ">
+                    <v-subheader>Equipo
+                        <v-icon aria-hidden="false" @click="ver_equipo = !ver_equipo">
                             mdi-eye-outline
-                          </v-icon>
-                        
+                        </v-icon>
+
 
                     </v-subheader>
-                      
+
                     <v-list-item v-if="ver_equipo">
                         <v-list-item-content>
                             <v-list-item-subtitle>Integrantes:</v-list-item-subtitle>
-                            <mequipo v-if="dialog_equipo" :fecha="fecha_calendario"  :datos="selectedEvent.consultorio"></mequipo>
+                            <mequipo v-if="dialog_equipo" :fecha="fecha_calendario" :datos="selectedEvent.consultorio">
+                            </mequipo>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -306,7 +307,7 @@ export default {
         buscar,
         datos,
         atencion,
-        mequipo, 
+        mequipo,
         viaje
     },
     data: () => ({
@@ -397,9 +398,12 @@ export default {
     },
     methods: {
         comparaFechas() {
-            const fechaActual = new Date(this.$store.getfecha_server + 'T00:00:00');
+            const fechaActual = new Date(this.$store.getters.getfecha_server + 'T00:00:00');
             const fechaCa = new Date(this.fecha_calendario + 'T00:00:00');
-            return fechaActua < fechaCa;
+            /*console.log(this.$store.getters.getfecha_server);
+            console.log(fechaActual,'<',fechaCa);*/
+            //console.log(fechaActual < fechaCa);
+            return fechaActual <= fechaCa;
         },
         async eliminar_atender($e) {
             let f = this.selectedEvent.fichas.id_ficha
@@ -800,16 +804,13 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 (response) => {
                     var r = response.data.seleccion
                     console.log(response.data);
-                    try {
-                        this.equipos = response.data.equipo
-                        if (r) {
-                            this.selectequipo = response.data.equipo[0]
-                        }
-
-
-                    } catch (error) {
-
+                    this.selectedOpen = true
+                    this.equipos = response.data.equipo
+                    if (r) {
+                        this.selectequipo = response.data.equipo[0]
                     }
+
+
 
                 }
             ).catch(err => {
@@ -995,7 +996,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     this.selectedElement = nativeEvent.target
                     this.selectequipo = ''
                     this.atencion_equipos()
-                    requestAnimationFrame(() => requestAnimationFrame(() => this.selectedOpen = true))
+                    //requestAnimationFrame(() => requestAnimationFrame(() => ))
                 }
                 if (this.selectedOpen) {
                     this.selectedOpen = false

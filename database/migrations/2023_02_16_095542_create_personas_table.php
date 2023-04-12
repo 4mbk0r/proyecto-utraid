@@ -13,6 +13,7 @@ class CreatePersonasTable extends Migration
      */
     public function up()
     {
+        DB::statement('CREATE EXTENSION IF NOT EXISTS unaccent');
         Schema::create('personas', function (Blueprint $table) {
             $table->increments('id');
             $table->text('ci');
