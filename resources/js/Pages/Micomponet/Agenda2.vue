@@ -75,7 +75,7 @@
                         @click:event="showEvent" :interval-minutes=60 :first-interval=7 :interval-count=14></v-calendar>
                     <v-menu v-if="selectedOpen" v-model="selectedOpen" :close-on-content-click="false"
                         :activator="selectedElement" offset-x>
-                        <v-card  min-width="350px" flat>
+                        <v-card min-width="350px" flat>
                             <v-toolbar :color="selectedEvent.color">
 
                                 <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
@@ -486,15 +486,44 @@ export default {
     },
     methods: {
         imprimir() {
-            this.dialog_imprimir = true;
+            // Abrir la pestaña principal
+            //this.$store.commit('update_imprimir', this.selectedEvent.fichas);
+            //console.log(this.selectedEvent.fichas);
+            //this.$store.commit('update_imprimir', this.selectedEvent.fichas)
+            this.$store.dispatch('guardar_imprimir',this.selectedEvent.fichas);
+            localStorage.setItem("usuario",  JSON.stringify(this.selectedEvent.fichas));
+            setTimeout(() => {
+                
+            }, 2);
+
+            let mainTab = window.open(`/${process.env.MIX_CARPETA}/imprimir`, '_blank');
+            // Esperar a que la pestaña principal esté lista
+            /*mainTab.addEventListener('load', function () {
+                // Abrir la mini pestaña en la pestaña principal
+                let miniTab = mainTab.open('http://localhost/main/imprimir', 'miniTab', 'width=400,height=300');
+
+                // Comunicar entre las dos pestañas
+                window.addEventListener('message', function (event) {
+                    if (event.origin !== 'https://www.ejemplo.com') return; // verificar el origen del mensaje
+                    console.log('Mensaje recibido:', event.data); // manejar el mensaje recibido
+                });
+
+                miniTab.postMessage('Hola, pestaña principal!', 'http://localhost/main/imprimir'); // enviar un mensaje a la mini pestaña
+            });*¨/
+
+
+
+
+            /*this.dialog_imprimir = true;
             setTimeout(() => {
 
             }, 1);
             this.$refs.print.cita = this.selectedEvent.fichas;
-
+            */
 
             //console.log(this.selectedEvent.fichas);
         },
+        
         comparaFechas() {
             const fechaActual = new Date(this.$store.getters.getfecha_server + 'T00:00:00');
             const fechaCa = new Date(this.fecha_calendario + 'T00:00:00');

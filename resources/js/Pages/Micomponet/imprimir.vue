@@ -4,7 +4,7 @@
         <v-container class="teal lighten-3" align="center" justify="center" id="section-to-print">
             <v-row class="pa-0 ma-0">
                 <v-col class="pa-0 ma-0" outlined tile align="center" cols="2" justify="center">
-                    <v-img height="80" width="100" contain src="assets/logo-sedes-lapaz.png"></v-img>
+                    <img height="80" width="100" contain src="assets/logo-sedes-lapaz.png"></img>
                 </v-col>
                 <v-col class="pa-0 ma-0" align="center" justify="center" cols="8" style="font-size: 10px !important;">
                     <v-card>
@@ -18,7 +18,7 @@
                 </v-col>
                 <v-col class="pa-0 ma-0" align="center" cols="2" justify="center">
 
-                    <v-img height="80" width="100" contain src="assets/GOBIERNO.png"></v-img>
+                    <img height="80" width="100" contain src="assets/GOBIERNO.png"></img>
 
                 </v-col>
 
@@ -41,13 +41,13 @@
             <v-row class="pa-1 ma-0">
                 <v-col class="pa-0 ma-0" cols="8" outlined tile align="center" justify="center">
                     <v-card>
-                        Fecha de evaluacion: {{ cita.fecha }}
+                        Fecha de evaluacion: {{ fechaTexto(cita.fecha) }}
 
                     </v-card>
                 </v-col>
                 <v-col class="pa-0 ma-0" cols="4" outlined tile align="center" justify="center">
                     <v-card>
-                        Hora: {{ cita.hora_inicio }}
+                        Hora: {{horaTexto(cita.hora_inicio) }}
 
                     </v-card>
                 </v-col>
@@ -57,7 +57,7 @@
 
                 <v-col class="pa-0 ma-0" cols="12" outlined tile align="center" justify="center">
                     <v-card>
-                        Lugar: {{ cita.lugar }}
+                        Lugar: {{ cita.direccion }}
 
                     </v-card>
                 </v-col>
@@ -160,7 +160,7 @@
 </template>
     
 <script>
-
+import moment from 'moment'
 export default {
     data() {
         return {
@@ -182,12 +182,106 @@ export default {
                 hora_inicio: '',
                 lugar: '',
             },
+
+            /*
+            ttlugares: ["CALLE MUÑOZ CORNEJO NRO 2702 - ESQUINA MENDEZ ARCOS - SOPOCACHI",
+            "TELEFERICO MORADO - FARO MURILLO",
+            "TELEFERICO PLATEADO - CIUDAD SATELITE",
+            "IXIAMAS",
+            "SAN BUENAVENTURA",
+            "APOLO",
+            "AUCAPATA",
+            "AYATA",
+            "CHUMA",
+            "CURVA",
+            "Gral. J.J. Pérez(CHARAZANI",
+            "PELECHUCO",
+            "ESCOMA",
+            "HUMANATA",
+            "MOCOMOCO",
+            "PUERTO ACOSTA",
+            "PUERTO CARABUCO",
+            "ACHACACHI",
+            "ANCORAIMES",
+            "CHUA COCANI",
+            "COMBAYA",
+            "HUARINA",
+            "HUATAJATA",
+            "QUIABAYA",
+            "SANTIAGO DE HUATA",
+            "SORATA",
+            "TACACOMA",
+            "BATALLAS",
+            "COPACABANA",
+            "PUCARANI",
+            "PUERTO PEREZ",
+            "SAN PEDRO DE TIQUINA",
+            "TITO YUPANQUI (Parquipujio)",
+            "ACHOCALLA",
+            "MECAPACA",
+            "PALCA",
+            "VIACHA",
+            "ALTO BENI",
+            "CARANAVI",
+            "GUANAY",
+            "MAPIRI",
+            "PALOS BLANCOS",
+            "TEOPONTE",
+            "TIPUANI",
+            "CHULUMANI (V. De La Libertad)",
+            "CORIPATA",
+            "COROICO",
+            "IRUPANA",
+            "LA ASUNTA",
+            "YANACACHI",
+            "DESAGUADERO",
+            "GUAQUI",
+            "JESUS DE MACHACA",
+            "LAJA",
+            "SAN ANDRES DE MACHACA",
+            "TARACO",
+            "TIAHUANACU",
+            "CALACOTO",
+            "CAQUIAVIRI",
+            "CATACORA",
+            "CHARAÑA",
+            "COMANCHE",
+            "COROCORO",
+            "NAZACARA DE PACAJES",
+            "SANTIAGO DE MACHACA",
+            "CHACARILLA",
+            "PAPEL PAMPA",
+            "PATACAMAYA",
+            "SAN PEDRO CURAHUARA",
+            "SANTIAGO DE CALLAPA",
+            "SICA SICA (Villa Aroma)",
+            "UMALA",
+            "AYO AYO",
+            "CALAMARCA",
+            "COLLANA",
+            "COLQUENCHA",
+            "SAPAHAQUI",
+            "WALDO BALLIVIAN",
+            "CAIROMA",
+            "LURIBAY",
+            "MALLA",
+            "YACO",
+            "CAJUATA",
+            "COLQUIRI",
+            "ICHOCA",
+            "INQUISIVI",
+            "QUIME",
+            "VILLA LIBERTAD LICOMA"
+        ],
+        tlugar: "CALLE MUÑOZ CORNEJO NRO 2702 - ESQUINA MENDEZ ARCOS - SOPOCACHI",
+            */
         }
     },
     created() {
         //this.cita = JSON.parse(localStorage.getItem('cita'))
-
-        console.log(this.cita)
+        //this.$store.dispatch('')
+        const usuarioString = localStorage.getItem("usuario");
+        this.cita = JSON.parse(usuarioString);
     },
     components: {
     },
@@ -195,6 +289,22 @@ export default {
     {
         print() {
             print()
+        },
+        fechaTexto(x) {
+            moment.locale('es');
+            const fecha = moment(x);
+
+            // Obtén la fecha en formato de texto
+            return fecha.format('dddd, D [de] MMMM [de] YYYY');
+        },
+        horaTexto(x) {
+            const hora = moment(x, 'HH:mm:ss').format('hh:mm ');
+
+            if (moment(hora, 'hh:mm ').isBefore(moment('12:00', 'hh:mm '))) {
+                return `${hora} mañana`;
+            } else {
+                return `${hora} tarde`;
+            }
         },
         close() {
             window.close();

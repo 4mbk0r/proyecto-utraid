@@ -38,7 +38,7 @@
   font-weight: bold;
 }
 
-/*
+
 @media print {
   body * {
     visibility: hidden;
@@ -61,7 +61,7 @@
   color: white !important;
 }
 
-*/
+
 
 /*.orange {
   --color: #f49764;

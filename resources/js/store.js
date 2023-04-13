@@ -28,11 +28,18 @@ const store = new Vuex.Store({
         dias: {},
         lugar: '',
         id_config: '',
+        imprimir: {
+            s: 'hola'
+        },
 
 
 
     },
     mutations: {
+        update_imprimir(state, imprimir) {
+
+            state.imprimir = imprimir
+        },
         update_fecha_server(state, fecha) {
 
             state.fecha_server = fecha
@@ -103,6 +110,9 @@ const store = new Vuex.Store({
         }
     },
     actions: {
+        guardar_imprimir(context, imprimir) {
+            context.commit('update_imprimir', imprimir)
+        },
         guardarfechaserver(constext, fecha) {
             constext.commit('update_fecha_server', fecha)
         },
@@ -136,6 +146,9 @@ const store = new Vuex.Store({
         }
     },
     getters: {
+        getimprimir() {
+            return store.state.imprimir;
+        },
         gethoy() {
             return store.state.fecha_hoy;
         },
