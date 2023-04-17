@@ -20,7 +20,7 @@ AD2 --> F1
 
 actor "Administrador" as AD1
 rectangle Administrar {
-  usecase "Registra Personal" as UC1
+  usecase "Registra Personal" as UC1  
   usecase "Listar Personal" as UC3
   usecase "Configuracion" as UC2
   

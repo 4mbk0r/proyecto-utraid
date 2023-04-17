@@ -1,0 +1,20 @@
+@startuml
+actor Usuario
+
+Usuario -> Sistema: Ingresar credenciales
+Sistema -> BaseDeDatos: Verificar credenciales
+activate BaseDeDatos
+BaseDeDatos --> Sistema: Credenciales válidas
+deactivate BaseDeDatos
+
+destroy BaseDeDatos
+alt Credenciales válidas
+    Sistema --> Usuario: Ingreso permitido
+    activate Sistema
+else Credenciales inválidas
+    Sistema -> Usuario: Ingreso denegado
+    
+end
+destroy Sistema
+destroy Usuario
+@enduml
