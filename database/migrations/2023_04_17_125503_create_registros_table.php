@@ -21,7 +21,7 @@ class CreateRegistrosTable extends Migration
             $table->string('tipo_discapacidad');
             $table->string('grado_discapacidad');
             $table->integer('porcentaje');
-            $table->timestamps();
+            
         });
         
         DB::statement('SET datestyle = SQL,DMY');
