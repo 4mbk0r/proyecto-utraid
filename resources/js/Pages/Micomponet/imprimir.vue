@@ -25,9 +25,25 @@
             </v-row>
             <v-row class="pa-0 ma-0">
 
-                <v-col class="pa-0 ma-0" align="center" justify="center" style="font-size: 10px !important;">
+                <v-col class="pa-0 ma-0" 
+                cols="4" 
+                    align="center" justify="center" style="font-size: 10px !important;">
+                    <p class="pa-0 ma-0">{{getcodigo()}}</p>
+                </v-col>
+
+                <v-col 
+                cols="4" 
+                    class="pa-0 ma-0" align="center" justify="center" style="font-size: 10px !important;">
                     <p class="pa-0 ma-0">PROGRAMACION PARA EVALUACION DE DISCAPACIDAD</p>
                 </v-col>
+                
+                <v-col
+                cols="4"  
+                    class="pa-0 ma-0" align="center" justify="center" style="font-size: 10px !important;">
+                    <p class="pa-0 ma-0">PROGRAMACION PARA EVALUACION DE DISCAPACIDAD</p>
+                </v-col>
+
+                
             </v-row>
             <v-row class="pa-1 ma-0">
                 <v-col class="pa-0 ma-0" outlined align="center" justify="center">

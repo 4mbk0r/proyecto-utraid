@@ -19,7 +19,14 @@ class CreatePersonasTable extends Migration
         
         Schema::create('personas', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('ci');
+
+
+            /*
+                ap_paterno! ap_materno! nombre_de_registro
+            
+            */
+            //$table->string('codigo')->unique();
+            $table->string('ci');
             //$table->foreignId('nombre')->nullable()->index();
             $table->text('nombres');
             $table->text('ap_paterno', 100)->nullable();
@@ -35,6 +42,7 @@ class CreatePersonasTable extends Migration
             $table->text('nom_departamento', 50)->nullable();
             $table->boolean('register')->default(True);
             $table->unique(['ci', 'expedido']);
+            
             //});
             /*$datos = [
                 'ci' => '8340024',
