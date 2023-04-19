@@ -1,9 +1,6 @@
 <template>
-  <v-dialog v-model="dialog" ref="ventana" fullscreen hide-overlay 
-  
-  @keydown.enter.stop.prevent="onEnter"
-  persistent class="fill-height" color="blue"
-    transition="dialog-bottom-transition">
+  <v-dialog v-model="dialog" ref="ventana" fullscreen hide-overlay @keydown.enter.stop.prevent="onEnter" persistent
+    class="fill-height" color="blue" transition="dialog-bottom-transition">
     <v-toolbar :color="op1 === 1 ? 'green' : 'blue'">
       <v-btn icon @click="close">
         <v-icon>mdi-close</v-icon>
@@ -32,10 +29,7 @@
                 <v-row no-gutters>
                   <v-col cols="12" sm="8" class="pr-4">
                     <v-text-field v-model="paciente.ci" :rules="ciRules" :color="op1 === 1 ? 'green' : 'blue'"
-                      label="Cedula de Identidad" @keydown.enter="buscadorporvalor()"
-                      @change = "buscadorporci()"
-                      
-                      required>
+                      label="Cedula de Identidad" @keydown.enter="buscadorporvalor()" @change="buscadorporci()" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4">
@@ -49,56 +43,47 @@
                     <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombre" @input="
                       (v) => {
                         paciente.nombres = v.toUpperCase().trim();
-                      }
-                    " 
-                    @change="buscadorporvalor()"
-
-                    required>
+                      }"
+                       @change="buscadorporvalor()" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
                     <v-text-field v-model="paciente.ap_paterno" @input="
                       (v) => {
                         paciente.ap_paterno = v.toUpperCase().trim();
-                      }
-                    " 
-                    @keydown.enter="buscadorporvalor()"
-                    @change="buscadorporvalor()"
-
-                    label="Apellido Paterno" required>
+                        validar_apellido(v)
+                      }" 
+                      :error-messages="errorpaterno" @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()"
+                      
+                      label="Apellido Paterno" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
                     <v-text-field v-model="paciente.ap_materno" @input="
                       (v) => {
                         paciente.ap_materno = v.toUpperCase().trim();
-                      }
-                    " 
-                    @keydown.enter="buscadorporvalor()"
-                    @change="buscadorporvalor()"
-                    
-                    label="Apellido Materno" required>
+                        validar_apellido(v)
+                      }" 
+                      :error-messages="errormaterno" @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()"
+                      label="Apellido Materno" required>
                     </v-text-field>
                   </v-col>
-                  
+
                 </v-row>
-                <v-row  no-gutters>
+                <v-row no-gutters>
                   <v-col cols="12" sm="1" md="1">
-                    <v-icon @click="ver_apellido_casada =  !ver_apellido_casada">
+                    <v-icon @click="ver_apellido_casada = !ver_apellido_casada">
                       mdi-human-male-female
                     </v-icon>
-                    
+
                   </v-col>
                   <v-col v-show="ver_apellido_casada" cols="12" sm="4" md="4">
                     <v-text-field v-model="paciente.ap_casada" @input="
                       (v) => {
                         paciente.ap_casada = v.toUpperCase();
                       }
-                    " 
-                    @keydown.enter="buscadorporvalor()"
-                    @change="buscadorporvalor()"
-                    
-                    label="Apellido Casado" required>
+                    " @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()" label="Apellido Casado"
+                      required>
                     </v-text-field>
                   </v-col>
                 </v-row>
@@ -141,17 +126,16 @@
                     </v-btn>
                   </v-col>
                   <v-col cols="12" sm="4">
-                    <v-btn  v-if="op1 == 2" color="primary" class="mr-4" @click="dar_cita()">
+                    <v-btn v-if="op1 == 2" color="primary" class="mr-4" @click="dar_cita()">
                       Dar cita
                       <v-icon end icon>mdi-calendar</v-icon>
                     </v-btn>
                   </v-col>
-                  <v-col  v-if="op1 == 2" cols="12" sm="4">
-                    <v-btn  class="ma-2"
-                      color="primary">
+                  <v-col v-if="op1 == 2" cols="12" sm="4">
+                    <v-btn class="ma-2" color="primary">
                       Imprimir
                       <v-icon end icon> mdi-printer</v-icon>
-                  </v-btn>
+                    </v-btn>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -310,13 +294,14 @@
         <v-card-title class="text-h5">
           Usuario existe
         </v-card-title>
-        <v-card-text> 
-          El usuario con 
+        <v-card-text>
+          El usuario con
           <p>cedula de identidad: {{ paciente_existen.ci }}</p>
           <p>Nombres:{{ paciente_existen.nombres }}</p>
           <p>Apellido Paterno:{{ paciente_existen.ap_paterno }}</p>
-          <p>Apellido Materno:{{ paciente_existen.ap_materno }}</p > 
-          Puedes user los datos ya tienes </v-card-text>
+          <p>Apellido Materno:{{ paciente_existen.ap_materno }}</p>
+          Puedes user los datos ya tienes
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="msm_existe = false">
@@ -395,6 +380,7 @@
 //import { thisTypeAnnotation } from "@babel/types";
 import axios from "axios";
 import moment from "moment";
+const _ = require('lodash');
 const day1 =
   new Date().getFullYear() +
   "-" +
@@ -566,18 +552,25 @@ export default {
     ],
     ciRules: [
       (v) => !!v || "Dato requerido",
-      (v) => (v.length >= 6) || "CI debe de tener mas de 6 caracteres",
+      (v) => (v && v.length >= 6) || "CI debe de tener mas de 6 caracteres",
       //v => v.length <= 10 || 'CI debe de tener mas de 10 caracteres',
     ],
     rules: {
       select: [(v) => !!v || "Item is required"],
       select2: [(v) => validar_seleccion(v)],
 
+
     },
     email: "",
     emailRules: [
       (v) => !!v || "E-mail is required",
       (v) => /.+@.+/.test(v) || "E-mail must be valid",
+    ],
+    rulesApellido: [
+      (v) => !!v || "Dato requerido",
+      //this.validar_apellido
+
+      //this.validar_apellido()
     ],
     departamentos: [
       "LA PAZ",
@@ -593,13 +586,16 @@ export default {
     minFechaNac: "1899-01-01",
     maxFechaNac: day1,
     ssexo: ["MASCULINO", "FEMENINO"],
+    errorpaterno: [],
+    errormaterno: [],
+
   }),
 
   beforeMount() {
 
 
   },
-  destroyed(){
+  destroyed() {
     this.items = []
   },
   created() {
@@ -678,6 +674,26 @@ export default {
 
   },
   methods: {
+
+    validar_apellido(v) {
+
+
+
+      if ( !_.isEmpty(this.paciente.ap_paterno) || !_.isEmpty(this.paciente.ap_materno) ) {
+        
+        this.errorpaterno = []
+        this.errormaterno = []
+        return true
+      }
+      console.log('______')
+      this.errorpaterno = 'Este campo es requerido'
+      this.errormaterno = 'Este campo es requerido'
+
+      return false
+
+
+    },
+
     seleccion_paciente(value) {
       this.paciente_existen = value
       this.msm_existe = true
@@ -713,31 +729,31 @@ export default {
     },
     /*  inicialiazar fecha minima*/
     async datos_filtrado() {
-      if(this.op1 == 1){
+      if (this.op1 == 1) {
         var res = await axios({
-        method: 'get',
-        url: `/${process.env.MIX_CARPETA}/persona`,
-        /*data: {
-          ficha: this.selectedEvent.fichas,
-          equipo: this.selectequipo.equipo
-        }*/
-      }).then(
-        (response) => {
-          console.log("---_:.-.-.-.-.-.-.::::::::----");
-          console.log(response);
-          this.items = response.data
-          /*this.selectedEvent.fichas = structuredClone(response.data);
-          //this.selectedEvent.color = 'yellow'
-          this.pedir_datos()
-          this.selectedOpen = false
-          */
-        }
-      ).catch(err => {
-        console.log(err)
+          method: 'get',
+          url: `/${process.env.MIX_CARPETA}/persona`,
+          /*data: {
+            ficha: this.selectedEvent.fichas,
+            equipo: this.selectequipo.equipo
+          }*/
+        }).then(
+          (response) => {
+            console.log("---_:.-.-.-.-.-.-.::::::::----");
+            console.log(response);
+            this.items = response.data
+            /*this.selectedEvent.fichas = structuredClone(response.data);
+            //this.selectedEvent.color = 'yellow'
+            this.pedir_datos()
+            this.selectedOpen = false
+            */
+          }
+        ).catch(err => {
+          console.log(err)
 
-      });  
+        });
       }
-      
+
 
     },
     validar_seleccion() {
@@ -870,7 +886,7 @@ export default {
           .send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
       }
     },
-    
+
     async buscadorporci() {
       if (this.paciente.ci == "") {
         return;
@@ -912,7 +928,8 @@ export default {
           url:
             `/${process.env.MIX_CARPETA}/api/buscar_valor`,
           data: {
-            paciente: this.paciente},
+            paciente: this.paciente
+          },
         }).then(
           (response) => {
             console.log(response);
@@ -923,10 +940,10 @@ export default {
               this.paciente_existen = response["data"]["persona"];
             }*/
           },).catch((error) => {
-          //console.log(error.response.data.mensaje);
+            //console.log(error.response.data.mensaje);
 
-        });
-      } 
+          });
+      }
     },
     persona_existente() {
       this.paciente = this.paciente_existen;
@@ -969,7 +986,8 @@ export default {
       this.v_agendar = false;
     },
     async cambiar_datos() {
-      if (this.$refs.formDatopersonales.validate()) {
+      var  a = this.validar_apellido()
+      if (this.$refs.formDatopersonales.validate() && a ) {
         console.log(this.paciente);
         console.log(" antiguo: ");
         console.log(this.paciente_edit);

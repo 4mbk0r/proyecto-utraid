@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateCarpetasTable extends Migration
@@ -14,11 +15,29 @@ class CreateCarpetasTable extends Migration
     public function up()
     {
         Schema::create('carpetas', function (Blueprint $table) {
-            $table->integer('id');
-            $table->string('codigo');
-             
-            
+            $table->string('codigo')->unique();
         });
+
+
+        DB::statement("
+            CREATE OR REPLACE FUNCTION   RETURNS text AS $$
+            DECLARE
+            last_seq integer;
+            new_seq integer;
+            new_string text;
+            BEGIN
+            SELECT COALESCE(MAX(SUBSTRING(codigo FROM length(prefix) + 1)::integer), 0)
+            INTO last_seq
+            FROM carpetas
+            WHERE codigo LIKE prefix || '%';
+            
+            new_seq := last_seq + 1;
+            new_string := prefix || LPAD(new_seq::text, 2, '0');
+            
+            RETURN new_string;
+            END;
+            $$ LANGUAGE plpgsql;
+        ");
     }
 
     /**
