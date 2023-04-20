@@ -16,11 +16,15 @@ class CreateCarpetasTable extends Migration
     {
         Schema::create('carpetas', function (Blueprint $table) {
             $table->string('codigo')->unique();
+            $table->integer('id_ci')->unique();
         });
 
-
+        DB::statement(
+            "ALTER TABLE carpetas ADD FOREIGN KEY (id_ci) REFERENCES personas(id)"
+        );       
+        
         DB::statement("
-            CREATE OR REPLACE FUNCTION   RETURNS text AS $$
+            CREATE OR REPLACE FUNCTION generate_auto_increment(prefix text) RETURNS text AS $$
             DECLARE
             last_seq integer;
             new_seq integer;

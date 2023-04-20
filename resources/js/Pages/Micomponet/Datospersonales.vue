@@ -29,22 +29,24 @@
                 <v-row no-gutters>
                   <v-col cols="12" sm="8" class="pr-4">
                     <v-text-field v-model="paciente.ci" :rules="ciRules" :color="op1 === 1 ? 'green' : 'blue'"
-                      label="Cedula de Identidad" @keydown.enter="buscadorporvalor()" @change="buscadorporci()" required>
+                      label="Cedula de Identidad" @keydown.enter="buscadorporvalor()" @input="
+                        (v) => {
+                          paciente.ci = v.toUpperCase().trim();
+                        }" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4">
                     <v-select v-model="paciente.expedido" :rules="nombreRules" persistent-placeholder
-                      placeholder="No se tiene datos" :items="departamentos" label="Expedido">
+                      placeholder="No se tiene datos" :items="departamentos" label="Expedido" @change="buscadorporci()">
                     </v-select>
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombre" @input="
+                    <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombres" @input="
                       (v) => {
                         paciente.nombres = v.toUpperCase().trim();
-                      }"
-                       @change="buscadorporvalor()" required>
+                      }" @change="buscadorporvalor()" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
@@ -52,10 +54,8 @@
                       (v) => {
                         paciente.ap_paterno = v.toUpperCase().trim();
                         validar_apellido(v)
-                      }" 
-                      :error-messages="errorpaterno" @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()"
-                      
-                      label="Apellido Paterno" required>
+                      }" :error-messages="errorpaterno" @keydown.enter="buscadaorporvalor()"
+                      @change="buscadorporvalor()" label="Apellido Paterno" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
@@ -63,9 +63,8 @@
                       (v) => {
                         paciente.ap_materno = v.toUpperCase().trim();
                         validar_apellido(v)
-                      }" 
-                      :error-messages="errormaterno" @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()"
-                      label="Apellido Materno" required>
+                      }" :error-messages="errormaterno" @keydown.enter="buscadorporvalor()"
+                      @change="buscadorporvalor()" label="Apellido Materno" required>
                     </v-text-field>
                   </v-col>
 
@@ -679,8 +678,8 @@ export default {
 
 
 
-      if ( !_.isEmpty(this.paciente.ap_paterno) || !_.isEmpty(this.paciente.ap_materno) ) {
-        
+      if (!_.isEmpty(this.paciente.ap_paterno) || !_.isEmpty(this.paciente.ap_materno)) {
+
         this.errorpaterno = []
         this.errormaterno = []
         return true
@@ -986,12 +985,12 @@ export default {
       this.v_agendar = false;
     },
     async cambiar_datos() {
-      var  a = this.validar_apellido()
-      if (this.$refs.formDatopersonales.validate() && a ) {
+      var a = this.validar_apellido()
+      if (this.$refs.formDatopersonales.validate() && a) {
         console.log(this.paciente);
         console.log(" antiguo: ");
         console.log(this.paciente_edit);
-        var res = await axios({
+        /*var res = await axios({
           method: "post",
           url: `/${process.env.MIX_CARPETA}/configuracion`,
           data: {
@@ -1006,6 +1005,7 @@ export default {
             ////console.log(response);
             //console.log('__configuracion ___');
             //console.log(response.data);
+            
             this.activar(response)
 
 
@@ -1014,60 +1014,61 @@ export default {
         ).catch((error) => {
           //console.log(error.response.data.mensaje);
 
-        });
-        var res = await axios({
-          method: "post",
-          url: "api/guardar_persona",
-          data: {
-            nuevo: this.paciente,
-            antiguo: this.paciente_edit,
-            opcion: this.op1,
-          },
-        }).then();
-        console.log(res);
-        if (res["data"]["mensaje"] == "ok") {
-          console.log("inserccion correcta");
-          this.alert("Inserccion Correcta");
-          this.paciente = res["data"]["persona"];
-          this.paciente_edit = structuredClone(this.paciente);
-          this.op1 = 2;
-          return;
-        }
-        if (res["data"]["mensaje"] == "ok update") {
-          console.log("update correcto");
-          this.alert("Actulizacion Correcta");
-          this.paciente = res["data"]["persona"];
-          this.paciente_edit = structuredClone(this.paciente);
-          this.op1 = 2;
-          return;
-        }
-        if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 1) {
-          this.msm_existe = true;
-          this.paciente_existen = structuredClone(res["data"]["persona"]);
-          return;
-          //this.paciente_edit = structuredClone(this.paciente)
-          //this.paciente = res['data']['persona']
-        }
-        if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 2) {
-          this.alert(
-            "No se puede cambiar la cedula de identidad " +
-            this.paciente_edit.ci +
-            " por " +
-            this.paciente.ci +
-            ". Por que esta (" +
-            this.paciente_edit.ci +
-            ") ya existe. Se volvera a la antigua configuracion"
-          );
-          this.paciente = structuredClone(this.paciente_edit);
+        });*/
+        this.guardar_datos()
+      }
+    },
+    async guardar_datos() {
+      var res = await axios({
+        method: "post",
+        url: "api/guardar_persona",
+        data: {
+          nuevo: this.paciente,
+          antiguo: this.paciente_edit,
+          opcion: this.op1,
+        },
+      }).then();
+      console.log(res);
+      if (res["data"]["mensaje"] == "ok") {
+        console.log("inserccion correcta");
+        this.alert("Inserccion Correcta");
+        this.paciente = res["data"]["persona"];
+        this.paciente_edit = structuredClone(this.paciente);
+        this.op1 = 2;
+        return;
+      }
+      if (res["data"]["mensaje"] == "ok update") {
+        console.log("update correcto");
+        this.alert("Actulizacion Correcta");
+        this.paciente = res["data"]["persona"];
+        this.paciente_edit = structuredClone(this.paciente);
+        this.op1 = 2;
+        return;
+      }
+      if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 1) {
+        this.msm_existe = true;
+        this.paciente_existen = structuredClone(res["data"]["persona"]);
+        return;
+        //this.paciente_edit = structuredClone(this.paciente)
+        //this.paciente = res['data']['persona']
+      }
+      if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 2) {
+        this.alert(
+          "No se puede cambiar la cedula de identidad " +
+          this.paciente_edit.ci +
+          " por " +
+          this.paciente.ci +
+          ". Por que esta (" +
+          this.paciente_edit.ci +
+          ") ya existe. Se volvera a la antigua configuracion"
+        );
+        this.paciente = structuredClone(this.paciente_edit);
 
-          this.paciente_existen = {};
-          this.op1 = 2;
-          return;
-          //this.paciente_edi t = structuredClone(this.paciente)
-          //this.paciente = res['data']['persona']
-        }
-        if (this.op1 == 2) {
-        }
+        this.paciente_existen = {};
+        this.op1 = 2;
+        return;
+        //this.paciente_edi t = structuredClone(this.paciente)
+        //this.paciente = res['data']['persona']
       }
     },
     async buscar_citas() {

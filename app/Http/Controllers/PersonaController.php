@@ -95,6 +95,7 @@ class PersonaController extends Controller
         $persona =(array) $request['paciente'];
         
         $r =[];
+        /*Buscar nombre, apellido en una tabla */
         foreach ($persona as $key => $value) {
             # code...
             //array_push($r, $key);
@@ -109,7 +110,7 @@ class PersonaController extends Controller
                 array_push($r, $p);
             }
         }
-        //return $r;
+        //return $r;  
         $t = [];
         if(count($r)>0){
             $t =db::table('personas')

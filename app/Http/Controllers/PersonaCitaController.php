@@ -119,6 +119,7 @@ class PersonaCitaController extends Controller
     }
     public static function buscar_persona_ci(String $ci)
     {
+        //Buscar persona por cedula de identidad
         $persona = DB::table('personas')
             ->select('*')
             ->where('ci', '=', $ci)

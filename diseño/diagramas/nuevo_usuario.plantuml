@@ -1,0 +1,12 @@
+@startuml
+actor Paciente
+boundary DatosPersonales
+control Apirest
+database BaseDatos
+Paciente -> DatosPersonales: Accede al sistema
+DatosPersonales -> Apirest: Solicita registro de paciente
+Apirest -> BaseDatos: Guarda información del paciente
+BaseDatos --> Sistema: Confirmación de registro
+Sistema --> DatosPersonales: Muestra mensaje de éxito
+DatosPersonales --> Paciente: Registra paciente exitosamente
+@enduml

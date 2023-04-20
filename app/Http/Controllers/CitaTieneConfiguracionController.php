@@ -231,6 +231,7 @@ Agenda2.vue:442
                         'salas' => $salas,
                         'salas_diponibles' => $horario,
                         'equipo' => $r_equipo,
+                        'respues' => '-+-+-+-+-+-+'
                         //'lista_conf' => $list_config,
                         //'casa0' => $list_config[0]->id_configuracion
                     ];
