@@ -1,62 +1,14 @@
 <template>
-    <v-app>
-        <section>
-            <h3>Create XLSX</h3>
-            <div>
-                <input v-model="sheetName" placeholder="type a new sheet name" />
-                <button v-if="sheetName" @click="addSheet">Add Sheet</button>
-            </div>
-
-            <div>Sheets: {{ sheets }}</div>
-
-            <xlsx-workbook>
-                <xlsx-sheet :collection="sheet.data" v-for="sheet in sheets" :key="sheet.name"
-                    :sheet-name="sheet.name" />
-                <xlsx-download>
-                    <button>Download</button>
-                </xlsx-download>
-            </xlsx-workbook>
-        </section>
-        <hr />
-        <section>
-            <h3>Import XLSX</h3>
-            <input type="file" @change="onChange" />
-            <xlsx-read :file="file">
-                <xlsx-sheets>
-                    <template #default="{ sheets }">
-                        <select v-model="selectedSheet">
-                            <option v-for="sheet in sheets" :key="sheet" :value="sheet">
-                                {{ sheet }}
-                            </option>
-                        </select>
-                    </template>
-                </xlsx-sheets>
-                <!--<xlsx-table :sheet="selectedSheet" />-->
-                <xlsx-json :sheet="selectedSheet">
-                    <template #default="{ collection }">
-
-
-                        {{ mostrar(collection)}}
-
-                    </template>
-                </xlsx-json>
-            </xlsx-read>
-        </section>
-        <div class="wrapper-dgxl">
-            <div ref="dgxl" class="grid"></div>
-            <input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
-            <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
-        </div>
-        <div>
-            
-        </div>
-    </v-app>
+    <v-form>
+        <v-file-input v-model="selectedFile" accept=".xlsx" label="Seleccionar archivo XLSX"></v-file-input>
+        <v-btn @click="uploadFile">Enviar</v-btn>
+    </v-form>
 </template>
 
 <script>
 import { XlsxRead, XlsxTable, XlsxSheets, XlsxJson, XlsxWorkbook, XlsxSheet, XlsxDownload } from "vue-xlsx"
 import DataGridXL from "@datagridxl/datagridxl2";
-
+import XLSX from 'xlsx';
 export default {
     name: "DataGrid",
     components: {
@@ -70,6 +22,7 @@ export default {
     },
     data() {
         return {
+            selectedFile: null,
             file: null,
             selectedSheet: null,
             sheetName: null,
@@ -90,7 +43,45 @@ export default {
         Object.assign(this, { dgxlObj }); // tucks all methods under dgxlObj object in component instance
     },
     methods: {
-        mostrar(x) {
+        uploadFile() {
+            const file = this.selectedFile;
+            if (!file) {
+                return;
+            }
+            var data;
+            var workbook;
+            var sheet_name_list
+            var sheet
+            var json;
+            const reader = new FileReader();
+            reader.onload = () => {
+                data = new Uint8Array(reader.result);
+                workbook = XLSX.read(data, { type: 'array' });
+                sheet_name_list = workbook.SheetNames;
+                sheet = workbook.Sheets[sheet_name_list[0]];
+                json = XLSX.utils.sheet_to_json(sheet);
+                console.log(json);
+                workbook.Sheets = null;
+                workbook.SheetNames = null;
+                workbook.Props = null;
+                workbook.Custprops = null;
+                //workbook = null;
+                // Limpiar el buffer o el input de la RAM
+                //data = null;
+                //reader = null;
+
+                //delete workbook;
+                //delete workbook;
+            };
+
+            reader.readAsArrayBuffer(file);
+            workbook = null;
+            // Limpiar el buffer o el input de la RAM
+            data = null;
+            //reader = null;
+
+        }
+        /*mostrar(x) {
             console.log(x)
             const dgxlObj = new DataGridXL(this.$refs.dgxl, {
                 data: x
@@ -114,7 +105,7 @@ export default {
             this.sheets.push({ name: this.sheetName, data: [...this.collection] });
 
             this.sheetName = null;
-        }
+        }*/
     }
 };
 </script>

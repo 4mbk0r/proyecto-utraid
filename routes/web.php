@@ -183,7 +183,7 @@ Route::get('/excel', function () {
 
 
 Route::get('/prrr', function () {
-    return Inertia::render('Micomponet/prueba');
+    return Inertia::render('Micomponet/excel2');
 })->name('excelss');
 
 

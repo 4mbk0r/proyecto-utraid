@@ -14,7 +14,7 @@
 
                 </v-col>
 
-            <!--<form @submit.prevent="uploadFile">
+                <!--<form @submit.prevent="uploadFile">
                     <input type="file" ref="fileInput">
                     <button type="submit">Enviar archivo</button>
                                                                                                                                                                                                                                                                         </form>-->
@@ -30,9 +30,9 @@
 
             <!--</div>-->
             <!--{{ this.rowObj }}-->
-        <!---<div class="wrapper-dgxl">
+            <!---<div class="wrapper-dgxl">
                                                                                                                 <div ref="dgxl" class="grid"></div>-->
-        <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
+            <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
                                                                                                                                                             <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
                                                                                                                                                                                                                                                                                                                         s                                                                                                                                                -->
             <v-row v-if="selectedSheet != null">
@@ -549,15 +549,15 @@ export default {
             }).then(
                 (response) => {
                     console.log(response);
-                    alert('Se ha insertado correctamente.'+response['data']['nro_insertado']);
-                    
-                    if(response['data']['nro_blancos']>0){
-                        alert('Existen una cantidad de '+response['data']['nro_blancos']+' personas en blanco que no son insertados');
-                        
+                    alert('Se ha insertado correctamente.' + response['data']['nro_insertado']);
+
+                    if (response['data']['nro_blancos'] > 0) {
+                        alert('Existen una cantidad de ' + response['data']['nro_blancos'] + ' personas en blanco que no son insertados');
+
                     }
-                    if(response['data']['nro_repetido']>0){
-                        alert('Existen una cantidad de '+response['data']['nro_repetido']+' personas repetidas que no son insertadas');
-                        
+                    if (response['data']['nro_repetido'] > 0) {
+                        alert('Existen una cantidad de ' + response['data']['nro_repetido'] + ' personas repetidas que no son insertadas');
+
                     }
                     //this.sheetList = response['data']; //Array of sheet names.
                     //console.log(this.sheetList[0]);
