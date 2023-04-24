@@ -115,6 +115,8 @@ class PersonaCitaController extends Controller
             ->orWhereRaw("unaccent(ap_materno) ilike unaccent('%" . $dato . "%')")
             ->orWhereRaw("unaccent(ap_paterno) ilike unaccent('%" . $dato . "%')")
             ->get();
+        
+        //return ['persona' => $, 'citas' => []];
         return $data;
     }
     public static function buscar_persona_ci(String $ci)
@@ -154,6 +156,19 @@ class PersonaCitaController extends Controller
                 return Response::json(['mensaje' => $e->getMessage(),500], 500);
             }
             $persona = DB::table('personas')->where('ci', $nuevo['ci'])->get();
+            $lsita_citas = 
+            DB::table("dar_citas")
+            ->leftJoin("fichas", function($join){
+                $join->on("fichas.id", "=", "dar_citas.id_ficha");
+            })
+            ->leftJoin("pers", function($join){
+                $join->on("onas", "personas.id", "=");
+            })
+            ->where("current_date", "<=", "fichas.fecha")
+            ->get();
+            
+            
+            
             return ['persona' => $persona[0], 'mensaje' => 'ok'];
         }
         if ($opcion == 2) {

@@ -241,8 +241,8 @@ class DarCitaController extends Controller
     {
         //
         DB::table('dar_citas')
-        ->where('id_ficha', '=', $dar_cita)
-        ->delete();
+            ->where('id_ficha', '=', $dar_cita)
+            ->delete();
     }
     public static function cambiar_cita(Request $request)
     {
@@ -253,28 +253,64 @@ class DarCitaController extends Controller
 
         $ficha1 =  $request['ficha1'];
         $ficha2 =  $request['ficha2'];
-     
+
         DB::table('dar_citas')
             ->where('id_ficha', '=', $ficha2['id_ficha'])
             ->delete();
-        
-            
+
+
         //return $request;   
         if (isset($ficha1['id_persona'])) {
             DB::table('dar_citas')
-            ->where('id_ficha', '=', $ficha1['id_ficha'])
-            ->delete();
+                ->where('id_ficha', '=', $ficha1['id_ficha'])
+                ->delete();
             DB::table('dar_citas')
                 ->updateOrInsert(['id_ficha' => $ficha2['id_ficha'], 'id_persona' => $ficha1['id_persona']]);
-        } 
+        }
         if (isset($ficha2['id_persona'])) {
             DB::table('dar_citas')
                 ->updateOrInsert(['id_ficha' => $ficha1['id_ficha'], 'id_persona' => $ficha2['id_persona']]);
         }
-        
+
         return $request;
 
 
         return $ficha1;
+    }
+    public static function get_cita(Request $request)
+    {
+
+        $paciente =  (array) $request['paciente'];
+        //return $paciente;
+       
+
+        $citas = DB::table("dar_citas")
+            ->leftJoin("fichas", function ($join) {
+                $join->on("fichas.id", "=", "dar_citas.id_ficha");
+            })
+            ->leftJoin("personas", function ($join) use ($paciente) {
+                $join->on("personas.id", "=", "dar_citas.id_persona");
+            })
+            
+            ->leftJoin("atenders", function ($join) use ($paciente) {
+                $join->on("atenders.id_ficha", "=", "fichas.id");
+            })
+            //->where("fichas.fecha", "<", DB::raw("current_date"))
+            //->where("fichas.fecha", "<=", DB::raw("current_date"))
+            ->where("dar_citas.id_persona", "=", $paciente['id'])
+            ->get();
+
+
+        $registro = DB::table("registros")
+            ->leftJoin("personas", function ($join) {
+                $join->on("personas.id", "=", 'registros.id_paciente');
+            })
+            ->where("registros.id_paciente", "=", $paciente['id'])
+            ->get();
+
+        return [
+            "cita" => $citas,
+            "registro" => $registro
+        ];
     }
 }

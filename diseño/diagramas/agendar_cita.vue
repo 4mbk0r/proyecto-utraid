@@ -2,6 +2,7 @@
 actor Usuario
 boundary DatosPersonales
 control ApiREST
+control DarcitaController
 database BaseDatos
 alt#Gold #LightBlue caso Ingreso Datos Cedula De Identidad (existo)
 Usuario -> DatosPersonales: Ingresa numero de carnet
@@ -92,6 +93,41 @@ else #Pink  Si los datos del registro no son validos
 
 ApiREST --> DatosPersonales: Devuelve Mensaje de Error de Validacion
 deactivate ApiREST
+
+DatosPersonales --> Usuario: Muestra Mensaje de Error
+'destroy ApiREST
+
+deactivate DatosPersonales
+end
+
+
+'-------DAR CITA------------'
+alt#Gold #LightBlue caso Dar Cita (existo)
+alt#Gold #LightBlue caso VALIDAR QUE NO TENGA CITAS\n
+
+Usuario -> DatosPersonales: dar_cita
+activate DatosPersonales
+
+DatosPersonales->DatosPersonales : Validar_datos: Se debe de insertar minimamente \n CI, expedido, Nombres, Apellido Paterno  y Materno 
+'DatosPersonales->Usuario: mensaje correcto
+else #Pink  si falla datos de validacion 
+DatosPersonales->Usuario: mensaje datos incorrectos o faltantes
+end
+DatosPersonales --> DarcitaController: Validar dar_cita\n url: "dar_cita"\n methods: POST 
+Activate DarcitaController
+DarcitaController -> BaseDatos: Consulta: Validar_datos\n Table: personas
+Activate BaseDatos
+BaseDatos --> DarcitaController: Devuelver datos inserccion y lista de cita  \n
+deactivate BaseDatos
+DarcitaController --> DatosPersonales: Devuelve datos y listas de citas
+DatosPersonales --> Usuario: Despliega Datos del Paciente y Lista de citas
+'deactivate ApiREST
+
+
+else #Pink  Si los datos del registro no son validos
+
+DarcitaController --> DatosPersonales: Devuelve Mensaje de Error de Validacion
+deactivate DarcitaController
 
 DatosPersonales --> Usuario: Muestra Mensaje de Error
 'destroy ApiREST

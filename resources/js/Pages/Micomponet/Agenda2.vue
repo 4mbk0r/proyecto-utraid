@@ -105,6 +105,17 @@
                             <v-card-text v-if="get_datos_ficha(selectedEvent) != null">
                                 <V-row no-gutters>
                                     <v-col>
+                                        Codigo:
+
+                                    </v-col>
+                                    <v-col>
+
+                                        {{ valores(selectedEvent.fichas, 'id') }}
+                                    </v-col>
+                                </v-row>
+
+                                <V-row no-gutters>
+                                    <v-col>
                                         CI:
 
                                     </v-col>

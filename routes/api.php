@@ -19,6 +19,7 @@ use App\Http\Controllers\CitaTieneConfiguracionController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\HorarioController;
 
+
 use App\Http\Controllers\AtenderController;
 use App\Http\Controllers\DarCitaController;
 use App\Http\Controllers\PersonaController;
@@ -296,4 +297,10 @@ Route::post('/update_sheet_excel', function (Request $request) {
 Route::post('/prueba_excel', function (Request $request) {
 
     return ExcelPaciente::downloadExcel($request);
+});
+
+
+Route::post('/get_citas', function (Request $request) {
+
+    return DarCitaController::get_cita($request);
 });

@@ -24,13 +24,28 @@
       <v-tabs-items v-model="datos_informacion" touchless>
         <v-tab-item>
           <v-card flat>
+
             <v-form v-model="valid" ref="formDatopersonales">
+
+
               <v-container>
+                <v-row>
+                  <v-col>
+                    <p v-if="op1 === 1">
+                      {{ "Paciente Nuevo" }}
+                    </p>
+                    <p v-else>
+                      Codigo de Carpeta
+                      <span class="font-weight-bold">
+                        {{ paciente.id }}
+                      </span>
+                    </p>
+                  </v-col>
+                </v-row>
                 <v-row no-gutters>
                   <v-col cols="12" sm="8" class="pr-4">
                     <v-text-field v-model="paciente.ci" :rules="ciRules" :color="op1 === 1 ? 'green' : 'blue'"
-                      label="Cedula de Identidad" @keydown.enter="buscadorporvalor()" @input="
-                        (v) => {
+                      label="Cedula de Identidad" @keydown.enter="buscadorporvalor()" @input="(v) => {
                           paciente.ci = v.toUpperCase().trim();
                         }" required>
                     </v-text-field>
@@ -43,15 +58,13 @@
                 </v-row>
                 <v-row no-gutters>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombres" @input="
-                      (v) => {
+                    <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombres" @input="(v) => {
                         paciente.nombres = v.toUpperCase().trim();
                       }" @change="buscadorporvalor()" required>
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.ap_paterno" @input="
-                      (v) => {
+                    <v-text-field v-model="paciente.ap_paterno" @input="(v) => {
                         paciente.ap_paterno = v.toUpperCase().trim();
                         validar_apellido(v)
                       }" :error-messages="errorpaterno" @keydown.enter="buscadaorporvalor()"
@@ -59,8 +72,7 @@
                     </v-text-field>
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.ap_materno" @input="
-                      (v) => {
+                    <v-text-field v-model="paciente.ap_materno" @input="(v) => {
                         paciente.ap_materno = v.toUpperCase().trim();
                         validar_apellido(v)
                       }" :error-messages="errormaterno" @keydown.enter="buscadorporvalor()"
@@ -77,11 +89,10 @@
 
                   </v-col>
                   <v-col v-show="ver_apellido_casada" cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.ap_casada" @input="
-                      (v) => {
+                    <v-text-field v-model="paciente.ap_casada" @input="(v) => {
                         paciente.ap_casada = v.toUpperCase();
                       }
-                    " @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()" label="Apellido Casado"
+                      " @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()" label="Apellido Casado"
                       required>
                     </v-text-field>
                   </v-col>
@@ -112,8 +123,8 @@
                     </v-select>-->
 
                     <v-radio-group v-model="paciente.sexo" row>
-                      <v-radio label="Masculino" value="Masculino"></v-radio>
-                      <v-radio label="Femenino" value="Femenino"></v-radio>
+                      <v-radio label="MASCULINO" value="MASCULINO"></v-radio>
+                      <v-radio label="FEMENINO" value="FEMENINO"></v-radio>
                     </v-radio-group>
                   </v-col>
 
@@ -125,26 +136,27 @@
                     </v-btn>
                   </v-col>
                   <v-col cols="12" sm="4">
-                    <v-btn v-if="op1 == 2" color="primary" class="mr-4" @click="dar_cita()">
+                    <v-btn v-if="op1 == 2 && con_cita" color="primary" class="mr-4" @click="dar_cita()">
                       Dar cita
                       <v-icon end icon>mdi-calendar</v-icon>
                     </v-btn>
                   </v-col>
-                  <v-col v-if="op1 == 2" cols="12" sm="4">
+                  <!-- <v-col v-if="op1 == 2" cols="12" sm="4">
                     <v-btn class="ma-2" color="primary">
                       Imprimir
                       <v-icon end icon> mdi-printer</v-icon>
                     </v-btn>
-                  </v-col>
+                  </v-col>-->
                 </v-row>
+                
                 <v-row>
                   <v-col cols="12">
                     <v-data-table v-if="op1 == 1" :headers="headers" :footer-props="{
-                      itemsPerPageText: 'Pacientes por pagina',
-                      'items-per-page-options': [15, 30, 50, 100, -1], 'items-per-page-all-text': 'Todos'
-                    }" :items="persona" item-key="ci" :search="search" :header-props='{
-  sortByText: "Ordenar por"
-}' @click:row="seleccion_paciente($event)" class="elevation-1">
+                        itemsPerPageText: 'Pacientes por pagina',
+                        'items-per-page-options': [15, 30, 50, 100, -1],
+                        'items-per-page-all-text': 'Todos'
+                      }" :items="persona" item-key="ci" :search="search" :header-props='{ sortByText: "Ordenar por" }'
+                      @click:row="seleccion_paciente($event)" class="elevation-1">
                       <template v-slot:no-results>
                         <span>No existen datos</span>
                       </template>
@@ -171,7 +183,90 @@
                     </template>
                     -->
                     </v-data-table>
+                    <v-data-table v-if="op1 == 2" item-key="fecha" :headers="headers_cita" :footer-props="{
+                        itemsPerPageText: 'Citas',
+                        'items-per-page-options': [15, 30, 50, 100, -1],
+                        'items-per-page-all-text': 'Todas las citas'
+                      }" 
+                      
+                      :item-class="getRowClass"
+                      :items="citas" :header-props='{ sortByText: "Ordenar por" }' @click:row="" 
+                      sort-by="fecha"
+                      :sort-desc="true" class="elevation-1">
+                      <template v-slot:no-results>
+                        <span>No existen datos</span>
+                      </template>
+
+                      <template v-slot:item.actions="{ item }">
+                        <v-icon v-if="fecha_mayor(item.fecha)" small class="mr-2" @click="eliminarItem(item)">mdi-delete</v-icon>
+                      </template>
+                      <template v-slot:item.print="{ item }">
+                        <v-icon v-if="fecha_mayor(item.fecha)" small class="mr-2" @click="">mdi-printer</v-icon>
+                      </template>
+                      <!--
+                  <template v-slot:top>
+                     v-container, v-col and v-row are just for decoration purposes
+                    <v-container>
+                      <v-row>
+
+                        <v-col cols="6">
+                          <v-row class="pa-6">
+                            Filter for dessert name
+                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+                              hide-details></v-text-field>
+
+                          </v-row>
+                        </v-col>
+
+
+
+                      </v-row>
+                    </v-container>
+
+                  </template>
+                  -->
+                    </v-data-table>
                   </v-col>
+                </v-row>
+                <v-data-table v-if="op1 == 2" :headers="headers_registro" :footer-props="{
+                    itemsPerPageText: 'Registro',
+                    'items-per-page-options': [15, 30, 50, 100, -1],
+                    'items-per-page-all-text': 'Todas los registros'
+                  }" :items="registro" item-key="fecha" :header-props='{ sortByText: "Ordenar por" }'
+                  @click:row="seleccion_paciente($event)" class="elevation-1">
+                  <template v-slot:item.fecha="{ item }">
+                    <v-icon>{{ fecha_mayor(item.fecha) ? 'mdi-check' : 'mdi-close' }}</v-icon>
+                  </template>
+                  <template v-slot:item.actions="{ item }">
+                    <v-icon small class="mr-2" @click="eliminarItem(item)">mdi-delete</v-icon>
+                  </template>
+                  <template v-slot:no-results>
+                    <span>No existen datos</span>
+                  </template>
+                  <!--
+            <template v-slot:top>
+               v-container, v-col and v-row are just for decoration purposes
+              <v-container>
+                <v-row>
+
+                  <v-col cols="6">
+                    <v-row class="pa-6">
+                      Filter for dessert name
+                      <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+                        hide-details></v-text-field>
+
+                    </v-row>
+                  </v-col>
+
+
+
+                </v-row>
+              </v-container>
+
+            </template>
+            -->
+                </v-data-table>
+                </v-col>
                 </v-row>
                 <v-card v-if="buscador == true"> buscar datos </v-card>
               </v-container>
@@ -188,9 +283,9 @@
               <template v-slot:item="i">
                 <!-- Since v-slot:item overrides how each row is rendered, I rebuild the row starting from <tr>. This allows me to add a class to <tr> based on any condition I want (in this case, the calorie count) -->
                 <tr :color="{
-                  primary: i.item.fecha > fechacitaMin,
-                  secondary: i.item.fecha < fechacitaMin,
-                }">
+                    primary: i.item.fecha > fechacitaMin,
+                    secondary: i.item.fecha < fechacitaMin,
+                  }">
                   <td>{{ i.item.fecha }}</td>
                   <td>{{ i.item.consultorio }}</td>
                   <td>{{ i.item.ci_paciente }}</td>
@@ -396,6 +491,7 @@ export default {
     return strx;
   },
   data: () => ({
+    con_cita: true,
     validacion: false,
     items: [],
     search: '',
@@ -404,7 +500,7 @@ export default {
     icon_ci: "mdi-account",
     consultorios: [],
     op: Number,
-    citas: [],
+
     v_agendar: false,
     menu2: false,
     datos_informacion: "1",
@@ -420,6 +516,28 @@ export default {
     ver_apellido_casada: false,
     paciente_edit: {},
     las_citas: [],
+    citas: [],
+    headers_cita: [
+      {
+        text: "Fecha",
+        align: "start",
+        value: "fecha",
+      },
+      { text: 'Acciones', value: 'actions' },
+      
+      { text: 'Imprimir', value: 'print' },
+    ],
+    registro: [],
+    headers_registro: [
+      {
+        text: "Fecha",
+        align: "start",
+        value: "fecha",
+      },
+      { text: 'Eliminar', value: 'actions' },
+      { text: 'Imprimir', value: 'print' },
+      
+    ],
     cita_nueva: {},
     fecha_cita: "",
     fechacitaMin: "",
@@ -596,6 +714,7 @@ export default {
   },
   destroyed() {
     this.items = []
+    this.con_cita = true
   },
   created() {
     //this.paciente_edit = structuredClone(this.paciente);
@@ -944,12 +1063,93 @@ export default {
           });
       }
     },
+    async eliminarItem(item) {
+      axios.delete(`/${process.env.MIX_CARPETA}/dar_ficha/` + item.id_ficha)
+        .then(response => {
+          // Manejar la respuesta del servidor en caso de éxito
+          console.log(response.data);
+          this.pedir_citas()
+        })
+        .catch(error => {
+          // Manejar el error en caso de que la petición falle
+          console.log(error);
+        });
+
+      // Lógica para eliminar el elemento de la lista de items
+      //const index = this.items.indexOf(item);
+      //this.items.splice(index, 1);
+    },
+
+    fecha_mayor(x) {
+      //console.log(x, " ", this.$store.getters.getfecha_server);
+      const fecha1 = moment(x, 'DD-MM-YYYY');
+      const fecha2 = moment(this.$store.getters.getfecha_server, 'DD-MM-YYYY');
+
+      if (fecha2.isSameOrBefore(fecha1)) {
+        this.con_cita = false
+        return true
+        //console.log('fecha1 es posterior a fecha2');
+      } else {
+        //this.con_cita = true
+        return false
+      }
+
+    },
+
+    async pedir_citas() {
+      var res = await axios({
+        method: "post",
+        url: `/${process.env.MIX_CARPETA}/api/get_citas`,
+        data: {
+          paciente: this.paciente_edit,
+        },
+      }).then(
+        (response) => {
+          //console.log("......00000");
+          //console.log(response.data);
+          this.citas = response['data']['cita']
+          this.registro = response['data']['cita']
+          //this.horario =  response.data['horario']
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
+    },
+    getRowClass(item) {
+      const fecha1 = moment(item.fecha, 'DD-MM-YYYY');
+      const fecha2 = moment(this.$store.getters.getfecha_server, 'DD-MM-YYYY');
+      
+      
+      if (fecha2.isSameOrBefore(fecha1)) {
+
+        this.con_cita = false
+        return 'yellow lighten-3';
+        //console.log('fecha1 es posterior a fecha2');
+      } else {
+        //this.con_cita = true
+
+        if(item.id_designado == null){
+          return 'blue lighten-3';
+        }
+        if(item.id_designado){
+          return 'green lighten-3';
+        }
+        
+      }
+    },
+
     persona_existente() {
+
+      console.log("fffffff");
+
       this.paciente = this.paciente_existen;
       this.paciente_existen = {};
       this.msm_existe = false;
       this.paciente_edit = structuredClone(this.paciente);
       this.op1 = 2;
+      this.pedir_citas()
+
     },
     alert(text) {
       this.$alert(text).then((res) => this.$inform("Cambios guardados!"));
