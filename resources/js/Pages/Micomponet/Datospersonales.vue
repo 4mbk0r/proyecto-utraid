@@ -23,13 +23,17 @@
 
       <v-tabs-items v-model="datos_informacion" touchless>
         <v-tab-item>
-          <v-card flat>
+          <v-btn @click="show_date = !show_date">
+            Datos Personales
+          </v-btn>
 
+          <v-card flat>
             <v-form v-model="valid" ref="formDatopersonales">
 
 
-              <v-container>
+              <v-container v-show="show_date">
                 <v-row>
+
                   <v-col>
                     <p v-if="op1 === 1">
                       {{ "Paciente Nuevo" }}
@@ -148,7 +152,7 @@
                     </v-btn>
                   </v-col>-->
                 </v-row>
-                
+
                 <v-row>
                   <v-col cols="12">
                     <v-data-table v-if="op1 == 1" :headers="headers" :footer-props="{
@@ -160,6 +164,7 @@
                       <template v-slot:no-results>
                         <span>No existen datos</span>
                       </template>
+
                       <!--
                     <template v-slot:top>
                        v-container, v-col and v-row are just for decoration purposes
@@ -183,93 +188,92 @@
                     </template>
                     -->
                     </v-data-table>
-                    <v-data-table v-if="op1 == 2" item-key="fecha" :headers="headers_cita" :footer-props="{
-                        itemsPerPageText: 'Citas',
-                        'items-per-page-options': [15, 30, 50, 100, -1],
-                        'items-per-page-all-text': 'Todas las citas'
-                      }" 
-                      
-                      :item-class="getRowClass"
-                      :items="citas" :header-props='{ sortByText: "Ordenar por" }' @click:row="" 
-                      sort-by="fecha"
-                      :sort-desc="true" class="elevation-1">
-                      <template v-slot:no-results>
-                        <span>No existen datos</span>
-                      </template>
 
-                      <template v-slot:item.actions="{ item }">
-                        <v-icon v-if="fecha_mayor(item.fecha)" small class="mr-2" @click="eliminarItem(item)">mdi-delete</v-icon>
-                      </template>
-                      <template v-slot:item.print="{ item }">
-                        <v-icon v-if="fecha_mayor(item.fecha)" small class="mr-2" @click="">mdi-printer</v-icon>
-                      </template>
-                      <!--
-                  <template v-slot:top>
-                     v-container, v-col and v-row are just for decoration purposes
-                    <v-container>
-                      <v-row>
-
-                        <v-col cols="6">
-                          <v-row class="pa-6">
-                            Filter for dessert name
-                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
-                              hide-details></v-text-field>
-
-                          </v-row>
-                        </v-col>
-
-
-
-                      </v-row>
-                    </v-container>
-
-                  </template>
-                  -->
-                    </v-data-table>
                   </v-col>
                 </v-row>
-                <v-data-table v-if="op1 == 2" :headers="headers_registro" :footer-props="{
-                    itemsPerPageText: 'Registro',
-                    'items-per-page-options': [15, 30, 50, 100, -1],
-                    'items-per-page-all-text': 'Todas los registros'
-                  }" :items="registro" item-key="fecha" :header-props='{ sortByText: "Ordenar por" }'
-                  @click:row="seleccion_paciente($event)" class="elevation-1">
-                  <template v-slot:item.fecha="{ item }">
-                    <v-icon>{{ fecha_mayor(item.fecha) ? 'mdi-check' : 'mdi-close' }}</v-icon>
-                  </template>
-                  <template v-slot:item.actions="{ item }">
-                    <v-icon small class="mr-2" @click="eliminarItem(item)">mdi-delete</v-icon>
-                  </template>
-                  <template v-slot:no-results>
-                    <span>No existen datos</span>
-                  </template>
-                  <!--
-            <template v-slot:top>
-               v-container, v-col and v-row are just for decoration purposes
-              <v-container>
-                <v-row>
 
-                  <v-col cols="6">
-                    <v-row class="pa-6">
-                      Filter for dessert name
-                      <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
-                        hide-details></v-text-field>
-
-                    </v-row>
-                  </v-col>
-
-
-
-                </v-row>
-              </v-container>
-
-            </template>
-            -->
-                </v-data-table>
-                </v-col>
-                </v-row>
                 <v-card v-if="buscador == true"> buscar datos </v-card>
               </v-container>
+              <v-data-table v-if="op1 == 2" item-key="fecha" :headers="headers_cita" :footer-props="{
+                  itemsPerPageText: 'Citas',
+                  'items-per-page-options': [15, 30, 50, 100, -1],
+                  'items-per-page-all-text': 'Todas las citas'
+                }" :item-class="getRowClass" :items="citas" :header-props='{ sortByText: "Ordenar por" }' @click:row=""
+                sort-by="fecha" :sort-desc="true" class="elevation-1">
+                <template v-slot:no-results>
+                  <span>No existen datos</span>
+                </template>
+                <template v-slot:item.hora_inicio="{ item }">
+                  {{ formatoHora(item.hora_inicio) }} - {{ formatoHora(item.hora_final) }}
+                </template>
+                <template v-slot:item.actions="{ item }">
+                  <v-icon v-if="fecha_mayor(item.fecha)" small class="mr-2"
+                    @click="eliminarItem(item)">mdi-delete</v-icon>
+                </template>
+                <template v-slot:item.print="{ item }">
+                  <v-icon v-if="fecha_mayor(item.fecha)" small class="mr-2" @click="">mdi-printer</v-icon>
+                </template>
+                <!--
+          <template v-slot:top>
+             v-container, v-col and v-row are just for decoration purposes
+            <v-container>
+              <v-row>
+
+                <v-col cols="6">
+                  <v-row class="pa-6">
+                    Filter for dessert name
+                    <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+                      hide-details></v-text-field>
+
+                  </v-row>
+                </v-col>
+
+
+
+              </v-row>
+            </v-container>
+
+          </template>
+          -->
+              </v-data-table>
+              <v-data-table v-if="op1 == 2" :headers="headers_registro" :footer-props="{
+                  itemsPerPageText: 'Registro',
+                  'items-per-page-options': [15, 30, 50, 100, -1],
+                  'items-per-page-all-text': 'Todas los registros'
+                }" :items="registro" item-key="fecha" :header-props='{ sortByText: "Ordenar por" }'
+                @click:row="show_registro($event)" class="elevation-1">
+                <template v-slot:item.fecha="{ item }">
+                  <v-icon>{{ fecha_mayor(item.fecha) ? 'mdi-check' : 'mdi-close' }}</v-icon>
+                </template>
+                <template v-slot:item.actions="{ item }">
+                  <v-icon small class="mr-2" @click="eliminarItem(item)">mdi-delete</v-icon>
+                </template>
+                <template v-slot:no-results>
+                  <span>No existen datos</span>
+                </template>
+                <!--
+        <template v-slot:top>
+           v-container, v-col and v-row are just for decoration purposes
+          <v-container>
+            <v-row>
+
+              <v-col cols="6">
+                <v-row class="pa-6">
+                  Filter for dessert name
+                  <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+                    hide-details></v-text-field>
+
+                </v-row>
+              </v-col>
+
+
+
+            </v-row>
+          </v-container>
+
+        </template>
+        -->
+              </v-data-table>
             </v-form>
           </v-card>
         </v-tab-item>
@@ -473,7 +477,7 @@
 <script>
 //import { thisTypeAnnotation } from "@babel/types";
 import axios from "axios";
-import moment from "moment";
+import moment, { relativeTimeThreshold } from "moment";
 const _ = require('lodash');
 const day1 =
   new Date().getFullYear() +
@@ -483,7 +487,11 @@ const day1 =
   ("0" + new Date().getDate()).slice(-2);
 
 export default {
-  props: {},
+  props: {
+
+    //fichas: Object
+
+  },
   pro(strx) {
     if (strx == "-1") {
       return "No hay";
@@ -523,8 +531,13 @@ export default {
         align: "start",
         value: "fecha",
       },
-      { text: 'Acciones', value: 'actions' },
-      
+      {
+        text: "Hora",
+        align: "start",
+        value: "hora_inicio",
+      },
+      { text: 'Eliminar', value: 'actions' },
+
       { text: 'Imprimir', value: 'print' },
     ],
     registro: [],
@@ -532,12 +545,30 @@ export default {
       {
         text: "Fecha",
         align: "start",
-        value: "fecha",
+        value: "fecha_registro",
       },
-      { text: 'Eliminar', value: 'actions' },
-      { text: 'Imprimir', value: 'print' },
+
+      {
+        text: "Tipo de discacidad",
+        align: "start",
+        value: "tipo_discapacidad",
+      },
       
+      {
+        text: "Grado de discapadad",
+        align: "start",
+        value: "grado_discapacidad",
+      },
+      {
+        text: "Porcentaje",
+        align: "start",
+        value: "porcentaje",
+      },
+      /*{ text: 'Eliminar', value: 'actions' },
+      { text: 'Imprimir', value: 'print' },*/
+
     ],
+    show_date: true,
     cita_nueva: {},
     fecha_cita: "",
     fechacitaMin: "",
@@ -669,7 +700,7 @@ export default {
     ],
     ciRules: [
       (v) => !!v || "Dato requerido",
-      (v) => (v && v.length >= 6) || "CI debe de tener mas de 6 caracteres",
+      (v) => (v && v.length >= 4) || "CI debe de tener mas de 6 caracteres",
       //v => v.length <= 10 || 'CI debe de tener mas de 10 caracteres',
     ],
     rules: {
@@ -1097,6 +1128,8 @@ export default {
     },
 
     async pedir_citas() {
+
+      console.log(this.paciente_edit);
       var res = await axios({
         method: "post",
         url: `/${process.env.MIX_CARPETA}/api/get_citas`,
@@ -1105,10 +1138,11 @@ export default {
         },
       }).then(
         (response) => {
-          //console.log("......00000");
-          //console.log(response.data);
+          console.log("......00000");
+          console.log(response.data);
+          this.con_cita = true
           this.citas = response['data']['cita']
-          this.registro = response['data']['cita']
+          this.registro = response['data']['registro']
           //this.horario =  response.data['horario']
         },
         (error) => {
@@ -1119,8 +1153,8 @@ export default {
     getRowClass(item) {
       const fecha1 = moment(item.fecha, 'DD-MM-YYYY');
       const fecha2 = moment(this.$store.getters.getfecha_server, 'DD-MM-YYYY');
-      
-      
+
+
       if (fecha2.isSameOrBefore(fecha1)) {
 
         this.con_cita = false
@@ -1129,13 +1163,13 @@ export default {
       } else {
         //this.con_cita = true
 
-        if(item.id_designado == null){
+        if (item.id_designado == null) {
           return 'blue lighten-3';
         }
-        if(item.id_designado){
+        if (item.id_designado) {
           return 'green lighten-3';
         }
-        
+
       }
     },
 
@@ -1227,49 +1261,60 @@ export default {
           antiguo: this.paciente_edit,
           opcion: this.op1,
         },
-      }).then();
-      console.log(res);
-      if (res["data"]["mensaje"] == "ok") {
-        console.log("inserccion correcta");
-        this.alert("Inserccion Correcta");
-        this.paciente = res["data"]["persona"];
-        this.paciente_edit = structuredClone(this.paciente);
-        this.op1 = 2;
-        return;
-      }
-      if (res["data"]["mensaje"] == "ok update") {
-        console.log("update correcto");
-        this.alert("Actulizacion Correcta");
-        this.paciente = res["data"]["persona"];
-        this.paciente_edit = structuredClone(this.paciente);
-        this.op1 = 2;
-        return;
-      }
-      if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 1) {
-        this.msm_existe = true;
-        this.paciente_existen = structuredClone(res["data"]["persona"]);
-        return;
-        //this.paciente_edit = structuredClone(this.paciente)
-        //this.paciente = res['data']['persona']
-      }
-      if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 2) {
-        this.alert(
-          "No se puede cambiar la cedula de identidad " +
-          this.paciente_edit.ci +
-          " por " +
-          this.paciente.ci +
-          ". Por que esta (" +
-          this.paciente_edit.ci +
-          ") ya existe. Se volvera a la antigua configuracion"
-        );
-        this.paciente = structuredClone(this.paciente_edit);
+      }).then(
+        (response) => {
+          /*console.log(response);
+          this.pedir_datos()
+          this.selectedOpen = false*/
+          console.log(res);
+          if (res["data"]["mensaje"] == "ok") {
+            console.log("inserccion correcta");
+            this.alert("Inserccion Correcta");
+            this.paciente = res["data"]["persona"];
+            this.paciente_edit = structuredClone(this.paciente);
+            this.op1 = 2;
+            this.pedir_citas()
+            return;
+          }
+          if (res["data"]["mensaje"] == "ok update") {
+            console.log("update correcto");
+            this.alert("Actulizacion Correcta");
+            this.paciente = res["data"]["persona"];
+            this.paciente_edit = structuredClone(this.paciente);
+            this.op1 = 2;
+            return;
+          }
+          if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 1) {
+            this.msm_existe = true;
+            this.paciente_existen = structuredClone(res["data"]["persona"]);
+            return;
+            //this.paciente_edit = structuredClone(this.paciente)
+            //this.paciente = res['data']['persona']
+          }
+          if (res["data"]["mensaje"] == "SQLSTATE[23505]:" && this.op1 == 2) {
+            this.alert(
+              "No se puede cambiar la cedula de identidad " +
+              this.paciente_edit.ci +
+              " por " +
+              this.paciente.ci +
+              ". Por que esta (" +
+              this.paciente_edit.ci +
+              ") ya existe. Se volvera a la antigua configuracion"
+            );
+            this.paciente = structuredClone(this.paciente_edit);
 
-        this.paciente_existen = {};
-        this.op1 = 2;
-        return;
-        //this.paciente_edi t = structuredClone(this.paciente)
-        //this.paciente = res['data']['persona']
-      }
+            this.paciente_existen = {};
+            this.op1 = 2;
+
+
+          }
+        }).catch(err => {
+          console.log(err)
+          console.log("err->", err.response.data)
+          return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+        });
+      //this.paciente_edi t = structuredClone(this.paciente)
+      //this.paciente = res['data']['persona']
     },
     async buscar_citas() {
       /*console.log('......');
@@ -1424,6 +1469,9 @@ export default {
       // evitar que la tecla Enter haga algo dentro del diálogo
       event.preventDefault();
     },
+    formatoHora(x) {
+      return moment(x, "HH:mm:ss").format("HH:mm A")
+    },
     async dar_cita() {
       console.log(this.cita_nueva);
       var res = await axios({
@@ -1437,7 +1485,7 @@ export default {
       }).then(
         (response) => {
           console.log(response);
-
+          this.pedir_citas()
 
 
         }
@@ -1447,6 +1495,7 @@ export default {
         return;
       });
     }
+
   },
 };
 </script>

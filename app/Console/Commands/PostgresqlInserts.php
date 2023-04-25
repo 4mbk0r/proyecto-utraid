@@ -37,7 +37,7 @@ class PostgresqlInserts extends Command
     public function handle()
     {
       
-        Artisan::call('backup:run --only-db --only-to-disk=local --database=utraid --extra-mysqldump-options="--skip-extended-insert --compact --no-create-info"');
+        Artisan::call('backup:run --only-db --only-to-disk=local --extra-mysqldump-options="--skip-extended-insert --compact --no-create-info"');
 
     }
 }

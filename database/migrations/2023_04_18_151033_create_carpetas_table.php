@@ -16,14 +16,14 @@ class CreateCarpetasTable extends Migration
     {
         Schema::create('carpetas', function (Blueprint $table) {
             $table->string('codigo')->unique();
-            $table->integer('id_ci')->unique();
+            $table->integer('id_persona')->unique();
         });
 
-        DB::statement(
-            "ALTER TABLE carpetas ADD FOREIGN KEY (id_ci) REFERENCES personas(id)"
-        );       
+        /*DB::statement(
+            "ALTER TABLE carpetas ADD FOREIGN KEY (id_persona) REFERENCES personas(id)"
+        );*/       
         
-        DB::statement("
+        /*DB::statement("
             CREATE OR REPLACE FUNCTION generate_auto_increment(prefix text) RETURNS text AS $$
             DECLARE
             last_seq integer;
@@ -41,7 +41,7 @@ class CreateCarpetasTable extends Migration
             RETURN new_string;
             END;
             $$ LANGUAGE plpgsql;
-        ");
+        ");*/
     }
 
     /**

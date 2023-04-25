@@ -139,6 +139,15 @@ class PersonaCitaController extends Controller
         if ($opcion == 1) {
             try {
                 //write your codes here
+                
+                $codigo  =  !empty($nuevo['ap_paterno']) ?  $nuevo['ap_paterno'][0]: '';
+                $codigo  .=  !empty($nuevo['ap_materno']) ?  $nuevo['ap_materno'][0]: '';
+                $codigo  .= !empty($nuevo['nombres']) ?  $nuevo['nombres'][0]: '';
+                if(strlen($codigo) == 2){
+                    $codigo .= '_';
+                }
+                $nuevo[ 'id'] = DB::raw("generate_auto_increment('".$codigo."')");
+
                 DB::table('personas')->insert($nuevo);
             } catch (Exception $e) {
                 $error = explode(' ', $e->getMessage())[0];
@@ -156,7 +165,7 @@ class PersonaCitaController extends Controller
                 return Response::json(['mensaje' => $e->getMessage(),500], 500);
             }
             $persona = DB::table('personas')->where('ci', $nuevo['ci'])->get();
-            $lsita_citas = 
+            /*$lsita_citas = 
             DB::table("dar_citas")
             ->leftJoin("fichas", function($join){
                 $join->on("fichas.id", "=", "dar_citas.id_ficha");
@@ -165,7 +174,7 @@ class PersonaCitaController extends Controller
                 $join->on("onas", "personas.id", "=");
             })
             ->where("current_date", "<=", "fichas.fecha")
-            ->get();
+            ->get();*/
             
             
             

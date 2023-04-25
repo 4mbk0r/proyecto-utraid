@@ -378,7 +378,7 @@
                 </v-list> -->
             </v-card>
         </v-dialog>
-        <datos v-if="dialog_persona" @pedir='actualizador' ref="dato">
+        <datos v-if="dialog_persona" @pedir='actualizador'   ref="dato">
         </datos>
         <atencion v-if="estado == 'atencion'" ref="atender" :equipo="lista_equipo"></atencion>
 

@@ -116,6 +116,12 @@ class ExcelPaciente extends Controller
             ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
             ->where("table_name", "=", $table)
             ->get();
+
+        $registro =
+            DB::table("information_schema.columns")
+            ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
+            ->where("table_name", "=", "registros")
+            ->get();
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $objPHPExcel = IOFactory::load($file);
@@ -140,12 +146,12 @@ class ExcelPaciente extends Controller
                     if ($i == 0) {
                         $valor_buscar = $cell->getValue();
                         array_push($hearder_sheet,  trim($cell->getValue()));
-                        if($valor_buscar == ''){
+                        if ($valor_buscar == '') {
                             return  throw new HttpException(500, 'Los encabezados del excel son blancos. Este es error.');
                         }
                     } else {
                         $key = $hearder_sheet[$j];
-                        
+
                         $f->$key =  trim($cell->getValue());
                         $value =  trim($cell->getValue());
                     }
@@ -181,18 +187,73 @@ class ExcelPaciente extends Controller
                                     $insertar->$vk = null;
                                 }
                             }
+                            $dato_registro = new stdClass();
+                            foreach ($registro as $key => $ui) {
+                                # code...
+                                $vk = ($ui->nombre);
+
+                                if (property_exists($f, $vk)) {
+                                    $dato_registro->$vk = $f->$vk;
+                                } else {
+                                    $dato_registro->$vk = null;
+                                }
+                            }
                             $u = (array)$insertar;
                             unset($u['id']);
                             unset($u['register']);
+                            $codigo = !empty($u['ap_paterno']) ?  $u['ap_paterno'][0] : '';
+                            $codigo .= !empty($u['ap_materno']) ?  $u['ap_materno'][0] : '';
+                            $codigo .= !empty($u['nombres']) ?  $u['nombres'][0] : '';
+                            if (strlen($codigo) == 2) {
+                                $codigo .= '_';
+                            }
+                            $u['id'] = DB::raw("generate_auto_increment('" . $codigo . "')");
+
                             $query = db::table('personas')
-                                ->insert($u);
+                                ->insertGetId($u);
+                            if (!empty($query)) {
+                                $dato_registro = (array) $dato_registro;
+                                $dato_registro['id_persona'] = $query;
+                                unset($dato_registro['id']);
+                                $query = db::table('registros')
+                                    ->insert($dato_registro);
+                            }
+
                             $nro_guardados++;
                             //array_push($r, $insertar);
-                        }
-                        //array_push($r, $f);
-                        $nro_repetidos++;
+                        } else {
+                            if (count($query) == 1) {
+                                $paciente = $query[0];
+                                $dato_registro = new stdClass();
+                                foreach ($registro as $key => $ui) {
+                                    # code...
+                                    $vk = ($ui->nombre);
 
+                                    if (property_exists($f, $vk)) {
+                                        $dato_registro->$vk = $f->$vk;
+                                    } else {
+                                        $dato_registro->$vk = null;
+                                    }
+                                }
+                                $resp = db::table('registros')
+                                    ->where('id_persona', '=', $paciente->id)
+                                    ->where('fecha_registro', '=', $dato_registro->fecha_registro)
+                                    ->exists();
+                                if (!$resp) {
+
+                                    $dato_registro = (array) $dato_registro;
+                                    $dato_registro['id_persona'] = $paciente->id;
+                                    unset($dato_registro['id']);
+                                    $query = db::table('registros')
+                                        ->insert($dato_registro);
+                                        $nro_repetidos++;
+                                }
+                            }
+                            //array_push($r, $f);
+                            
+                        }
                     } else {
+
                         $nro_blanco++;
                         //array_push($r, $f);
                         // La validación falló, manejar el error
@@ -201,11 +262,13 @@ class ExcelPaciente extends Controller
                 $i++;
             }
             unset($request);
-            return response()->json(['file' => $hearder_sheet, 'header' => $hearder, 
-            'nro_repetido'=> $nro_repetidos, 'nro_blancos'=> $nro_blanco,
-            'nro_insertado' => $nro_guardados,
-            
-            'success' => true]);
+            return response()->json([
+                'file' => $hearder_sheet, 'header' => $hearder,
+                'nro_repetido' => $nro_repetidos, 'nro_blancos' => $nro_blanco,
+                'nro_insertado' => $nro_guardados,
+
+                'success' => true
+            ]);
             return $file;
         } else {
             return response()->json(['message' => 'No se encontró ningún archivo'], 400);
@@ -215,17 +278,17 @@ class ExcelPaciente extends Controller
 
     public static function downloadExcel(Request $request)
     {
-      
-    
+
+
         $file = $request->file('file');
         $sheet_id = json_decode($request->input('sheet'))->id;
         $spreadsheet = IOFactory::load($file);
         //$spreadsheet = IOFactory::load($file->getPathname());
         $sheet = $spreadsheet->getSheet($sheet_id);
-    
+
         // Validar los datos antes de agregarlos al archivo de Excel
         $data = $sheet->toArray();
-        
+
 
         // Validar los datos antes de agregarlos al archivo de Excel
         $validator = Validator::make($data, [
@@ -247,7 +310,7 @@ class ExcelPaciente extends Controller
 
             // Pintar las celdas con errores de validación
             $failedRules = $validator->failed();
-            
+
             /*$r = [];
             foreach ($failedRules as $row => $rules) {
                 $fila =  explode(".", $row);
@@ -257,7 +320,7 @@ class ExcelPaciente extends Controller
             foreach ($failedRules as $row => $rules) {
                 foreach ($rules as $column => $rule) {
                     $fila =  explode(".", $row);
-                    $cell = $sheet->getCellByColumnAndRow(intval($fila[1])+1, intval($fila[0]) +1 );
+                    $cell = $sheet->getCellByColumnAndRow(intval($fila[1]) + 1, intval($fila[0]) + 1);
                     // Definir el estilo de la celda
                     $style = [
                         'fill' => [

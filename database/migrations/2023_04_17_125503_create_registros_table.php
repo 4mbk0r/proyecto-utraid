@@ -16,14 +16,17 @@ class CreateRegistrosTable extends Migration
     {
         Schema::create('registros', function (Blueprint $table) {
             $table->date('fecha_registro');
-            $table->string('numero_formulario');
-            $table->string('id_registro');
-            $table->string('tipo_discapacidad');
-            $table->string('grado_discapacidad');
-            $table->integer('porcentaje');
-            
+            $table->string('numero_formulario')->nullable();
+            $table->string('id_registro')->nullable();
+            $table->string('tipo_discapacidad')->nullable();
+            $table->string('grado_discapacidad')->nullable();
+            $table->string('porcentaje')->nullable();
+            $table->string('id_persona');
+            $table->unique(['fecha_registro', 'id_persona']);
         });
-        
+        DB::statement(
+            "ALTER TABLE registros ADD FOREIGN KEY (id_persona) REFERENCES personas(id)"
+        );
         DB::statement('SET datestyle = SQL,DMY');
         
     }   

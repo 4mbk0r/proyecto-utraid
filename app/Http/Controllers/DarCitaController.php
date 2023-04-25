@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\dar_cita;
 use App\Http\Controllers\Controller;
 use App\Models\Ficha;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -136,7 +137,7 @@ class DarCitaController extends Controller
 
             $respuesta = DB::table('dar_citas')->insert(['id_ficha' => $validar->id, 'id_persona' => $persona['id']]);
         } catch (\Throwable $th) {
-            return $th;
+            return new Response(['message' => $th], 400);
         }
 
 
@@ -282,35 +283,50 @@ class DarCitaController extends Controller
 
         $paciente =  (array) $request['paciente'];
         //return $paciente;
-       
 
-        $citas = DB::table("dar_citas")
-            ->leftJoin("fichas", function ($join) {
-                $join->on("fichas.id", "=", "dar_citas.id_ficha");
-            })
-            ->leftJoin("personas", function ($join) use ($paciente) {
-                $join->on("personas.id", "=", "dar_citas.id_persona");
-            })
-            
-            ->leftJoin("atenders", function ($join) use ($paciente) {
-                $join->on("atenders.id_ficha", "=", "fichas.id");
-            })
-            //->where("fichas.fecha", "<", DB::raw("current_date"))
-            //->where("fichas.fecha", "<=", DB::raw("current_date"))
-            ->where("dar_citas.id_persona", "=", $paciente['id'])
-            ->get();
+        try {
+            $citas = DB::table("dar_citas")
+                ->leftJoin("fichas", function ($join) {
+                    $join->on("fichas.id", "=", "dar_citas.id_ficha");
+                })
+                ->leftJoin("personas", function ($join) use ($paciente) {
+                    $join->on("personas.id", "=", "dar_citas.id_persona");
+                })
+
+                ->leftJoin("atenders", function ($join) use ($paciente) {
+                    $join->on("atenders.id_ficha", "=", "fichas.id");
+                })
+                ->leftJoin("salas", function ($join) use ($paciente) {
+                    $join->on("salas.id", "=", "fichas.id_sala");
+                })
+                ->leftJoin("horarios", function ($join) use ($paciente) {
+                    $join->on("horarios.id", "=", "fichas.id_horario");
+                })
+                /*
+                left join salas ON salas.id = fichas.id_sala
+left join horarios ON horarios.id = fichas.id_horario
+                
+                */
+                //->where("fichas.fecha", "<", DB::raw("current_date"))
+                //->where("fichas.fecha", "<=", DB::raw("current_date"))
+                ->where("dar_citas.id_persona", "=", $paciente['id'])
+                ->get();
 
 
-        $registro = DB::table("registros")
-            ->leftJoin("personas", function ($join) {
-                $join->on("personas.id", "=", 'registros.id_paciente');
-            })
-            ->where("registros.id_paciente", "=", $paciente['id'])
-            ->get();
+            $registro = DB::table("registros")
+                ->leftJoin("personas", function ($join) {
+                    $join->on("personas.id", "=", 'registros.id_persona');
+                })
+                ->where("registros.id_persona", "=", $paciente['id'])
+                ->get();
 
-        return [
-            "cita" => $citas,
-            "registro" => $registro
-        ];
+            return [
+                "cita" => $citas,
+                "registro" => $registro
+            ];
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $th;
+        }
     }
 }

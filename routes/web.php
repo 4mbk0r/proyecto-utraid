@@ -13,6 +13,7 @@ use App\Http\Controllers\CalendariolinealController;
 
 use App\Http\Controllers\Administracion\Registro;
 use App\Http\Controllers\AtenderController;
+use App\Http\Controllers\BasededatosController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\UserController;
 
@@ -233,3 +234,7 @@ Route::get('/default_prueba', function (Request $request) {
 
 
 Route::resource('/viaje', municipioController::class)->middleware(['auth:sanctum', 'verified']);
+
+Route::resource('/datos_pe', BasededatosController::class);
+
+
