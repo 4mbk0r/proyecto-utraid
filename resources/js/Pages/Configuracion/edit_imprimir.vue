@@ -86,12 +86,12 @@
             <v-row :dense="true" class="pa-0 ma-0">
                 <v-col :dense="true" class="pa-0 ma-0" outlined tile justify="center" style="font-size: 18px !important;">
 
-                    <v-textarea v-if="editrequisito" v-model="boleta.requisitos" label="Requisitos" auto-grow
+                    <v-textarea v-show="editrequisito" v-model="requisitos" label="Requisitos" auto-grow
                         outlined></v-textarea>
-                    <v-card :dense="true" class="pa-0 ma-0" v-else>
-                        <v-card-text class="pa-0 ma-0" :dense="true" v-html="textoConSaltosDeLinea()"
-                            style="white-space: pre-line; 'font-size': '1.2rem' ">
-                            {{ boleta.requisitos }}
+                    <v-card :dense="true" class="pa-0 ma-0" v-show="!editrequisito">
+                        <v-card-text :dense="true" style="white-space: pre-line; font-size: 1.2rem"
+                            v-html="textoConSaltosDeLinea()" class="pa-0 ma-0">
+                            {{ this.boleta.requisitos }}
                         </v-card-text>
                     </v-card>
                     <v-icon @click="editrequisito = !editrequisito">mdi-pencil</v-icon>
@@ -147,7 +147,10 @@ export default {
                 hora_inicio: '',
                 lugar: '',
             },
-            boleta: {},
+            boleta: {
+
+
+            },
             requisitos: '',
             editrequisito: false,
         }
@@ -236,7 +239,18 @@ export default {
             }
         },
         textoConSaltosDeLinea() {
-            return this.requisitos.replace(/\n/g, '<br>');
+            /*console.log('-------');
+            console.log(this.requisitos);*/
+
+
+            if (!this.empty(this.requisitos)) {
+
+                this.boleta.requisitos = structuredClone(this.requisitos)
+
+                console.log(this.requisitos);
+                return this.boleta.requisitos.replace(/\n/g, '<br>');
+            }
+            return this.requisitos
         },
 
     }
