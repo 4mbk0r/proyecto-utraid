@@ -94,6 +94,16 @@
                                 </v-list-item-content>
                             </v-list-item>
                         </jet-nav-link>
+                        <jet-nav-link :href="route('boleta')">
+                            <v-list-item v-if="$page.props.user.cargo == 'ADMIN'" key="4" link>
+                                <v-list-item-content style="color: white;">
+                                    <v-list-item-title>
+                                        <v-icon>mdi-file-document-edit</v-icon>
+                                        <span>Boleta Configuracion</span>
+                                    </v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </jet-nav-link>
                         
                     </v-list-item-group>
                 </v-list>

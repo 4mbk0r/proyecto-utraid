@@ -14,6 +14,7 @@ use App\Http\Controllers\CalendariolinealController;
 use App\Http\Controllers\Administracion\Registro;
 use App\Http\Controllers\AtenderController;
 use App\Http\Controllers\BasededatosController;
+use App\Http\Controllers\BoletaController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\UserController;
 
@@ -224,6 +225,7 @@ Route::post('/default_password', function (Request $request) {
 
 
 
+
 Route::get('/default_prueba', function (Request $request) {
     return Inertia::render('Micomponet/Excelcopy');
     //return UserController::default_password($request);
@@ -233,5 +235,10 @@ Route::get('/default_prueba', function (Request $request) {
 Route::resource('/viaje', municipioController::class)->middleware(['auth:sanctum', 'verified']);
 
 Route::resource('/datos_pe', BasededatosController::class);
+
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/boletas', function () {
+    return Inertia::render('Configuracion/edit_imprimir');
+})->name('boleta');
 
 

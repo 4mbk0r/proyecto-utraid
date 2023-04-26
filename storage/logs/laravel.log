@@ -1747,3 +1747,22 @@ DETAIL:  Ya existe la llave (id_sala, id_municipio)=(1, 20201). at C:\\xampp\\ht
 #54 C:\\xampp\\htdocs\\main\\server.php(21): require_once('C:\\\\xampp\\\\htdocs...')
 #55 {main}
 "} 
+[2023-04-26 13:57:32] local.ERROR: Command "route:clera" is not defined.
+
+Did you mean one of these?
+    route:cache
+    route:clear
+    route:list {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"route:clera\" is not defined.
+
+Did you mean one of these?
+    route:cache
+    route:clear
+    route:list at C:\\xampp\\htdocs\\main\\vendor\\symfony\\console\\Application.php:718)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\main\\vendor\\symfony\\console\\Application.php(259): Symfony\\Component\\Console\\Application->find('route:clera')
+#1 C:\\xampp\\htdocs\\main\\vendor\\symfony\\console\\Application.php(171): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#2 C:\\xampp\\htdocs\\main\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Application.php(94): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#3 C:\\xampp\\htdocs\\main\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(129): Illuminate\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#4 C:\\xampp\\htdocs\\main\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#5 {main}
+"} 
