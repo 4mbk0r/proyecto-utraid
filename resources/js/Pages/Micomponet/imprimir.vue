@@ -25,25 +25,19 @@
             </v-row>
             <v-row class="pa-0 ma-0">
 
-                <v-col class="pa-0 ma-0" 
-                cols="4" 
-                    align="center" justify="center" style="font-size: 10px !important;">
-                    <p class="pa-0 ma-0">{{getcodigo()}}</p>
+                <v-col class="pa-0 ma-0" cols="4" align="center" justify="center" style="font-size: 20px !important;">
+                    <p class="pa-0 ma-0"> Codigo: {{ cita.id }}</p>
                 </v-col>
 
-                <v-col 
-                cols="4" 
-                    class="pa-0 ma-0" align="center" justify="center" style="font-size: 10px !important;">
-                    <p class="pa-0 ma-0">PROGRAMACION PARA EVALUACION DE DISCAPACIDAD</p>
-                </v-col>
-                
-                <v-col
-                cols="4"  
-                    class="pa-0 ma-0" align="center" justify="center" style="font-size: 10px !important;">
+                <v-col cols="4" class="pa-0 ma-0" align="center" justify="center" style="font-size: 10px !important;">
                     <p class="pa-0 ma-0">PROGRAMACION PARA EVALUACION DE DISCAPACIDAD</p>
                 </v-col>
 
-                
+                <v-col cols="4" class="pa-0 ma-0" align="center" justify="center" style="font-size: 10px !important;">
+                    <p class="pa-0 ma-0">PROGRAMACION PARA EVALUACION DE DISCAPACIDAD</p>
+                </v-col>
+
+
             </v-row>
             <v-row class="pa-1 ma-0">
                 <v-col class="pa-0 ma-0" outlined align="center" justify="center">
@@ -63,7 +57,7 @@
                 </v-col>
                 <v-col class="pa-0 ma-0" cols="4" outlined tile align="center" justify="center">
                     <v-card>
-                        Hora: {{horaTexto(cita.hora_inicio) }}
+                        Hora: {{ horaTexto(cita.hora_inicio) }}
 
                     </v-card>
                 </v-col>
@@ -73,7 +67,7 @@
 
                 <v-col class="pa-0 ma-0" cols="12" outlined tile align="center" justify="center">
                     <v-card>
-                        Lugar: {{ cita.direccion }}
+                        Lugar: {{ getlugar(cita) }}
 
                     </v-card>
                 </v-col>
@@ -146,10 +140,6 @@
                                 </v-col>
                             </v-row>
 
-
-
-
-
                         </p>
 
                     </v-card>
@@ -199,98 +189,7 @@ export default {
                 lugar: '',
             },
 
-            /*
-            ttlugares: ["CALLE MUÑOZ CORNEJO NRO 2702 - ESQUINA MENDEZ ARCOS - SOPOCACHI",
-            "TELEFERICO MORADO - FARO MURILLO",
-            "TELEFERICO PLATEADO - CIUDAD SATELITE",
-            "IXIAMAS",
-            "SAN BUENAVENTURA",
-            "APOLO",
-            "AUCAPATA",
-            "AYATA",
-            "CHUMA",
-            "CURVA",
-            "Gral. J.J. Pérez(CHARAZANI",
-            "PELECHUCO",
-            "ESCOMA",
-            "HUMANATA",
-            "MOCOMOCO",
-            "PUERTO ACOSTA",
-            "PUERTO CARABUCO",
-            "ACHACACHI",
-            "ANCORAIMES",
-            "CHUA COCANI",
-            "COMBAYA",
-            "HUARINA",
-            "HUATAJATA",
-            "QUIABAYA",
-            "SANTIAGO DE HUATA",
-            "SORATA",
-            "TACACOMA",
-            "BATALLAS",
-            "COPACABANA",
-            "PUCARANI",
-            "PUERTO PEREZ",
-            "SAN PEDRO DE TIQUINA",
-            "TITO YUPANQUI (Parquipujio)",
-            "ACHOCALLA",
-            "MECAPACA",
-            "PALCA",
-            "VIACHA",
-            "ALTO BENI",
-            "CARANAVI",
-            "GUANAY",
-            "MAPIRI",
-            "PALOS BLANCOS",
-            "TEOPONTE",
-            "TIPUANI",
-            "CHULUMANI (V. De La Libertad)",
-            "CORIPATA",
-            "COROICO",
-            "IRUPANA",
-            "LA ASUNTA",
-            "YANACACHI",
-            "DESAGUADERO",
-            "GUAQUI",
-            "JESUS DE MACHACA",
-            "LAJA",
-            "SAN ANDRES DE MACHACA",
-            "TARACO",
-            "TIAHUANACU",
-            "CALACOTO",
-            "CAQUIAVIRI",
-            "CATACORA",
-            "CHARAÑA",
-            "COMANCHE",
-            "COROCORO",
-            "NAZACARA DE PACAJES",
-            "SANTIAGO DE MACHACA",
-            "CHACARILLA",
-            "PAPEL PAMPA",
-            "PATACAMAYA",
-            "SAN PEDRO CURAHUARA",
-            "SANTIAGO DE CALLAPA",
-            "SICA SICA (Villa Aroma)",
-            "UMALA",
-            "AYO AYO",
-            "CALAMARCA",
-            "COLLANA",
-            "COLQUENCHA",
-            "SAPAHAQUI",
-            "WALDO BALLIVIAN",
-            "CAIROMA",
-            "LURIBAY",
-            "MALLA",
-            "YACO",
-            "CAJUATA",
-            "COLQUIRI",
-            "ICHOCA",
-            "INQUISIVI",
-            "QUIME",
-            "VILLA LIBERTAD LICOMA"
-        ],
-        tlugar: "CALLE MUÑOZ CORNEJO NRO 2702 - ESQUINA MENDEZ ARCOS - SOPOCACHI",
-            */
+
         }
     },
     created() {
@@ -299,7 +198,19 @@ export default {
         const usuarioString = localStorage.getItem("usuario");
         this.cita = JSON.parse(usuarioString);
     },
+    destroyed() {
+        //localStorage.setItem("usuario",  JSON.stringify(this.selectedEvent.fichas));
+        localStorage.removeItem('usuario');
+    },
+    mounted() {
+        // agregar evento beforeunload al objeto window
+        window.addEventListener('beforeunload', () => {
+            // eliminar el componente de la instancia de Vue
+            this.$destroy();
+        });
+    },
     components: {
+        
     },
     methods:
     {
@@ -323,7 +234,21 @@ export default {
             }
         },
         close() {
+            //destroyed()
             window.close();
+        },
+        empty(variable) {
+            if (variable === null || variable === undefined || isNaN(variable) ||
+                variable === '' || (Array.isArray(variable) && variable.length === 0)) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        getlugar(x){
+            console.log(this.cita.id_municipio);
+            if(this.empty(this.cita.id_municipio) ) return this.cita.direccion
+            return this.cita.municipio
         }
 
 

@@ -109,7 +109,6 @@
 
                                     </v-col>
                                     <v-col>
-
                                         {{ valores(selectedEvent.fichas, 'id') }}
                                     </v-col>
                                 </v-row>
@@ -226,7 +225,7 @@
 
             <v-card>
                 <v-toolbar dark color="black">
-                    <v-btn icon dark @click="dialog_equipo = false">
+                    <v-btn icon dark @click="close_atencion()">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                     <v-toolbar-title>Configuracion Atencion</v-toolbar-title>
@@ -378,9 +377,9 @@
                 </v-list> -->
             </v-card>
         </v-dialog>
-        <datos v-if="dialog_persona" @pedir='actualizador'   ref="dato">
+        <datos v-if="dialog_persona" @pedir='actualizador' ref="dato">
         </datos>
-        <atencion v-if="estado == 'atencion'" ref="atender" :equipo="lista_equipo"></atencion>
+        <atencion v-if="estado == 'atencion'" ref="atender" @pedir='actualizador' :equipo="lista_equipo"></atencion>
 
 
     </v-app>
@@ -496,15 +495,24 @@ export default {
         }
     },
     methods: {
+
+        empty(variable) {
+            if (variable === null || variable === undefined || isNaN(variable) ||
+                variable === '' || (Array.isArray(variable) && variable.length === 0)) {
+                return true;
+            } else {
+                return false;
+            }
+        },
         imprimir() {
             // Abrir la pestaña principal
             //this.$store.commit('update_imprimir', this.selectedEvent.fichas);
             //console.log(this.selectedEvent.fichas);
             //this.$store.commit('update_imprimir', this.selectedEvent.fichas)
-            this.$store.dispatch('guardar_imprimir',this.selectedEvent.fichas);
-            localStorage.setItem("usuario",  JSON.stringify(this.selectedEvent.fichas));
+            this.$store.dispatch('guardar_imprimir', this.selectedEvent.fichas);
+            localStorage.setItem("usuario", JSON.stringify(this.selectedEvent.fichas));
             setTimeout(() => {
-                
+
             }, 2);
 
             let mainTab = window.open(`/${process.env.MIX_CARPETA}/imprimir`, '_blank');
@@ -534,7 +542,7 @@ export default {
 
             //console.log(this.selectedEvent.fichas);
         },
-        
+
         comparaFechas() {
             const fechaActual = new Date(this.$store.getters.getfecha_server + 'T00:00:00');
             const fechaCa = new Date(this.fecha_calendario + 'T00:00:00');
@@ -760,7 +768,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                         );
                         this.categories.push(salas[key]['descripcion'])
                         this.events.push({
-                            name: salas[key]['nombre_equipo'],
+                            name:  this.empty(salas[key]['id_municipio']) ? salas[key]['nombre_equipo'] : salas[key]['nombre_equipo'] +" "+salas[key]['municipio'],
                             start: start2,
                             end: end,
                             color: 'black',
@@ -1265,6 +1273,10 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             console.log(this.cal.updateTimes());
             setInterval(() => this.cal.updateTimes(), 60 * 2000)
         },
+        close_atencion(){
+            this.dialog_equipo =  false
+            this.pedir_datos();
+        }
     }
 }
 

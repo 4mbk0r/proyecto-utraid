@@ -4,13 +4,12 @@
         <v-form ref="municipio">
             <v-row no-gutters>
                 <v-col>
-                    <v-select v-model="selectMunicipio" persistent-placeholder placeholder="No se tiene datos" :items="viaje"
-                    item-text="municipio"
-                    item-value="id"    
-                    :rules="selecionRules" label="Seleccione Municipio" required>
+                    <v-select v-model="selectMunicipio" persistent-placeholder placeholder="No se tiene datos"
+                        :items="viaje" item-text="municipio" item-value="id" :rules="selecionRules"
+                        label="Seleccione Municipio" required>
                     </v-select>
-                    
-                <!--<v-btn color="success" v-if="!getvalores(selectedEvent.fichas, 'id_designado')"
+
+                    <!--<v-btn color="success" v-if="!getvalores(selectedEvent.fichas, 'id_designado')"
                             @click="save_atender">
                             Guardar
                                 </v-btn>-->
@@ -21,7 +20,12 @@
             <v-row>
                 <v-col>
                     <v-btn @click="guardar">
-                       Guardar
+                        Guardar
+                    </v-btn>
+                </v-col>
+                <v-col>
+                    <v-btn @click="eliminar">
+                        Eliminar
                     </v-btn>
                 </v-col>
             </v-row>
@@ -101,58 +105,87 @@ export default {
     },
     methods: {
         async pedir_datos() {
-            this.datos.fecha =  this.fecha
+            this.datos.fecha = this.fecha
             var res = await axios({
                 method: 'get',
-                url: `/${process.env.MIX_CARPETA}/viaje/`+JSON.stringify(this.datos),
-                
-                }).then(
-                    (response) => {
-                        //var r = response.data.seleccion
-                        console.log('viejo--------------------')
-                        console.log(response.data);
-                        this.viaje = response.data['municipios']
-                        /*this.integrantes = response.data
-                        
-                        tjh
-                        this.viejos.push(this.datos.nombre_equipo)
-                        this.selectequipo = this.datos.nombre_equipo
-                        */
+                url: `/${process.env.MIX_CARPETA}/viaje/` + JSON.stringify(this.datos),
 
-                    }
-                ).catch(err => {
-                    console.log(err)
+            }).then(
+                (response) => {
+                    //var r = response.data.seleccion
+                    console.log('viejo--------------------')
+                    console.log(response.data);
+                    this.viaje = response.data['municipios']
+                    this.selectMunicipio = response.data['municipio']
+                    /*this.integrantes = response.data
+                    
+                    tjh
+                    this.viejos.push(this.datos.nombre_equipo)
+                    this.selectequipo = this.datos.nombre_equipo
+                    */
 
-                });
+                }
+            ).catch(err => {
+                console.log(err)
+
+            });
         },
         async guardar() {
-            if(!this.$refs.municipio.validate()) return;
-            this.datos.fecha =  this.fecha
+            if (!this.$refs.municipio.validate()) return;
+            this.datos.fecha = this.fecha
             var res = await axios({
                 method: 'post',
                 url: `/${process.env.MIX_CARPETA}/viaje`,
-                data:{
-                    datos: this.datos, 
+                data: {
+                    datos: this.datos,
                     municipio: this.selectMunicipio
                 }
-                }).then(
-                    (response) => {
-                        //var r = response.data.seleccion
-                        /*console.log('viejo--------------------')
-                        console.log(response.data);
-                        this.viaje = response.data['municipios']
-                        /*this.integrantes = response.data
-                        
-                        tjh
-                        this.viejos.push(this.datos.nombre_equipo)
-                        this.selectequipo = this.datos.nombre_equipo
-                        */
+            }).then(
+                (response) => {
+                    //var r = response.data.seleccion
+                    /*console.log('viejo--------------------')
+                    console.log(response.data);
+                    this.viaje = response.data['municipios']
+                    /*this.integrantes = response.data
+                    
+                    tjh
+                    this.viejos.push(this.datos.nombre_equipo)
+                    this.selectequipo = this.datos.nombre_equipo
+                    */
 
-                    }
-                ).catch(err => {
-                    console.log(err)
+                }
+            ).catch(err => {
+                console.log(err)
 
-                });
+            });
+        },
+        async eliminar() {
+            if (!this.$refs.municipio.validate()) return;
+            this.datos.fecha = this.fecha
+            var res = await axios({
+                method: 'delete',
+                url: `/${process.env.MIX_CARPETA}/viaje/`+JSON.stringify(this.selectMunicipio),
+                
+            }).then(
+                (response) => {
+                    console.log(response)
+                    this.pedir_datos()
+                    //var r = response.data.seleccion
+                    /*console.log('viejo--------------------')
+                    console.log(response.data);
+                    this.viaje = response.data['municipios']
+                    /*this.integrantes = response.data
+                    
+                    tjh
+                    this.viejos.push(this.datos.nombre_equipo)
+                    this.selectequipo = this.datos.nombre_equipo
+                    */
+
+                }
+            ).catch(err => {
+                console.log(err)
+
+            });
         },
         get_nombre_equipo($value) {
             /*console.log("------");

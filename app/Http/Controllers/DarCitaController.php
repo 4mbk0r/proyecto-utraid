@@ -286,6 +286,7 @@ class DarCitaController extends Controller
 
         try {
             $citas = DB::table("dar_citas")
+                ->select(['*', 'personas.id as id', 'fichas.id  as id_ficha'])
                 ->leftJoin("fichas", function ($join) {
                     $join->on("fichas.id", "=", "dar_citas.id_ficha");
                 })
@@ -299,9 +300,27 @@ class DarCitaController extends Controller
                 ->leftJoin("salas", function ($join) use ($paciente) {
                     $join->on("salas.id", "=", "fichas.id_sala");
                 })
+                ->leftJoin("viajes", function ($join) use ($paciente) {
+                    $join->on("viajes.id_sala", "=", "salas.id");
+                })
+                ->leftJoin("municipios", function ($join) use ($paciente) {
+                    $join->on("municipios.id", "=", "viajes.id_municipio");
+                })
                 ->leftJoin("horarios", function ($join) use ($paciente) {
                     $join->on("horarios.id", "=", "fichas.id_horario");
                 })
+                ->leftJoin("calendarios", function ($join) use ($paciente) {
+                    $join->on("calendarios.fecha", "=", "fichas.fecha");
+                })
+                ->leftJoin("institucions", function ($join) use ($paciente) {
+                    $join->on("institucions.codigo", "=", "calendarios.codigo");
+                })
+                
+                /*
+                    left join viajes ON viajes.id_sala = salas.id
+                    left join municipios ON municipios.id = viajes.id_municipio
+                 */
+                
                 /*
                 left join salas ON salas.id = fichas.id_sala
 left join horarios ON horarios.id = fichas.id_horario

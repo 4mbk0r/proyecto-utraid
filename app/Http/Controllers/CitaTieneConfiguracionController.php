@@ -140,6 +140,8 @@ where atencion = 'feriado' and TRIM(to_char(fecha, 'yyyy')) = TRIM(to_char('" . 
                         ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
                         ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipo_lineals.id_equipo')
                         ->where('asignar_config_salas.id_conf', '=', $list_config[0]->id_configuracion)
+                        ->where('designar_equipo_lineals.id_conf', '=', $list_config[0]->id_configuracion)
+                        
                         ->get();
                     $horario = [];
                     foreach ($salas as $key => $value) {
@@ -165,6 +167,12 @@ where atencion = 'feriado' and TRIM(to_char(fecha, 'yyyy')) = TRIM(to_char('" . 
                             ->leftJoin("horarios", function ($join) {
                                 $join->on("horarios.id", "=", "asignar_horarios.id_horario");
                             })
+                            /*->leftJoin("viajes", function ($join)  {
+                                $join->on("viajes.id_sala", "=", "salas.id");
+                            })
+                            ->leftJoin("municipios", function ($join)  {
+                                $join->on("municipios.id", "=", "viajes.id_municipio");
+                            })*/
                             ->whereNotNull('conf_salas.id')
                             //->where('conf_salas.id','=',$value->id_conf)
                             ->where('salas.id', '=', $value->id_sala)
@@ -244,7 +252,7 @@ Agenda2.vue:442
             //
             $salas =
                 DB::table("calendarios")
-                ->select(['designar_equipos.*', 'salas.descripcion', 'equipos.nombre_equipo'])
+                ->select(['designar_equipos.*', 'viajes.id_municipio','municipios.*', 'salas.descripcion', 'equipos.nombre_equipo'])
 
                 ->leftJoin("designar_equipos", function ($join) {
                     $join->on("designar_equipos.fecha", "=", "calendarios.fecha");
@@ -254,6 +262,12 @@ Agenda2.vue:442
                 })
                 ->leftJoin("salas", function ($join) {
                     $join->on("salas.id", "=", "designar_equipos.id_sala");
+                })
+                ->leftJoin("viajes", function ($join)  {
+                    $join->on("viajes.id_sala", "=", "salas.id");
+                })
+                ->leftJoin("municipios", function ($join)  {
+                    $join->on("municipios.id", "=", "viajes.id_municipio");
                 })
                 ->where('calendarios.fecha', '=', $fecha)
                 ->get();
@@ -268,8 +282,14 @@ Agenda2.vue:442
                 
                 */
                 $horario = DB::table('fichas')
-                    ->select(['fichas.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'designar_equipos.id_equipo', 'designar_equipos.id_sala as id_sala_asig', 'equipos.nombre_equipo', 'salas.descripcion', 'atenders.id_designado', 'fichas.id as id_ficha', 'institucions.*'])
+                    ->select(['fichas.*','viajes.id_municipio','municipios.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'designar_equipos.id_equipo', 'designar_equipos.id_sala as id_sala_asig', 'equipos.nombre_equipo', 'salas.descripcion', 'atenders.id_designado', 'fichas.id as id_ficha', 'institucions.*'])
                     ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+                    ->leftJoin("viajes", function ($join)  {
+                        $join->on("viajes.id_sala", "=", "salas.id");
+                    })
+                    ->leftJoin("municipios", function ($join)  {
+                        $join->on("municipios.id", "=", "viajes.id_municipio");
+                    })
                     ->leftJoin('designar_equipos', 'designar_equipos.id_sala', '=', 'salas.id')
                     ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipos.id_equipo')
                     ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_conf_sala')
@@ -277,7 +297,7 @@ Agenda2.vue:442
                     ->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
                     ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
                     ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
-
+                    
                     ->leftJoin("calendarios", function ($join) {
                         $join->on("calendarios.fecha", "=", "fichas.fecha");
                     })

@@ -211,7 +211,7 @@
                     @click="eliminarItem(item)">mdi-delete</v-icon>
                 </template>
                 <template v-slot:item.print="{ item }">
-                  <v-icon v-if="fecha_mayor(item.fecha)" small class="mr-2" @click="">mdi-printer</v-icon>
+                  <v-icon v-if="fecha_mayor(item.fecha)" small class="mr-2" @click="imprimir(item)">mdi-printer</v-icon>
                 </template>
                 <!--
           <template v-slot:top>
@@ -553,7 +553,7 @@ export default {
         align: "start",
         value: "tipo_discapacidad",
       },
-      
+
       {
         text: "Grado de discapadad",
         align: "start",
@@ -1095,6 +1095,8 @@ export default {
       }
     },
     async eliminarItem(item) {
+      console.log(item
+      );
       axios.delete(`/${process.env.MIX_CARPETA}/dar_ficha/` + item.id_ficha)
         .then(response => {
           // Manejar la respuesta del servidor en caso de éxito
@@ -1126,7 +1128,17 @@ export default {
       }
 
     },
+    imprimir(item) {
+      console.log(item
+      );
+      this.$store.dispatch('guardar_imprimir', item);
+      localStorage.setItem("usuario", JSON.stringify(item));
+      setTimeout(() => {
 
+      }, 2);
+
+      let mainTab = window.open(`/${process.env.MIX_CARPETA}/imprimir`, '_blank');
+    },
     async pedir_citas() {
 
       console.log(this.paciente_edit);
@@ -1263,6 +1275,7 @@ export default {
         },
       }).then(
         (response) => {
+          var res = response
           /*console.log(response);
           this.pedir_datos()
           this.selectedOpen = false*/
