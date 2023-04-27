@@ -242,3 +242,4 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/boletas', function () {
 })->name('boleta');
 
 
+Route::resource('/boleta', BoletaController::class);

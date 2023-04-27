@@ -94,7 +94,7 @@
                             {{ this.boleta.requisitos }}
                         </v-card-text>
                     </v-card>
-                    <v-icon @click="editrequisito = !editrequisito">mdi-pencil</v-icon>
+                    <v-icon @click="editmagin()">mdi-pencil</v-icon>
                 </v-col>
             </v-row>
             <!-- This image from <v-img> will not be visible on print -->
@@ -214,14 +214,14 @@ export default {
             return this.cita.municipio
         },
         async editmagin() {
-            this.editmagin = !this.editmagin
-            if (this.editmagin) {
+            this.editrequisito = !this.editrequisito
+            if (!this.editrequisito) {
                 var res = await axios({
                     method: "post",
                     url:
                         `/${process.env.MIX_CARPETA}/boleta`,
                     data: {
-                        paciente: this.paciente
+                        boleta: this.boleta
                     },
                 }).then(
                     (response) => {
@@ -242,12 +242,14 @@ export default {
             /*console.log('-------');
             console.log(this.requisitos);*/
 
-
+            this.boleta.requisitos = structuredClone(this.requisitos)
             if (!this.empty(this.requisitos)) {
 
                 this.boleta.requisitos = structuredClone(this.requisitos)
 
                 console.log(this.requisitos);
+                console.log('boleta');
+                console.log(this.boleta)
                 return this.boleta.requisitos.replace(/\n/g, '<br>');
             }
             return this.requisitos
