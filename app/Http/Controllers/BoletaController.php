@@ -37,6 +37,7 @@ class BoletaController extends Controller
     public function store(Request $request)
     {
         //
+        
         return $request;
     }
 
@@ -49,6 +50,7 @@ class BoletaController extends Controller
     public function show(Boleta $boleta)
     {
         //
+        DB::table('boletas')->selt
     }
 
     /**

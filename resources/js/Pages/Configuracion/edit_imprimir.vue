@@ -156,6 +156,7 @@ export default {
         }
     },
     created() {
+        this.pedir_form()
         //this.cita = JSON.parse(localStorage.getItem('cita'))
         //this.$store.dispatch('')
         //const usuarioString = localStorage.getItem("usuario");
@@ -254,6 +255,24 @@ export default {
             }
             return this.requisitos
         },
+        async pedir_form(){
+            var res = await axios({
+                    method: "get",
+                    url:
+                        `/${process.env.MIX_CARPETA}/boleta`,
+                }).then(
+                    (response) => {
+                        console.log(response);
+                        /*if (response["data"]["mensaje"] == "SQLSTATE[23505]:") {
+                          //let rep = response['data']['persona']
+                          this.msm_existe = true;
+                          this.paciente_existen = response["data"]["persona"];
+                        }*/
+                    },).catch((error) => {
+                        //console.log(error.response.data.mensaje);
+
+                    });
+        }
 
     }
 

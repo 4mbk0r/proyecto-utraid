@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateBoletasTable extends Migration
@@ -14,9 +15,15 @@ class CreateBoletasTable extends Migration
     public function up()
     {
         Schema::create('boletas', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->increments('id');
+            $table->string('id_institucion')->unique();
+            $table->text('requisitos');
+            
+            
         });
+        DB::statement(
+            "ALTER TABLE boletas ADD FOREIGN KEY (id_institucion) REFERENCES institucions(codigo) ON DELETE CASCADE"
+        );
     }
 
     /**
