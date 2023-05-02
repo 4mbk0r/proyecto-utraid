@@ -156,7 +156,8 @@
                                         </v-text-field>
                                     </template>
                                     <v-date-picker v-model="editedItem.fecha" :min="minfecha()" :max="maxfecha()" no-title
-                                        @input="menu2 = false">
+                                    format = "dd/MM/yyyy"    
+                                    @input="menu2 = false">
                                     </v-date-picker>
                                 </v-menu>
                             </v-col>
@@ -253,6 +254,7 @@ export default {
                 align: 'start',
                 sortable: true,
                 value: 'fecha',
+                format: "dd/MM/yyyy0",
             },
             {
                 text: 'Descripcion',

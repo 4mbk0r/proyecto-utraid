@@ -82,66 +82,11 @@
             <v-row class="pa-0 ma-0">
                 <v-col class="pa-0 ma-0" outlined tile justify="center" style="font-size: 18px !important;">
                     <v-card class="pa-0 ma-0">
-                        <p class="pa-0 ma-0" style="font-size: 14px !important;">
-                            <v-row justify="center" class="ma-0 pa-0" no-gutters>
-                                <v-col cols="auto" class="pa-0 ma-0 d-flex flex-column align-center">
-                                    <v-icon>mdi-numeric-1-circle</v-icon>
-                                </v-col>
-                                <v-col class=" pa-0 ma-0">
-                                    LA FALTA DE DOCUMENTACION Y EL RETRASO DE <v-icon
-                                        color="red">mdi-numeric-10-circle-outline</v-icon> MINUTOS DARA LUGAR A
-                                    REPROGRAMAR<br>
-
-                                </v-col>
-                            </v-row>
-                            <v-row justify="center" class="ma-0 pa-0" no-gutters>
-                                <v-col cols="auto" class="pa-0 ma-0 d-flex flex-column align-center">
-                                    <v-icon>mdi-numeric-2-circle</v-icon>
-                                </v-col>
-                                <v-col class=" pa-0 ma-0">
-                                    <v-col class="pa-0 ma-0 ">
-                                        PRESENTARSE 10 MINUTOS ANTES DE LA HORA DE PROGRAMACION<br>
-                                    </v-col>
-                                </v-col>
-                            </v-row>
-                            <v-row justify="center" class="ma-0 pa-0" no-gutters>
-                                <v-col cols="auto" class="pa-0 ma-0 d-flex flex-column align-center">
-                                    <v-icon>mdi-numeric-3-circle</v-icon>
-                                </v-col>
-                                <v-col class=" pa-0 ma-0">
-                                    <v-col class="pa-0 ma-0 ">
-                                        DE NO ASISTIR INFORMAR CON 48 HORAS DE ANTICIPACION
-                                        TELEFONO 2412391 UTRAID<v-icon>mdi-phone-incoming-outline</v-icon><br>
-                                    </v-col>
-                                </v-col>
-                            </v-row>
-                            <v-row justify="center" class="ma-0 pa-0" no-gutters>
-                                <v-col cols="auto" class="pa-0 ma-0 d-flex flex-column align-center">
-                                    <v-icon>mdi-numeric-4-circle</v-icon>
-                                </v-col>
-                                <v-col class=" pa-0 ma-0">
-                                    <v-col class="pa-0 ma-0 ">
-                                        <v-icon>mdi-card-account-details-outline</v-icon>, 1 COPIA CARNET DISCAPACIDAD
-                                        <v-icon>mdi-card-account-details-star</v-icon>, INFORME MEDICO ORIGINAL
-                                        <v-icon>mdi-text-box-check-outline</v-icon>, CROQUIS
-                                        DOMICILIO <v-icon>mdi-home-map-marker</v-icon></span>
-                                    </v-col>
-                                </v-col>
-                            </v-row>
-                            <v-row justify="center" class="ma-0 pa-0" no-gutters>
-                                <v-col cols="auto" class="pa-0 ma-0 d-flex flex-column align-center">
-                                    <v-icon>mdi-numeric-5-circle</v-icon>
-                                </v-col>
-                                <v-col class=" pa-0 ma-0">
-                                    <v-col class="pa-0 ma-0 ">
-                                        PRESENTAR SU DOCUMENTACION EN FOLDER AMARILLO TAMAÑO OFICIO
-                                        CON FASTENER <v-icon color="yellow darken-1">mdi-folder</v-icon><br>
-                                    </v-col>
-                                </v-col>
-                            </v-row>
-
-                        </p>
-
+                        <v-card-text :dense="true" style="white-space: pre-line; font-size: 1rem"
+                            v-html="textoConSaltosDeLinea()" class="pa-0 ma-0">
+                            
+                            {{ this.requisitos }}
+                        </v-card-text>
                     </v-card>
                 </v-col>
 
@@ -188,7 +133,8 @@ export default {
                 hora_inicio: '',
                 lugar: '',
             },
-
+            requisitos: '',
+            boleta: {}
 
         }
     },
@@ -197,6 +143,8 @@ export default {
         //this.$store.dispatch('')
         const usuarioString = localStorage.getItem("usuario");
         this.cita = JSON.parse(usuarioString);
+        this.cambiar_form()
+        
     },
     destroyed() {
         //localStorage.setItem("usuario",  JSON.stringify(this.selectedEvent.fichas));
@@ -214,6 +162,45 @@ export default {
     },
     methods:
     {
+        textoConSaltosDeLinea() {
+            
+            //this.boleta.requisitos = structuredClone(this.requisitos)
+            return this.requisitos.replace(/\n/g, '<br>');
+            
+            if (!this.empty(this.requisitos)) {
+                
+                this.boleta.requisitos = this.requisitos
+                console.log(this.requisitos);
+                console.log('boleta');
+                console.log(this.boleta)
+                
+            }
+            return this.requisitos
+        },
+        async cambiar_form(){
+            var res = await axios({
+                method: "get",
+                url:
+                    `/${process.env.MIX_CARPETA}/boleta/`+'01',
+            }).then(
+                (response) => {
+                    
+                    this.boleta  = structuredClone(response.data[0])
+                    this.requisitos = this.boleta.requisitos
+                    
+                    //this.boleta = response['data']
+
+                    /*if (response["data"]["mensaje"] == "SQLSTATE[23505]:") {
+                      //let rep = response['data']['persona']
+                      this.msm_existe = true;
+                      this.paciente_existen = response["data"]["persona"];
+                    }*/
+                },).catch((error) => {
+                    //console.log(error.response.data.mensaje);
+
+                });
+
+        },
         print() {
             print()
         },

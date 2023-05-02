@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Boleta;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BoletaController extends Controller
 {
@@ -16,6 +17,16 @@ class BoletaController extends Controller
     public function index()
     {
         //
+        
+        $sw = DB::table('boletas')
+        ->select('*')
+        ->get();
+        
+        if (count($sw)> 0) {
+            return $sw;
+        }
+        $a = [];
+        return json_encode($a);
     }
 
     /**
@@ -37,7 +48,22 @@ class BoletaController extends Controller
     public function store(Request $request)
     {
         //
+        $s = (array)$request['datos'];
         
+        $r = DB::table('boletas')
+        ->where('id_institucion','=',$s['id_institucion'])
+        ->get();
+        if(count($r)==0){
+            DB::table('boletas')->insert($s);
+        }else{
+            DB::table('boletas')
+            ->where('id_institucion','=',$s['id_institucion'])
+            ->update($s);
+        }
+        return DB::table('boletas')
+        ->where('id_institucion','=',$s['id_institucion'])
+        ->first();
+        //DB::table('boletas')->updateOrInsert($s);   
         return $request;
     }
 
@@ -47,10 +73,20 @@ class BoletaController extends Controller
      * @param  \App\Models\Boleta  $boleta
      * @return \Illuminate\Http\Response
      */
-    public function show(Boleta $boleta)
+    public function show(String $boleta)
     {
         //
-        DB::table('boletas')->selt
+        $sw = DB::table('boletas')
+        ->select('*')
+        ->where('id_institucion', '=', $boleta)
+        ->get();
+        
+        if (count($sw)> 0) {
+            return $sw;
+        }
+        $emptyArray = [];
+
+        return json_encode($emptyArray);
     }
 
     /**

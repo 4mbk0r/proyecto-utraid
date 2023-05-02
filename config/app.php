@@ -68,7 +68,7 @@ return [
     */
 
     'timezone' => 'America/La_Paz',
-
+    'date_format' => 'd/m/Y',
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration

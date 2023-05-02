@@ -265,11 +265,13 @@ Agenda2.vue:442
                 })
                 ->leftJoin("viajes", function ($join)  {
                     $join->on("viajes.id_sala", "=", "salas.id");
+                    $join->on("viajes.fecha", "=", "calendarios.fecha");
                 })
                 ->leftJoin("municipios", function ($join)  {
                     $join->on("municipios.id", "=", "viajes.id_municipio");
                 })
                 ->where('calendarios.fecha', '=', $fecha)
+                
                 ->get();
 
 

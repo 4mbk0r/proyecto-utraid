@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\InstitucionController;
 use App\Http\Controllers\SalaController;
 use App\Http\Controllers\ConfSalaController;
 use App\Http\Controllers\HorarioController;
@@ -243,3 +244,6 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/boletas', function () {
 
 
 Route::resource('/boleta', BoletaController::class);
+
+Route::resource('/institucion', InstitucionController::class);
+

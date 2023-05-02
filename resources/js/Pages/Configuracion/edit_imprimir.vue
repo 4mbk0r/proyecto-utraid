@@ -1,6 +1,18 @@
 <template>
     <AppLayout>
+        <v-container>
+            <v-row>
+                <v-col>
+                    <v-select v-model="selectedItem" :items="items" item-text="nombre" item-value="codigo"
+                        label="Seleccione la Institucion"
+                        @change="cambiar_form"
+                        ></v-select>
+                </v-col>
+            </v-row>
+        </v-container>
         <v-container :dense="true" class="teal lighten-3" align="center" justify="center" id="section-to-print">
+            
+
             <v-row class="pa-0 ma-0">
                 <v-col class="pa-0 ma-0" outlined tile align="center" cols="2" justify="center">
                     <img height="80" width="100" contain src="assets/logo-sedes-lapaz.png">
@@ -91,7 +103,7 @@
                     <v-card :dense="true" class="pa-0 ma-0" v-show="!editrequisito">
                         <v-card-text :dense="true" style="white-space: pre-line; font-size: 1.2rem"
                             v-html="textoConSaltosDeLinea()" class="pa-0 ma-0">
-                            {{ this.boleta.requisitos }}
+                            {{ this.requisitos }}
                         </v-card-text>
                     </v-card>
                     <v-icon @click="editmagin()">mdi-pencil</v-icon>
@@ -123,12 +135,13 @@ import moment from 'moment'
 import AppLayout from '@/Layouts/AppLayout'
 //import AppLayout from '../../Layouts/AppLayout.vue';
 
-export default {
+export default{
     components: {
         AppLayout
     },
     data() {
         return {
+            selectedItem: {},
             drawer: null,
             items: [{
                 title: 'Home',
@@ -178,6 +191,34 @@ export default {
     },
     methods:
     {
+        async cambiar_form(){
+            var res = await axios({
+                method: "get",
+                url:
+                    `/${process.env.MIX_CARPETA}/boleta/`+this.selectedItem,
+            }).then(
+                (response) => {
+                    
+                    console.log(response);
+                    console.log('---------------')
+                    console.log(this.boleta );
+                    console.log(response.data)
+                    this.boleta  = structuredClone(response.data[0])
+                    this.requisitos = this.boleta.requisitos
+                    
+                    //this.boleta = response['data']
+
+                    /*if (response["data"]["mensaje"] == "SQLSTATE[23505]:") {
+                      //let rep = response['data']['persona']
+                      this.msm_existe = true;
+                      this.paciente_existen = response["data"]["persona"];
+                    }*/
+                },).catch((error) => {
+                    //console.log(error.response.data.mensaje);
+
+                });
+
+        },
         print() {
             print()
         },
@@ -185,7 +226,7 @@ export default {
             moment.locale('es');
             const fecha = moment(x);
 
-            // Obtén la fecha en formato de texto
+            // Obtén la fecha en formato de texto-
             return fecha.format('dddd, D [de] MMMM [de] YYYY');
         },
         horaTexto(x) {
@@ -210,6 +251,7 @@ export default {
             }
         },
         getlugar(x) {
+            return ''
             console.log(this.cita.id_municipio);
             if (this.empty(this.cita.id_municipio)) return this.cita.direccion
             return this.cita.municipio
@@ -217,17 +259,24 @@ export default {
         async editmagin() {
             this.editrequisito = !this.editrequisito
             if (!this.editrequisito) {
+                console.log(this.boleta)
+                this.boleta.id_institucion = '01'//structuredClone(this.selectedItem)
+                this.boleta.requisitos = structuredClone(this.requisitos)
                 var res = await axios({
                     method: "post",
                     url:
                         `/${process.env.MIX_CARPETA}/boleta`,
                     data: {
-                        boleta: this.boleta
+                        datos: { 
+                        id_institucion: this.selectedItem,
+                        requisitos: this.requisitos,
+                        }
+                        //usuario: this.$page.props.user
                     },
                 }).then(
                     (response) => {
                         console.log(response);
-                        this.items = response.data
+                        //this.items = response.data
                         /*if (response["data"]["mensaje"] == "SQLSTATE[23505]:") {
                           //let rep = response['data']['persona']
                           this.msm_existe = true;
@@ -240,38 +289,39 @@ export default {
             }
         },
         textoConSaltosDeLinea() {
-            /*console.log('-------');
-            console.log(this.requisitos);*/
-
-            this.boleta.requisitos = structuredClone(this.requisitos)
+            
+            //this.boleta.requisitos = structuredClone(this.requisitos)
+            return this.requisitos.replace(/\n/g, '<br>');
+            
             if (!this.empty(this.requisitos)) {
-
-                this.boleta.requisitos = structuredClone(this.requisitos)
-
+                
+                this.boleta.requisitos = this.requisitos
                 console.log(this.requisitos);
                 console.log('boleta');
                 console.log(this.boleta)
-                return this.boleta.requisitos.replace(/\n/g, '<br>');
+                
             }
             return this.requisitos
         },
-        async pedir_form(){
+        async pedir_form() {
             var res = await axios({
-                    method: "get",
-                    url:
-                        `/${process.env.MIX_CARPETA}/boleta`,
-                }).then(
-                    (response) => {
-                        console.log(response);
-                        /*if (response["data"]["mensaje"] == "SQLSTATE[23505]:") {
-                          //let rep = response['data']['persona']
-                          this.msm_existe = true;
-                          this.paciente_existen = response["data"]["persona"];
-                        }*/
-                    },).catch((error) => {
-                        //console.log(error.response.data.mensaje);
+                method: "get",
+                url:
+                    `/${process.env.MIX_CARPETA}/institucion`,
+            }).then(
+                (response) => {
+                    console.log(response);
+                    this.items = response['data']
+                    
+                    /*if (response["data"]["mensaje"] == "SQLSTATE[23505]:") {
+                      //let rep = response['data']['persona']
+                      this.msm_existe = true;
+                      this.paciente_existen = response["data"]["persona"];
+                    }*/
+                },).catch((error) => {
+                    //console.log(error.response.data.mensaje);
 
-                    });
+                });
         }
 
     }

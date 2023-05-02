@@ -29,6 +29,9 @@ class CreateViajesTable extends Migration
         DB::statement(
             "ALTER TABLE viajes ADD FOREIGN KEY (id_sala) REFERENCES salas(id)"
         );
+        DB::statement(
+            "ALTER TABLE viajes ADD FOREIGN KEY (fecha) REFERENCES calendarios(fecha)"
+        );
        
            
     }
