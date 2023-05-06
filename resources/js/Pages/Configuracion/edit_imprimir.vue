@@ -260,8 +260,8 @@ export default{
             this.editrequisito = !this.editrequisito
             if (!this.editrequisito) {
                 console.log(this.boleta)
-                this.boleta.id_institucion = '01'//structuredClone(this.selectedItem)
-                this.boleta.requisitos = structuredClone(this.requisitos)
+                //this.boleta.id_institucion = '01'//structuredClone(this.selectedItem)
+                //this.boleta.requisitos = structuredClone(this.requisitos)
                 var res = await axios({
                     method: "post",
                     url:

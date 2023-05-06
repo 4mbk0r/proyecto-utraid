@@ -27,7 +27,9 @@
                                         :rules="[v => !!v || 'Se requiere completar']">
                                     </v-text-field>
                                 </template>
-                                <v-date-picker v-model="fecha" :min="minfecha()" :max="maxfecha()" no-title
+                                <v-date-picker v-model="fecha" 
+                                    locale="es"
+                                    :min="minfecha()" :max="maxfecha()" no-title
                                     @input="menu2 = false">
                                 </v-date-picker>
                             </v-menu>

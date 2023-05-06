@@ -29,10 +29,10 @@
             <v-row>
                 <v-col cols="6">
 
-                    <v-list two-line>
-                        <v-list-item-group v-model="selected_equipo" active-class="pink--text">
+                    <v-list dense two-line>
+                        <v-list-item-group v-model="selected_equipo"  dense active-class="pink--text">
                             <template v-for="(item, index) in equipo">
-                                <v-list-item :key="item.title" @click="seleccion_equipo(item)">
+                                <v-list-item  dense :key="item.title" @click="seleccion_equipo(item)">
                                     <template v-slot:default="{ active }">
                                         <v-list-item-content>
                                             <v-list-item-title v-text="item.equipo"></v-list-item-title>

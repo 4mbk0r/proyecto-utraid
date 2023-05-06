@@ -14,6 +14,8 @@ class CreateCalendariosTable extends Migration
      */
     public function up()
     {
+        DB::statement("SET datestyle = 'ISO, DMY'");
+        
         Schema::create('calendarios', function (Blueprint $table) {
             //$table->increments('id');
             $table->date('fecha')->primary();
@@ -26,6 +28,7 @@ class CreateCalendariosTable extends Migration
         DB::statement(
             "ALTER TABLE calendarios ADD FOREIGN KEY (codigo) REFERENCES institucions(codigo) ON DELETE CASCADE"
         );
+        
     }
 
     /**

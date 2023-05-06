@@ -15,10 +15,10 @@ class CreatePersonasTable extends Migration
     public function up()
     {
         DB::statement('CREATE EXTENSION IF NOT EXISTS unaccent');
-        DB::statement('SET datestyle = SQL,YMD');
+        //DB::statement('SET datestyle = SQL,YMD');
 
         Schema::create('personas', function (Blueprint $table) {
-            $table->string('id')->unique();
+            $table->text('id')->unique();
 
 
             /*
@@ -26,7 +26,7 @@ class CreatePersonasTable extends Migration
             
             */
             //$table->string('codigo')->unique();
-            $table->string('ci');
+            $table->text('ci');
             //$table->foreignId('nombre')->nullable()->index();
             $table->text('nombres');
             $table->text('ap_paterno', 100)->nullable();
@@ -62,14 +62,16 @@ class CreatePersonasTable extends Migration
             new_seq integer;
             new_string text;
             BEGIN
+            
+            
             SELECT COALESCE(MAX(SUBSTRING(id FROM length(prefix) + 1)::integer), 0)
             INTO last_seq
             FROM personas
             WHERE id LIKE prefix || '%';
             
             new_seq := last_seq + 1;
-            new_string := prefix || LPAD(new_seq::text, 2, '0');
-            
+            new_string := prefix || '0' ||new_seq::text;
+            --new_string := iconv('UTF-8', 'ISO-8859-1//TRANSLIT', new_string);
             RETURN new_string;
             END;
             $$ LANGUAGE plpgsql;

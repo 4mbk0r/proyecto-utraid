@@ -11,6 +11,8 @@ use stdClass;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Validator;
+use PHPExcel_Shared_Date;
+
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ExcelPaciente extends Controller
@@ -113,15 +115,16 @@ class ExcelPaciente extends Controller
         $table = 'personas';
         $hearder =
             DB::table("information_schema.columns")
-            ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
+            ->select("column_name as nombre")
             ->where("table_name", "=", $table)
-            ->get();
+            ->pluck('nombre')->toArray();
 
-        $registro =
+
+        $hregistro =
             DB::table("information_schema.columns")
-            ->select("column_name as nombre", "data_type as tipo", "is_nullable", DB::raw('false as sw'))
+            ->select("column_name as nombre")
             ->where("table_name", "=", "registros")
-            ->get();
+            ->pluck('nombre')->toArray();
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $objPHPExcel = IOFactory::load($file);
@@ -132,147 +135,137 @@ class ExcelPaciente extends Controller
             $sheet = $objPHPExcel->getSheet($sheet_id);
             $i = 0;
             $hearder_sheet = [];
-            $r = [];
-            $nro_blanco = 0;
-            $nro_repetidos = 0;
-            $nro_guardados = 0;
+            $j = 0;
+
             foreach ($sheet->getRowIterator() as $row) {
-
-
-                $f = new stdClass();
                 $j = 0;
+                $f = new stdClass();
                 foreach ($row->getCellIterator() as $cell) {
 
                     if ($i == 0) {
-                        $valor_buscar = $cell->getValue();
+                        //$valor_buscar = $cell->getValue();
                         array_push($hearder_sheet,  trim($cell->getValue()));
-                        if ($valor_buscar == '') {
+                        /*if ($valor_buscar == '') {
                             return  throw new HttpException(500, 'Los encabezados del excel son blancos. Este es error.');
-                        }
+                        }*/
                     } else {
                         $key = $hearder_sheet[$j];
-
-                        $f->$key =  trim($cell->getValue());
-                        $value =  trim($cell->getValue());
+                        $f->$key = mb_convert_encoding(trim($cell->getValue()), 'UTF-8', 'auto');;
+                        //mb_convert_encoding(trim($cell->getValue()), 'UTF-8', 'auto');
+                        //$value =  
+                        //iconv('ISO-8859-1', 'UTF-8', trim($cell->getValue()) );
                     }
                     $j++;
                     // Do something with the value
-                }
 
+                }
                 if ($i > 0) {
+                    $array = get_object_vars($f);
+                    $persona = array_intersect_key($array, array_flip($hearder));
+                    //$registro = array_diff_key($array, array_flip($hregistro));
+                    $registro = array_intersect_key($array, array_flip($hregistro));
+
                     $rules = [
                         'nombres' => 'required',
-                        'ci' => 'required'
+                        'ci' => 'required',
+                        'expedido' => 'required'
                     ];
-                    //$resp = new Request((array)$f);
-                    $validator = Validator::make(json_decode(json_encode($f), true), $rules);
-                    if ($validator->passes()) {
-                        // La validación fue exitosa
-                        $query = db::table('personas')
-                            ->where('ci', '=', $f->ci)
-                            ->where('expedido', '=', $f->expedido)
-                            ->get();
-                        //array_push($r, $query);
+                    $validator = Validator::make($persona, $rules);
+                    $validator2 = db::table('personas')
+                        ->where('ci', '=', $persona['ci'])
+                        ->where('expedido', '=', $persona['expedido'])
+                        ->exists();
 
-                        if (count($query) == 0) {
-                            //array_push($r, $hearder);
-                            $insertar = new stdClass();
-                            foreach ($hearder as $key => $ui) {
-                                # code...
-                                $vk = ($ui->nombre);
-
-                                if (property_exists($f, $vk)) {
-                                    $insertar->$vk = $f->$vk;
+                    if (!$validator->fails() && !$validator2) {
+                        // Handle validation errors
+                        try {
+                            $tabla_reemplazo = array(
+                                'Á' => 'A',
+                                'É' => 'E',
+                                'Í' => 'I',
+                                'Ó' => 'O',
+                                'Ú' => 'U',
+                                'Ñ' => 'Ñ'
+                            );
+                            $codigo = '';
+                            $paterno = strtr(strtoupper($persona['ap_paterno']), $tabla_reemplazo);
+                            if (!empty($paterno)) {
+                                if (substr($paterno, 0, 2) == 'CH') {
+                                    $codigo .= substr($paterno, 0, 2);
                                 } else {
-                                    $insertar->$vk = null;
+                                    $codigo .= $paterno[0];
                                 }
                             }
-                            $dato_registro = new stdClass();
-                            foreach ($registro as $key => $ui) {
-                                # code...
-                                $vk = ($ui->nombre);
+                            $codigo .= !empty($persona['ap_materno']) ? strtr(strtoupper($persona['ap_materno']), $tabla_reemplazo)[0] : '';
+                            $codigo .= !empty($persona['nombres']) ?  strtr(strtoupper($persona['nombres']), $tabla_reemplazo)[0] : '';
+                            $len = strlen($codigo);
+                            if ($len == 2) {
+                                $codigo .= '__';
+                            } else {
 
-                                if (property_exists($f, $vk)) {
-                                    $dato_registro->$vk = $f->$vk;
-                                } else {
-                                    $dato_registro->$vk = null;
+                                if ($len == 3) {
+                                    $codigo .= '_';
                                 }
                             }
-                            $u = (array)$insertar;
-                            unset($u['id']);
-                            unset($u['register']);
-                            $codigo = !empty($u['ap_paterno']) ?  $u['ap_paterno'][0] : '';
-                            $codigo .= !empty($u['ap_materno']) ?  $u['ap_materno'][0] : '';
-                            $codigo .= !empty($u['nombres']) ?  $u['nombres'][0] : '';
-                            if (strlen($codigo) == 2) {
-                                $codigo .= '_';
+                            //$codigo = mb_convert_encoding($codigo, 'UTF-8', 'auto');
+                            $persona['id'] = DB::raw("generate_auto_increment('" .$codigo. "')");
+                            $date_format = 'd-m-Y';
+                            $date = date_create_from_format($persona['fecha_nacimiento'], $date_format);
+                            if ($date === false && is_numeric($persona['fecha_nacimiento']) ) {
+                                // La fecha no está en el formato "dd-mm-yyyy"
+                                try {
+                                    //code...
+                                    $persona['fecha_nacimiento'] = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($persona['fecha_nacimiento']));
+                                } catch (\Throwable $th) {
+                                    ///$persona['fecha_nacimiento'] = date('Y-m-d', $persona['fecha_nacimiento']);
+                                }
+                                
+                                   
                             }
-                            $u['id'] = DB::raw("generate_auto_increment('" . $codigo . "')");
-
                             $query = db::table('personas')
-                                ->insertGetId($u);
-                            if (!empty($query)) {
-                                $dato_registro = (array) $dato_registro;
-                                $dato_registro['id_persona'] = $query;
-                                unset($dato_registro['id']);
-                                $query = db::table('registros')
-                                    ->insert($dato_registro);
-                            }
-
-                            $nro_guardados++;
-                            //array_push($r, $insertar);
-                        } else {
-                            if (count($query) == 1) {
-                                $paciente = $query[0];
-                                $dato_registro = new stdClass();
-                                foreach ($registro as $key => $ui) {
-                                    # code...
-                                    $vk = ($ui->nombre);
-
-                                    if (property_exists($f, $vk)) {
-                                        $dato_registro->$vk = $f->$vk;
-                                    } else {
-                                        $dato_registro->$vk = null;
-                                    }
+                                ->insertGetId($persona);
+                            $registro['id_persona']=$query;
+                            $date_format = 'd-m-Y';
+                            $date = date_create_from_format($registro['fecha_registro'], $date_format);
+                            if ($date === false && is_numeric($registro['fecha_registro']) ) {
+                                // La fecha no está en el formato "dd-mm-yyyy"
+                                try {
+                                    //code...
+                                    $registro['fecha_registro'] = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($registro['fecha_registro']));
+                                } catch (\Throwable $th) {
+                                    ///$persona['fecha_nacimiento'] = date('Y-m-d', $persona['fecha_nacimiento']);
                                 }
-                                $resp = db::table('registros')
-                                    ->where('id_persona', '=', $paciente->id)
-                                    ->where('fecha_registro', '=', $dato_registro->fecha_registro)
-                                    ->exists();
-                                if (!$resp) {
-
-                                    $dato_registro = (array) $dato_registro;
-                                    $dato_registro['id_persona'] = $paciente->id;
-                                    unset($dato_registro['id']);
-                                    $query = db::table('registros')
-                                        ->insert($dato_registro);
-                                        $nro_repetidos++;
-                                }
+                                
+                                   
                             }
-                            //array_push($r, $f);
-                            
+                            $date = date_create_from_format($registro['fecha_vigencia'], $date_format);
+                            if ($date === false && is_numeric($registro['fecha_vigencia']) ) {
+                                // La fecha no está en el formato "dd-mm-yyyy"
+                                try {
+                                    //code...
+                                    $registro['fecha_vigencia'] = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($registro['fecha_vigencia']));
+                                } catch (\Throwable $th) {
+                                    ///$persona['fecha_nacimiento'] = date('Y-m-d', $persona['fecha_nacimiento']);
+                                }
+                                
+                                   
+                            }
+                            $reg = db::table('registros')
+                                ->updateOrInsert($registro);
+
+                        } catch (\Throwable $e) {
+                            return ['datos' => $persona, 's' => $e];
                         }
                     } else {
-
-                        $nro_blanco++;
-                        //array_push($r, $f);
-                        // La validación falló, manejar el error
+                        // Data is valid
+                        //return ['datos' => $persona, 's' => 'no existe', 'validator' => $validator->fails(), 'validator' => $validator2];
                     }
+                    //return ['sppp'=>$f,  'sss' => $persona, 'ssss' => $registro ];
                 }
                 $i++;
             }
-            unset($request);
-            return response()->json([
-                'file' => $hearder_sheet, 'header' => $hearder,
-                'nro_repetido' => $nro_repetidos, 'nro_blancos' => $nro_blanco,
-                'nro_insertado' => $nro_guardados,
-
-                'success' => true
-            ]);
-            return $file;
-        } else {
-            return response()->json(['message' => 'No se encontró ningún archivo'], 400);
         }
+        return $j;
     }
 
 
@@ -358,7 +351,6 @@ class ExcelPaciente extends Controller
 
         return response()->download($filename)->deleteFileAfterSend(true);
     }
-
     private static function validateData($data)
     {
         $rules = [
@@ -379,3 +371,149 @@ class ExcelPaciente extends Controller
         }
     }
 }
+/**
+ * 
+ * 
+ * 
+ * 
+                if ($i > 0) {
+                    //$resp = new Request((array)$f);
+                    $validator = Validator::make(json_decode(json_encode($f), true), $rules);
+                    if ($validator->passes()) {
+                        // La validación fue exitosa
+                        $query = db::table('personas')
+                            ->where('ci', '=', $f->ci)
+                            ->where('expedido', '=', $f->expedido)
+                            ->get();
+                        //array_push($r, $query);
+
+                        if (count($query) == 0) {
+                            //array_push($r, $hearder);
+                            $insertar = new stdClass();
+                            foreach ($hearder as $key => $ui) {
+                                # code...
+                                $vk = ($ui->nombre);
+
+                                if (property_exists($f, $vk)) {
+                                    $insertar->$vk = mb_convert_encoding($f->$vk, 'UTF-8', 'ISO-8859-1');
+                                } else {
+                                    $insertar->$vk = null;
+                                }
+                            }
+                            $dato_registro = new stdClass();
+                            foreach ($registro as $key => $ui) {
+                                # code...
+                                $vk = ($ui->nombre);
+
+                                if (property_exists($f, $vk)) {
+                                    $dato_registro->$vk =  mb_convert_encoding($f->$vk, 'UTF-8', 'ISO-8859-1');
+                                } else {
+                                    $dato_registro->$vk = null;
+                                }
+                            }
+                            $u = (array)$insertar;
+                            unset($u['id']);
+                            unset($u['register']);
+                            $u['fecha_nacimiento'] = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($u['fecha_nacimiento']));
+                            $tabla_reemplazo = array(
+                                'Á' => 'A',
+                                'É' => 'E',
+                                'Í' => 'I',
+                                'Ó' => 'O',
+                                'Ú' => 'U'
+                            );
+                            $codigo = '';
+                            $paterno = strtr(strtoupper($u['ap_paterno']), $tabla_reemplazo);
+                            if (!empty($paterno)) {
+                                if (substr($paterno, 0, 2) == 'CH') {
+                                    $codigo .= substr($paterno, 0, 2);
+                                } else {
+                                    $codigo .= $paterno[0];
+                                }
+                            }
+                            $codigo .= !empty($u['ap_materno']) ? strtr(strtoupper($u['ap_materno']), $tabla_reemplazo)[0] : '';
+                            $codigo .= !empty($u['nombres']) ?  strtr(strtoupper($u['nombres']), $tabla_reemplazo)[0] : '';
+                            $len = strlen($codigo);
+                            if ($len == 2) {
+                                $codigo .= '__';
+                            } else {
+
+                                if ($len == 3) {
+                                    $codigo .= '_';
+                                }
+                            }
+                            $u['id'] = DB::raw("generate_auto_increment('" . mb_convert_encoding( $codigo, 'UTF-8', 'ISO-8859-1') . "')");
+                            try{
+                                $query = db::table('personas')
+                                ->insertGetId($u);
+                            }catch(\Throwable $e){
+                                return ['datos' => $u, 's'=> $e];
+                            }
+                            if (!empty($query)) {
+                                $dato_registro = (array) $dato_registro;
+                                $dato_registro['id_persona'] = $query;
+                                unset($dato_registro['id']);
+                                $dato_registro['fecha_registro'] = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($dato_registro['fecha_registro']));
+                                $dato_registro['fecha_vigencia'] = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($dato_registro['fecha_vigencia']));
+
+                                $query = db::table('registros')
+                                    ->insert($dato_registro);
+                            }
+
+                            $nro_guardados++;
+                            //array_push($r, $insertar);
+                        } else {
+                            if (count($query) == 1) {
+                                $paciente = $query[0];
+                                $dato_registro = new stdClass();
+                                foreach ($registro as $key => $ui) {
+                                    # code...
+                                    $vk = ($ui->nombre);
+
+                                    if (property_exists($f, $vk)) {
+                                        $dato_registro->$vk = $f->$vk;
+                                    } else {
+                                        $dato_registro->$vk = null;
+                                    }
+                                }
+                                $dato_registro->fecha_registro = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($dato_registro->fecha_registro));
+                                $dato_registro->fecha_vigencia = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($dato_registro->fecha_vigencia));
+                                $resp = db::table('registros')
+                                    ->where('id_persona', '=', $paciente->id)
+                                    ->where('fecha_registro', '=', $dato_registro->fecha_registro)
+                                    ->exists();
+                                if (!$resp) {
+
+                                    $dato_registro = (array) $dato_registro;
+                                    $dato_registro['id_persona'] = $paciente->id;
+                                    unset($dato_registro['id']);
+                                    $query = db::table('registros')
+                                        ->insert($dato_registro);
+                                    $nro_repetidos++;
+                                }
+                            }
+                            //array_push($r, $f);
+
+                        }
+                    } else {
+
+                        $nro_blanco++;
+                        //array_push($r, $f);
+                        // La validación falló, manejar el error
+                    }
+                }
+                $i++;
+            }
+            unset($request);
+            return response()->json([
+                'file' => $hearder_sheet, 'header' => $hearder,
+                'nro_repetido' => $nro_repetidos, 'nro_blancos' => $nro_blanco,
+                'nro_insertado' => $nro_guardados,
+
+                'success' => true
+            ]);
+            return $file;
+        } else {
+            return response()->json(['message' => 'No se encontró ningún archivo'], 400);
+        }
+ */

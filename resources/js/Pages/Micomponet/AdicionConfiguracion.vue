@@ -137,15 +137,6 @@
 
                 <v-stepper-content step="4">
 
-                    <v-card-actions>
-                        <v-btn color="primary" @click="paso5">
-                            Continuar
-                        </v-btn>
-                        <v-divider></v-divider>
-                        <v-btn text @click="cancelar">
-                            Cancelar
-                        </v-btn>
-                    </v-card-actions>
                     <equipo @update="equipo_update($emit)" @next="paso5" :equipo="equipo" ref="equipo"></equipo>
 
                 </v-stepper-content>

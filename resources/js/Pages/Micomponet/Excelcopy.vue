@@ -2,7 +2,19 @@
 <template>
     <app-layout>
         <v-container>
-            <h1>Importar Pacientes</h1>
+            <v-row>
+                <v-col>
+                    <h1>Importar Pacientes</h1>
+                </v-col>
+                <v-col>
+                    <v-btn tile color="info" @click="descargarbase()">
+                        <v-icon left>
+                            mdi-content-save-settings
+                        </v-icon>
+                        Plantilla
+                    </v-btn>
+                </v-col>
+            </v-row>
             <v-row>
                 <v-col>
                     <form method="POST" enctype="multipart/form-data">
@@ -281,6 +293,7 @@ export default {
                 },
                 url: `/${process.env.MIX_CARPETA}/api/get_sheet_excel`,
                 data: formData,
+
             }).then(
                 (response) => {
                     console.log(response);
@@ -546,6 +559,7 @@ export default {
                 },
                 url: `/${process.env.MIX_CARPETA}/api/update_sheet_excel`,
                 data: formData,
+                timeout: 1200000 // tiempo de espera en milisegundos (20 minutos)
             }).then(
                 (response) => {
                     console.log(response);

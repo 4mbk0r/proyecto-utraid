@@ -14,6 +14,7 @@ class CreateBoletasTable extends Migration
      */
     public function up()
     {
+        
         Schema::create('boletas', function (Blueprint $table) {
             $table->increments('id');
             $table->string('id_institucion')->unique();

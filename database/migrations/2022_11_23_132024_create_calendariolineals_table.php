@@ -14,6 +14,8 @@ class CreateCalendariolinealsTable extends Migration
      */
     public function up()
     {
+        DB::statement("SET datestyle = 'ISO, DMY'");
+        
         $base = 'calendariolineals';
         Schema::create($base, function (Blueprint $table) {
             $table->increments('id')->start_from(0);

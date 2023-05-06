@@ -374,13 +374,15 @@ class CitaController extends Controller
         
         //$date = new DateTime(''.$s);
         //$format= date_format($date, 'Y-m-d');
+        DB::statement("SET datestyle = 'ISO, DMY'");
         
         $year =  $s;
         
         try {
             //code...
             $query = DB::table("calendarios")
-                ->select(DB::raw("TRIM(to_char (fecha, 'day'))"), DB::raw("case when to_char (fecha, 'day') = 'saturday' then date (fecha::date + interval '1 days') when trim (to_char(fecha, 'day')) = 'sunday' then date (fecha::date + interval '2 days') else fecha end"))
+                ->select(DB::raw("TRIM(to_char (fecha, 'day'))"), 
+                DB::raw("case when to_char (fecha, 'day') = 'saturday' then date (fecha::date + interval '2 days') when trim (to_char(fecha, 'day')) = 'sunday' then date (fecha::date + interval '1 days') else fecha end"))
                 ->where("atencion", "=", 'feriado')
                 ->where(DB::raw("TRIM(to_char(fecha, 'yyyy'))"), '=', db::raw("TRIM('".$year."')"))
                 ->get();
@@ -437,7 +439,7 @@ class CitaController extends Controller
                 
             }
             $query = DB::table("calendarios")
-                    ->select('*',DB::raw("case when to_char (fecha, 'day') = 'saturday' then date (fecha::date + interval '1 days') when trim (to_char(fecha, 'day')) = 'sunday' then date (fecha::date + interval '2 days') else fecha end as fecha"))
+                    ->select('*',DB::raw("case when to_char (fecha, 'day') = 'saturday' then date (fecha::date + interval '2 days') when trim (to_char(fecha, 'day')) = 'sunday' then date (fecha::date + interval '1 days') else fecha end as fecha"))
                     ->where("atencion", "=", 'feriado')
                     ->where(DB::raw("TRIM(to_char(fecha, 'yyyy'))"),'=', db::raw("TRIM('".$year."')"))
                     ->get();
