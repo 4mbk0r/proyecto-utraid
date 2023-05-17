@@ -8,22 +8,17 @@ class Notifiable
 {
     use NotifiableTrait;
 
-    public function routeNotificationForMail(): string | array
+    public function routeNotificationForMail()
     {
         return config('backup.notifications.mail.to');
     }
 
-    public function routeNotificationForSlack(): string
+    public function routeNotificationForSlack()
     {
         return config('backup.notifications.slack.webhook_url');
     }
 
-    public function routeNotificationForDiscord(): string
-    {
-        return config('backup.notifications.discord.webhook_url');
-    }
-
-    public function getKey(): int
+    public function getKey()
     {
         return 1;
     }

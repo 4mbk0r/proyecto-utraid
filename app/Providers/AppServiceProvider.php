@@ -28,6 +28,10 @@ class AppServiceProvider extends ServiceProvider
     {
         config(['app.locale' => 'es']);
         Carbon::setLocale('es');
+        $this->commands([
+            \App\Console\Commands\RestoreDatabase::class,
+        ]);
+        
         date_default_timezone_set('America/La_Paz');
         if (env('APP_ENV') == 'local') {
             URL::forceScheme('http');

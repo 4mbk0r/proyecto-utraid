@@ -72,6 +72,7 @@ class CreatePersonasTable extends Migration
             new_seq := last_seq + 1;
             new_string := prefix || '0' ||new_seq::text;
             --new_string := iconv('UTF-8', 'ISO-8859-1//TRANSLIT', new_string);
+            new_string := REPLACE(new_string, 'Ã', 'Ñ');
             RETURN new_string;
             END;
             $$ LANGUAGE plpgsql;
@@ -85,6 +86,7 @@ class CreatePersonasTable extends Migration
      */
     public function down()
     {
+        DB::statement('DROP FUNCTION IF EXISTS generate_auto_increment(prefix text)');
         Schema::dropIfExists('personas');
     }
 }

@@ -9,6 +9,8 @@ class BackupDestinationFactory
     public static function createFromArray(array $config): Collection
     {
         return collect($config['destination']['disks'])
-            ->map(fn ($filesystemName) => BackupDestination::create($filesystemName, $config['name']));
+            ->map(function ($filesystemName) use ($config) {
+                return BackupDestination::create($filesystemName, $config['name']);
+            });
     }
 }

@@ -22,9 +22,11 @@ class Format
 
     public static function emoji(bool $bool): string
     {
-        return $bool
-            ? '✅'
-            : '❌';
+        if ($bool) {
+            return '✅';
+        }
+
+        return '❌';
     }
 
     public static function ageInDays(Carbon $date): string

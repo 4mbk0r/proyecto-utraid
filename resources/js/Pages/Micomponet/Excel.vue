@@ -1,47 +1,46 @@
 <!-- Use preprocessors via the lang attribute! e.g. <template lang="pug"> -->
 <template>
-    <v-app>
-        <v-container>
-            <h1>Importar Personal</h1>
-            <div>
-            <!--<form method="POST" enctype="multipart/form-data">
-                    <!--@change="excelExport"
-                    <input type="file" ref="excelFile"
-                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
-                    <v-btn @click="excelExport">Enviar</v-btn>
-                        </form>-->
+    <v-container>
+        <v-row>
+            <v-col>
+                <h1>Importar Personal</h1>
+            </v-col>
+        </v-row>
+        <v-divider vertical></v-divider>
+        <v-row>
+            <v-col>
+
                 <form @submit.prevent="uploadFile">
                     <input type="file" ref="fileInput" @change="uploadFile">
                     <!--<button type="submit">Enviar archivo</button>-->
                 </form>
-            </div>
-            <div>
-                <!--{{ mostrar(this.excelData) }}-->
-                <v-select v-model="selectedSheet" :items="sheetList" label="Selecione Hoja" @change="onchangeSheet"
-                    outlined></v-select>
-            </div>
-            <!--{{ this.rowObj }}-->
-            <div class="wrapper-dgxl">
-                <div ref="dgxl" class="grid"></div>
-            <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
-                                                                                                                                                            <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
-                                                s                                                                                                                                                -->
-            </div>
+            </v-col>
 
-            <v-btn tile color="success" @click="save">
-                <v-icon left>
-                    mdi-content-save-settings
-                </v-icon>
-                Guardar
-            </v-btn>
-            <v-btn tile color="info" @click="save2">
-                <v-icon left>
-                    mdi-content-save-settings
-                </v-icon>
-                Seleccion
-            </v-btn>
-        </v-container>
-    </v-app>
+            <v-col>
+                <v-btn tile color="success" @click="save">
+                    <v-icon left>
+                        mdi-content-save-settings
+                    </v-icon>
+                    Guardar
+                </v-btn>
+            </v-col>
+
+        </v-row>
+        <v-row>
+            <!--{{ mostrar(this.excelData) }}-->
+            <v-col>
+                <v-select v-model="selectedSheet" :items="sheetList" label="Selecione Hoja" @change="onchangeSheet"
+                    outlined>
+                </v-select>
+            </v-col>
+
+        </v-row>
+        <!--{{ this.rowObj }}-->
+        <div class="wrapper-dgxl">
+            <div ref="dgxl" class="grid"></div>
+        </div>
+
+    </v-container>
 </template>
 
 <script>

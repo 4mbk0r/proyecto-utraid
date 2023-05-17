@@ -8,27 +8,38 @@ use Symfony\Component\Process\Process;
 
 class MySql extends DbDumper
 {
-    protected bool $skipComments = true;
+    /** @var bool */
+    protected $skipComments = true;
 
-    protected bool $useExtendedInserts = true;
+    /** @var bool */
+    protected $useExtendedInserts = true;
 
-    protected bool $useSingleTransaction = false;
+    /** @var bool */
+    protected $useSingleTransaction = false;
 
-    protected bool $skipLockTables = false;
+    /** @var bool */
+    protected $skipLockTables = false;
 
-    protected bool $doNotUseColumnStatistics = false;
+    /** @var bool */
+    protected $doNotUseColumnStatistics = false;
 
-    protected bool $useQuick = false;
+    /** @var bool */
+    protected $useQuick = false;
 
-    protected string $defaultCharacterSet = '';
+    /** @var string */
+    protected $defaultCharacterSet = '';
 
-    protected bool $dbNameWasSetAsExtraOption = false;
+    /** @var bool */
+    protected $dbNameWasSetAsExtraOption = false;
 
-    protected bool $allDatabasesWasSetAsExtraOption = false;
+    /** @var bool */
+    protected $allDatabasesWasSetAsExtraOption = false;
 
-    protected string $setGtidPurged = 'AUTO';
+    /** @var string */
+    protected $setGtidPurged = 'AUTO';
 
-    protected bool $createTables = true;
+    /** @var bool */
+    protected $createTables = true;
 
     /** @var false|resource */
     private $tempFileHandle;
@@ -38,98 +49,147 @@ class MySql extends DbDumper
         $this->port = 3306;
     }
 
-    public function skipComments(): self
+    /**
+     * @return $this
+     */
+    public function skipComments()
     {
         $this->skipComments = true;
 
         return $this;
     }
 
-    public function dontSkipComments(): self
+    /**
+     * @return $this
+     */
+    public function dontSkipComments()
     {
         $this->skipComments = false;
 
         return $this;
     }
 
-    public function useExtendedInserts(): self
+    /**
+     * @return $this
+     */
+    public function useExtendedInserts()
     {
         $this->useExtendedInserts = true;
 
         return $this;
     }
 
-    public function dontUseExtendedInserts(): self
+    /**
+     * @return $this
+     */
+    public function dontUseExtendedInserts()
     {
         $this->useExtendedInserts = false;
 
         return $this;
     }
 
-    public function useSingleTransaction(): self
+    /**
+     * @return $this
+     */
+    public function useSingleTransaction()
     {
         $this->useSingleTransaction = true;
 
         return $this;
     }
 
-    public function dontUseSingleTransaction(): self
+    /**
+     * @return $this
+     */
+    public function dontUseSingleTransaction()
     {
         $this->useSingleTransaction = false;
 
         return $this;
     }
 
-    public function skipLockTables(): self
+    /**
+     * @return $this
+     */
+    public function skipLockTables()
     {
         $this->skipLockTables = true;
 
         return $this;
     }
 
-    public function doNotUseColumnStatistics(): self
+    /**
+     * @return $this
+     */
+    public function doNotUseColumnStatistics()
     {
         $this->doNotUseColumnStatistics = true;
 
         return $this;
     }
 
-    public function dontSkipLockTables(): self
+    /**
+     * @return $this
+     */
+    public function dontSkipLockTables()
     {
         $this->skipLockTables = false;
 
         return $this;
     }
 
-    public function useQuick(): self
+    /**
+     * @return $this
+     */
+    public function useQuick()
     {
         $this->useQuick = true;
 
         return $this;
     }
 
-    public function dontUseQuick(): self
+    /**
+     * @return $this
+     */
+    public function dontUseQuick()
     {
         $this->useQuick = false;
 
         return $this;
     }
 
-    public function setDefaultCharacterSet(string $characterSet): self
+    /**
+     * @param string $characterSet
+     *
+     * @return $this
+     */
+    public function setDefaultCharacterSet(string $characterSet)
     {
         $this->defaultCharacterSet = $characterSet;
 
         return $this;
     }
 
-    public function setGtidPurged(string $setGtidPurged): self
+    /**
+     * @return $this
+     */
+    public function setGtidPurged(string $setGtidPurged)
     {
         $this->setGtidPurged = $setGtidPurged;
 
         return $this;
     }
 
-    public function dumpToFile(string $dumpFile): void
+    /**
+     * Dump the contents of the database to the given file.
+     *
+     * @param string $dumpFile
+     *
+     * @throws \Spatie\DbDumper\Exceptions\CannotStartDump
+     * @throws \Spatie\DbDumper\Exceptions\DumpFailed
+     */
+    public function dumpToFile(string $dumpFile)
     {
         $this->guardAgainstIncompleteCredentials();
 
@@ -143,9 +203,9 @@ class MySql extends DbDumper
         $this->checkIfDumpWasSuccessFul($process, $dumpFile);
     }
 
-    public function addExtraOption(string $extraOption): self
+    public function addExtraOption(string $extraOption)
     {
-        if (str_contains($extraOption, '--all-databases')) {
+        if (strpos($extraOption, '--all-databases') !== false) {
             $this->dbNameWasSetAsExtraOption = true;
             $this->allDatabasesWasSetAsExtraOption = true;
         }
@@ -158,13 +218,24 @@ class MySql extends DbDumper
         return parent::addExtraOption($extraOption);
     }
 
-    public function doNotCreateTables(): self
+    /**
+     * @return $this
+     */
+    public function doNotCreateTables()
     {
         $this->createTables = false;
 
         return $this;
     }
 
+    /**
+     * Get the command that should be performed to dump the database.
+     *
+     * @param string $dumpFile
+     * @param string $temporaryCredentialsFile
+     *
+     * @return string
+     */
     public function getDumpCommand(string $dumpFile, string $temporaryCredentialsFile): string
     {
         $quote = $this->determineQuote();
@@ -252,7 +323,7 @@ class MySql extends DbDumper
         return implode(PHP_EOL, $contents);
     }
 
-    public function guardAgainstIncompleteCredentials(): void
+    public function guardAgainstIncompleteCredentials()
     {
         foreach (['userName', 'host'] as $requiredProperty) {
             if (strlen($this->$requiredProperty) === 0) {
@@ -282,7 +353,7 @@ class MySql extends DbDumper
     /**
      * @return false|resource
      */
-    public function getTempFileHandle(): mixed
+    public function getTempFileHandle()
     {
         return $this->tempFileHandle;
     }

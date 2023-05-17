@@ -1,7 +1,7 @@
 <!-- Use preprocessors via the lang attribute! e.g. <template lang="pug"> -->
 <template>
-    <app-layout>
-        <v-container>
+    <AppLayout>
+        <v-card dense>
             <v-row>
                 <v-col>
                     <h1>Importar Pacientes</h1>
@@ -71,8 +71,8 @@
             </v-row>
 
 
-        </v-container>
-    </app-layout>
+        </v-card>
+    </AppLayout>
 </template>
 
 <script>

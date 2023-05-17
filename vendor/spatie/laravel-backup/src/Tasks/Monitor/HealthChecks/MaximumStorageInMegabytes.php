@@ -8,12 +8,15 @@ use Spatie\Backup\Tasks\Monitor\HealthCheck;
 
 class MaximumStorageInMegabytes extends HealthCheck
 {
-    public function __construct(
-        protected int $maximumSizeInMegaBytes = 5000
-    ) {
+    /** @var int */
+    protected $maximumSizeInMegaBytes;
+
+    public function __construct(int $maximumSizeInMegaBytes = 5000)
+    {
+        $this->maximumSizeInMegaBytes = $maximumSizeInMegaBytes;
     }
 
-    public function checkHealth(BackupDestination $backupDestination): void
+    public function checkHealth(BackupDestination $backupDestination)
     {
         $usageInBytes = $backupDestination->usedStorage();
 

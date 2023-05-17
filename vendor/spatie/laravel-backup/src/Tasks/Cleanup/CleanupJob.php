@@ -11,17 +11,17 @@ use Spatie\Backup\Helpers\Format;
 
 class CleanupJob
 {
-    protected Collection $backupDestinations;
+    /** @var \Illuminate\Support\Collection */
+    protected $backupDestinations;
 
-    protected CleanupStrategy $strategy;
+    /** @var \Spatie\Backup\Tasks\Cleanup\CleanupStrategy */
+    protected $strategy;
 
-    protected bool $sendNotifications = true;
+    /** @var bool */
+    protected $sendNotifications = true;
 
-    public function __construct(
-        Collection $backupDestinations,
-        CleanupStrategy $strategy,
-        bool $disableNotifications = false,
-    ) {
+    public function __construct(Collection $backupDestinations, CleanupStrategy $strategy, bool $disableNotifications = false)
+    {
         $this->backupDestinations = $backupDestinations;
 
         $this->strategy = $strategy;
@@ -29,7 +29,7 @@ class CleanupJob
         $this->sendNotifications = ! $disableNotifications;
     }
 
-    public function run(): void
+    public function run()
     {
         $this->backupDestinations->each(function (BackupDestination $backupDestination) {
             try {
@@ -57,7 +57,7 @@ class CleanupJob
         });
     }
 
-    protected function sendNotification($notification): void
+    protected function sendNotification($notification)
     {
         if ($this->sendNotifications) {
             event($notification);

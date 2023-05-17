@@ -7,10 +7,17 @@ use Spatie\Backup\Exceptions\InvalidHealthCheck;
 
 class HealthCheckFailure
 {
-    public function __construct(
-        protected HealthCheck $healthCheck,
-        protected Exception $exception
-    ) {
+    /** @var \Spatie\Backup\Tasks\Monitor */
+    protected $healthCheck;
+
+    /** @var \Exception */
+    protected $exception;
+
+    public function __construct(HealthCheck $healthCheck, Exception $exception)
+    {
+        $this->healthCheck = $healthCheck;
+
+        $this->exception = $exception;
     }
 
     public function healthCheck(): HealthCheck

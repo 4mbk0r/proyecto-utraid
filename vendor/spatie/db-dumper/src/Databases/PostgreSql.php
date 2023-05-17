@@ -8,9 +8,11 @@ use Symfony\Component\Process\Process;
 
 class PostgreSql extends DbDumper
 {
-    protected bool $useInserts = false;
+    /** @var bool */
+    protected $useInserts = false;
 
-    protected bool $createTables = true;
+    /** @var bool */
+    protected $createTables = true;
 
     /** @var false|resource */
     private $tempFileHandle;
@@ -20,14 +22,25 @@ class PostgreSql extends DbDumper
         $this->port = 5432;
     }
 
-    public function useInserts(): self
+    /**
+     * @return $this
+     */
+    public function useInserts()
     {
         $this->useInserts = true;
 
         return $this;
     }
 
-    public function dumpToFile(string $dumpFile): void
+    /**
+     * Dump the contents of the database to the given file.
+     *
+     * @param string $dumpFile
+     *
+     * @throws \Spatie\DbDumper\Exceptions\CannotStartDump
+     * @throws \Spatie\DbDumper\Exceptions\DumpFailed
+     */
+    public function dumpToFile(string $dumpFile)
     {
         $this->guardAgainstIncompleteCredentials();
 
@@ -41,6 +54,13 @@ class PostgreSql extends DbDumper
         $this->checkIfDumpWasSuccessFul($process, $dumpFile);
     }
 
+    /**
+     * Get the command that should be performed to dump the database.
+     *
+     * @param string $dumpFile
+     *
+     * @return string
+     */
     public function getDumpCommand(string $dumpFile): string
     {
         $quote = $this->determineQuote();
@@ -78,22 +98,14 @@ class PostgreSql extends DbDumper
     public function getContentsOfCredentialsFile(): string
     {
         $contents = [
-            $this->escapeCredentialEntry($this->host),
-            $this->escapeCredentialEntry($this->port),
-            $this->escapeCredentialEntry($this->dbName),
-            $this->escapeCredentialEntry($this->userName),
-            $this->escapeCredentialEntry($this->password),
+            $this->host,
+            $this->port,
+            $this->dbName,
+            $this->userName,
+            $this->password,
         ];
 
         return implode(':', $contents);
-    }
-
-    protected function escapeCredentialEntry($entry): string
-    {
-        $entry = str_replace('\\', '\\\\', $entry);
-        $entry = str_replace(':', '\\:', $entry);
-
-        return $entry;
     }
 
     public function guardAgainstIncompleteCredentials()
@@ -113,13 +125,20 @@ class PostgreSql extends DbDumper
         ];
     }
 
-    public function doNotCreateTables(): self
+    /**
+     * @return $this
+     */
+    public function doNotCreateTables()
     {
         $this->createTables = false;
 
         return $this;
     }
 
+    /**
+     * @param string $dumpFile
+     * @return Process
+     */
     public function getProcess(string $dumpFile): Process
     {
         $command = $this->getDumpCommand($dumpFile);
@@ -143,7 +162,7 @@ class PostgreSql extends DbDumper
     /**
      * @param false|resource $tempFileHandle
      */
-    public function setTempFileHandle($tempFileHandle): void
+    public function setTempFileHandle($tempFileHandle)
     {
         $this->tempFileHandle = $tempFileHandle;
     }

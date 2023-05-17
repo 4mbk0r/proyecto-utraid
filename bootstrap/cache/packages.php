@@ -124,17 +124,6 @@
       0 => 'Spatie\\Backup\\BackupServiceProvider',
     ),
   ),
-  'spatie/laravel-signal-aware-command' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Spatie\\SignalAwareCommand\\SignalAwareCommandServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'Signal' => 'Spatie\\SignalAwareCommand\\Facades\\Signal',
-    ),
-  ),
   'tightenco/ziggy' => 
   array (
     'providers' => 

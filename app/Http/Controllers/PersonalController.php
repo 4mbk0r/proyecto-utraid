@@ -155,6 +155,7 @@ class PersonalController extends Controller
                 $i['error'] = $e;
             }
         }
+        
         return $fallos;
         /**/
     }

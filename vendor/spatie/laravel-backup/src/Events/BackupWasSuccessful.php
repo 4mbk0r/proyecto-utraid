@@ -6,8 +6,11 @@ use Spatie\Backup\BackupDestination\BackupDestination;
 
 class BackupWasSuccessful
 {
-    public function __construct(
-        public BackupDestination $backupDestination,
-    ) {
+    /** @var \Spatie\Backup\BackupDestination\BackupDestination */
+    public $backupDestination;
+
+    public function __construct(BackupDestination $backupDestination)
+    {
+        $this->backupDestination = $backupDestination;
     }
 }

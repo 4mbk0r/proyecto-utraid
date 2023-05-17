@@ -3,12 +3,12 @@
 namespace Spatie\Backup\Tasks\Backup;
 
 use Countable;
-use Generator;
 use SplFileObject;
 
 class Manifest implements Countable
 {
-    protected string $manifestPath;
+    /** @var string */
+    protected $manifestPath;
 
     public static function create(string $manifestPath): self
     {
@@ -27,7 +27,12 @@ class Manifest implements Countable
         return $this->manifestPath;
     }
 
-    public function addFiles(array | string | Generator $filePaths): self
+    /**
+     * @param array|string $filePaths
+     *
+     * @return $this
+     */
+    public function addFiles($filePaths): self
     {
         if (is_string($filePaths)) {
             $filePaths = [$filePaths];
@@ -42,7 +47,10 @@ class Manifest implements Countable
         return $this;
     }
 
-    public function files(): Generator | array
+    /**
+     * @return \Generator|string[]
+     */
+    public function files()
     {
         $file = new SplFileObject($this->path());
 

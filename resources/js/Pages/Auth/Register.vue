@@ -120,24 +120,26 @@
 
         </v-form>
 
-        <v-dialog v-model="excel_dialog" fullscreen hide-overlay transition="excel_dialog-bottom-transition">
-
+        <v-dialog v-model="excel_dialog" fullscreen transition="dialog-bottom-transition">
             <v-card>
                 <v-toolbar dark color="primary">
                     <v-btn icon dark @click="excel_dialog = false">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
-                    <v-toolbar-title>Settings</v-toolbar-title>
+                    <v-toolbar-title>PERSONAL</v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-toolbar-items>
+                    <!--<v-toolbar-items>
                         <v-btn dark text @click="closeexcel()">
                             Save
                         </v-btn>
-                    </v-toolbar-items>
+                    </v-toolbar-items>-->
                 </v-toolbar>
-                <excel v-if="excel_dialog" refs="" @guardar_datos="save($event)">
+                <v-card-text>
+                    <excel v-if="excel_dialog" refs="" @guardar_datos="save($event)">
+                    </excel>
 
-                </excel>
+                </v-card-text>
+                    
             </v-card>
         </v-dialog>
     </v-card>
@@ -256,7 +258,7 @@ export default {
                             password_confirmation: '',
                             terms: false,
                         }),*/
-                            this.alert('Se registro de forma correcta')
+                        this.alert('Se registro de forma correcta')
                         this.$refs.form.resetValidation()
                         //this.$inertia.get(route('regitrar'))
 

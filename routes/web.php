@@ -14,6 +14,7 @@ use App\Http\Controllers\CalendariolinealController;
 
 use App\Http\Controllers\Administracion\Registro;
 use App\Http\Controllers\AtenderController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BasededatosController;
 use App\Http\Controllers\BoletaController;
 use App\Http\Controllers\CargoController;
@@ -247,3 +248,9 @@ Route::resource('/boleta', BoletaController::class);
 
 Route::resource('/institucion', InstitucionController::class);
 
+Route::resource('/backup_', BackupController::class);
+
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/backup', function () {
+    return Inertia::render('Backup/Backup');
+})->name('backup');

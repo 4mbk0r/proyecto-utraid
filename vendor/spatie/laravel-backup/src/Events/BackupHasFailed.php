@@ -7,9 +7,16 @@ use Spatie\Backup\BackupDestination\BackupDestination;
 
 class BackupHasFailed
 {
-    public function __construct(
-        public Exception $exception,
-        public ?BackupDestination $backupDestination = null,
-    ) {
+    /** @var \Exception */
+    public $exception;
+
+    /** @var \Spatie\Backup\BackupDestination\BackupDestination|null */
+    public $backupDestination;
+
+    public function __construct(Exception $exception, BackupDestination $backupDestination = null)
+    {
+        $this->exception = $exception;
+
+        $this->backupDestination = $backupDestination;
     }
 }

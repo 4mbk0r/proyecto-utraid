@@ -61,7 +61,7 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            
+
         ],
 
         'pgsql' => [
@@ -73,14 +73,17 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci', // Establecer a utf8_unicode_ci
             'prefix' => '',
             'prefix_indexes' => true,
             'schema' => 'public',
             'sslmode' => 'prefer',
-            'dump_command_path' =>' C:\xampp\mysql\bin',
+            'dump_command_path' => ' C:\xampp\mysql\bin',
 
             'dump' => [
                 'add-inserts' => true,
+                //'exclude_tables' => ['migrations', 'migrations_id_seq'],
+                'addExtraOption' => " --inserts", // Opciones adicionales al comando de dump
             ],
         ],
 

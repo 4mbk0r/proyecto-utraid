@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use stdClass;
@@ -12,7 +13,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Validator;
 use PHPExcel_Shared_Date;
-
+use Illuminate\Support\Facades\Storage;
+use PHPExcel_IOFactory;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ExcelPaciente extends Controller
@@ -95,9 +97,25 @@ class ExcelPaciente extends Controller
     public static function get_sheet(Request $request)
     {
         //return $request;
+        $disk = Storage::disk('local');
         if ($request->hasFile('file')) {
+
             $file = $request->file('file');
+            //$nombreArchivo = $file->getClientOriginalName();
+            $extensionArchivo = $file->getClientOriginalExtension();
+            //$nombreArchivoUnico = uniqid() . '_' . $nombreArchivo;
+            //$nombreArchivoUnico = uniqid() . '_' . $file->getClientOriginalName();
+
+            // Guardar el archivo en el almacenamiento local de Laravel (Storage)
+            Storage::put('open'.$extensionArchivo, file_get_contents($file));
+
+            //Cache::put($nombreArchivoUnico . '.' . $extensionArchivo, file_get_contents($file));
+
             $objPHPExcel = IOFactory::load($file);
+            //$disk->put('openexcel.xlsx', $objPHPExcel->save('php://output'));
+            //$disk->put('nombre_de_archivo.xlsx', fwrite($objPHPExcel->getActiveSheet()->getStream(), ""));
+            //  Cache::put('open', $file);
+
             $hojas = $objPHPExcel->getSheetCount();
             $resp = [];
             for ($i = 0; $i < $hojas; $i++) {
@@ -127,7 +145,17 @@ class ExcelPaciente extends Controller
             ->pluck('nombre')->toArray();
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $objPHPExcel = IOFactory::load($file);
+            $extensionArchivo = $file->getClientOriginalExtension();
+            
+            $excelContent = Storage::get('open'.$extensionArchivo);
+            //$reader = PHPExcel_IOFactory::createReaderForFile($excelContent);
+            //$reader->setReadDataOnly(true);
+            // Cargar el contenido del archivo Excel en una variable
+            //$reader = IOFactory::createReader('Xlsx');
+            //$excel = IOFactory::loadFromArray($excelContent);
+            //$excel = $reader->loadFromstring($excelContent);
+            $objPHPExcel = IOFactory::load(storage_path('app/'.'open'.$extensionArchivo));
+            //$excel = IOFactory::loadFromByteArray($excelContent);
 
             //$hojas = $objPHPExcel->getSheetCount();
             //$resp = [];
@@ -150,7 +178,7 @@ class ExcelPaciente extends Controller
                         }*/
                     } else {
                         $key = $hearder_sheet[$j];
-                        $f->$key = mb_convert_encoding(trim($cell->getValue()), 'UTF-8', 'auto');;
+                        $f->$key = trim($cell->getValue()); ///), 'UTF-8', 'auto');;
                         //mb_convert_encoding(trim($cell->getValue()), 'UTF-8', 'auto');
                         //$value =  
                         //iconv('ISO-8859-1', 'UTF-8', trim($cell->getValue()) );
@@ -185,7 +213,7 @@ class ExcelPaciente extends Controller
                                 'Í' => 'I',
                                 'Ó' => 'O',
                                 'Ú' => 'U',
-                                'Ñ' => 'Ñ'
+                                "\xc3\x42" => "\xC3\x91"
                             );
                             $codigo = '';
                             $paterno = strtr(strtoupper($persona['ap_paterno']), $tabla_reemplazo);
@@ -207,11 +235,14 @@ class ExcelPaciente extends Controller
                                     $codigo .= '_';
                                 }
                             }
-                            //$codigo = mb_convert_encoding($codigo, 'UTF-8', 'auto');
-                            $persona['id'] = DB::raw("generate_auto_increment('" .$codigo. "')");
+                            $codigo = mb_convert_encoding($codigo, 'UTF-8', 'ISO-8859-1');
+                            $codigo = strtr($codigo, $tabla_reemplazo);
+                            //$codigo = DB::connection()->getPdo()->quote($codigo);
+                            $resultado = DB::select("SELECT generate_auto_increment(?) as codigo", [$codigo]);
+                            $persona['id'] = $resultado[0]->codigo;
                             $date_format = 'd-m-Y';
                             $date = date_create_from_format($persona['fecha_nacimiento'], $date_format);
-                            if ($date === false && is_numeric($persona['fecha_nacimiento']) ) {
+                            if ($date === false && is_numeric($persona['fecha_nacimiento'])) {
                                 // La fecha no está en el formato "dd-mm-yyyy"
                                 try {
                                     //code...
@@ -219,15 +250,13 @@ class ExcelPaciente extends Controller
                                 } catch (\Throwable $th) {
                                     ///$persona['fecha_nacimiento'] = date('Y-m-d', $persona['fecha_nacimiento']);
                                 }
-                                
-                                   
                             }
                             $query = db::table('personas')
                                 ->insertGetId($persona);
-                            $registro['id_persona']=$query;
+                            $registro['id_persona'] = $query;
                             $date_format = 'd-m-Y';
                             $date = date_create_from_format($registro['fecha_registro'], $date_format);
-                            if ($date === false && is_numeric($registro['fecha_registro']) ) {
+                            if ($date === false && is_numeric($registro['fecha_registro'])) {
                                 // La fecha no está en el formato "dd-mm-yyyy"
                                 try {
                                     //code...
@@ -235,11 +264,9 @@ class ExcelPaciente extends Controller
                                 } catch (\Throwable $th) {
                                     ///$persona['fecha_nacimiento'] = date('Y-m-d', $persona['fecha_nacimiento']);
                                 }
-                                
-                                   
                             }
                             $date = date_create_from_format($registro['fecha_vigencia'], $date_format);
-                            if ($date === false && is_numeric($registro['fecha_vigencia']) ) {
+                            if ($date === false && is_numeric($registro['fecha_vigencia'])) {
                                 // La fecha no está en el formato "dd-mm-yyyy"
                                 try {
                                     //code...
@@ -247,12 +274,9 @@ class ExcelPaciente extends Controller
                                 } catch (\Throwable $th) {
                                     ///$persona['fecha_nacimiento'] = date('Y-m-d', $persona['fecha_nacimiento']);
                                 }
-                                
-                                   
                             }
                             $reg = db::table('registros')
                                 ->updateOrInsert($registro);
-
                         } catch (\Throwable $e) {
                             return ['datos' => $persona, 's' => $e];
                         }

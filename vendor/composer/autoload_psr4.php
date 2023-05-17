@@ -43,8 +43,6 @@ return array(
     'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
     'Svg\\' => array($vendorDir . '/phenx/php-svg-lib/src/Svg'),
     'Spatie\\TemporaryDirectory\\' => array($vendorDir . '/spatie/temporary-directory/src'),
-    'Spatie\\SignalAwareCommand\\' => array($vendorDir . '/spatie/laravel-signal-aware-command/src'),
-    'Spatie\\LaravelPackageTools\\' => array($vendorDir . '/spatie/laravel-package-tools/src'),
     'Spatie\\DbDumper\\' => array($vendorDir . '/spatie/db-dumper/src'),
     'Spatie\\Backup\\' => array($vendorDir . '/spatie/laravel-backup/src'),
     'Sabberworm\\CSS\\' => array($vendorDir . '/sabberworm/php-css-parser/src'),

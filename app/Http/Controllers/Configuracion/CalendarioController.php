@@ -513,6 +513,7 @@ class CalendarioController extends Controller
         $resp = CalendarioController::validar_personal($request['archivo']);
         $verificar_datos =  $resp['verificar'];
         $valores =  $resp['datos'];
+        
         if ($verificar_datos) {
             $hearder_personas =
                 DB::table("information_schema.columns")
@@ -526,8 +527,6 @@ class CalendarioController extends Controller
                 $query = db::table('users')
                     ->where('ci', '=', $value->ci)
                     ->where('expedido', '=', $value->expedido);
-
-
                 if (!($query && $query->exists())) {
                     $insertar = new stdClass();
                     foreach ($hearder_personas as $key => $valor) {

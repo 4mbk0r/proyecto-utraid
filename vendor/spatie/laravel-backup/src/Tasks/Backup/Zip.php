@@ -8,11 +8,14 @@ use ZipArchive;
 
 class Zip
 {
-    protected ZipArchive $zipFile;
+    /** @var \ZipArchive */
+    protected $zipFile;
 
-    protected int $fileCount = 0;
+    /** @var int */
+    protected $fileCount = 0;
 
-    protected string $pathToZip;
+    /** @var string */
+    protected $pathToZip;
 
     public static function createForManifest(Manifest $manifest, string $pathToZip): self
     {
@@ -77,17 +80,23 @@ class Zip
         return Format::humanReadableSize($this->size());
     }
 
-    public function open(): void
+    public function open()
     {
         $this->zipFile->open($this->pathToZip, ZipArchive::CREATE);
     }
 
-    public function close(): void
+    public function close()
     {
         $this->zipFile->close();
     }
 
-    public function add(string | iterable $files, string $nameInZip = null): self
+    /**
+     * @param string|array $files
+     * @param string $nameInZip
+     *
+     * @return \Spatie\Backup\Tasks\Backup\Zip
+     */
+    public function add($files, string $nameInZip = null): self
     {
         if (is_array($files)) {
             $nameInZip = null;

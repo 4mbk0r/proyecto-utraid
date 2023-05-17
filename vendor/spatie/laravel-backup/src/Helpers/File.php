@@ -7,7 +7,8 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 
 class File
 {
-    protected static array $allowedMimeTypes = [
+    /** @var array */
+    protected static $allowedMimeTypes = [
         'application/zip',
         'application/x-zip',
         'application/x-gzip',
@@ -27,18 +28,18 @@ class File
         return pathinfo($path, PATHINFO_EXTENSION) === 'zip';
     }
 
-    protected function hasAllowedMimeType(?Filesystem $disk, string $path): bool
+    protected function hasAllowedMimeType(?Filesystem $disk, string $path)
     {
         return in_array($this->mimeType($disk, $path), self::$allowedMimeTypes);
     }
 
-    protected function mimeType(?Filesystem $disk, string $path): bool | string
+    protected function mimeType(?Filesystem $disk, string $path)
     {
         try {
             if ($disk && method_exists($disk, 'mimeType')) {
                 return $disk->mimeType($path) ?: false;
             }
-        } catch (Exception) {
+        } catch (Exception $exception) {
             // Some drivers throw exceptions when checking mime types, we'll
             // just fallback to `false`.
         }

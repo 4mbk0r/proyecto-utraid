@@ -8,14 +8,21 @@ use Spatie\Backup\Helpers\File;
 
 class BackupCollection extends Collection
 {
-    protected ?float $sizeCache = null;
+    /** @var null|float */
+    protected $sizeCache = null;
 
     public static function createFromFiles(?FileSystem $disk, array $files): self
     {
         return (new static($files))
-            ->filter(fn (string $path) => (new File())->isZipFile($disk, $path))
-            ->map(fn (string $path) => new Backup($disk, $path))
-            ->sortByDesc(fn (Backup $backup) => $backup->date()->timestamp)
+            ->filter(function ($path) use ($disk) {
+                return (new File)->isZipFile($disk, $path);
+            })
+            ->map(function ($path) use ($disk) {
+                return new Backup($disk, $path);
+            })
+            ->sortByDesc(function (Backup $backup) {
+                return $backup->date()->timestamp;
+            })
             ->values();
     }
 
@@ -27,7 +34,7 @@ class BackupCollection extends Collection
     public function oldest(): ?Backup
     {
         return $this
-            ->filter(fn (Backup $backup) => $backup->exists())
+            ->filter->exists()
             ->last();
     }
 
@@ -37,6 +44,6 @@ class BackupCollection extends Collection
             return $this->sizeCache;
         }
 
-        return $this->sizeCache = $this->sum(fn (Backup $backup) => $backup->sizeInBytes());
+        return $this->sizeCache = $this->sum->size();
     }
 }

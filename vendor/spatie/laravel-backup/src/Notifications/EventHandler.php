@@ -15,12 +15,15 @@ use Spatie\Backup\Exceptions\NotificationCouldNotBeSent;
 
 class EventHandler
 {
-    public function __construct(
-        protected Repository $config
-    ) {
+    /** @var \Illuminate\Contracts\Config\Repository */
+    protected $config;
+
+    public function __construct(Repository $config)
+    {
+        $this->config = $config;
     }
 
-    public function subscribe(Dispatcher $events): void
+    public function subscribe(Dispatcher $events)
     {
         $events->listen($this->allBackupEventClasses(), function ($event) {
             $notifiable = $this->determineNotifiable();
@@ -40,11 +43,15 @@ class EventHandler
 
     protected function determineNotification($event): Notification
     {
-        $lookingForNotificationClass = class_basename($event) . "Notification";
+        $eventName = class_basename($event);
 
         $notificationClass = collect($this->config->get('backup.notifications.notifications'))
             ->keys()
-            ->first(fn (string $notificationClass) => class_basename($notificationClass) === $lookingForNotificationClass);
+            ->first(function ($notificationClass) use ($eventName) {
+                $notificationName = class_basename($notificationClass);
+
+                return $notificationName === $eventName;
+            });
 
         if (! $notificationClass) {
             throw NotificationCouldNotBeSent::noNotificationClassForEvent($event);

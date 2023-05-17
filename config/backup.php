@@ -9,7 +9,10 @@ return [
          * the backups.
          */
         'name' => env('APP_NAME', 'laravel-backup'),
-
+        //'only_db' => true,
+        'database_dump_options' => [
+            'exclude-table-data' => ['migrations', 'table2'],
+        ],
         'source' => [
 
             'files' => [
@@ -18,7 +21,7 @@ return [
                  * The list of directories and files that will be included in the backup.
                  */
                 'include' => [
-                    base_path(),
+                    //base_path(),
                 ],
 
                 /*
@@ -27,8 +30,8 @@ return [
                  * Directories used by the backup process will automatically be excluded.
                  */
                 'exclude' => [
-                    base_path('vendor'),
-                    base_path('node_modules'),
+                    //base_path('vendor'),
+                    //base_path('node_modules'),
                 ],
 
                 /*
@@ -47,6 +50,7 @@ return [
                  * Example: base_path()
                  */
                 'relative_path' => null,
+                'add_options' => '-W -t',
             ],
             'profiles' => [
                 'onlyData' => [
@@ -54,9 +58,16 @@ return [
                     'database',
                     [
                         'dump' => [
-                            'excludeTables' => ['table1', 'table2'],
+                            'use_inserts' => true,
                             'dumpOnlyData' => true,
                             'useExtendedInserts' => true,
+                            'use_comma_separator' => true,
+                            //'use_inserts' => true,
+                            'add_delimiter' => false,
+                            'dump_exclude' => ['/.' , '/..'],
+                            'exclude_tables' => ['migrations', 'table2'],
+                            //'additional_options' => '--no-unlogged-table-data',
+                            'add_extra_option' => '--only-data',
                         ],
                     ],
                 ],
@@ -93,7 +104,8 @@ return [
              * For a complete list of available customization options, see https://github.com/spatie/db-dumper
              */
             'databases' => [
-                'pgsql' 
+                'pgsql',
+                
             ],
         ],
 
@@ -153,7 +165,62 @@ return [
          */
         'encryption' => 'default',
     ],
+    'restore' => [
 
+        /*
+         * The name of the disk where the backups are stored.
+         */
+        'disk' => 'local',
+    
+        /*
+         * The path of the backup zip file relative to the root of the disk.
+         */
+        'path' => 'backups/backup.sql',
+    
+        /*
+         * The name of the connection to the database that should be restored.
+         * Only PostgreSQL and MySQL databases are supported.
+         */
+        'database_connection' => 'pgsql',
+    
+        /*
+         * The name of the database that should be restored.
+         */
+        'database_name' => 'utraid',
+    
+        /*
+         * The path where the backup should be temporarily uncompressed before restoring.
+         */
+        'temporary_directory' => storage_path('app/backups/'),
+    
+        /*
+         * The options that should be passed to the database restore command.
+         * Only PostgreSQL and MySQL databases are supported.
+         */
+        'restore_options' => [
+            'pgsql' => ['-C', '-O'],
+            'mysql' => ['--single-transaction', '--routines', '--events'],
+        ],
+        
+    
+        /*
+         * Determines if the existing database should be dropped before restoring the backup.
+         */
+        'drop_database' => true,
+    
+        /*
+         * Determines if the databsase should be seeded after restoring the backup.
+         * Only supported if the `db:seed` command is available in your application.
+         */
+        'seed_database' => false,
+    ],
+    'destinations' => [
+        'local' => [
+            'filename' => 'S.sql',
+            'compression' => 'uncompressed',
+        ],
+    ],
+    
     /*
      * You can get notified when specific events occur. Out of the box you can use 'mail' and 'slack'.
      * For Slack you need to install laravel/slack-notification-channel.

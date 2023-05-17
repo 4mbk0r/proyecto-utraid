@@ -6,8 +6,11 @@ use Spatie\Backup\Tasks\Backup\Manifest;
 
 class BackupManifestWasCreated
 {
-    public function __construct(
-        public Manifest $manifest,
-    ) {
+    /** @var \Spatie\Backup\Tasks\Backup\Manifest */
+    public $manifest;
+
+    public function __construct(Manifest $manifest)
+    {
+        $this->manifest = $manifest;
     }
 }

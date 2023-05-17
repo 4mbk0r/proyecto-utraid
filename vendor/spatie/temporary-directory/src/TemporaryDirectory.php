@@ -2,26 +2,24 @@
 
 namespace Spatie\TemporaryDirectory;
 
+use Exception;
 use FilesystemIterator;
-use Spatie\TemporaryDirectory\Exceptions\InvalidDirectoryName;
-use Spatie\TemporaryDirectory\Exceptions\PathAlreadyExists;
+use InvalidArgumentException;
 
 class TemporaryDirectory
 {
-    protected string $location;
+    /** @var string */
+    protected $location;
 
-    protected string $name = '';
+    /** @var string */
+    protected $name;
 
-    protected bool $forceCreate = false;
+    /** @var bool */
+    protected $forceCreate = false;
 
     public function __construct(string $location = '')
     {
         $this->location = $this->sanitizePath($location);
-    }
-
-    public static function make(string $location = ''): self
-    {
-        return (new self($location))->create();
     }
 
     public function create(): self
@@ -38,8 +36,8 @@ class TemporaryDirectory
             $this->deleteDirectory($this->getFullPath());
         }
 
-        if ($this->exists()) {
-            throw PathAlreadyExists::create($this->getFullPath());
+        if (file_exists($this->getFullPath())) {
+            throw new InvalidArgumentException("Path `{$this->getFullPath()}` already exists.");
         }
 
         mkdir($this->getFullPath(), 0777, true);
@@ -88,7 +86,6 @@ class TemporaryDirectory
     public function empty(): self
     {
         $this->deleteDirectory($this->getFullPath());
-
         mkdir($this->getFullPath(), 0777, true);
 
         return $this;
@@ -99,14 +96,9 @@ class TemporaryDirectory
         return $this->deleteDirectory($this->getFullPath());
     }
 
-    public function exists(): bool
-    {
-        return file_exists($this->getFullPath());
-    }
-
     protected function getFullPath(): string
     {
-        return $this->location.(! empty($this->name) ? DIRECTORY_SEPARATOR.$this->name : '');
+        return $this->location.($this->name ? DIRECTORY_SEPARATOR.$this->name : '');
     }
 
     protected function isValidDirectoryName(string $directoryName): bool
@@ -129,7 +121,7 @@ class TemporaryDirectory
     protected function sanitizeName(string $name): string
     {
         if (! $this->isValidDirectoryName($name)) {
-            throw InvalidDirectoryName::create($name);
+            throw new Exception("The directory name `$name` contains invalid characters.");
         }
 
         return trim($name);
@@ -146,7 +138,7 @@ class TemporaryDirectory
 
     protected function isFilePath(string $path): bool
     {
-        return str_contains($path, '.');
+        return strpos($path, '.') !== false;
     }
 
     protected function deleteDirectory(string $path): bool

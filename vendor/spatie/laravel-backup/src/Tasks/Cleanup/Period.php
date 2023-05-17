@@ -6,10 +6,17 @@ use Carbon\Carbon;
 
 class Period
 {
-    public function __construct(
-        protected Carbon $startDate,
-        protected Carbon $endDate
-    ) {
+    /** @var \Carbon\Carbon */
+    protected $startDate;
+
+    /** @var \Carbon\Carbon */
+    protected $endDate;
+
+    public function __construct(Carbon $startDate, Carbon $endDate)
+    {
+        $this->startDate = $startDate;
+
+        $this->endDate = $endDate;
     }
 
     public function startDate(): Carbon
