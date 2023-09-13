@@ -1,0 +1,129 @@
+@startuml
+
+!define Table(name, fields) class name as "<<" + name + ">>" {
+  fields
+}
+
+!define PK(field) field <<PK>>
+!define FK(field) field <<FK>>
+
+hide empty attributes
+
+Table(Personal, 
+  + codigo_Personal (PK: int)
+  Nombre: string
+  ap_paterno: string
+  ap_materno: string
+  ci: string
+  pasword: string
+)
+
+Table(Institucion, 
+  + codigo_Institucion (PK: int)
+  Nombre: string
+  Direccion: string
+)
+
+Table(Contrata,
+  + codigo_Institucion (FK: int)
+  + codigo_Personal (FK: int)
+)
+
+Table(Equipo,
+  + codigo_equipo (PK: int)
+  nombre_equipo: string
+)
+
+Table(Asigna_equipo,
+  + codigo_equipo (FK: int)
+  + codigo_Personal (FK: int)
+)
+
+Table(Calentario,
+  + fecha (PK: date)
+  recordatorio: string
+  Descripcion: string
+  + codigo_Institucion (FK: int)
+)
+
+Table(Configuracion,
+  + codigo_conf (PK: int)
+  descripcion: string
+  atencion: string
+  + fecha (PK: date)
+)
+
+Table(Consultorio,
+  + codigo_conf (PK: int)
+  consultorio: string
+  estado: string
+)
+
+Table(Horario,
+  + codigo_horario (PK: int)
+  hora_inicio: string
+  hora_final: string
+)
+
+Table(designa_consultorio_horario,
+  + codigo_conf (FK: int)
+  + codigo_horario (FK: int)
+)
+
+Table(asigna_horario,
+  + codigo_conf (FK: int)
+  + codigo_horario (FK: int)
+)
+
+Table(Ficha,
+  + codigo_ficha (PK: int)
+  descripcion: string
+  + fecha (FK: date)
+  + codigo_conf (FK: int)
+  + horario (FK: int)
+)
+
+Table(Agenda,
+  + codigo_agenda (PK: int)
+  observacion: string
+  + fecha (FK: date)
+  + codigo_paciente (FK: int)
+)
+
+Table(Paciente,
+  + codigo_paciente (PK: int)
+  Nombre: string
+  ap_paterno: string
+  ap_materno: string
+  ci: string
+  sexo: string
+  fecha_nacimiento: string
+)
+
+Table(Evaluacion,
+  + codigo_evaluacion (PK: int)
+  grado_discapacidad: string
+  tipo_discapacidad: string
+  diagnostico: string
+  + codigo_agenda (FK: int)
+  + codigo_equipo (FK: int)
+)
+
+Personal -- Contrata
+Personal -- Asigna_equipo
+Equipo -- Asigna_equipo
+Personal -- Calentario
+Calentario -- Institucion
+Calentario -- Configuracion
+Configuracion -- Consultorio
+designa_consultorio_horario -- Consultorio
+asigna_horario -- Consultorio
+designa_consultorio_horario -- Horario
+asigna_horario -- Horario
+Ficha -- Horario
+Agenda -- Ficha
+Paciente -- Agenda
+Agenda -- Evaluacion
+Equipo -- Evaluacion
+
+@enduml

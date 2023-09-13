@@ -19,26 +19,37 @@ class CreateCargosTable extends Migration
             $table->string('cargo')->primary();
             $table->boolean('servicio')->default(0);
             $table->boolean('administrativo')->default(0);
-            
+            $table->boolean('oficinista')->default(0);
+            $table->boolean('eliminar')->default(1);
+            $table->boolean('editar')->default(1);
         });
     
         $datos = [
             'cargo' => 'ADMIN',
+            'administrativo' => true,
+            'editar' => false,
+            'eliminar' => false,
         ];
         DB::table('cargos')->insert($datos);
         $datos = [
             'cargo' => 'MEDICO GENERAL',
-            'servicio' => true
+            'servicio' => true,
+            'editar' => false,
+            'eliminar' => false,
         ];
         DB::table('cargos')->insert($datos);
         $datos = [
             'cargo' => 'TRABAJADOR SOCIAL',
-            'servicio' => true
+            'servicio' => true,
+            'editar' => false,
+            'eliminar' => false,
         ];
         DB::table('cargos')->insert($datos);
         $datos = [
             'cargo' => 'PSICOLOGO',
-            'servicio' => true
+            'servicio' => true,
+            'editar' => false,
+            'eliminar' => false,
         ];
         DB::table('cargos')->insert($datos);
         $datos = [
@@ -49,13 +60,16 @@ class CreateCargosTable extends Migration
         $datos = [
             'cargo' => 'SECRETARIA',
             'servicio' => false,
-            'administrativo' => true
+            
+            //'administrativo' => true
         ];
         DB::table('cargos')->insert($datos);
         $datos = [
             'cargo' => 'recepcionista',
             'servicio' => false,
-            'administrativo' => true
+            'oficinista' => true,
+            'editar' => false,
+            'eliminar' => false,
         ];
         DB::table('cargos')->insert($datos);
     }

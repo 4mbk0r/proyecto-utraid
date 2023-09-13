@@ -1,4 +1,3 @@
-<!-- Use preprocessors via the lang attribute! e.g. <template lang="pug"> -->
 <template>
     <v-container>
         <v-row>
@@ -7,15 +6,31 @@
             </v-col>
         </v-row>
         <v-divider vertical></v-divider>
+        <!-- Mensaje para cargar el archivo -->
         <v-row>
             <v-col>
+                <p>Aquí debe subir un archivo Excel con los datos de personal:</p>
+                <ul>
+                    <li>Asegúrese de que el archivo esté en formato Excel (xlsx).</li>
+                    <li>Seleccione el archivo haciendo clic en el botón de carga a continuación.</li>
+                    <li>Después de cargar el archivo, haga clic en "Guardar" para guardar los datos.</li>
+                </ul>
+            </v-col>
+            <v-col>
+                <!-- Columna para mostrar información de la plantilla y el botón de descarga -->
+                <div class="template-info">
+                    <p>Descargue la plantilla de Excel necesaria con el formato requerido:</p>
 
+                    <v-btn tile color="primary" @click="downloadTemplate">Descargar Plantilla</v-btn>
+                </div>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
                 <form @submit.prevent="uploadFile">
                     <input type="file" ref="fileInput" @change="uploadFile">
-                    <!--<button type="submit">Enviar archivo</button>-->
                 </form>
             </v-col>
-
             <v-col>
                 <v-btn tile color="success" @click="save">
                     <v-icon left>
@@ -24,25 +39,20 @@
                     Guardar
                 </v-btn>
             </v-col>
-
         </v-row>
         <v-row>
-            <!--{{ mostrar(this.excelData) }}-->
             <v-col>
-                <v-select v-model="selectedSheet" :items="sheetList" label="Selecione Hoja" @change="onchangeSheet"
+                <v-select v-model="selectedSheet" :items="sheetList" label="Seleccione Hoja" @change="onchangeSheet"
                     outlined>
                 </v-select>
             </v-col>
-
         </v-row>
-        <!--{{ this.rowObj }}-->
         <div class="wrapper-dgxl">
             <div ref="dgxl" class="grid"></div>
         </div>
 
     </v-container>
 </template>
-
 <script>
 
 import XLSX from 'xlsx'
@@ -482,7 +492,37 @@ export default {
             console.log("________________");
             console.log(this.DataGridXL.getSelection());
             return;
-        }
+        },
+        downloadTemplate() {
+            // Aquí puedes agregar el código para descargar la plantilla de Excel.
+            // Puedes usar un enlace de descarga o una solicitud al servidor para obtener la plantilla.
+            // Por ejemplo:
+            // window.location.href = '/ruta/de/la/plantilla.xlsx';
+            axios({
+                url: `/${process.env.MIX_CARPETA}/api/descargarPantilla`,
+                method: 'GET',
+                responseType: 'blob', // Indica que la respuesta es un archivo binario
+            })
+                .then((response) => {
+                    // Crea un objeto URL para el archivo Excel
+                    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    const url = window.URL.createObjectURL(blob);
+
+                    // Crea un elemento de enlace para descargar el archivo Excel
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'usuarios.xlsx'; // Nombre del archivo Excel
+
+                    // Simula hacer clic en el enlace para iniciar la descarga
+                    a.click();
+
+                    // Limpia el objeto URL y el elemento de enlace
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch((error) => {
+                    console.error('Error al descargar la plantilla:', error);
+                });
+        },
     },
     computed: {
 

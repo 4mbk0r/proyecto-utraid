@@ -1,0 +1,27 @@
+@startuml
+left to right direction
+actor Administrador as g
+
+package Administracion {
+  usecase "Registrar Usuario" as UC1
+  usecase "Lista Usuario" as L1
+  usecase "Editar Usuario" as L2
+  usecase "Configuracion" as UC2
+  usecase "Lista Configuracion" as L3
+  usecase "Editar Configuracion" as L4
+  usecase "Craar Backup" as UC3
+  usecase "Configuracion Boleta" as UC4
+
+}
+(UC1) .down.> (L1) : <<include>>
+(UC1) .down.> (L2) : <<include>>
+g --> UC1
+
+(UC2) .right.> (L3) : <<include>>
+(UC2) .down.> (L4) : <<include>>
+g --> UC2
+
+g -down-> UC3
+
+g --> UC4
+@enduml

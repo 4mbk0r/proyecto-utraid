@@ -4,7 +4,7 @@
 
 
             <!-- Page Heading -->
-            <v-app-bar color="#a2315a" class="white--text" app>
+            <v-app-bar color="#772241" class="white--text" app>
                 <v-app-bar-nav-icon style="color: white;" @click="drawer = !drawer">
 
                 </v-app-bar-nav-icon>
@@ -20,11 +20,11 @@
             </v-app-bar>
 
             <!--Page Content-->
-            <v-navigation-drawer v-model="drawer" color="#a2315a" style="color: white;" app>
+            <v-navigation-drawer v-model="drawer" color="#772241" style="color: white;" app>
                 <v-list v-if="$page.props.user" dense class="custom-tile">
                     <v-list-item-group v-model="idlist" active-class="bg-active">
                         <v-list-item class="px-2" key="0">
-                            <v-img max-height="80" max-width="150" src="assets/logo-sedes-lapaz.png"></v-img>
+                            <v-img max-height="80" max-width="150"  :src="pedir_url()"></v-img>
                         </v-list-item>
                         <Link :href="route('inicio')">
                         <v-list-item link>
@@ -33,7 +33,7 @@
                                     {{ $page.props.user.cargo }}
                                 </v-list-item-title>
                                 <v-list-item-title>
-                 
+
                                     {{ $page.props.user.nombre }} {{ $page.props.user.ap_paterno }}
                                     {{ $page.props.user.ap_materno }}
                                 </v-list-item-title>
@@ -53,16 +53,6 @@
                             </form>
                         </v-list-item>
 
-                        <Link :href="route('agendar')">
-                        <v-list-item v-if="$page.props.user.cargo == 'recepcionista'" key="3" @click="mostrar(3)">
-                            <v-list-item-content style="color: white;">
-                                <v-list-item-title>
-                                    <v-icon>mdi-file-document-edit</v-icon>
-                                    <span>Agendar</span>
-                                </v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                        </Link>
                         <jet-nav-link :href="route('registro')">
                             <v-list-item v-if="$page.props.user.cargo == 'ADMIN'" key="4" link>
                                 <v-list-item-content style="color: white;">
@@ -115,7 +105,28 @@
                                 </v-list-item-content>
                             </v-list-item>
                         </jet-nav-link>
-                        
+                        <jet-nav-link :href="route('atender')">
+                            <v-list-item v-if="roles.servicio" key="4" link>
+                                <v-list-item-content style="color: white;">
+                                    <v-list-item-title>
+                                        <v-icon>mdi-file-document-edit</v-icon>
+                                        <span>Atencion</span>
+                                    </v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </jet-nav-link>
+                        <jet-nav-link :href="route('agendar')">
+                            <v-list-item v-if="roles.oficinista" key="4" link>
+                                <v-list-item-content style="color: white;">
+                                    <v-list-item-title>
+                                        <v-icon>mdi-file-document-edit</v-icon>
+                                        <span>Agendar</span>
+                                    </v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </jet-nav-link>
+
+
                     </v-list-item-group>
                 </v-list>
 
@@ -182,10 +193,11 @@ export default {
         JetResponsiveNavLink,
         Link,
     },
-
+    
     data() {
         return {
-            items: [
+            roles: {},
+            itdems: [
                 { title: 'Home', icon: 'dashboard' },
                 { title: 'About', icon: 'question_answer' },
                 { title: 'Bookmark', icon: 'bookmark' }
@@ -240,9 +252,44 @@ export default {
 
         }
     },
-
+    async created() {
+        //console.log('////s/s/s/s//s/');
+        this.pedir_roles()
+        //console.log(w);
+        //console.log(this.roles);
+    },
     methods: {
-
+        pedir_url(){
+            return `/${process.env.MIX_CARPETA}/assets/logo-sedes-lapaz.png`      
+        },
+        async pedir_roles() {
+            //console.log('ssss83938');
+            var res = await axios({
+                method: 'get',
+                url: `/${process.env.MIX_CARPETA}/cargo/`+this.$page.props.user.username,
+                //method: method,
+                //url: url,
+                //data: t,
+            })
+                .then((response) =>  {
+                    // Manejo de la respuesta exitosa
+                    console.log('Datos recibidos:', response.data);
+                    this.roles = response.data
+                    
+                })
+                .catch((error) =>  {
+                    // Manejo de errores
+                    if (error.response) {
+                        console.error('Error de respuesta del servidor:', error.response.status);
+                        console.error('Mensaje de error:', error.response.data);
+                    } else if (error.request) {
+                        console.error('No se pudo realizar la solicitud al servidor:', error.request);
+                    } else {
+                        console.error('Error:', error.message);
+                    }
+                    console.error('Configuración de solicitud:', error.config);
+                });
+        },
         mostrar(val) {
             console.log("....." + val)
             this.idlist = val

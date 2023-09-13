@@ -8,37 +8,29 @@
         <v-btn color="primary" @click="dialog = true">
           Adicionar Sala
         </v-btn>
+
+
+        <equipos_seleccion :datos="elemento" :dialogVisible="editgrupo" :item_equipo_prop="item_equipo"
+          @eventoCerrarEditgrupo="cerrarEditgrupo" @eventoCrearEditgrupo="crearEditgrupo"></equipos_seleccion>
+
         <v-dialog v-if="dialog" v-model="dialog" max-width="500px">
           <salaespera ref="salaespera" @validar_descripcion="evaluar_descripcion($event)" @lista="mostrarsalas($event)"
-            @eliminar="eliminarsalas($event)" @cerrar="cerrar($event)" :editedIndex="editedIndex"
-            :editedItem="editedItem"></salaespera>
-        </v-dialog>
-        <v-dialog v-if="editgrupo" v-model="editgrupo" max-width="500px">
-          <v-card>
-            <v-card-title class="text-h5"> 
-              {{ elemento.descripcion }}</v-card-title>
+            @eliminar="eliminarsalas($event)" @cerrar="cerrar($event)" :salas_datos="desserts" :editedIndex="editedIndex"
+            :equipo="item_equipo" :originalItem="editedItem" @actulizar_lista="crearEditgrupo"></salaespera>
 
-            <v-card-text>
-              <equipos_seleccion :datos="elemento"></equipos_seleccion>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="">Cancelar</v-btn>
-              <v-btn color="blue darken-1" text @click="">Aceptar</v-btn>
-              <v-spacer></v-spacer>
-            </v-card-actions>
-          </v-card>
-          
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">Deseas Eliminar la Consulta</v-card-title>
             <v-card-actions>
+
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="closeDelete">Cancelar</v-btn>
               <v-btn color="blue darken-1" text @click="deleteItemConfirm">Aceptar</v-btn>
               <v-spacer></v-spacer>
+
             </v-card-actions>
+
           </v-card>
         </v-dialog>
       </v-toolbar>
@@ -50,7 +42,7 @@
       <v-icon small class="mr-2" @click="opengrupo(item)">
         mdi-account-group
       </v-icon>
-      
+
       <v-icon v-if="editar_consulta" small @click="deleteItem(item)">
         mdi-delete
       </v-icon>
@@ -78,12 +70,14 @@ export default {
     configuracion: Object,
     editar_consulta: false,
 
+    //equipos: Array,
+
   },
   data: () => ({
     addconfiguracion: '',
     dialog: false,
     dialogDelete: false,
-    editgrupo:  false,
+    editgrupo: false,
     headers: [
 
 
@@ -91,8 +85,12 @@ export default {
         text: 'Descrpcion',
         align: 'start',
         value: 'descripcion',
+        sortable: true
       },
-      { text: 'Opciones', value: 'actions', sortable: false },
+      { text: 'Opciones', value: 'actions', },
+      { text: 'Equipo', value: 'lista', },
+
+
     ],
     desserts: [],
     editedIndex: -1,
@@ -120,6 +118,11 @@ export default {
     ],
     horario: [],
     elemento: {},
+
+    //equipo 
+    item_equipo: [],
+    lista_equipo: [],
+    lista_completa: {},
   }),
   components: {
     salaespera,
@@ -142,18 +145,109 @@ export default {
     },
     salas: function () {
       this.$emit('salas', this.salas)
-    }
+    },
+    item_equipo(nuevo, anterior) {
+      this.filtrar_equipo()
+    },
+    desserts(nuevo, anterior) {
+      this.filtrar_equipo()
+    },
+
   },
   created() {
     console.log(':::::::::::: ')
     console.log(this.configuracion.id_configuracion);
     this.initialize()
+    this.pedir_datos()
   },
   methods: {
-    opengrupo(item){
-      this.editgrupo =  true
+    filtrar_equipo(){
+      this.lista_completa = []
+      var sw = false
+      for (const x in this.desserts) {
+        var lista = ''
+        var array =[]
+        var l = {}
+        var nombre_equipo = ''
+        for (const y in this.item_equipo) {
+          if (this.item_equipo[y].hasOwnProperty('sala')) {
+            if (this.item_equipo[y].sala === this.desserts[x].descripcion) {
+              if (lista === '') {
+                lista += this.item_equipo[y].equipo + ': '
+                nombre_equipo = this.item_equipo[y].equipo
+              }
+              lista += this.item_equipo[y].ap_paterno + ', '
+              array.push(this.item_equipo[y])
+            }
+          }
+
+        }
+        this.desserts[x].lista = lista
+        console.log('?????/')
+        console.log(this.desserts)
+        if (array.length > 0) {
+          console.log('id sala ');
+          l.id_sala = this.desserts[x].id_sala
+          l.nombre_sala = this.desserts[x].descripcion
+          l.equipo =  nombre_equipo
+          l.lista =  array
+          this.lista_completa.push(l) 
+        }
+        console.log('-+-+-+-+');
+        console.log(this.desserts[x].id_sala);
+      }
+      var devolver = {
+        lista_completa: this.lista_completa,
+        verificar: sw
+      }
+      this.$emit('lista_completa', this.lista_completa)
+    },
+    isEmpty(value) {
+      return value === undefined || value === null || value === '' || (typeof value === 'object' && Object.keys(value).length === 0);
+    },
+    filtrarPorSala(array, salaElegido) {
+      return array.filter((empleado) => empleado.sala === salaElegido);
+    },
+
+    cerrarEditgrupo(data) {
+      this.editgrupo = data
+    },
+    crearEditgrupo(data) {
+      this.editgrupo = data.dialog
+      this.item_equipo = []
+      this.item_equipo = data.item_equipo
+
+    },
+    opengrupo(item) {
+      this.editgrupo = true
       this.elemento = item
-    },  
+    },
+
+    async pedir_datos() {
+      console.log("datops");
+      try {
+        var res = await axios({
+          method: 'get',
+          url: `/${process.env.MIX_CARPETA}/api/` + "personal_servicio",
+        }).then(
+          (response) => {
+            //console.log('dsf'+response);
+            this.item_equipo = response.data
+            //this.desserts = response.data
+
+            console.log('dato')
+            console.log(response.data)
+
+          }, (error) => {
+            console.log(error);
+          }
+        );
+      } catch (err) {
+        console.log("err->", err.response.data)
+        return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+      }
+
+    },
     async initialize() {
 
       console.log("----", this.configuracion);
@@ -225,6 +319,7 @@ export default {
     deleteItem(item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
+
       this.dialogDelete = true
     },
     async deleteItemConfirm() {
@@ -243,13 +338,32 @@ export default {
               //console.log(response.data);
               this.desserts = response.data
               this.closeDelete();
+              for (const key in this.item_equipo) {
+                console.log('++++');
+                console.log(this.item_equipo[key].sala);
+                console.log(this.editedItem.descripcion);
+                if (this.editedItem.descripcion === this.item_equipo[key].sala) {
+                  this.item_equipo[key].sala = undefined
+                  this.item_equipo[key].equipo = undefined
+
+                }
+              }
 
             }, (error) => {
               //console.log(error);
             });
         }
       } else {
+        console.log('===');
+        for (const key in this.item_equipo) {
+          console.log('++++');
+          console.log(this.item_equipo[key].sala);
+          if (this.editedItem.descripcion === this.item_equipo[key].sala) {
+            this.item_equipo[key].sala = undefined
+            this.item_equipo[key].equipo = undefined
 
+          }
+        }
         this.desserts.splice(this.editedIndex, 1)
         this.closeDelete()
       }
@@ -338,16 +452,48 @@ export default {
     mostrarsalas(valor) {
       //console.log('***-ç-ç-ç-ç-ç-ç-ç-ç-ç-******')
       //console.log(valor)
+
       this.desserts.push(valor)
+
       //console.log(this.desserts)
     },
     eliminarsalas(valor) {
-      //console.log('*********')
+      /*console.log('*********')
       ////console.log(valor)
       //console.log(valor)
       //const ret = this.desserts.slice(valor.index);
+      console.log(valor.sala);
+      for (const key in this.item_equipo) {
+          console.log('++++');
+          console.log(this.item_equipo[key].sala);
+          if(valor.sala === this.item_equipo[key].sala){
+            this.item_equipo[key].sala = undefined
+            this.item_equipo[key].equipo = undefined
+            
+          } 
+      }*/
+      
+      this.item_equipo.forEach((lista) => {
+        // Si la ocupación es "estudiante", cambia la ocupación a "graduado"
+        if (lista.sala === valor.anterior.descripcion) {
+          console.log('++++++++++++');
+          console.log(valor.anterior.descripcion + ' ' + valor.item.descripcion);
+          lista.sala = valor.item.descripcion
+        }
+      });
 
+      console.log('-------------------------');
+      console.log(valor.index)
+      
+      console.log('-------------------------');
+      console.log(valor.sala)
       this.desserts.splice(valor.index, 1, valor.sala)
+      
+      var p = this.desserts
+      this.desserts = []
+      this.desserts = p
+      
+
       //this.desserts[valor.index]= structuredClone(valor.sala)
     },
     evaluar_descripcion(val) {
@@ -364,7 +510,7 @@ export default {
 
         }
       }
-    }
+    },
   },
 
 

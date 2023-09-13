@@ -1,12 +1,19 @@
 @startuml
-actor Paciente
-boundary DatosPersonales
-control Apirest
-database BaseDatos
-Paciente -> DatosPersonales: Accede al sistema
-DatosPersonales -> Apirest: Solicita registro de paciente
-Apirest -> BaseDatos: Guarda información del paciente
-BaseDatos --> Sistema: Confirmación de registro
-Sistema --> DatosPersonales: Muestra mensaje de éxito
-DatosPersonales --> Paciente: Registra paciente exitosamente
+left to right direction
+actor Administrador as g
+
+package Administracion {
+  usecase "Agendar Paciente" as UC1
+  usecase "Registrar Paciente" as L1
+  usecase "Editar Cita" as UC2
+  usecase "Imprimir Boleta" as UC4
+
+}
+(UC1) .down.> (L1) : <<include>>
+g --> UC1
+
+g --> UC2
+
+
+g --> UC4
 @enduml

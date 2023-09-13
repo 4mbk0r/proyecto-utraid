@@ -4,7 +4,7 @@
 
 
         <jet-validation-errors />
-        <v-form ref="form" @submit.prevent="submit" class="elevation-5 rounded-lg px-5 py-7">
+        <v-form ref="form" @submit.prevent="submit" class="">
             <v-row class="my-2">
                 <v-card-title class="justify-center">
                     Registrar Usuarios
@@ -26,20 +26,22 @@
             </v-row>
             <v-row>
                 <v-col>
-                    <v-text-field dense outlined id="nombre" label="Nombres" type="text" v-model="form.nombres"
-                        :rules="[v => !!v || ' Se requiere completar Nombre']" required autofocus
-                        prepend-inner-icon="mdi-account-arrow-right-outline" class="mb-n5 pa-0"
-                        @input="(val) => (form.nombres = val.toUpperCase())" pattern="[a-zA-Z]+" />
+                    <v-text-field dense outlined id="nombres" label="Nombres" type="text" 
+                    v-model="form.nombres"
+                        :rules="reglasTexto" required :autofocus="shouldAutofocus"
+                        prepend-inner-icon="mdi-account-arrow-right-outline" class="mb-n6 pa-1"
+                        @input="(val) => (form.nombres = val.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '').toUpperCase())"
+                        persistent-hint />
                 </v-col>
                 <v-col>
                     <v-text-field dense outlined id="paterno" label="Apellido Paterno" type="text" v-model="form.ap_paterno"
-                        :rules="[v => !!v || 'Se requiere Completar Apellido Paterno']"
-                        prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0"
+                        :rules="[v => !!v || 'Se requiere Completar Apellido Paterno',(v) => !!v.match(/^[a-zA-Z]*$/i) || 'Solo se permiten letras' ]"
+                        prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n6 pa-0"
                         @input="(val) => (form.ap_paterno = val.toUpperCase())" pattern="[a-zA-Z]+" />
                 </v-col>
                 <v-col>
                     <v-text-field dense outlined id="materno" label="Apellido Materno" type="text" v-model="form.ap_materno"
-                        :rules="[v => !!v || 'Se requiere Completar Apellido Materno']"
+                        :rules="[v => !!v || 'Se requiere Completar Apellido Materno', (v) => !!v.match(/^[a-zA-Z]*$/i) || 'Solo se permiten letras']"
                         @input="(val) => (form.ap_materno = val.toUpperCase())"
                         prepend-inner-icon="mdi-account-arrow-right-outline" required class="mb-n5 pa-0"
                         pattern="[a-zA-Z]+" />
@@ -48,7 +50,7 @@
             <v-row>
                 <v-col>
                     <v-text-field dense outlined id="CI" label="Cedula de Identidad" type="number" v-model="form.ci"
-                        :rules="ciRules" required class="mb-n4 pa-0"
+                        :rules="ciRules" required 
                         prepend-inner-icon="mdi-card-account-details-outline" />
                 </v-col>
                 <v-col>
@@ -58,24 +60,42 @@
                         --->
                     <v-select dense outlined item-value="departamento" item-text="departamento" :items="departamentos"
                         v-model="form.expedido" :rules="[v => !!v || 'Se requiere seleccionar departamento expedicion']"
-                        filled label="Seleccione departemento de expacion" class="mb-n4 pa-0" required
+                        filled label="Seleccione departemento de expacion" required
                         prepend-inner-icon="mdi-clipboard-account">
                     </v-select>
                 </v-col>
             </v-row>
-            <v-row>
-                <v-select dense outlined item-value="cargo" item-text="cargo" :items="cargos" v-model="form.cargo"
-                    :rules="[v => !!v || 'Se requiere el Cargo']" filled label="Asigne un cargo" class="mb-n4 pa-0" required
-                    prepend-inner-icon="mdi-clipboard-account">
-                </v-select>
+            <v-row dense>
+                <v-col cols="11" class="d-flex justify-center" dense>
+                    <v-select dense outlined item-value="cargo" item-text="cargo" 
+                    
+                    :items="cargos" v-model="form.cargo"
+                    :rules="[v => !!v || 'Se requiere el Cargo']"
+                     filled label="Asigne un cargo" class="mb-n4 pa-2"
+                    required prepend-inner-icon="mdi-clipboard-account">
+                    </v-select>
+                </v-col>
+                <v-col dense cols="1" class="d-flex justify-center">
+                    <v-btn color="primary" fab small dark @click="dialog_cargo = true">
+                        <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+
+                </v-col>
             </v-row>
-            <v-row>
-                <!---dense outlined-->
-                <v-select item-value="id" item-text="nombre" :items="establecimiento" v-model="form.establecimiento"
-                    :rules="[v => !!v || 'Se requiere el establecimierto que pertenece']" filled
-                    label="Seleccione la Estableciemiento de trabajo" class="mb-n4 pa-0" required
-                    prepend-inner-icon="mdi-clipboard-account">
-                </v-select>
+            <v-row dense>
+                <v-col cols="11" class="d-flex justify-center" dense>
+                    <v-select dense outlined filled item-value="id" item-text="nombre" :items="establecimiento" v-model="form.establecimiento"
+                        :rules="[v => !!v || 'Se requiere el establecimierto que pertenece']" 
+                        label="Seleccione la Estableciemiento de trabajo" class="mb-n4 pa-2" required
+                        prepend-inner-icon="mdi-clipboard-account">
+                    </v-select>
+                </v-col>
+                <v-col dense cols="1" class="d-flex justify-center">
+                    <v-btn color="primary" fab small dark @click="dialog_establecimiento = true">
+                        <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+
+                </v-col>
             </v-row>
             <v-row>
                 <v-col>
@@ -88,24 +108,6 @@
                         v-model="form.celular" prepend-inner-icon="mdi-cellphone" />
                 </v-col>
             </v-row>
-
-
-
-            <!--
-                    <div class="mt-4" v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature">
-                        <jet-label for="terms">
-                            <div >
-                                <jet-checkbox name="terms" id="terms" v-model="form.terms" />
-                                <div class="ml-2">
-                                    I agree to the <a target="_blank" :href="route('terms.show')"
-                                        class="underline text-sm text-gray-600 hover:text-gray-900">Terms of Service</a> and
-                                    <a target="_blank" :href="route('policy.show')"
-                                        class="underline text-sm text-gray-600 hover:text-gray-900">Privacy Policy</a>
-                                </div>
-                            </div>
-                        </jet-label>
-                    </div>
-                    -->
             <v-row class="flex items-center justify-center mt-4">
                 <!--<inertia-link :href="route('login')"
                                 class="underline text-sm text-gray-600 hover:text-gray-900">
@@ -117,9 +119,7 @@
                     Registrar
                 </v-btn>
             </v-row>
-
         </v-form>
-
         <v-dialog v-model="excel_dialog" fullscreen transition="dialog-bottom-transition">
             <v-card>
                 <v-toolbar dark color="primary">
@@ -139,9 +139,42 @@
                     </excel>
 
                 </v-card-text>
-                    
+
             </v-card>
         </v-dialog>
+        <v-dialog v-model="dialog_cargo" transition="dialog-bottom-transition">
+            <v-card>
+                <v-toolbar dark color="primary">
+                    <v-btn icon dark @click="cerrar_cargo()">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title>Cargo</v-toolbar-title>
+                    <v-spacer></v-spacer>
+
+                </v-toolbar>
+                <v-card-text>
+                    <cargo></cargo>
+                </v-card-text>
+
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialog_establecimiento" transition="dialog-bottom-transition">
+            <v-card>
+                <v-toolbar dark color="primary">
+                    <v-btn icon dark @click="cerrar_establecimiento()">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title>Estableciemiento</v-toolbar-title>
+                    <v-spacer></v-spacer>
+
+                </v-toolbar>
+                <v-card-text>
+                    <estable></estable>
+                    <!--<cargo></cargo>-->
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+        
     </v-card>
     <!--</app-layout>-->
 </template>
@@ -156,6 +189,8 @@ import JetCheckbox from "@/Jetstream/Checkbox";
 import JetLabel from '@/Jetstream/Label'
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import Excel from '../../Pages/Micomponet/Excel.vue'
+import Cargo from '../../Pages/Register/Cargo.vue'
+import Estable from '../../Pages/Register/Estable.vue'
 
 
 export default {
@@ -166,6 +201,9 @@ export default {
     },
     data() {
         return {
+            shouldAutofocus: true,
+            dialog_cargo: false,
+            dialog_establecimiento: false,
             notifications: false,
             sound: true,
             widgets: false,
@@ -175,6 +213,9 @@ export default {
                 (v) => (v.length >= 6) || "CI debe de tener mas de 6 caracteres",
                 //v => v.length <= 10 || 'CI debe de tener mas de 10 caracteres',
             ],
+
+            reglasTexto: [ v => !!v || 'Se requiere completar Nombre', 
+            (v) => !!v.match(/^[a-zA-Z]*$/i) || 'Solo se permiten letras'],
             form: this.$inertia.form({
                 nombres: '',
                 ap_paterno: '',
@@ -205,6 +246,8 @@ export default {
         JetLabel,
         JetValidationErrors,
         Excel,
+        Cargo,
+        Estable
 
     },
     created() {
@@ -222,7 +265,14 @@ export default {
 
     },
     methods: {
-
+        cerrar_establecimiento() {
+            this.$inertia.reload()
+            this.dialog_establecimiento = false
+        },
+        cerrar_cargo() {
+            this.$inertia.reload()
+            this.dialog_cargo = false
+        },
 
         closeexcel() {
 

@@ -38,9 +38,10 @@ class CreatePersonasTable extends Migration
             $table->date('fecha_nacimiento')->nullable();
             $table->text('direccion', 100)->nullable();
             $table->text('sexo', 50)->nullable();
-            $table->text('nom_municipio', 50)->nullable();
+            $table->text('municipio', 50)->nullable();
             $table->text('nom_departamento', 50)->nullable();
             $table->boolean('register')->default(True);
+            $table->string('registro')->nullable()->default(null);
             $table->unique(['ci', 'expedido']);
 
             //});

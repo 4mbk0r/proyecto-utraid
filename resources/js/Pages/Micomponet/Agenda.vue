@@ -2,19 +2,18 @@
     <v-app>
         <div>
             <v-container>
-                
+
                 <v-row>
                     <v-col>
                         <v-sheet height="64">
                             <v-toolbar>
                                 <v-btn outlined class="mr-4" color="grey darken-2" @click="setToday">
-                                    Hoy
+                                    Hoy2
                                 </v-btn>
                                 <!--onkeydown="return false"-->
                                 <!--<v-text-field v-model="fecha_uso"  :min="fechacitaMin" :rules="[ fechaValida ]" type="date" label="Fecha De Cita" >
                         </v-text-field>-->
-                                <input id="txtDate" type="date" refs="seldate" 
-                                    v-model="fecha_hoy" @change="formatDate" />
+                                <input id="txtDate" type="date" refs="seldate" v-model="fecha_hoy" @change="formatDate" />
                                 <v-btn fab text small color="grey darken-2" @click="prev">
                                     <v-icon small>
                                         mdi-chevron-left
@@ -44,13 +43,15 @@
                             <!--@change=""-->
                             <v-calendar ref="calendar" v-model="focus" color="primary" type="category" category-show-all
                                 :categories="categories" :events="events" :event-color="getEventColor"
-                                @click:event="showEvent" :first-interval=7 :interval-minutes=60 :interval-count=12>
+                                :event-class="customEventClass" @click:event="showEvent" :first-interval=7
+                                :interval-minutes=60 :interval-count=12>
                             </v-calendar>
                         </v-sheet>
+
                     </v-col>
                 </v-row>
             </v-container>
-            
+
 
         </div>
     </v-app>
@@ -66,7 +67,7 @@ export default {
     },
     props: {
         datos_cita: Array,
-       
+
     },
     data: () => ({
         av_buscar: false,
@@ -76,7 +77,7 @@ export default {
         focus: '',
         events: [],
         categories: [],
-        
+
     }),
     mounted() {
         this.$refs.calendar.checkChange()
@@ -85,6 +86,9 @@ export default {
         this.initialize()
     },
     methods: {
+        customEventClass({ event }) {
+            return 'custom-event';
+        },
         showEvent({
             nativeEvent,
             event
@@ -125,7 +129,7 @@ export default {
             var today = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + new Date().getDate()).slice(-2);
             this.anterior_dia = today;
             this.fecha_hoy = today;
-            
+
             //this.traerdatos();
             //alert("anterios dia"+this.anterior_dia+"hoy"+this.fecha_hoy);
 
@@ -175,10 +179,10 @@ export default {
             return Math.floor((b - a + 1) * Math.random()) + a
         },
         async formatDate() {
-            
-            
-            
-            
+
+
+
+
         },
         textoDate(val) {
             var dia = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
@@ -191,7 +195,7 @@ export default {
             //alert(" =>"+ver1+" "+ver2);
             //this.$emit('input', dateObj);
         },
-        },
+    },
     computed: {
 
     },

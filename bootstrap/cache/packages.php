@@ -10,6 +10,17 @@
       'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
     ),
   ),
+  'beyondcode/laravel-websockets' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'BeyondCode\\LaravelWebSockets\\WebSocketsServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'WebSocketRouter' => 'BeyondCode\\LaravelWebSockets\\Facades\\WebSocketRouter',
+    ),
+  ),
   'facade/ignition' => 
   array (
     'providers' => 
@@ -115,6 +126,13 @@
     'providers' => 
     array (
       0 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
+    ),
+  ),
+  'owen-it/laravel-auditing' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'OwenIt\\Auditing\\AuditingServiceProvider',
     ),
   ),
   'spatie/laravel-backup' => 

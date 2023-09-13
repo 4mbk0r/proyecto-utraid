@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\DataUpdated;
+use App\Events\ProductoActualizado;
+use App\Events\SaludoUsuario;
 use App\Models\atender;
 use App\Http\Controllers\Controller;
 use App\Models\Horario;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +21,59 @@ class AtenderController extends Controller
      */
     public function index()
     {
-        //
+        // Consulta SQL original:
+        /* 
+         select * from atenders
+        LEFT JOIN fichas ON fichas.id = atenders.id_ficha
+		left join salas ON salas.id = fichas.id_sala
+		left join horarios ON horarios.id = fichas.id_horario
+		LEFT JOIN dar_citas ON dar_citas.id_ficha = fichas.id
+        LEFT JOIN personas ON personas.id = dar_citas.id_persona
+        left join equipos ON equipos.id = atenders.id_designado
+        left join asignar_equipos ON asignar_equipos.id_equipo = equipos.id 
+        left join users ON users.id = asignar_equipos.id_usuario
+        where users.username = '6011483'
+        and fichas.fecha = '2023-09-05'
+        */
+        // Obtener el nombre de usuario del usuario autenticado
+        event(new DataUpdated('sss'));
+        $username = auth()->user()->username;
+
+        // Obtener la fecha actual en formato 'Y-m-d'
+        $hoy = Carbon::now()->toDateString();
+
+        $resultados = DB::table('atenders')
+            ->select(
+                'atenders.*',
+                'fichas.*',
+                'horarios.*',
+                'salas.*',
+                'dar_citas.*',
+                'personas.*',
+                'equipos.*',
+                'asignar_equipos.*',
+            )
+            ->leftJoin('fichas', 'fichas.id', '=', 'atenders.id_ficha')
+            ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+            ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
+            ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
+            ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
+            ->leftJoin('equipos', 'equipos.id', '=', 'atenders.id_designado')
+            ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
+            ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
+            ->where('users.username', $username)
+            ->where('fichas.fecha', $hoy)
+            ->get();
+
+        event(new SaludoUsuario($username));
+
+        return inertia('Atencion/Atencion', [
+            'atenciones' => $resultados,
+            'hoy' => $hoy,
+            'fecha_actual' => $hoy,
+        ]);
+        //event(new ProductoActualizado('JISISISIS'));
+        return $resultados;
     }
 
     /**
@@ -27,6 +83,7 @@ class AtenderController extends Controller
      */
     public function create()
     {
+
         //
     }
 
@@ -93,6 +150,7 @@ class AtenderController extends Controller
                 return $th;
             }
 
+
             $horario = DB::table('fichas')
                 ->select(['fichas.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'atenders.id_designado'])
                 ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
@@ -136,10 +194,59 @@ class AtenderController extends Controller
      * @param  \App\Models\atender  $atender
      * @return \Illuminate\Http\Response
      */
-    public function show(atender $atender)
+    public function show(String $atender)
     {
-        //
 
+        //
+        // Consulta SQL original:
+        /* 
+         select * from atenders
+        LEFT JOIN fichas ON fichas.id = atenders.id_ficha
+		left join salas ON salas.id = fichas.id_sala
+		left join horarios ON horarios.id = fichas.id_horario
+		LEFT JOIN dar_citas ON dar_citas.id_ficha = fichas.id
+        LEFT JOIN personas ON personas.id = dar_citas.id_persona
+        left join equipos ON equipos.id = atenders.id_designado
+        left join asignar_equipos ON asignar_equipos.id_equipo = equipos.id 
+        left join users ON users.id = asignar_equipos.id_usuario
+        where users.username = '6011483'
+        and fichas.fecha = '2023-09-05'
+        */
+        // Obtener el nombre de usuario del usuario autenticado
+        $username = auth()->user()->username;
+
+        // Obtener la fecha actual en formato 'Y-m-d'
+        $hoy = Carbon::now()->toDateString();
+
+        $resultados = DB::table('atenders')
+            ->select(
+                'atenders.*',
+                'fichas.*',
+                'salas.*',
+                'horarios.*',
+                'dar_citas.*',
+                'personas.*',
+                'equipos.*',
+                'asignar_equipos.*',
+            )
+            ->leftJoin('fichas', 'fichas.id', '=', 'atenders.id_ficha')
+            ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+            ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
+            ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
+            ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
+            ->leftJoin('equipos', 'equipos.id', '=', 'atenders.id_designado')
+            ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
+            ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
+            ->where('users.username', $username)
+            ->where('fichas.fecha', $atender)
+            ->get();
+
+        return inertia('Atencion/Atencion', [
+            'atenciones' => $resultados,
+            'hoy' => $hoy,
+            'fecha_actual' => $atender,
+        ]);
+        return $resultados;
     }
 
     /**

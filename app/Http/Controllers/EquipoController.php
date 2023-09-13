@@ -70,7 +70,6 @@ class EquipoController extends Controller
         //
         $total =  [];
         $equipo = (array) $request['equipo'];
-
         foreach ($equipo as $key => $v) {
             # code...
             $lista = (array) $v['lista'];
@@ -86,7 +85,6 @@ class EquipoController extends Controller
             }
             $r_equipo = [];
             foreach ($lista as $key => $value) {
-
                 DB::table('asignar_equipos')->insert(
                     [
                         'id_equipo' => $id_equipo,
@@ -95,11 +93,12 @@ class EquipoController extends Controller
                 );
                 array_push($r_equipo, $value);
             }
-            array_push($total, [$equipo => $r_equipo, 'id_equipo' => $id_equipo]);
+            array_push($total, [
+                'id_sala' =>   $v['id_sala'], 
+                'nombre_sala' =>   $v['nombre_sala'],
+                'nombre_equipo' => $v['equipo'],
+                'id_equipo' => $id_equipo]);
         }
-
-
-
         return $total;
     }
 

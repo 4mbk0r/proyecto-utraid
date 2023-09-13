@@ -32,6 +32,7 @@ use App\Http\Controllers\Controllgeneral;
 
 use App\Http\Controllers\CuentaController;
 use App\Http\Controllers\EquipoController;
+use App\Http\Controllers\EstablecimientoController;
 use App\Http\Controllers\HistorialController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -198,6 +199,12 @@ Route::resource('/dar_ficha', DarCitaController::class)->middleware(['auth:sanct
 
 
 Route::resource('/atender', AtenderController::class)->middleware(['auth:sanctum', 'verified']);
+Route::middleware(['auth:sanctum', 'verified', 'permiso'])->get('/atender', [AtenderController::class, 'index'],)->name('atender');
+
+
+
+
+Route::get('/atenders/{fecha}', [AtenderController::class, 'show'])->name('atencion');
 
 
 Route::resource('/persona', PersonaController::class)->middleware(['auth:sanctum', 'verified']);
@@ -250,7 +257,14 @@ Route::resource('/institucion', InstitucionController::class);
 
 Route::resource('/backup_', BackupController::class);
 
+Route::resource('/establecimiento', EstablecimientoController::class);
+
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/backup', function () {
     return Inertia::render('Backup/Backup');
 })->name('backup');
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/cargos_', function () {
+    return Inertia::render('Register/Cargo');
+})->name('cargos_');
+

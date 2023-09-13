@@ -16,3 +16,7 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+Broadcast::channel('saludo-usuario.{userId}', function ($user, $userId) {
+    // En este ejemplo, permitimos que el usuario acceda al canal si está autenticado y el userId coincide con el suyo.
+    return $user->id === (int) $userId && auth()->check();
+});

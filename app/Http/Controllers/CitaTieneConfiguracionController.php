@@ -284,10 +284,11 @@ Agenda2.vue:442
                 
                 */
                 $horario = DB::table('fichas')
-                    ->select(['fichas.*','viajes.id_municipio','municipios.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'designar_equipos.id_equipo', 'designar_equipos.id_sala as id_sala_asig', 'equipos.nombre_equipo', 'salas.descripcion', 'atenders.id_designado', 'fichas.id as id_ficha', 'institucions.*'])
+                    ->select(['fichas.*', 'viajes.id_municipio','municipios.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'designar_equipos.id_equipo', 'designar_equipos.id_sala as id_sala_asig', 'equipos.nombre_equipo', 'salas.descripcion', 'atenders.id_designado', 'fichas.id as id_ficha', 'institucions.*', 'personas.id as id', 'evaluacions.id_persona as id_persona'])
                     ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
                     ->leftJoin("viajes", function ($join)  {
                         $join->on("viajes.id_sala", "=", "salas.id");
+                        $join->on("viajes.fecha", "=", "fichas.fecha");
                     })
                     ->leftJoin("municipios", function ($join)  {
                         $join->on("municipios.id", "=", "viajes.id_municipio");
@@ -299,7 +300,7 @@ Agenda2.vue:442
                     ->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
                     ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
                     ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
-                    
+                    ->leftJoin('evaluacions', 'personas.id', '=', 'evaluacions.id_persona')
                     ->leftJoin("calendarios", function ($join) {
                         $join->on("calendarios.fecha", "=", "fichas.fecha");
                     })

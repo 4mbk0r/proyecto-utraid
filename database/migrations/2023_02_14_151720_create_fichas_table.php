@@ -22,6 +22,7 @@ class CreateFichasTable extends Migration
             $table->integer('id_conf_sala');
             $table->date('fecha');
             $table->string('institucion');
+            $table->string('observaciones')->nullable();
             $table->unique(['id_sala', 'id_horario', 'id_conf_sala', 'fecha', 'institucion']);
             //$table->timestamps();
         });

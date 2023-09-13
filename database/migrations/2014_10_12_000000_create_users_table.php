@@ -22,10 +22,10 @@ class CreateUsersTable extends Migration
             $table->string('ci');
             $table->string('expedido');
             $table->string('item')->nullable();
-
             $table->string('email')->nullable();
             $table->string('celular')->nullable();
             $table->string('cargo');
+            $table->string('estado')->nullable()->default('activo');
             $table->rememberToken();
             $table->timestamp('email_verified_at')->nullable();
             $table->foreignId('current_team_id')->nullable();
