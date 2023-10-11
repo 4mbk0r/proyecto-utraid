@@ -103,7 +103,7 @@ group by configuracions.id
      */
     public function store(Request $request)
     {
-
+        //return $request;    
         $antigua = $request['configuracion_antigua'];
         $configuracion = $request['configuracion'];
         $fecha = $request['fecha_nueva'];
@@ -154,7 +154,6 @@ group by configuracions.id
         } catch (\Throwable $th) {
             DB::table('configuracions')->delete($id_config);
             $resul = DB::table($table)
-                ->where('id', '=',  $antigua['id_calendario'])
                 ->update(['fecha_final' => $conf_antigua->fecha_final, 'principal' => $conf_antigua->principal]);
             return Response::json(['mensaje' => $th->getMessage()], 500);
         }
@@ -178,7 +177,7 @@ group by configuracions.id
                         'institucion' => $value['institucion'],
                         'estado' => true,
                     ];
-                    $e = DB::table('salas')->insertGetId($s);
+                     $e = DB::table('salas')->insertGetId($s);
                     $s = [
                         'descripcion' => $value['descripcion'],
                         'institucion' => $value['institucion'],

@@ -72,6 +72,8 @@ class PersonaCitaController extends Controller
      * @param  \App\Models\Persona_cita  $persona_cita
      * @return \Illuminate\Http\Response
      */
+
+     
     public function edit(Persona_atencion $persona_cita)
     {
         //dd(request('persona_cita'));
@@ -143,11 +145,16 @@ class PersonaCitaController extends Controller
                 $codigo  =  !empty($nuevo['ap_paterno']) ?  $nuevo['ap_paterno'][0]: '';
                 $codigo  .=  !empty($nuevo['ap_materno']) ?  $nuevo['ap_materno'][0]: '';
                 $codigo  .= !empty($nuevo['nombres']) ?  $nuevo['nombres'][0]: '';
-                if(strlen($codigo) == 2){
-                    $codigo .= '_';
-                }
-                $nuevo[ 'id'] = DB::raw("generate_auto_increment('".$codigo."')");
+                $len = strlen($codigo);
+                if( $len == 2){
+                    $codigo .= '__';
+                }else {
 
+                    if ($len == 3) {
+                        $codigo .= '_';
+                    }
+                }
+                $nuevo['id'] = DB::raw("generate_auto_increment('".$codigo."')");
                 DB::table('personas')->insert($nuevo);
             } catch (Exception $e) {
                 $error = explode(' ', $e->getMessage())[0];

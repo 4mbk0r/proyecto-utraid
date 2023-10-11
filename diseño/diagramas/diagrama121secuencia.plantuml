@@ -1,0 +1,29 @@
+@startuml
+actor Usuario
+boundary Registro
+control ApiREST
+database BaseDatos
+alt#Gold #LightBlue caso Registro de Boleta (existo)
+Usuario -> Registro: Ingresa datos boleta
+activate Registro
+
+Registro --> ApiREST: Crear registro de boleta\n url: "/api/Validar_boleta"\n methods: GET 
+Activate ApiREST
+
+ApiREST -> BaseDatos: Consulta: Buscar datos de boleta\n Table: Boleta
+Activate BaseDatos
+BaseDatos --> ApiREST: Resultado: Devolver datos de boleta\n
+deactivate BaseDatos
+ApiREST --> Registro: Devuelve mensaje de no encontrado
+Registro --> Usuario: Muestra el mensaje de no encontrado
+
+else #Pink Error Registro de boleta
+
+ApiREST --> Registro: Devuelve los datos encontrado
+deactivate ApiREST
+
+Registro --> Usuario: Muestra el mensaje de Usuario ya existe
+'destroy ApiREST
+
+deactivate Registro
+end

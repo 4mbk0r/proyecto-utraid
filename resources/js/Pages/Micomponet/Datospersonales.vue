@@ -10,299 +10,239 @@
     </v-toolbar>
 
     <v-card>
-      <v-tabs :color="op1 === 1 ? 'green' : 'blue'" v-model="datos_informacion" icons-and-text centered>
+      <!--<v-tabs :color="op1 === 1 ? 'green' : 'blue'" v-model="datos_informacion" icons-and-text centered>
         <v-tab :color="op1 === 1 ? 'errror' : 'blue'" key="0">
           {{ op1 === 1 ? "Paciente Nuevo" : "Paciente" }}
           <v-icon color="poobrown">{{ icon_ci }}</v-icon>
         </v-tab>
-        <v-tab v-if="paciente.register" @click="buscar_citas" key="1">
-          Citas
-          <v-icon color="poobrown">{{ "mdi-calendar-account" }}</v-icon>
-        </v-tab>
-      </v-tabs>
+      </v-tabs>-->
 
-      <v-tabs-items v-model="datos_informacion" touchless>
-        <v-tab-item>
-          <v-btn @click="show_date = !show_date">
-            Datos Personales
-          </v-btn>
+      <!--<v-tabs-items v-model="datos_informacion" touchless>-->
+      <v-btn @click="show_date = !show_date">
+        Datos Personales
+      </v-btn>
 
-          <v-card flat>
-            <v-form v-model="valid" ref="formDatopersonales">
+      <v-card>
+        <v-form class="pa-4" v-model="valid" ref="formDatopersonales">
 
 
-              <v-container v-show="show_date">
-                <v-row>
+          <v-row>
 
-                  <v-col>
-                    <p v-if="op1 === 1">
-                      {{ "Paciente Nuevo" }}
-                    </p>
-                    <p v-else>
-                      Codigo de Carpeta
-                      <span class="font-weight-bold">
-                        {{ paciente.id }}
-                      </span>
-                    </p>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col cols="12" sm="8" class="pr-4">
-                    <v-text-field v-model="paciente.ci" :rules="ciRules" :color="op1 === 1 ? 'green' : 'blue'"
-                      label="Cedula de Identidad" @keydown.enter="buscadorporvalor()" @input="(v) => {
-                          paciente.ci = v.toUpperCase().trim();
-                        }" required>
-                    </v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="4">
-                    <v-select v-model="paciente.expedido" :rules="nombreRules" persistent-placeholder
-                      placeholder="No se tiene datos" :items="departamentos" label="Expedido" @change="buscadorporci()">
-                    </v-select>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombres" @input="(v) => {
-                        paciente.nombres = v.toUpperCase().trim();
-                      }" @change="buscadorporvalor()" required>
-                    </v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.ap_paterno" @input="(v) => {
-                        paciente.ap_paterno = v.toUpperCase().trim();
-                        validar_apellido(v)
-                      }" :error-messages="errorpaterno" @keydown.enter="buscadaorporvalor()"
-                      @change="buscadorporvalor()" label="Apellido Paterno" required>
-                    </v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.ap_materno" @input="(v) => {
-                        paciente.ap_materno = v.toUpperCase().trim();
-                        validar_apellido(v)
-                      }" :error-messages="errormaterno" @keydown.enter="buscadorporvalor()"
-                      @change="buscadorporvalor()" label="Apellido Materno" required>
-                    </v-text-field>
-                  </v-col>
+            <v-col cols="7">
+              <v-row>
+                <v-col>
+                  <p v-if="op1 === 1">
+                    {{ "Paciente Nuevo" }}
+                  </p>
+                  <p v-else>
+                    Codigo de Carpeta
+                    <span class="font-weight-bold">
+                      {{ paciente.id }}
+                    </span>
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="8" class="pr-4">
+                  <v-text-field v-model="paciente.ci" :rules="ciRules" :disabled="op1 === 2" label="Cedula de Identidad"
+                    @keydown.enter="buscadorporvalor()" @input="(v) => {
+                      paciente.ci = v.toUpperCase().trim();
+                    }" required>
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <v-select v-model="paciente.expedido" :rules="nombreRules" persistent-placeholder :disabled="op1 === 2"
+                    placeholder="No se tiene datos" :items="departamentos" label="Expedido" @change="buscadorporci()">
+                  </v-select>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="4" md="4">
+                  <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombres" @input="(v) => {
+                    paciente.nombres = v.toUpperCase().trim();
+                  }" @change="buscadorporvalor()" required>
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-text-field v-model="paciente.ap_paterno" @input="(v) => {
+                    paciente.ap_paterno = v.toUpperCase().trim();
+                    validar_apellido(v)
+                  }" :error-messages="errorpaterno" @keydown.enter="buscadaorporvalor()" @change="buscadorporvalor()"
+                    label="Apellido Paterno" required>
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-text-field v-model="paciente.ap_materno" @input="(v) => {
+                    paciente.ap_materno = v.toUpperCase().trim();
+                    validar_apellido(v)
+                  }" :error-messages="errormaterno" @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()"
+                    label="Apellido Materno" required>
+                  </v-text-field>
+                </v-col>
 
-                </v-row>
-                <v-row no-gutters>
-                  <v-col cols="12" sm="1" md="1">
-                    <v-icon @click="ver_apellido_casada = !ver_apellido_casada">
-                      mdi-human-male-female
-                    </v-icon>
+              </v-row>
+              <v-row no-gutters>
+                <v-col cols="12" sm="1" md="1">
+                  <v-icon @click="ver_apellido_casada = !ver_apellido_casada">
+                    mdi-human-male-female
+                  </v-icon>
 
-                  </v-col>
-                  <v-col v-show="ver_apellido_casada" cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.ap_casada" @input="(v) => {
-                        paciente.ap_casada = v.toUpperCase();
-                      }
-                      " @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()" label="Apellido Casado"
-                      required>
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.correo" label="Correo">
-                    </v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.celular" label="Numero Celular">
-                    </v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-text-field v-model="paciente.direccion" label="Direccion">
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col cols="12" sm="6">
-                    <v-text-field v-model="paciente.fecha_nacimiento" :min="minFechaNac" :max="maxFechaNac" type="date"
-                      label="Fecha de nacimiento">
-                    </v-text-field>
-                  </v-col>
-                  <v-col cols="12" class="d-flex justify-center" sm="6">
-                    <!--<v-select v-model="paciente.sexo" persistent-placeholder placeholder="No se tiene datos"
+                </v-col>
+                <v-col v-show="ver_apellido_casada" cols="12" sm="4" md="4">
+                  <v-text-field v-model="paciente.ap_casada" @input="(v) => {
+                    paciente.ap_casada
+                      = v.toUpperCase();
+                  }
+                    " @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()" label="Apellido Casado"
+                    required>
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col cols="12" sm="4" md="4">
+                  <v-text-field v-model="paciente.correo" label="Correo">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-text-field v-model="paciente.celular" label="Numero Celular">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-text-field v-model="paciente.direccion" label="Direccion">
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col cols="12" sm="6">
+                  <v-text-field v-model="paciente.fecha_nacimiento" :min="minFechaNac" :max="maxFechaNac" type="date"
+                    label="Fecha de nacimiento">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" class="d-flex justify-center" sm="6">
+                  <!--<v-select v-model="paciente.sexo" persistent-placeholder placeholder="No se tiene datos"
                       :items="ssexo" color="purple darken-3" label="Sexo" pa-0 solo>
                     </v-select>-->
 
-                    <v-radio-group v-model="paciente.sexo" row>
-                      <v-radio label="MASCULINO" value="MASCULINO"></v-radio>
-                      <v-radio label="FEMENINO" value="FEMENINO"></v-radio>
-                    </v-radio-group>
-                  </v-col>
+                  <v-radio-group v-model="paciente.sexo" row>
+                    <v-radio label="MASCULINO" value="MASCULINO"></v-radio>
+                    <v-radio label="FEMENINO" value="FEMENINO"></v-radio>
+                  </v-radio-group>
+                </v-col>
 
-                </v-row>
-                <v-row no-gutters>
-                  <v-col cols="12" sm="4">
-                    <v-btn color="primary" class="mr-4" @click="cambiar_datos">
-                      Guardar Datos
-                    </v-btn>
-                  </v-col>
-                  <v-col cols="12" sm="4">
-                    <v-btn v-if="op1 == 2 && con_cita" color="primary" class="mr-4" @click="dar_cita()">
-                      Dar cita
-                      <v-icon end icon>mdi-calendar</v-icon>
-                    </v-btn>
-                  </v-col>
-                  <!-- <v-col v-if="op1 == 2" cols="12" sm="4">
+              </v-row>
+              <v-row>
+                <v-col cols="6" class="text-center">
+                  <v-btn color="primary" class="m-4" @click="cambiar_datos">
+                    Guardar Datos
+                  </v-btn>
+                </v-col>
+                <v-col cols="6" class="text-center">
+                  <v-btn v-if="op1 == 2 && con_cita" color="primary" class="mr-4" @click="dar_cita()">
+                    Dar cita
+                    <v-icon end icon>mdi-calendar</v-icon>
+                  </v-btn>
+                </v-col>
+                <!-- <v-col v-if="op1 == 2" cols="12" sm="4">
                     <v-btn class="ma-2" color="primary">
                       Imprimir
                       <v-icon end icon> mdi-printer</v-icon>
                     </v-btn>
                   </v-col>-->
-                </v-row>
+              </v-row>
 
+            </v-col>
+
+            <v-col cols="5">
+              <v-row v-if="op1 == 1">
+                <v-data-table v-if="persona.length > 0" :headers="headers" :footer-props="{
+                  itemsPerPageText: 'Pacientes',
+                  'items-per-page-options': [15, 30, 50, 100, -1],
+                  'items-per-page-all-text': 'Todos'
+                }" :items="persona" item-key="ci" :search="search" :header-props='{ sortByText: "Ordenar por" }'
+                  @click:row="seleccion_paciente($event)" class="elevation-1">
+                  <template v-slot:no-results>
+                    <span>No existen datos</span>
+                  </template>
+
+                </v-data-table>
+                <v-alert v-else :value="true" type="info">
+                  No se encontraron datos del Paciente.
+                </v-alert>
+              </v-row>
+
+              <v-row v-if="op1 == 2">
                 <v-row>
-                  <v-col cols="12">
-                    <v-data-table v-if="op1 == 1" :headers="headers" :footer-props="{
-                        itemsPerPageText: 'Pacientes por pagina',
-                        'items-per-page-options': [15, 30, 50, 100, -1],
-                        'items-per-page-all-text': 'Todos'
-                      }" :items="persona" item-key="ci" :search="search" :header-props='{ sortByText: "Ordenar por" }'
-                      @click:row="seleccion_paciente($event)" class="elevation-1">
-                      <template v-slot:no-results>
-                        <span>No existen datos</span>
-                      </template>
-
-                      <!--
-                    <template v-slot:top>
-                       v-container, v-col and v-row are just for decoration purposes
-                      <v-container>
-                        <v-row>
-
-                          <v-col cols="6">
-                            <v-row class="pa-6">
-                              Filter for dessert name
-                              <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
-                                hide-details></v-text-field>
-
-                            </v-row>
-                          </v-col>
-
-
-
-                        </v-row>
-                      </v-container>
-
-                    </template>
-                    -->
-                    </v-data-table>
-
+                  <v-col cols="12" class="text-center">
+                    <span class="headline font-weight-bold"></span>Historial de Citas
                   </v-col>
                 </v-row>
-
-                <v-card v-if="buscador == true"> buscar datos </v-card>
-              </v-container>
-              <v-data-table v-if="op1 == 2" item-key="fecha" :headers="headers_cita" :footer-props="{
+                <v-data-table v-if="citas.length > 0" item-key="fecha" :headers="headers_cita" :footer-props="{
                   itemsPerPageText: 'Citas',
                   'items-per-page-options': [15, 30, 50, 100, -1],
                   'items-per-page-all-text': 'Todas las citas'
                 }" :item-class="getRowClass" :items="citas" :header-props='{ sortByText: "Ordenar por" }' @click:row=""
-                sort-by="fecha" :sort-desc="true" class="elevation-1">
-                <template v-slot:no-results>
-                  <span>No existen datos</span>
-                </template>
-                <template v-slot:item.hora_inicio="{ item }">
-                  {{ formatoHora(item.hora_inicio) }} - {{ formatoHora(item.hora_final) }}
-                </template>
-                <template v-slot:item.actions="{ item }">
-                  <v-icon v-if="fecha_mayor(item.fecha)" small class="mr-2"
-                    @click="eliminarItem(item)">mdi-delete</v-icon>
-                </template>
-                <template v-slot:item.print="{ item }">
-                  <v-icon v-if="fecha_mayor(item.fecha)" small class="mr-2" @click="imprimir(item)">mdi-printer</v-icon>
-                </template>
-                <!--
-          <template v-slot:top>
-             v-container, v-col and v-row are just for decoration purposes
-            <v-container>
-              <v-row>
-
-                <v-col cols="6">
-                  <v-row class="pa-6">
-                    Filter for dessert name
-                    <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
-                      hide-details></v-text-field>
-
-                  </v-row>
-                </v-col>
+                  sort-by="fecha" :sort-desc="true" class="elevation-1">
+                  <template v-slot:no-results>
+                    <span>No existen datos</span>
+                  </template>
 
 
+                  <template v-slot:item.hora_inicio="{ item }">
+                    {{ formatoHora(item.hora_inicio) }} - {{ formatoHora(item.hora_final) }}
+                  </template>
+                  <template v-slot:item.actions="{ item }">
+                    <v-btn v-if="fecha_mayor(item.fecha)" small class="mr-2" @click="mostrarDialogo(item)">
+                      <v-icon small class="mr-2">mdi-delete</v-icon> Eliminar
+                    </v-btn>
+                  </template>
+                  <template v-slot:item.print="{ item }">
 
-              </v-row>
-            </v-container>
+                    <v-btn v-if="fecha_mayor(item.fecha)" small class="mr-2" @click="imprimir_datos(item)">
+                      <v-icon>mdi-printer</v-icon> Imprimir
+                    </v-btn>
+                  </template>
+                </v-data-table>
+                <v-alert v-else :value="true" type="warning">
+                  No se encontraron datos de anteriores fichas de usuario.
+                </v-alert>
 
-          </template>
-          -->
-              </v-data-table>
-              <v-data-table v-if="op1 == 2" :headers="headers_registro" :footer-props="{
+                <v-divider></v-divider>
+                <v-row>
+                  <v-col cols="12" class="text-center">
+                    <span class="headline font-weight-bold"></span>Registro de Fichas medicas
+                  </v-col>
+                </v-row>
+                <v-data-table v-if="registro.length > 0" :headers="headers_registro" :footer-props="{
                   itemsPerPageText: 'Registro',
                   'items-per-page-options': [15, 30, 50, 100, -1],
                   'items-per-page-all-text': 'Todas los registros'
                 }" :items="registro" item-key="fecha" :header-props='{ sortByText: "Ordenar por" }'
-                @click:row="show_registro($event)" class="elevation-1">
-                <template v-slot:item.fecha="{ item }">
-                  <v-icon>{{ fecha_mayor(item.fecha) ? 'mdi-check' : 'mdi-close' }}</v-icon>
-                </template>
-                <template v-slot:item.actions="{ item }">
-                  <v-icon small class="mr-2" @click="eliminarItem(item)">mdi-delete</v-icon>
-                </template>
-                <template v-slot:no-results>
-                  <span>No existen datos</span>
-                </template>
-                <!--
-        <template v-slot:top>
-           v-container, v-col and v-row are just for decoration purposes
-          <v-container>
-            <v-row>
+                  @click:row="show_registro($event)" class="elevation-1">
+                  <template v-slot:item.fecha="{ item }">
+                    <v-icon>{{ fecha_mayor(item.fecha) ? 'mdi-check' : 'mdi-close' }}</v-icon>
+                  </template>
+                  <template v-slot:item.actions="{ item }">
+                    <v-icon small class="mr-2" @click="eliminarItem(item)">mdi-delete</v-icon>
+                  </template>
+                  <template v-slot:no-results>
+                    <span>No existen datos</span>
+                  </template>
 
-              <v-col cols="6">
-                <v-row class="pa-6">
-                  Filter for dessert name
-                  <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
-                    hide-details></v-text-field>
-
-                </v-row>
-              </v-col>
+                </v-data-table>
+                <v-alert v-else :value="true" type="success">
+                  No se encontraron datos de anteriores citas.
+                </v-alert>
+              </v-row>
 
 
 
-            </v-row>
-          </v-container>
+            </v-col>
+          </v-row>
+          <v-card v-if="buscador == true"> buscar datos </v-card>
 
-        </template>
-        -->
-              </v-data-table>
-            </v-form>
-          </v-card>
-        </v-tab-item>
-        <v-tab-item>
-          <v-card flat>
-            <v-btn color="primary" class="mb-2" @click="openAgendar()">
-              Agendar Nueva cita
-            </v-btn>
-            <v-data-table :headers="encabezado" :items="las_citas" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc"
-              hide-default-footer disable-pagination>
-              <template v-slot:item="i">
-                <!-- Since v-slot:item overrides how each row is rendered, I rebuild the row starting from <tr>. This allows me to add a class to <tr> based on any condition I want (in this case, the calorie count) -->
-                <tr :color="{
-                    primary: i.item.fecha > fechacitaMin,
-                    secondary: i.item.fecha < fechacitaMin,
-                  }">
-                  <td>{{ i.item.fecha }}</td>
-                  <td>{{ i.item.consultorio }}</td>
-                  <td>{{ i.item.ci_paciente }}</td>
-                  <td>{{ i.item.horario }}</td>
-                  <td>{{ i.item.tipo_cita }}</td>
-                  <td>{{ i.item.observacion }}</td>
-                </tr>
-              </template>
-            </v-data-table>
-          </v-card>
-        </v-tab-item>
-        <v-tab-item> </v-tab-item>
-      </v-tabs-items>
+        </v-form>
+      </v-card>
+
     </v-card>
     <v-dialog v-model="v_agendar" max-width="600">
       <v-toolbar dark color="#1CA698">
@@ -387,7 +327,7 @@
       </template>
     </v-dialog>
 
-    <v-dialog v-model="msm_existe" persistent max-width="290">
+    <v-dialog v-model="msm_existe" max-width="600">
       <v-card>
         <v-card-title class="text-h5">
           Usuario existe
@@ -398,20 +338,38 @@
           <p>Nombres:{{ paciente_existen.nombres }}</p>
           <p>Apellido Paterno:{{ paciente_existen.ap_paterno }}</p>
           <p>Apellido Materno:{{ paciente_existen.ap_materno }}</p>
-          Puedes user los datos ya tienes
+
+
+          <p>Identificador:{{ paciente_existen.id_persona }}</p>
+
+          <v-alert v-if="!isEmpty(paciente_existen.fecha_vigencia)" :type="alertType">
+            Este paciente está registrado desde el {{ paciente_existen.fecha_registro }} y su fecha de vigencia es hasta
+            el {{ paciente_existen.fecha_vigencia }}.
+          </v-alert>
+
+          <v-alert v-else>
+            No se encontró ningún registro de estas evaluaciones.
+          </v-alert>
+
+
         </v-card-text>
+
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="green darken-1" text @click="msm_existe = false">
-            Cancelar
-          </v-btn>
-          <v-btn color="green darken-1" text @click="persona_existente()">
-            Usar datos
-          </v-btn>
+
+          <v-alert type="info" class="text-center mx-auto">
+            ¿Deseas utilizar los datos de este usuario?
+            <v-spacer></v-spacer>
+            <v-btn @click="msm_existe = false">
+              Cancelar
+            </v-btn>
+            <v-btn @click="persona_existente()">
+              Usar datos
+            </v-btn>
+          </v-alert>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="msm_update" persistent max-width="300">
+    <v-dialog v-model="msm_update" max-width="600">
       <v-card>
         <v-card-title class="text-h5">
           La cedula de identidad {{ paciente_edit.ci }}<br />
@@ -431,7 +389,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="msm_update" persistent max-width="300">
+    <v-dialog v-model="msm_update_ci" persistent max-width="300">
       <v-card>
         <v-card-title class="text-h5">
           La cedula de identidad {{ paciente_edit.ci }}<br />
@@ -471,6 +429,49 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="dialogVisible" fullscreen hide-overlay>
+      <!-- Contenido del cuadro de diálogo -->
+      <v-card>
+        <v-toolbar dark color="primary">
+          <v-btn icon @click="cerrar_imprimir()">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>Boleta de Cita</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <!--<v-btn dark text @click="dialog = false">
+                            Save
+                        </v-btn>-->
+          </v-toolbar-items>
+        </v-toolbar>
+        <!-- Toolbar -->
+
+
+
+        <!-- Contenido del diálogo -->
+        <v-card-title>
+          <!-- Puedes agregar un título aquí si es necesario -->
+        </v-card-title>
+        <v-card-text>
+          <imprimir v-if="dialogVisible" ref="print">
+          </imprimir>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialogDeletecita" max-width="400">
+      <v-card>
+        <v-card-title>Confirmar Eliminación</v-card-title>
+        <v-card-text>
+          ¿Estás seguro de que deseas eliminar estos datos?
+        </v-card-text>
+        <v-card-actions>
+          <!-- Botón para confirmar la eliminación -->
+          <v-btn color="error" @click="eliminarDatos()">Eliminar</v-btn>
+          <!-- Botón para cerrar el diálogo -->
+          <v-btn @click="cerrarDialogo()">Cancelar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-dialog>
 </template>
 
@@ -478,6 +479,7 @@
 //import { thisTypeAnnotation } from "@babel/types";
 import axios from "axios";
 import moment, { relativeTimeThreshold } from "moment";
+import imprimir from '@/Pages/Micomponet/imprimir';
 const _ = require('lodash');
 const day1 =
   new Date().getFullYear() +
@@ -487,6 +489,10 @@ const day1 =
   ("0" + new Date().getDate()).slice(-2);
 
 export default {
+  components: {
+
+        imprimir
+    },
   props: {
 
     //fichas: Object
@@ -499,6 +505,11 @@ export default {
     return strx;
   },
   data: () => ({
+    dialogVisible: false,
+    dialogDeletecita: false,
+    show: false,
+    alertType: 'success',
+    alertMessage: '',
     con_cita: true,
     validacion: false,
     items: [],
@@ -520,6 +531,7 @@ export default {
     buscador: false,
     msm_existe: false,
     msm_update: false,
+    msm_update_ci: false,
     msm_imprimir: false,
     ver_apellido_casada: false,
     paciente_edit: {},
@@ -736,6 +748,7 @@ export default {
     ssexo: ["MASCULINO", "FEMENINO"],
     errorpaterno: [],
     errormaterno: [],
+    itemdelete: {},
 
   }),
 
@@ -801,7 +814,6 @@ export default {
 
 
 
-
         /*{
             text: 'Cargo',
             value: 'cargo',
@@ -823,7 +835,68 @@ export default {
 
   },
   methods: {
+    mostrarDialogo(item) {
+      this.itemdelete = item
+      this.dialogDeletecita = true; // Abre el diálogo de confirmación
+    },
+    cerrarDialogo() {
+      this.dialogDeletecita = false; // Cierra el diálogo de confirmación
+      delete this.itemdelete
+    },
+    eliminarDatos() {
+      // Aquí puedes agregar la lógica para eliminar los datos
+      // Después de eliminar, cierra el diálogo
 
+      this.eliminarItem(this.itemdelete)
+    },
+    cerrar_imprimir() {
+      console.log(this.paciente_edit)
+      console.log(this.paciente_existen)
+      this.$store.dispatch('guardar_imprimir', null);
+      localStorage.removeItem("usuario");
+      this.dialogVisible = false
+    },
+    imprimir_datos(item) {
+      // Abrir la pestaña principal
+      //this.$store.commit('update_imprimir', this.selectedEvent.fichas);
+      //console.log(this.selectedEvent.fichas);
+      //this.$store.commit('update_imprimir', this.selectedEvent.fichas)
+      //console.log('/*/*/*/*/*/*/')
+      //console.log(this.selectedEvent.fichas)
+      this.$store.dispatch('guardar_imprimir', item);
+      console.log('fsadf');
+      console.log(item)
+      localStorage.setItem("usuario", JSON.stringify(item));
+      setTimeout(() => {
+
+      }, 2);
+      this.dialogVisible = true
+    },
+    isEmpty(value) {
+      return value === undefined || value === null || value === '' || (typeof value === 'object' && Object.keys(value).length === 0);
+    },
+    showAlert(type) {
+      this.show = true;
+      this.alertType = type;
+
+      // Personaliza el mensaje según el tipo de alerta
+      switch (type) {
+        case 'success':
+          this.alertMessage = '¡Éxito! Esta es una alerta de éxito.';
+          break;
+        case 'info':
+          this.alertMessage = 'Información: Esto es solo para informarte.';
+          break;
+        case 'warning':
+          this.alertMessage = 'Advertencia: Algo podría no estar bien.';
+          break;
+        case 'error':
+          this.alertMessage = '¡Error! Algo salió mal.';
+          break;
+        default:
+          this.alertMessage = '';
+      }
+    },
     validar_apellido(v) {
 
 
@@ -992,11 +1065,13 @@ export default {
       this.cita = {};
       this.paciente.ci = datos;
       this.msm_update = false;
+      this.msm_update_ci = false;
+
       this.buscadorporci();
       this.$refs.formDatopersonales.resetValidation();
     },
     update_ci() {
-      this.msm_update = false;
+      this.msm_update_ci = false;
       this.cambiar_datos();
     },
     ver_horario(item) {
@@ -1093,7 +1168,11 @@ export default {
 
           });
       }
+      if (this.op1 == 2) {
+        //this.msm_update = true
+      }
     },
+    
     async eliminarItem(item) {
       console.log(item
       );
@@ -1102,6 +1181,7 @@ export default {
           // Manejar la respuesta del servidor en caso de éxito
           console.log(response.data);
           this.pedir_citas()
+          this.cerrarDialogo()
         })
         .catch(error => {
           // Manejar el error en caso de que la petición falle
@@ -1151,6 +1231,7 @@ export default {
       }).then(
         (response) => {
           console.log("......00000");
+          console.log(this.paciente_edit);
           console.log(response.data);
           this.con_cita = true
           this.citas = response['data']['cita']
@@ -1188,6 +1269,7 @@ export default {
     persona_existente() {
 
       console.log("fffffff");
+
 
       this.paciente = this.paciente_existen;
       this.paciente_existen = {};
@@ -1315,7 +1397,6 @@ export default {
               ") ya existe. Se volvera a la antigua configuracion"
             );
             this.paciente = structuredClone(this.paciente_edit);
-
             this.paciente_existen = {};
             this.op1 = 2;
 

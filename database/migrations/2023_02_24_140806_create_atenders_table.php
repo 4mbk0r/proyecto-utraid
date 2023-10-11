@@ -15,6 +15,7 @@ class CreateAtendersTable extends Migration
     public function up()
     {
         Schema::create('atenders', function (Blueprint $table) {
+            $table->increments('id_atencion');
             $table->integer('id_designado');
             $table->integer('id_ficha');
             //$table->integer('id_sala');

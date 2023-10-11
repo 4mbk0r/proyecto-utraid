@@ -28,7 +28,8 @@
         "tailwindcss": "^2.0.1",
         "vue": "^2.7.8",
         "vue-loader": "^15.9.8",
-        "vue-template-compiler": "^2.6.10"
+        "vue-template-compiler": "^2.6.10",
+        "workbox-webpack-plugin": "^7.0.0"
     },
     "dependencies": {
         "@datagridxl/datagridxl2": "^2.0.13",
@@ -36,10 +37,15 @@
         "belair-store": "^0.1.2",
         "form-data": "^4.0.0",
         "fs": "^0.0.1-security",
+        "js-cookie": "^3.0.5",
         "js-xlsx": "^0.8.22",
+        "laravel-echo": "^1.8.0",
         "moment": "^2.29.1",
         "nprogress": "^0.2.0",
         "path": "^0.12.7",
+        "pusher-js": "^8.3.0",
+        "socket.io": "^2.3.0",
+        "socket.io-client": "^2.3.0",
         "stream": "^0.0.2",
         "vue-axios": "^3.4.1",
         "vue-color": "^2.8.1",

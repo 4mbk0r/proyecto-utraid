@@ -2,11 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AtenderEvent;
+use App\Events\DataUpdated;
+use App\Events\PrivateMessage;
+use App\Events\ProductoActualizado;
+use App\Events\SaludoUsuario;
+use App\Events\SomeEvent;
 use App\Models\atender;
 use App\Http\Controllers\Controller;
 use App\Models\Horario;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use SocketIO\Client;
 
 class AtenderController extends Controller
 {
@@ -15,9 +25,65 @@ class AtenderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+
+    protected $client;
     public function index()
     {
-        //
+        //$this->client = new Client('http://localhost:3000');
+        // Consulta SQL original:
+        /* 
+         select * from atenders
+        LEFT JOIN fichas ON fichas.id = atenders.id_ficha
+		left join salas ON salas.id = fichas.id_sala
+		left join horarios ON horarios.id = fichas.id_horario
+		LEFT JOIN dar_citas ON dar_citas.id_ficha = fichas.id
+        LEFT JOIN personas ON personas.id = dar_citas.id_persona
+        left join equipos ON equipos.id = atenders.id_designado
+        left join asignar_equipos ON asignar_equipos.id_equipo = equipos.id 
+        left join users ON users.id = asignar_equipos.id_usuario
+        where users.username = '6011483'
+        and fichas.fecha = '2023-09-05'
+        */
+        // Obtener el nombre de usuario del usuario autenticado
+        //event(new SomeEvent('holllla'));
+        $username = auth()->user()->username;
+
+        // Obtener la fecha actual en formato 'Y-m-d'
+        $hoy = Carbon::now()->toDateString();
+
+        $resultados = DB::table('atenders')
+            ->select(
+                'atenders.*',
+                'fichas.*',
+                'horarios.*',
+                'salas.*',
+                'dar_citas.*',
+                'personas.*',
+                'equipos.*',
+                'asignar_equipos.*',
+            )
+            ->leftJoin('fichas', 'fichas.id', '=', 'atenders.id_ficha')
+            ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+            ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
+            ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
+            ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
+            ->leftJoin('equipos', 'equipos.id', '=', 'atenders.id_designado')
+            ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
+            ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
+            ->where('users.username', $username)
+            ->where('fichas.fecha', $hoy)
+            ->get();
+
+        //event(new SaludoUsuario($username));
+
+        return inertia('Atencion/Atencion', [
+            'atenciones1' => $resultados,
+            'hoy' => $hoy,
+            'fecha_actual' => $hoy,
+        ]);
+        //event(new ProductoActualizado('JISISISIS'));
+        return $resultados;
     }
 
     /**
@@ -27,6 +93,7 @@ class AtenderController extends Controller
      */
     public function create()
     {
+
         //
     }
 
@@ -38,10 +105,16 @@ class AtenderController extends Controller
      */
     public function store(Request $request)
     {
+        
+        $mensaje = "Alguien ha accedido a la ruta 'mandarmensaje'";
+
+        // Actualizar el mensaje en el caché
+        Cache::put('mensaje_actualizado', $mensaje);
         //$DB::table('atenders')->insert()
         //return $request;
         $equipo = $request['equipo'];
         $ficha = $request['ficha'];
+        //return $ficha['fecha'];
         //return $request;
         $id_ficha = $ficha['id_ficha'];
         $id_sala =  $ficha['id_sala'];
@@ -82,6 +155,25 @@ class AtenderController extends Controller
 
                 DB::table('atenders')->insert(['id_ficha' => $id_antiguo, 'id_designado' => $id_equipo]);
 
+                // SQL original: select * from users
+                // left join asignar_equipos ON asignar_equipos.id_usuario = users.id
+                // where id_equipo = '4'
+                
+
+                $usuarios = User::select('users.*')
+                    ->leftJoin('asignar_equipos', 'asignar_equipos.id_usuario', '=', 'users.id')
+                    ->where('asignar_equipos.id_equipo', '=', $id_equipo)
+                    ->get();
+
+                foreach ($usuarios as $user) {
+                    //event(new PrivateMessage($user));
+                    event(new AtenderEvent($user, $ficha['fecha']));
+            
+                    //echo 'ID de Usuario: ' . $user->id . '<br>';
+                }
+
+
+
                 //DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_equipo]);
 
                 //DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_equipo]);
@@ -92,6 +184,7 @@ class AtenderController extends Controller
                 //throw $th;
                 return $th;
             }
+
 
             $horario = DB::table('fichas')
                 ->select(['fichas.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'atenders.id_designado'])
@@ -136,10 +229,59 @@ class AtenderController extends Controller
      * @param  \App\Models\atender  $atender
      * @return \Illuminate\Http\Response
      */
-    public function show(atender $atender)
+    public function show(String $atender)
     {
-        //
 
+        //
+        // Consulta SQL original:
+        /* 
+         select * from atenders
+        LEFT JOIN fichas ON fichas.id = atenders.id_ficha
+		left join salas ON salas.id = fichas.id_sala
+		left join horarios ON horarios.id = fichas.id_horario
+		LEFT JOIN dar_citas ON dar_citas.id_ficha = fichas.id
+        LEFT JOIN personas ON personas.id = dar_citas.id_persona
+        left join equipos ON equipos.id = atenders.id_designado
+        left join asignar_equipos ON asignar_equipos.id_equipo = equipos.id 
+        left join users ON users.id = asignar_equipos.id_usuario
+        where users.username = '6011483'
+        and fichas.fecha = '2023-09-05'
+        */
+        // Obtener el nombre de usuario del usuario autenticado
+        $username = auth()->user()->username;
+
+        // Obtener la fecha actual en formato 'Y-m-d'
+        $hoy = Carbon::now()->toDateString();
+
+        $resultados = DB::table('atenders')
+            ->select(
+                'atenders.*',
+                'fichas.*',
+                'salas.*',
+                'horarios.*',
+                'dar_citas.*',
+                'personas.*',
+                'equipos.*',
+                'asignar_equipos.*',
+            )
+            ->leftJoin('fichas', 'fichas.id', '=', 'atenders.id_ficha')
+            ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+            ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
+            ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
+            ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
+            ->leftJoin('equipos', 'equipos.id', '=', 'atenders.id_designado')
+            ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
+            ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
+            ->where('users.username', $username)
+            ->where('fichas.fecha', $atender)
+            ->get();
+
+        return inertia('Atencion/Atencion', [
+            'atenciones1' => $resultados,
+            'hoy' => $hoy,
+            'fecha_actual' => $atender,
+        ]);
+        return $resultados;
     }
 
     /**
@@ -171,10 +313,33 @@ class AtenderController extends Controller
      * @param  \App\Models\atender  $atender
      * @return \Illuminate\Http\Response
      */
-    public function destroy(int $id_ficha)
+    public static function destroy(int $id_ficha)
     {
         //
+        $mensaje = "Alguien ha accedido a la ruta 'mandarmensaje'";
+
+        // Actualizar el mensaje en el caché
+        //Cache::put('mensaje_actualizado', $mensaje);
+
+        $selecion = DB::table('atenders')
+        ->leftJoin('fichas', 'fichas.id', '=', 'atenders.id_ficha')
+        ->where('id_ficha', '=', $id_ficha)
+        ->first();
+        
         DB::table('atenders')->where('id_ficha', '=', $id_ficha)->delete();
+       
+        
+        $usuarios = User::select('users.*')
+            ->leftJoin('asignar_equipos', 'asignar_equipos.id_usuario', '=', 'users.id')
+            ->where('asignar_equipos.id_equipo', '=', $selecion->id_designado)
+            ->get();
+
+        foreach ($usuarios as $user) {
+            //event(new PrivateMessage($user));
+            event(new AtenderEvent($user, $selecion->fecha));
+            //event(new PrivateMessage($user));
+            //echo 'ID de Usuario: ' . $user->id . '<br>';
+        }
         return $id_ficha;
         //DB::table('atenders')->where('id_ficha', '=', $id_nuevo)->delete();
 

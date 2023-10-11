@@ -6,9 +6,11 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Contracts\RegisterViewResponse;
+use Laravel\Fortify\Fortify;
 
 class RegisteredUserController extends Controller
 {
@@ -43,18 +45,24 @@ class RegisteredUserController extends Controller
 
     /**
      * Create a new registered user.
-     *                                                                                                                                                             
+     *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Laravel\Fortify\Contracts\CreatesNewUsers  $creator
      * @return \Laravel\Fortify\Contracts\RegisterResponse
      */
     public function store(Request $request,
-                          CreatesNewUsers $creator)
+                          CreatesNewUsers $creator): RegisterResponse
     {
+        if (config('fortify.lowercase_usernames')) {
+            $request->merge([
+                Fortify::username() => Str::lower($request->{Fortify::username()}),
+            ]);
+        }
+
         event(new Registered($user = $creator->create($request->all())));
-        
-        //$this->guard->login($user);
-        //return $user;
-        return redirect()->route('registro');//app(RegisterResponse::class);//);
+
+        $this->guard->login($user);
+
+        return app(RegisterResponse::class);
     }
 }

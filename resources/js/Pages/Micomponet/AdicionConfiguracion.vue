@@ -33,13 +33,14 @@
                     Paso 3.
                 </v-stepper-step>
                 <v-divider></v-divider>
-                <v-stepper-step editable step="4">
+                <!---<v-stepper-step editable step="4">
                     Paso 4.
                 </v-stepper-step>
                 <v-divider></v-divider>
                 <v-stepper-step editable step="5">
                     Paso 5.
                 </v-stepper-step>
+                -->
             </v-stepper-header>
 
             <v-stepper-items>
@@ -123,7 +124,7 @@
                 </v-stepper-content>
 
                 <v-stepper-content step="3">
-                    <salas ref="sala" :configuracion="item"></salas>
+                    <salas ref="sala" :configuracion="item" @lista_completa = "verificar_lista" ></salas>
                     <v-card-actions>
                         <v-btn color="primary" @click="paso4">
                             Continuar
@@ -197,7 +198,9 @@ export default {
         alert: false,
         errors_descripcion: [],
         equipo: [],
-        salas: []
+        salas: [],
+        lista_completa: {},
+        lista_equipo: [], 
 
     }),
 
@@ -226,6 +229,12 @@ export default {
     },
 
     methods: {
+        verificar_lista(datos){
+            console.log('{{{{{}}}}}');
+            console.log(datos);
+            this.lista_completa = structuredClone(datos)
+
+        },
         limpiar_errors() {
             this.errors_descripcion = []
         },
@@ -330,13 +339,56 @@ export default {
 
 
         },
+        async verifcar_equipo(){
+            console.log("---LISTA COMPPLTERA---");
+            console.log(this.lista_completa.length, '==', this.salas.length);
+            if (this.lista_completa.length == this.salas.length) {
+                var e = []
+                var res = await axios({
+                    method: "post",
+                    url: `/${process.env.MIX_CARPETA}/equipo2`,
+                    data: {
+                        equipo: this.lista_completa
+                    },
+                }).then(
+                    (response) => {
+                        console.log('respuesta equipos api');
+                        console.log(response.data);
+                        this.lista_equipo =  response.data
+                        this.paso6()
+                        ////console.log('validat');
+                        /*
+                        console.log('-____--------');
+                        console.log(resp);*/
+                        /*var r = {
+                            resp: true,
+                            datos: response.data
+                        }*/
+                    
+                        //r = JSON.stringify(r)
+                        //this.$emit('next', r);
+
+                        //console.log('__configuracion ___');
+                        //console.log(response.data);
+                        //this.close()
+
+
+                    },
+                ).catch((error) => {
+                    //console.log(error.response.data.mensaje);
+
+                });    
+            }else{
+                alert('falta asignar equipos')
+            }
+            
+        },
         paso4() {
             //this.paso+=1
             /*setTimeout(() => {
                 
             }, 30);*/
-            console.log(this.salas
-            );
+
             this.$refs.sala.generar_horario()
             this.salas = structuredClone(this.$refs.sala.desserts)
 
@@ -344,10 +396,11 @@ export default {
                 alert('no se puede crear configuracion con salas 0')
                 return
             }
-            let k = 1
-            this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo ' + (k), descripcion: this.salas[k-1].descripcion+' => Equipo ' + (k++), lista: [] }))]
-            this.paso = 4
-
+            //let k = 1
+            //this.equipo = [...Array(this.salas.length).fill(0).map(x => ({ equipo: 'Equipo ' + (k), descripcion: this.salas[k-1].descripcion+' => Equipo ' + (k++), lista: [] }))]
+            //this.paso = 4
+            this.verifcar_equipo()
+                
             /*
             this.$refs.equipo.equipo = [{
                 equipo: 'Equipo 1',
@@ -392,7 +445,7 @@ export default {
 
                         equipo: this.equipo
                     },
-                }).then(
+                }).then(    
                     (response) => {
                         ////console.log('validat');
                         console.log(response);
@@ -415,19 +468,18 @@ export default {
 
         },
         async paso6() {
-            console.log(this.equipo);
+            console.log('creacion  de salas');
             this.configuracion.color = this.color
             this.configuracion.institucion = '01'
             var res = await axios({
                 method: "post",
                 url: `/${process.env.MIX_CARPETA}/configuracion`,
                 data: {
-
                     fecha_nueva: this.date,
                     configuracion: this.configuracion,
                     configuracion_antigua: this.item,
                     salas: this.salas,
-                    equipo: this.equipo
+                    equipo: this.lista_equipo
                 },
             }).then(
                 (response) => {

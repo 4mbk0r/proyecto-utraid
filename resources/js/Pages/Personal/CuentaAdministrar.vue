@@ -18,10 +18,10 @@
             </v-row>
             <v-row>
                 <v-col>
-                    <v-text-field dense outlined id="nombre" label="Nombres" type="text" v-model="form.nombre"
+                    <v-text-field dense outlined id="nombres" label="Nombres" type="text" v-model="form.nombres"
                         :rules="[v => !!v || ' Se requiere completar Nombre']" required autofocus
                         prepend-inner-icon="mdi-account-arrow-right-outline" class="mb-n5 pa-0"
-                        @input="(val) => (form.nombre = val.toUpperCase())" pattern="[a-zA-Z]+" />
+                        @input="(val) => (form.nombres = val.toUpperCase())" pattern="[a-zA-Z]+" />
                 </v-col>
                 <v-col>
                     <v-text-field dense outlined id="paterno" label="Apellido Paterno" type="text"
@@ -125,6 +125,9 @@
             </v-row>
         </v-form>
         <cambiar_password v-if="dialog_cambio" @close="close_dialog($event)" :paciente="form"></cambiar_password>
+
+        
+
     </v-card>
 </template>
 
@@ -210,19 +213,19 @@ export default {
             this.$alert(text).then(res => this.$inform("Cambios guardados!"));
         },
         submit() {
-            this.form.nombre = this.form.nombre.trimStart().toUpperCase()
+            this.form.nombres = this.form.nombres.trimStart().toUpperCase()
             this.form.ap_materno = this.form.ap_materno.trimStart().toUpperCase()
             this.form.ap_paterno = this.form.ap_paterno.trimStart().toUpperCase()
             if (this.$refs.form.validate()) {
                 this.form.username = this.form.ci
-                this.form.password = this.form.ci + this.form.nombre[0] + this.form.ap_paterno[0] + this.form.ap_materno[0]
+                this.form.password = this.form.ci + this.form.nombres[0] + this.form.ap_paterno[0] + this.form.ap_materno[0]
                 this.form.password_confirmation = this.form.password
                 console.log(this.form.username)
                 this.form.post(this.route('register'), {
                     onFinish: () => this.form.reset('password', 'password_confirmation'),
                     onSuccess: () => {
                         this.form = this.$inertia.form({
-                            nombre: '',
+                            nombres: '',
                             ap_paterno: '',
                             ap_materno: '',
                             ci: '',

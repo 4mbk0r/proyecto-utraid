@@ -1,153 +1,63 @@
 
 <template>
-    <v-app>
+    <v-dialog  v-model="dialogVisible" fullscreen :scrim="false" transition="dialog-bottom-transition">
+        <v-toolbar dark color="primary">
+            <v-btn icon dark @click="cerrar()">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
+            <v-toolbar-title>Crear equipo </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+                <v-btn variant="text" @click="save()">
+                    Crear
+                </v-btn>
+            </v-toolbar-items>
+        </v-toolbar>
+
         <v-card>
 
-            <v-row>
+            <v-card-title class="text-h5">{{ this.datos.descripcion }}</v-card-title>
 
-                <v-col cols="4">
-                    Seleccion de Equipos
-                </v-col>
-                <v-col cols="4">
-                    <v-btn class="float-right" dense small @click="delete_all">
-                        <v-icon color="yello w darken-3">
-                            mdi-delete
-                        </v-icon>
-                        Eliminar Todo
-                    </v-btn>
-                </v-col>
-                <v-col cols="4">
-                    <v-btn class="float-right" dense small @click="save_all">
-                        <v-icon color="yello w darken-3">
-                            mdi-save
-                        </v-icon>
-                        Guardar
-                    </v-btn>
-                </v-col>
-            </v-row>
-
-            <v-row>
-                <v-col cols="6">
-
-                    <v-list dense two-line>
-                        <v-list-item-group v-model="selected_equipo"  dense active-class="pink--text">
-                            <template v-for="(item, index) in equipo">
-                                <v-list-item  dense :key="item.title" @click="seleccion_equipo(item)">
-                                    <template v-slot:default="{ active }">
-                                        <v-list-item-content>
-                                            <v-list-item-title v-text="item.equipo"></v-list-item-title>
-
-                                            <v-list-item-subtitle class="text--primary"
-                                                v-text="item.headline"></v-list-item-subtitle>
-
-                                            <v-list-item-subtitle v-text="item.ap_paterno"></v-list-item-subtitle>
-                                        </v-list-item-content>
-
-                                        <v-list-item-action>
-                                            <v-list-item-action-text v-text="item.action"></v-list-item-action-text>
-
-                                            <v-icon v-if="item.lista.length >= 1" color="grey lighten-1">
-                                                {{ item.lista.length }}
-                                            </v-icon>
-
-                                            <v-icon v-else color="yello w darken-3">
-
-                                            </v-icon>
-                                        </v-list-item-action>
+            <v-card-text>
+                <v-form ref="equipo">
+                    <v-row>
+                        <v-col>
+                            <v-text-field v-model="nombre_equipo" label="Nombre Equipo"
+                            :rules="nameRules"
+                            required>
+                            </v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="6">
+                            <v-data-table :headers="headers" :items="item_equipo" item-key="ci" :search="search"
+                                :fixed-header="true" :hide="['sala']" @click:row="addequipo($event)"
+                                class="elevation-1 pa-6">
+                                <template v-slot:[`header.sala`]="{ header }">
+                                    <template v-if="header.text !== 'Sala'">
+                                        {{ header.text }}
                                     </template>
-                                </v-list-item>
+                                </template>
+                            </v-data-table>
+                        </v-col>
 
-                                <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
-                            </template>
-                        </v-list-item-group>
-                    </v-list>
+                        <v-col cols="6">
+                            <v-data-table :headers="headers2" :items="item_equipo" item-key="ci" :search="search"
+                                @click:row="addequipo($event)" class="elevation-1 pa-6">
+                            </v-data-table>
+                        </v-col>
+                    </v-row>
+                </v-form>
 
-
-                </v-col>
-                <!--seleccion_equipo(selected_equipo)">-->
-
-                <v-col cols="6">
-
-
-                    <v-divider></v-divider>
-                    <v-list two-line v-if="selected_equipo >= 0">
-                        <v-list-item-group v-model="selected_lista" active-class="pink--text">
-                            <template v-for="(item, index) in items">
-
-                                <v-list-item v-if="item.equipo === selected_equipo" :key="item.title">
-                                    <template v-slot:default="{ active }">
-                                        <v-list-item-content>
-                                            <v-list-item-title v-text="item.nombre"></v-list-item-title>
-
-                                            <v-list-item-subtitle class="text--primary"
-                                                v-text="item.headline"></v-list-item-subtitle>
-
-                                            <v-list-item-subtitle
-                                                v-text="item.ap_paterno + item.ap_materno"></v-list-item-subtitle>
-                                            <v-list-item-subtitle v-text="item.cargo"></v-list-item-subtitle>
-
-                                        </v-list-item-content>
-
-                                        <v-list-item-action>
-                                            <v-list-item-action-text v-text="item.action"></v-list-item-action-text>
-
-                                            <v-icon v-if="!active" color="grey lighten-1">
-                                                mdi-star-outline
-                                            </v-icon>
-
-                                            <v-icon v-else color="yello w darken-3">
-                                                mdi-star
-                                            </v-icon>
-                                            <v-btn @click="selected_delete(item)">
-                                                <v-icon color="yello w darken-3">
-                                                    mdi-delete
-                                                </v-icon>
-                                            </v-btn>
-                                        </v-list-item-action>
-                                    </template>
-                                </v-list-item>
-
-                                <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
-
-                            </template>
-
-                        </v-list-item-group>
-                    </v-list>
-                </v-col>
-
-            </v-row>
-            <v-card-title>
-
-            </v-card-title>
-            <v-data-table :headers="headers" :items="eventos" item-key="ci" :search="search" @click:row="addequipo($event)"
-                class="elevation-1 pa-6">
-                <template v-slot:top>
-                    <!-- v-container, v-col and v-row are just for decoration purposes. -->
-                    <v-container>
-                        <v-row>
-
-                            <v-col cols="6">
-                                <v-row class="pa-6">
-                                    <!-- Filter for dessert name-->
-                                    <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
-                                        hide-details></v-text-field>
-
-                                </v-row>
-                            </v-col>
-
-                           
-
-                        </v-row>
-                    </v-container>
-
-                </template>
-
-            </v-data-table>
-
-
-
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="cerrar">Cancelar</v-btn>
+                <v-btn color="blue darken-1" text @click="save">Aceptar</v-btn>
+                <v-spacer></v-spacer>
+            </v-card-actions>
         </v-card>
-    </v-app>
+    </v-dialog>
 </template>
 
 <script>
@@ -161,17 +71,26 @@ export default {
         //dialog: Boolean,
         //mensaje: Object,
         datos: Object,
+        item_equipo_prop: Array,
+        dialogVisible: Boolean,
+
+        //editgrupo: Boolean,
         //equipo: Array,
         //cargos: Array,
     },
     created() {
-        this.pedir_datos();
+        //this.pedir_datos();
+
     },
     data: () => ({
+
+        nombre_equipo: '',
+        item_equipo: [],
+        equipo_seleccion: [],
         selected_medico: '',
         selected_psicologo: '',
         selected_trabajo: '',
-        selected: [2],
+        selected: [],
         items: [],
         /*equipo: [
             {
@@ -206,11 +125,19 @@ export default {
         // Filter models.
         dessertFilterValue: '',
 
+        lista_equipo: [],
+        show_lista: true,
+        equipo: []
         // Table data.
 
 
     }),
     mounted() {
+        console.log('dsf')
+        if (this.dialogVisible) {
+
+            this.item_equipo = this.item_equipo_prop
+        }
         //console.log('sssss', this.item);
         /*if(this.cargos.length > 0 ){
             for (const key in this.cargos) {
@@ -223,10 +150,43 @@ export default {
         }*/
 
     },
+    watch: {
+        item_equipo_prop(nuevoValor, viejoValor) {
+            /*
+            console.log('el valor cambia');
+            console.log(nuevoValor)
+            console.log(viejoValor)
+            */
+            this.item_equipo = nuevoValor
+        },
+        datos(nuevo, anterior) {
+            this.equipo_seleccion = this.filtrarPorSala(this.item_equipo, nuevo.descripcion)
+            if(this.equipo_seleccion.length > 0){
+                
+                this.nombre_equipo = this.equipo_seleccion[0].equipo
+            }else{
+                
+                this.nombre_equipo = ''
+            }
+
+        },
+        nombre_equipo(nuevo, anterior) {
+            //console.log(this.equipo_seleccion)
+            for (const key in this.equipo_seleccion) {
+                this.equipo_seleccion[key].equipo = nuevo
+            }
+        }
+
+    },
     components: {
         AppLayout
     },
     computed: {
+        nameRules() {
+            return [
+                v => !!v || 'El nombre es requerido',
+            ];
+        },
 
         eventos() { return this.items },
         getnumero_por_equipo() {
@@ -268,12 +228,54 @@ export default {
                     filter: this.cargoFilter
                     //filter: this.caloriesFilter,
                 },
-
                 {
-                    text: 'Equipo',
-                    value: 'equipo',
+                    text: 'Sala',
+                    value: 'sala',
                     filter: this.esta_en_equipo,
                     show: false,
+                    //filter: this.caloriesFilter,
+                },
+
+            ]
+        },
+        headers2() {
+            return [
+                {
+                    text: 'Nombres',
+                    align: 'left',
+                    //sortable: false,
+                    value: 'nombres',
+                    //filter: this.nameFilter,
+                },
+                {
+                    text: 'Apellido Paterno',
+                    value: 'ap_paterno',
+                    //filter: this.caloriesFilter,
+                },
+                {
+                    text: 'Apellido Materno',
+                    value: 'ap_materno',
+                    //filter: this.caloriesFilter,
+                },
+                {
+                    text: 'Cedula de identidad',
+                    value: 'ci',
+                    //filter: this.esta_en_equipo
+                    //filter: this.caloriesFilter,
+                },
+
+                {
+                    text: 'Cargo',
+                    value: 'cargo',
+                    filter: this.cargoFilter2
+                    //filter: this.caloriesFilter,
+                },
+
+                {
+                    text: 'Sala',
+                    value: 'sala',
+                    filter: this.esta_en_equipo2,
+
                     //filter: this.caloriesFilter,
                 },
 
@@ -282,16 +284,22 @@ export default {
         },
     },
     methods: {
-
-        close() {
-            //this.dialog = false
-            //console.log(this.date);
-            this.$emit('respuesta', false)
+        cerrar() {
+            this.$emit("eventoCerrarEditgrupo", false);
         },
-        aceptar() {
-            //this.dialog = false
-            //console.log(this.date);
-            this.$emit('respuesta', true)
+        save() {
+            if (this.$refs.equipo.validate()){
+                //dialogVisible = false
+                
+                var respuesta = {
+                    dialog: false,
+                    item_equipo: this.item_equipo
+                    
+                }
+                this.$emit("eventoCrearEditgrupo", respuesta);
+            }
+                
+            
         },
         async pedir_cargos() {
             console.log("datops");
@@ -322,30 +330,6 @@ export default {
 
         },
 
-        async pedir_datos() {
-            console.log("datops");
-            try {
-                var res = await axios({
-                    method: 'post',
-                    url: `/${process.env.MIX_CARPETA}/api/` + "personal_servicio",
-                    data: this.datos
-                }).then(
-                    (response) => {
-                        //console.log('dsf'+response);
-                        this.items = response.data
-                        //this.desserts = response.data
-
-                        console.log('dato')
-                        console.log(response.data)
-
-                    }
-                );
-            } catch (err) {
-                console.log("err->", err.response.data)
-                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-            }
-
-        },
         selected_delete(item) {
             console.log(item);
             item.guardar = false
@@ -372,47 +356,31 @@ export default {
             console.log(this.equipo[this.selected_equipo]);
 
         },
+        isEmpty(value) {
+            return value === undefined || value === null || value === '' || (typeof value === 'object' && Object.keys(value).length === 0);
+        },
         addequipo(item) {
-            console.log(item);
-            console.log(this.selected_equipo);
-            if (typeof this.selected_equipo == 'undefined' || this.selected_equipo === '') {
-                this.selected_medico = ''
-                this.selected_psicologo = ''
-                this.selected_trabajo = ''
+            if (this.isEmpty(item.sala)) {
+                console.log(this.datos.descripcion)
+                item.sala = this.datos.descripcion
+                item.equipo = this.nombre_equipo
+                var s = structuredClone(this.item_equipo)
+                this.item_equipo = []
+                this.item_equipo = s
+                this.equipo_seleccion = this.filtrarPorSala(this.item_equipo, this.datos.descripcion)
                 return
 
+            } else {
+                item.sala = undefined
+                item.equipo = this.nombre_equipo
+                var s = structuredClone(this.item_equipo)
+                this.item_equipo = []
+                this.item_equipo = s
+                this.equipo_seleccion = this.filtrarPorSala(this.item_equipo, this.datos.descripcion)
+
             }
-            if (item.equipo >= 0) {
-                alert('ya tiene equipo esta en ' + item.equipo);
-                return;
-            }
+            // console.log(item)
 
-            else {
-                //alert('ya tiene un  ' + item.cargo + ' en el equipo');
-                //return;
-
-                let findx = this.items.findIndex(o => o.cargo === item.cargo && o.equipo == this.selected_equipo)
-                if (findx >= 0) {
-
-                    alert('ya tiene un  ' + item.cargo + ' en el equipo');
-                    return;
-                    this.items[findx].equipo = -1
-                    this.items[findx].guardar = false
-                    //
-                    this.selected_delete(this.items[findx])
-                }
-
-                item.equipo = this.selected_equipo
-                item.guardar = true
-                this.equipo[this.selected_equipo].lista.push(item)
-            }
-            console.log(this.items)
-            //this.update_item()
-            this.selected_equipo = -1
-            this.selected_equipo = item.equipo
-            var s = structuredClone(this.items)
-            this.items = []
-            this.items = s
 
         },
         verificar(active, item) {
@@ -428,7 +396,7 @@ export default {
                 this.selected_delete(this.items[i]);
             }
             for (const key in this.equipo) {
-               this.equipo[key].lista = []
+                this.equipo[key].lista = []
             }
             this.selected_medico = ''
             this.selected_psicologo = ''
@@ -498,21 +466,42 @@ export default {
             return value.toLowerCase().includes(this.dessertFilterValue.toLowerCase());
         },
 
+
         /**
          * Filter for calories column.
          * @param value Value to be tested.
          * @returns {boolean}
          */
 
+        filtrarPorSala(array, salaElegido) {
+            return array.filter((empleado) => empleado.sala === salaElegido);
+        },
         cargoFilter(value) {
-            
+
+
+            for (const objeto of this.equipo_seleccion) {
+                if (objeto.cargo === value) {
+                    return false
+                }
+            }
+            return true
+            // If this filter has no value we just skip the entire filter.
+            if (!this.caloriesFilterValue) {
+                return true;
+            }
+
+            // Check if the current loop value (The calories value)
+            // equals to the selected value at the <v-select>.
+            return value === this.caloriesFilterValue;
+        },
+        cargoFilter2(value) {
             try {
-                var e  = this.equipo[this.selected_equipo].lista
+                var e = this.equipo[this.selected_equipo].lista
             } catch (error) {
                 return true
             }
-            for (const key in e ) {
-                if(value == e[key].cargo)
+            for (const key in e) {
+                if (value == e[key].cargo)
                     return false
             }
             return true
@@ -526,8 +515,13 @@ export default {
             return value === this.caloriesFilterValue;
         },
         esta_en_equipo(value) {
-            if(typeof value == 'undefined') return true
-            return !(value >= 0)
+            if (typeof value == 'undefined') return true
+            return false
+        },
+        esta_en_equipo2(value) {
+            if (typeof value != 'undefined' && value == this.datos.descripcion) return true
+
+            return false
         }
     },
 }

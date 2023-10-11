@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="61cm" height="52cm" viewBox="-64 -276 1218 1027" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="270.584" y="-267.878" width="558.771" height="897.211"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="270.584" y="-267.878" width="558.771" height="897.211"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="549.97" y="185.528">
+      <tspan x="549.97" y="185.528"></tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="16" y="123" width="112.7" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="16" y="123" width="112.7" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="72.35" y="144.2">INSTITUCION</text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="53" y="325" width="128.1" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="53" y="325" width="128.1" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="117.05" y="346.2">CONFIGURACION</text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="559.422" y="-36.3768" width="58.8" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="559.422" y="-36.3768" width="58.8" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="588.822" y="-15.1768">SALA</text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="643.876" y="-159.039" width="81.9" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="643.876" y="-159.039" width="81.9" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="684.826" y="-137.839">HORARIO</text>
+  </g>
+  <g>
+    <polygon style="fill: #ffffff" points="53,255.55 92.25,232 131.5,255.55 92.25,279.1 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="53,255.55 92.25,232 131.5,255.55 92.25,279.1 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="96.25" y="226">(1:1)</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="96.25" y="301.1">(1:M)</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="92.25" y="258.75">tiene</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="72.35,159 72.35,194.998 92.25,194.998 92.25,230.996 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="92.25,279.1 92.25,301.545 117.05,301.545 117.05,323.991 "/>
+  <g>
+    <polygon style="fill: #ffffff" points="162.889,217.497 202.139,193.947 241.389,217.497 202.139,241.047 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="162.889,217.497 202.139,193.947 241.389,217.497 202.139,241.047 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="156.889" y="211.497">(1:1)</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="247.389" y="211.497">(1:M)</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="202.139" y="220.697">tiene</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="128.7,141 145.795,141 145.795,217.497 162.889,217.497 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="241.389,217.497 255.986,217.497 255.986,405.03 270.584,405.03 "/>
+  <g>
+    <rect style="fill: #ffffff" x="429.504" y="678.302" width="89.6" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="429.504" y="678.302" width="89.6" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="474.304" y="699.502">Usuarios</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="16,159 16,356 -33.013,356 -33.013,666.322 "/>
+  <g>
+    <polygon style="fill: #ffffff" points="-33.013,666.322 21.637,633.532 76.287,666.322 21.637,699.112 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="-33.013,666.322 21.637,633.532 76.287,666.322 21.637,699.112 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="-39.013" y="660.322">1:M</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="82.287" y="660.322">1:N</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="21.637" y="669.522">ASIGNADOS</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="77.2749,666.322 252.887,666.322 252.887,696.302 428.498,696.302 "/>
+  <g>
+    <polygon style="fill: #ffffff" points="752.122,713.508 814.472,676.098 876.822,713.508 814.472,750.918 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="752.122,713.508 814.472,676.098 876.822,713.508 814.472,750.918 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="746.122" y="707.508">1:N</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="882.822" y="707.508">1:M</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="814.472" y="716.708">CONTRATADOS</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="519.104,696.302 635.116,696.302 635.116,713.508 751.127,713.508 "/>
+  <g>
+    <rect style="fill: #ffffff" x="1055.58" y="668.168" width="97.3" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1055.58" y="668.168" width="97.3" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="1104.23" y="689.368">Entidades</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="877.817,713.508 966.195,713.508 966.195,686.168 1054.57,686.168 "/>
+  <g>
+    <polygon style="fill: #ffffff" points="331.234,-163.042 397.434,-202.762 463.634,-163.042 397.434,-123.322 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="331.234,-163.042 397.434,-202.762 463.634,-163.042 397.434,-123.322 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="325.234" y="-169.042">1:N</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="469.634" y="-169.042">1:M</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="397.434" y="-159.842">conf_horario</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="588.822,-36.3768 517.338,-36.3768 517.338,-123.321 397.434,-123.321 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="463.634,-163.042 553.252,-163.042 553.252,-141.039 642.871,-141.039 "/>
+  <g>
+    <rect style="fill: #ffffff" x="572.456" y="463.398" width="151.2" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="572.456" y="463.398" width="151.2" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="648.056" y="484.598">Calendariolineal</text>
+  </g>
+  <g>
+    <polygon style="fill: #ffffff" points="152.9,466.61 207.55,433.82 262.2,466.61 207.55,499.4 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="152.9,466.61 207.55,433.82 262.2,466.61 207.55,499.4 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="146.9" y="460.61">1:M</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="268.2" y="460.61">1:N</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="207.55" y="469.81">HISTORIAL</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="117.05,361 117.05,383.908 152.9,383.908 152.9,466.61 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="263.188,466.61 417.317,466.61 417.317,481.398 571.447,481.398 "/>
+  <g>
+    <polygon style="fill: #ffffff" points="379.746,51.6422 438.246,16.5422 496.746,51.6422 438.246,86.7422 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="379.746,51.6422 438.246,16.5422 496.746,51.6422 438.246,86.7422 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="373.746" y="45.6422">1:N</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="502.746" y="45.6422">1:M</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="438.246" y="54.8422">conf_salas</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="497.742,51.6422 534,51.6422 534,-18.3769 559.422,-18.3769 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="388.9,164 432.616,164 432.616,375.182 513,375.182 "/>
+  <g>
+    <polygon style="fill: #ffffff" points="513,375.182 567.65,342.392 622.3,375.182 567.65,407.972 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="513,375.182 567.65,342.392 622.3,375.182 567.65,407.972 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="507" y="369.182">1:M</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="628.3" y="369.182">1:N</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="567.65" y="378.382">Asignados</text>
+  </g>
+  <g>
+    <ellipse style="fill: #ffffff" cx="346.586" cy="409.82" rx="46.95" ry="18"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="346.586" cy="409.82" rx="46.95" ry="18"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="346.586" y="413.02">version</text>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="207.55" y1="433.82" x2="302.789" y2="417.38"/>
+  <g>
+    <ellipse style="fill: #ffffff" cx="89.2368" cy="501.62" rx="43.1" ry="18"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="89.2368" cy="501.62" rx="43.1" ry="18"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="89.2368" y="504.82">Activa</text>
+  </g>
+  <g>
+    <polygon style="fill: #ffffff" points="215.236,533.48 258.336,507.62 301.436,533.48 258.336,559.34 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="215.236,533.48 258.336,507.62 301.436,533.48 258.336,559.34 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="209.236" y="527.48">1:1</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="307.436" y="527.48">1:N</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="258.336" y="536.68">asigna</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="301.436,533.48 301.436,516.944 648.056,516.944 648.056,500.407 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="53,361 36.6368,361 36.6368,533.48 215.236,533.48 "/>
+  <g>
+    <polygon style="fill: #ffffff" points="915.2,-126.654 954.45,-150.204 993.7,-126.654 954.45,-103.104 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="915.2,-126.654 954.45,-150.204 993.7,-126.654 954.45,-103.104 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="909.2" y="-132.654">1:N</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="999.7" y="-132.654">1:M</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="954.45" y="-123.454">viaje</text>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="125.358" y1="490.932" x2="151.903" y2="483.076"/>
+  <g>
+    <rect style="fill: #ffffff" x="307" y="128" width="81.9" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="307" y="128" width="81.9" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="347.95" y="149.2">Version</text>
+  </g>
+  <g>
+    <polygon style="fill: #ffffff" points="338,280.55 377.25,257 416.5,280.55 377.25,304.1 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="338,280.55 377.25,257 416.5,280.55 377.25,304.1 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="332" y="274.55">1:1</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="422.5" y="274.55">1:M</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="377.25" y="283.75">tiene</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="182.108,343 279.679,343 279.679,304.1 377.25,304.1 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="377.25,255.994 377.25,209.997 347.95,209.997 347.95,164 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="347.95,126.991 347.95,89.3165 379.746,89.3165 379.746,51.6422 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="307,128 307,-52 331.234,-52 331.234,-163.041 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="623.288,375.182 678.748,375.182 678.748,360.916 734.209,360.916 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="519.104,678.302 519.104,568 789.13,568 789.13,508.726 "/>
+  <g>
+    <rect style="fill: #ffffff" x="735.218" y="342.916" width="74.2" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="735.218" y="342.916" width="74.2" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="772.318" y="364.116">Equipo</text>
+  </g>
+  <g>
+    <polygon style="fill: #ffffff" points="749.88,485.176 789.13,461.626 828.38,485.176 789.13,508.726 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="749.88,485.176 789.13,461.626 828.38,485.176 789.13,508.726 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="793.13" y="455.626">1:N</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="793.13" y="530.726">1:1</text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="789.13" y="488.376">tiene</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="789.13,460.622 789.13,420.274 772.318,420.274 772.318,379.925 "/>
+  <g>
+    <rect style="fill: #ffffff" x="1032.44" y="-274.046" width="97.3" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1032.44" y="-274.046" width="97.3" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="1081.09" y="-252.846">Provincia</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="993.7,-126.654 993.7,-230.864 1081.09,-230.864 1081.09,-237.049 "/>
+  <g>
+    <ellipse style="fill: #ffffff" cx="905.128" cy="-235.998" rx="39.25" ry="18"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="905.128" cy="-235.998" rx="39.25" ry="18"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="905.128" y="-232.798">FECHA</text>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="913.491" y1="-217.458" x2="943.42" y2="-151.107"/>
+  <g>
+    <rect style="fill: #ffffff" x="1071.55" y="129.896" width="81.9" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1071.55" y="129.896" width="81.9" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="1112.5" y="151.096">PERSONA</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1071.55,147.896 1071.55,65.2406 799.42,65.2406 799.42,60.263 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="618.222,-18.3769 855.082,-18.3769 855.082,-126.654 914.197,-126.654 "/>
+  <g>
+    <polygon style="fill: #ffffff" points="728.62,60.263 764.02,39.023 799.42,60.263 764.02,81.503 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="728.62,60.263 764.02,39.023 799.42,60.263 764.02,81.503 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="722.62" y="54.263"></text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="805.42" y="54.263"></text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="764.02" y="63.463">Cita</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="684.826,-122.03 684.826,-42.0062 764.02,-42.0062 764.02,38.0176 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="588.822,-0.3768 588.822,29.9431 728.62,29.9431 728.62,60.263 "/>
+  <g>
+    <rect style="fill: #ffffff" x="707.03" y="179.364" width="105" height="36"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="707.03" y="179.364" width="105" height="36"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="759.53" y="200.564">Calendario</text>
+  </g>
+  <g>
+    <polygon style="fill: #ffffff" points="529.676,189.034 568.926,165.484 608.176,189.034 568.926,212.584 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="529.676,189.034 568.926,165.484 608.176,189.034 568.926,212.584 "/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:end;font-family:monospace;font-style:normal;font-weight:normal" x="523.676" y="183.034"></text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="614.176" y="183.034"></text>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:monospace;font-style:normal;font-weight:normal" x="568.926" y="192.234">tiene</text>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="389.905,146 459.791,146 459.791,189.034 529.676,189.034 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="609.18,189.034 658.105,189.034 658.105,197.364 707.03,197.364 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="759.53,178.355 759.53,130.432 764.02,130.432 764.02,82.5084 "/>
+</svg>

@@ -1,37 +1,160 @@
 <template>
     <!--<welcome />-->
     <app-layout>
-        <v-row>
+        <v-row align="center" justify="center">
+            <!-- Contenido dentro del v-row -->
             <v-col>
-                <v-btn color="blue-grey" class="ma-2 white--text" @click="crear_backup()">
-                    Crear Backup
-                    <v-icon right dark>
-                        mdi-cloud-upload
-                    </v-icon>
-                </v-btn>
-            </v-col>
-            <v-col>
-                <v-form @submit.prevent="subir_archivo">
-                    <v-file-input v-model="file" label="Seleccionar archivo"></v-file-input>
-                    <v-btn type="submit">Enviar</v-btn>
-                </v-form>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" @click="showRow = !showRow">
+                            <v-icon>{{ showRow ? 'mdi-window-minimize' : 'mdi-window-maximize' }}</v-icon>
+                            Restauracion y Crearcion de Backup
+                        </v-btn>
+                    </template>
+                    <span>{{ showRow ? 'Minimizar el contenido' : 'Maximizar el contenido' }}</span>
+                </v-tooltip>
             </v-col>
         </v-row>
-        <v-data-table :headers="headers" :items="lista_backup" class="elevation-1">
-            <template v-slot:item.actions="{ item }">
-                <v-icon small class="mr-2" @click="descargar_archivo(item)">
-                    mdi-pencil
-                </v-icon>
-                <v-icon small @click="eliminar_archivo(item)">
-                    mdi-delete
-                </v-icon>
-            </template>
-            <template v-slot:no-data>
-                <v-btn color="primary" @click="initialize">
-                    Reset
-                </v-btn>
-            </template>
-        </v-data-table>
+        <v-row v-if="showRow">
+            <v-col>
+                <v-card>
+                    <v-card-text>
+                        <h2 class="headline">Crear Backup</h2>
+                        <p>
+                            ¡Bienvenido a la sección de creación de backups! Aquí puedes generar una copia de seguridad de
+                            tus datos.
+                            Cuando hagas clic en el botón "Crear Backup", se actualizará la lista de backups disponibles.
+                        </p>
+                    </v-card-text>
+                    <v-divider></v-divider>
+                    <v-card-actions>
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on }">
+                                <v-btn class="ma-4" color="primary" dark v-on="on" @click="crear_backup">
+                                    Crear Backup
+                                    <v-icon>mdi-download</v-icon>
+                                </v-btn>
+                            </template>
+                            <span>Crear una copia de seguridad</span>
+                        </v-tooltip>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+            <v-col><v-card>
+                    <v-card-text>
+                        <h2 class="headline">Restauración de Backup</h2>
+                        <p>
+                            ¡Bienvenido a la restauración de backups! Aquí puedes restaurar una copia de seguridad de tus
+                            datos utilizando un archivo zip.
+
+                        </p>
+                    </v-card-text>
+                    <v-divider></v-divider>
+                    <v-card-actions>
+                        <v-form @submit.prevent="subir_archivo">
+                            <p>Haga clic en el botón "Seleccionar Archivo", podrás buscar el archivo en tu
+                                dispositivo
+                                y seleccionarlo.</p>
+                            <v-file-input v-model="file" label="Seleccionar archivo"></v-file-input>
+                            <p> Luego, haz clic en el botón "Subir Archivo" para comenzar la restauración.</p>
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn type="submit" class="ma-2" color="primary" dark v-on="on" :disabled="!file">
+                                        Subir Archivo
+                                        <v-icon>mdi-upload</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Restaurar copia de seguridad</span>
+                            </v-tooltip>
+                        </v-form>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-divider></v-divider>
+
+        <v-row align="center" justify="center">
+            <!-- Contenido dentro del v-row -->
+            <v-col>
+                <v-btn-toggle>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                            <v-btn v-on="on" @click="showRow2 = !showRow2">
+                                <v-icon>{{ showRow2 ? 'mdi-window-minimize' : 'mdi-window-maximize' }}</v-icon>
+                                Lista de Backup
+                            </v-btn>
+                        </template>
+                        <span>{{ showRow2 ? 'Minimizar el contenido' : 'Maximizar el contenido' }}</span>
+                    </v-tooltip>
+                </v-btn-toggle>
+
+            </v-col>
+        </v-row>
+
+        <v-divider></v-divider>
+        <v-row v-if="showRow2">
+            <v-col>
+                <v-data-table :headers="headers" :items="lista_backup" class="elevation-1">
+                    <template v-slot:item.actions="{ item }">
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on }">
+                                <v-btn class="ma-2" color="primary" dark v-on="on" @click="descargar_archivo(item)">
+                                    <v-icon>
+                                        mdi-download
+                                    </v-icon>
+                                </v-btn>
+                            </template>
+                            <span>Descargar Backup</span>
+                        </v-tooltip>
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on }">
+                                <v-btn class="ma-2" color="primary" dark v-on="on" @click="eliminar_archivo(item)">
+                                    <v-icon>
+                                        mdi-delete
+                                    </v-icon>
+                                </v-btn>
+                            </template>
+                            <span>Eliminar Backup</span>
+                        </v-tooltip>
+                    </template>
+                    <template v-slot:no-data>
+                        <v-btn color="primary" @click="initialize">
+                            Reset
+                        </v-btn>
+                    </template>
+                </v-data-table>
+
+            </v-col>
+        </v-row>
+
+        <v-dialog v-model="errorDialog" max-width="400">
+            <v-card>
+                <v-card-title class="error-dialog-title">
+                    <v-icon color="error">mdi-alert</v-icon>
+                    <span class="headline">¡Error!</span>
+                </v-card-title>
+                <v-card-text>
+                    <v-row align="center" justify="center">
+                        <v-col cols="12" class="text-center">
+                            <v-icon x-large color="red">mdi-alert</v-icon>
+                            <p class="error-dialog-message red--text text--darken-4 headline">
+                                {{ errorMessage }}
+                            </p>
+                        </v-col>
+                    </v-row>
+
+                </v-card-text>
+                <v-card-actions class="text-center">
+                    <v-row>
+                        <v-col class="text-center">
+                            <v-btn color="primary" text @click="errorDialog = !errorDialog">Cerrar</v-btn>
+
+                        </v-col>
+                    </v-row>
+
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </app-layout>
     <!--:datos_cita="fechas"-->
     <!--<barrasu/>-->
@@ -46,6 +169,10 @@ import axios from 'axios'
 export default {
     data() {
         return {
+            showRow: true,
+            showRow2: true,
+            errorMessage: '',
+            errorDialog: false,
             search: '',
             tab: null,
 
@@ -197,13 +324,19 @@ export default {
                 },
             }).then(
                 (response) => {
-                    console.log(response);
+                    console.log(response.data);
+                    if (response.data.success) {
+                        window.location.href = `/${process.env.MIX_CARPETA}/login`
+                    }
 
                 }
             ).catch(err => {
-                console.log(err)
-                console.log("err->", err.response.data)
-                return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+                //console.log(err)
+                this.errorDialog = true
+                this.errorMessage = err.response.data.error
+                //console.log("err->", err.response.data.error)
+
+                //return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             });
 
         },

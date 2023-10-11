@@ -8,6 +8,55 @@ Breaking changes are marked with ⚠️.
 
 ## [Unreleased]
 
+## [v1.6.2] - 2023-08-18
+
+**Fixed**
+
+- Make slash "not encoding" less restrictive by @aguingand in https://github.com/tighten/ziggy/pull/661
+
+## [v1.6.1] - 2023-08-04
+
+**Fixed**
+
+- Fix numeric route names by @bakerkretzmar https://github.com/tighten/ziggy/pull/658
+
+## [v1.6.0] - 2023-05-12
+
+**Added**
+
+- Add `'ziggy.output.path'` config option by @mhelaiwa https://github.com/tighten/ziggy/pull/633
+
+## [v1.5.2] - 2023-05-05
+
+**Added**
+
+- Add Vite instructions to README.md by @fullstackfool https://github.com/tighten/ziggy/pull/627
+
+**Fixed**
+
+- Trim slashes between origin and optional first param by @bakerkretzmar in https://github.com/tighten/ziggy/pull/637
+- Fix `route().params` not being decoded by @Tofandel in https://github.com/tighten/ziggy/pull/610
+
+## [v1.5.1] - 2023-04-22
+
+**Fixed**
+
+- Check for overridden `getKeyName()` and `$primaryKey` by @Jared0430 in https://github.com/tighten/ziggy/pull/630
+
+## [v1.5.0] - 2022-09-23
+
+**Added**
+
+- Add support for negating route filter patterns with `!` by @bakerkretzmar in https://github.com/tighten/ziggy/pull/559
+
+**Changed**
+
+- Test on PHP 8.2 by @bakerkretzmar in https://github.com/tighten/ziggy/pull/584
+
+**Fixed**
+
+- Allow `null` as entire params argument by @bakerkretzmar in https://github.com/tighten/ziggy/pull/582
+
 ## [v1.4.6] - 2022-04-08
 
 **Fixed**
@@ -239,7 +288,13 @@ Breaking changes are marked with ⚠️.
 
 For previous changes see the [Releases](https://github.com/tighten/ziggy/releases) page.
 
-[Unreleased]: https://github.com/tighten/ziggy/compare/v1.4.6...HEAD
+[Unreleased]: https://github.com/tighten/ziggy/compare/v1.6.2...HEAD
+[v1.6.2]: https://github.com/tighten/ziggy/compare/v1.6.1...v1.6.2
+[v1.6.1]: https://github.com/tighten/ziggy/compare/v1.6.0...v1.6.1
+[v1.6.0]: https://github.com/tighten/ziggy/compare/v1.5.2...v1.6.0
+[v1.5.2]: https://github.com/tighten/ziggy/compare/v1.5.1...v1.5.2
+[v1.5.1]: https://github.com/tighten/ziggy/compare/v1.5.0...v1.5.1
+[v1.5.0]: https://github.com/tighten/ziggy/compare/v1.4.6...v1.5.0
 [v1.4.6]: https://github.com/tighten/ziggy/compare/v1.4.5...v1.4.6
 [v1.4.5]: https://github.com/tighten/ziggy/compare/v1.4.4...v1.4.5
 [v1.4.4]: https://github.com/tighten/ziggy/compare/v1.4.3...v1.4.4

@@ -7,6 +7,9 @@
 */
 @import "vuetify/dist/vuetify.min.css";
 
+:root{
+  font-size: 18px;
+}
 .v-current-time {
   height: 2px;
   background-color: #ea4335;
@@ -54,7 +57,9 @@
 }
 
 
-
+.custom-event {
+  font-size: 30px;
+}
 /*.orange {
   --color: #f49764;
   background:#fbe8a6

@@ -141,7 +141,7 @@ class ExcelPaciente extends Controller
         $hregistro =
             DB::table("information_schema.columns")
             ->select("column_name as nombre")
-            ->where("table_name", "=", "registros")
+            ->where("table_name", "=", "evaluacions")
             ->pluck('nombre')->toArray();
         if ($request->hasFile('file')) {
             $file = $request->file('file');
@@ -275,7 +275,7 @@ class ExcelPaciente extends Controller
                                     ///$persona['fecha_nacimiento'] = date('Y-m-d', $persona['fecha_nacimiento']);
                                 }
                             }
-                            $reg = db::table('registros')
+                            $reg = db::table('evaluacions')
                                 ->updateOrInsert($registro);
                         } catch (\Throwable $e) {
                             return ['datos' => $persona, 's' => $e];
@@ -480,7 +480,7 @@ class ExcelPaciente extends Controller
                                 $dato_registro['fecha_registro'] = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($dato_registro['fecha_registro']));
                                 $dato_registro['fecha_vigencia'] = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($dato_registro['fecha_vigencia']));
 
-                                $query = db::table('registros')
+                                $query = db::table('evaluacions')
                                     ->insert($dato_registro);
                             }
 
@@ -502,7 +502,7 @@ class ExcelPaciente extends Controller
                                 }
                                 $dato_registro->fecha_registro = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($dato_registro->fecha_registro));
                                 $dato_registro->fecha_vigencia = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($dato_registro->fecha_vigencia));
-                                $resp = db::table('registros')
+                                $resp = db::table('evaluacions')
                                     ->where('id_persona', '=', $paciente->id)
                                     ->where('fecha_registro', '=', $dato_registro->fecha_registro)
                                     ->exists();
@@ -511,7 +511,7 @@ class ExcelPaciente extends Controller
                                     $dato_registro = (array) $dato_registro;
                                     $dato_registro['id_persona'] = $paciente->id;
                                     unset($dato_registro['id']);
-                                    $query = db::table('registros')
+                                    $query = db::table('evaluacions')
                                         ->insert($dato_registro);
                                     $nro_repetidos++;
                                 }
