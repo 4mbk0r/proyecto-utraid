@@ -114,6 +114,7 @@ class PersonaController extends Controller
         $t = [];
         if(count($r)>0){
             $t =db::table('personas')
+            ->leftJoin('evaluacions', 'evaluacions.id_persona', '=', 'personas.id')
             ->where($r)
             ->get();
         }

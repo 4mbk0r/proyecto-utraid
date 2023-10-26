@@ -1,0 +1,33 @@
+@startuml
+
+entity "Usuarios" as usuarios {
+  + id
+  nombre
+  email
+  password
+}
+
+entity "Cargos" as cargos {
+  + id
+  nombre
+}
+
+entity "Permisos" as permisos {
+  + id
+  nombre
+}
+
+entity "Permiso_Usuario" as permiso_usuario {
+  + id
+  usuario_id
+  permiso_id
+}
+
+usuarios --o cargos : pertenece a
+usuarios --o permisos : tiene permisos
+usuarios --o permisos : tiene permisos
+permisos --o cargos : pertenece a
+usuarios -- permiso_usuario
+permisos -- permiso_usuario
+
+@enduml

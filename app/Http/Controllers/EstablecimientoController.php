@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\establecimiento;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EstablecimientoController extends Controller
 {
@@ -16,6 +18,10 @@ class EstablecimientoController extends Controller
     public function index()
     {
         //
+        return DB::table('establecimientos')
+            ->select('*')
+            //->where('cargo', '!=', 'Admin')
+            ->get();
     }
 
     /**
@@ -37,6 +43,22 @@ class EstablecimientoController extends Controller
     public function store(Request $request)
     {
         //
+        
+        try {
+            $resp = (array)$request['formulario'];
+            DB::table('establecimientos')->insert($resp);
+            // Procesamiento exitoso, mostrar mensaje de éxito
+            return response()->json(['message' => '¡Datos insertados correctamente!']);
+        }
+        catch (QueryException $e) {
+            // Error de inserción en la base de datos
+            return response()->json(['error' => 'Error al insertar los datos: ' . $e->getMessage()], 500);
+        }  
+        catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['error' =>  $th], 500);
+        }
+        return;
     }
 
     /**
@@ -68,9 +90,28 @@ class EstablecimientoController extends Controller
      * @param  \App\Models\establecimiento  $establecimiento
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, establecimiento $establecimiento)
+    public function update(Request $request, $establecimiento)
     {
         //
+        $nuevo = $request['formulario'];
+        $anterior = $request['anterior'];
+        //return $nuevo['nombre'];
+        try {
+            $sw = DB::table('establecimientos')->where('nombre', '=', $anterior['nombre'])->update($nuevo);
+            if($sw){
+                return response()->json(['message' => '¡Datos actulizados  con existo!']);
+            }else{
+                return response()->json(['message' => '¡Datos no se puedo actulizado. Por que no existe!']);
+            }
+        }catch (QueryException $e) {
+            // Error de inserción en la base de datos
+            return response()->json(['error' => 'Error al insertar los datos: ' . $e->getMessage()], 500);
+        }  
+        catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['error' =>  $th], 500);
+        }
+        return $request;
     }
 
     /**
@@ -79,8 +120,25 @@ class EstablecimientoController extends Controller
      * @param  \App\Models\establecimiento  $establecimiento
      * @return \Illuminate\Http\Response
      */
-    public function destroy(establecimiento $establecimiento)
+    public function destroy($establecimiento)
     {
         //
+        $objeto = json_decode($establecimiento);
+        $nombre = $objeto->nombre;
+        try {
+            $sw = DB::table('establecimientos')->where('nombre', '=', $nombre)->delete();
+            if($sw){
+                return response()->json(['message' => '¡Datos eliminados con existo!']);
+            }else{
+                return response()->json(['message' => '¡Datos no se puedo eliminar. Por que no existe!']);
+            }
+        }catch (QueryException $e) {
+            // Error de inserción en la base de datos
+            return response()->json(['error' => 'Error al insertar los datos: ' . $e->getMessage()], 500);
+        }  
+        catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['error' =>  $th], 500);
+        }
     }
 }

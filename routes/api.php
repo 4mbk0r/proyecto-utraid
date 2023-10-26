@@ -304,3 +304,10 @@ Route::post('/get_citas', function (Request $request) {
 
     return DarCitaController::get_cita($request);
 });
+Route::get('/descargarPantilla', function () {
+    return PersonalController::plantilla(); 
+});
+
+Route::post('/lista_personal', function (Request $request) {
+    return PersonalController::activar_personal($request); 
+});

@@ -13,15 +13,14 @@
             </v-tab>
 
         </v-tabs>
-        <v-tabs-items v-model="tabs" touchless>
+        <v-tabs-items v-model="tabs">
             <v-tab-item>
-                <Registros :cargos="cargos" :establecimiento="establecimiento" :departamentos="departamentos">
+                <Registros   :cargos="cargos" :establecimiento="establecimiento" :departamentos="departamentos">
                 </Registros>
             </v-tab-item>
             <v-tab-item>
                 <Lista :cargos="cargos" v-if="tabs == '1'"></Lista>
             </v-tab-item>
-            <v-tab-item> </v-tab-item>
         </v-tabs-items>
     </app-layout>
 </template>

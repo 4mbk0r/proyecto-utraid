@@ -2,12 +2,11 @@
     <v-app>
 
         <v-row class="fill-height">
-
             <v-col>
                 <v-sheet height="64">
                     <v-toolbar flat>
                         <v-btn outlined class="mr-4" color="grey darken-2" @click="setToday">
-                            Hoy
+                            Hoy2
                         </v-btn>
                         <v-btn fab text small color="grey darken-2" @click="prev">
                             <v-icon small>
@@ -48,12 +47,14 @@
                         </v-menu>
                     </v-toolbar>
                 </v-sheet>
+
                 <v-sheet>
-                    <v-calendar v-if="estado == 'calendario'" ref="calendar" v-model="fecha_calendario" :type="type"
-                        color="error" :events="events" :categories="categories" :event-color="getEventColor"
-                        event-overlap-mode="stack" @click:event="showEvent" @click:more="viewDay" @click:date="viewDay"
-                        @change="updateRange" :max-days=5 weekdays="1, 2, 3, 4, 5" :weekday-format="getDay"
-                        :first-interval=7 :interval-minutes=60 :interval-count=12>
+                    <v-calendar class="custom-calendar" v-if="estado == 'calendario'" ref="calendar"
+                        v-model="fecha_calendario" :type="type" color="error" :events="events" :categories="categories"
+                        :event-color="getEventColor" event-overlap-mode="stack" @click:event="showEvent"
+                        @click:more="viewDay" @click:date="viewDay" @change="updateRange" :max-days=5
+                        weekdays="1, 2, 3, 4, 5" :weekday-format="getDay" :first-interval=7 :interval-minutes=60
+                        :interval-count=12>
                         <template #day-body="{ date, category }">
                             <div class="v-current-time" :class="{ first: true }" :style="{ top: nowY }">
                             </div>
@@ -68,17 +69,17 @@
                             </div>
                         </template>
                     </v-calendar>
-
                     <v-calendar v-if="estado == 'atencion'" ref="calendar" v-model="fecha_calendario" color="error"
                         type="category" category-show-all :categories="categories" :events="events"
                         event-overlap-mode="stack" :event-color="getEventColor" :weekday-format="getDay"
-                        @click:event="showEvent" :interval-minutes=60 :first-interval=7 :interval-count=14></v-calendar>
+                        @click:event="showEvent" :interval-minutes=60 :first-interval=7 :interval-count=14>
+                    </v-calendar>
                     <v-menu v-if="selectedOpen" v-model="selectedOpen" :close-on-content-click="false"
                         :activator="selectedElement" offset-x>
                         <v-card min-width="350px" flat>
                             <v-toolbar :color="selectedEvent.color">
 
-                                <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
+                                <v-toolbar-title v-html="selectedEvent.name" class="white--text"></v-toolbar-title>
                                 <v-spacer></v-spacer>
                                 <v-btn
                                     v-if="comparaFechas() && get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
@@ -87,7 +88,7 @@
                                 </v-btn>
                                 <v-btn
                                     v-if="comparaFechas() && get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
-                                    @click="eliminar_ficha($event)" icon>
+                                    @click="mostrarDialogo" icon>
                                     <v-icon>mdi-account-remove-outline</v-icon>
                                 </v-btn>
                                 <v-btn
@@ -97,7 +98,7 @@
                                 </v-btn>
                                 <v-btn
                                     v-if="comparaFechas() && get_datos_ficha(selectedEvent) != null && !getvalores(selectedEvent.fichas, 'id_designado')"
-                                    @click="imprimir($event)" icon>
+                                    @click="imprimir_datos()" icon>
                                     <v-icon>mdi-printer</v-icon>
                                 </v-btn>
                             </v-toolbar>
@@ -221,6 +222,37 @@
             </v-col>
 
         </v-row>
+
+        <!-- Cuadro de diálogo superpuesto -->
+        <v-dialog v-model="dialogVisible" fullscreen hide-overlay>
+            <!-- Contenido del cuadro de diálogo -->
+            <v-card>
+                <v-toolbar dark color="primary">
+                    <v-btn icon @click="cerrar_imprimir()">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title>Boleta de Cita</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <!--<v-btn dark text @click="dialog = false">
+                            Save
+                        </v-btn>-->
+                    </v-toolbar-items>
+                </v-toolbar>
+                <!-- Toolbar -->
+
+
+
+                <!-- Contenido del diálogo -->
+                <v-card-title>
+                    <!-- Puedes agregar un título aquí si es necesario -->
+                </v-card-title>
+                <v-card-text>
+                    <imprimir v-if="dialogVisible" ref="print">
+                    </imprimir>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
         <v-dialog v-model="dialog_equipo" fullscreen :scrim="false" transition="dialog-bottom-transition">
 
             <v-card>
@@ -264,37 +296,10 @@
                 <v-list>
                     <v-subheader>Viaje</v-subheader>
                     <viaje v-if="dialog_equipo" :fecha="fecha_calendario" :datos="selectedEvent.consultorio"></viaje>
-                    <!--{{ selectedEvent }}-->
-                    <!--<v-list-item>
-                        <v-list-item-action>
-                            <v-checkbox v-model="notifications"></v-checkbox>
-                        </v-list-item-action>
-                        <v-list-item-content>
-                            <v-list-item-title>Notifications</v-list-item-title>
-                            <v-list-item-subtitle>Notify me about updates to apps or games that I
-                                downloaded</v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                        <v-list-item-action>
-                            <v-checkbox v-model="sound"></v-checkbox>
-                        </v-list-item-action>
-                        <v-list-item-content>
-                            <v-list-item-title>Sound</v-list-item-title>
-                            <v-list-item-subtitle>Auto-update apps at any time. Data charges may
-                                apply</v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                        <v-list-item-action>
-                            <v-checkbox v-model="widgets"></v-checkbox>
-                        </v-list-item-action>
-                        <v-list-item-content>
-                            <v-list-item-title>Auto-add widgets</v-list-item-title>
-                            <v-list-item-subtitle>Automatically add home screen widgets</v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
-                -->
+                </v-list>
+                <v-list>
+                    <v-subheader>Configuracion de Horarios</v-subheader>
+                    <confihorario :editedIndex="editedIndex" :originalItem="editedItem"></confihorario>
                 </v-list>
             </v-card>
         </v-dialog>
@@ -313,8 +318,6 @@
                         </v-btn>
                     </v-toolbar-items>
                 </v-toolbar>
-                <imprimir v-if="dialog_imprimir" ref="print">
-                </imprimir>
                 <!--<v-list three-line subheader>
                     <v-subheader>Imprimir</v-subheader>
                     <v-list-item>
@@ -379,11 +382,35 @@
         </v-dialog>
         <datos v-if="dialog_persona" @pedir='actualizador' ref="dato">
         </datos>
-        <atencion v-if="estado == 'atencion'" ref="atender" @pedir='actualizador' :equipo="lista_equipo"></atencion>
-
+        <atencion v-if="estado == 'atencion'" ref="atender" @pedir='actualizador' 
+        :equipo="lista_equipo"></atencion>
+        <!-- Diálogo de confirmación -->
+        <v-dialog v-model="dialogDeletecita" max-width="400">
+            <v-card>
+                <v-card-title>Confirmar Eliminación</v-card-title>
+                <v-card-text>
+                    ¿Estás seguro de que deseas eliminar estos datos?
+                </v-card-text>
+                <v-card-actions>
+                    <!-- Botón para confirmar la eliminación -->
+                    <v-btn color="error" @click="eliminarDatos">Eliminar</v-btn>
+                    <!-- Botón para cerrar el diálogo -->
+                    <v-btn @click="cerrarDialogo">Cancelar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
 
     </v-app>
 </template>
+
+<style scoped>
+.custom-calendar {
+    font-size: 20px !important;
+
+    /* Tamaño de fuente personalizado */
+    /* Otros estilos personalizados según tus preferencias */
+}
+</style>
 
 <script>
 import moment from 'moment'
@@ -393,22 +420,22 @@ import atencion from '@/Pages/Micomponet/Atencion'
 import imprimir from '@/Pages/Micomponet/imprimir'
 
 import mequipo from '@/Pages/Configuracion/seleccionequipo'
-
+import confihorario from '@/Pages/Micomponet/SalaEspera'
 import viaje from '@/Pages/Configuracion/viaje'
-
-
-
 export default {
     components: {
-        buscar,
-        datos,
-        atencion,
-        mequipo,
-        viaje,
-        imprimir
-    },
+    buscar,
+    datos,
+    atencion,
+    mequipo,
+    viaje,
+    imprimir,
+    confihorario,
+    //config
+},
     data: () => ({
-
+        dialogDeletecita: false, // Controla la visibilidad del diálogo
+        dialogVisible: false,
         value: '',
         ready: false,
         dialog_imprimir: false,
@@ -495,7 +522,17 @@ export default {
         }
     },
     methods: {
-
+        mostrarDialogo() {
+            this.dialogDeletecita = true; // Abre el diálogo de confirmación
+        },
+        cerrarDialogo() {
+            this.dialogDeletecita = false; // Cierra el diálogo de confirmación
+        },
+        eliminarDatos() {
+            // Aquí puedes agregar la lógica para eliminar los datos
+            // Después de eliminar, cierra el diálogo
+            this.eliminar_ficha()
+        },
         empty(variable) {
             if (variable === null || variable === undefined || isNaN(variable) ||
                 variable === '' || (Array.isArray(variable) && variable.length === 0)) {
@@ -504,43 +541,21 @@ export default {
                 return false;
             }
         },
-        imprimir() {
-            // Abrir la pestaña principal
-            //this.$store.commit('update_imprimir', this.selectedEvent.fichas);
-            //console.log(this.selectedEvent.fichas);
-            //this.$store.commit('update_imprimir', this.selectedEvent.fichas)
+        cerrar_imprimir() {
+            this.$store.dispatch('guardar_imprimir', null);
+            localStorage.removeItem("usuario");
+            this.dialogVisible = false
+        },
+        imprimir_datos() {
+            console.log('/*/*/*/*/*/*/')
+            console.log(this.selectedEvent.fichas)
             this.$store.dispatch('guardar_imprimir', this.selectedEvent.fichas);
             localStorage.setItem("usuario", JSON.stringify(this.selectedEvent.fichas));
             setTimeout(() => {
 
             }, 2);
+            this.dialogVisible = true
 
-            let mainTab = window.open(`/${process.env.MIX_CARPETA}/imprimir`, '_blank');
-            // Esperar a que la pestaña principal esté lista
-            /*mainTab.addEventListener('load', function () {
-                // Abrir la mini pestaña en la pestaña principal
-                let miniTab = mainTab.open('http://localhost/main/imprimir', 'miniTab', 'width=400,height=300');
-
-                // Comunicar entre las dos pestañas
-                window.addEventListener('message', function (event) {
-                    if (event.origin !== 'https://www.ejemplo.com') return; // verificar el origen del mensaje
-                    console.log('Mensaje recibido:', event.data); // manejar el mensaje recibido
-                });
-
-                miniTab.postMessage('Hola, pestaña principal!', 'http://localhost/main/imprimir'); // enviar un mensaje a la mini pestaña
-            });*¨/
-
-
-
-
-            /*this.dialog_imprimir = true;
-            setTimeout(() => {
-
-            }, 1);
-            this.$refs.print.cita = this.selectedEvent.fichas;
-            */
-
-            //console.log(this.selectedEvent.fichas);
         },
 
         comparaFechas() {
@@ -696,39 +711,6 @@ export default {
                 console.log("err->", err.response.data)
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             }
-            /*try {
-                var res = await axios({
-                    method: 'get',
-                    url: `/${process.env.MIX_CARPETA}/lista_agenda/` + date,
-                }).then(
-                    (response) => {
-                        let pacientes = response.data;
-                        for (const key in pacientes) {
-                            let paciente = pacientes[key];
-                            //console.log(paciente.fecha + 'T'+paciente.hora_inicio+'-04:00')//new Date(),);
-                            this.events.push({
-                                name: paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
-                                start: new Date(paciente.fecha + 'T' + paciente.hora_inicio + '-04:00'),
-                                end: new Date(paciente.fecha + 'T' + paciente.hora_final + '-04:00'),
-                                color: 'blue',
-                                timed: 1,
-                                category: this.categories[paciente.consultorio-1],
-                                paciente: structuredClone(paciente)
-                            })
-                            /*if (Object.hasOwnProperty.call(object, key)) {
-                                const element = object[key];
-                                
-                            }*//*
-}
-
-}, (error) => {
-console.log(error);
-}
-);
-} catch (err) {
-console.log("err->", err.response.data)
-return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
-}*/
         },
         async pedir_datos(date) {
             console.log(this.fecha_calendario);
@@ -764,11 +746,10 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                         console.log(salas_disponibles)
                         */
                         console.log('-000000---');
-                        console.log(salas
-                        );
+                        console.log(salas);
                         this.categories.push(salas[key]['descripcion'])
                         this.events.push({
-                            name:  this.empty(salas[key]['id_municipio']) ? salas[key]['nombre_equipo'] : salas[key]['nombre_equipo'] +" "+salas[key]['municipio'],
+                            name: this.empty(salas[key]['id_municipio']) ? salas[key]['nombre_equipo'] : salas[key]['nombre_equipo'] + " " + salas[key]['municipio'],
                             start: start2,
                             end: end,
                             color: 'black',
@@ -792,12 +773,14 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                     console.log(this.fecha_calendario)
                     for (const key in salas_disponibles) {
                         let fichas = salas_disponibles[key];
-                        //console.log(fichas);
-                        //console.log(typeof ficha.id_oersiba);
 
                         for (const x in fichas) {
                             let ficha = fichas[x];
-                            //console.log(ficha.id_persona);
+                            console.log(ficha.nombres);
+                            console.log(ficha.id);
+                            console.log(ficha.id_equipo);
+                            console.log(ficha.id_sala);
+
                             let categoria = ''
                             for (const key in this.salas) {
                                 /*console.log('------');
@@ -809,11 +792,11 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                                     //categoria=this.categories[key]
 
                                     this.events.push({
-                                        name: (!ficha.id_persona) ? 'Sin asignar' : ficha.nombres,
+                                        name: (!ficha.ci) ? 'Sin asignar' : ficha.nombres,
                                         //paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
                                         start: new Date(this.fecha_calendario + 'T' + ficha.hora_inicio + '-04:00'),
                                         end: new Date(this.fecha_calendario + 'T' + ficha.hora_final + '-04:00'),
-                                        color: (!ficha.id_persona) ? 'grey' : (!ficha.id_designado) ? 'blue' : 'green',
+                                        color: (!ficha.ci) ? '#595959' : (!ficha.id_designado) ? 'blue' : 'green',
                                         timed: 1,
                                         category: this.categories[key],
                                         fichas: fichas[x],
@@ -915,7 +898,6 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             alert('seleccione usuario a cambiar');
             this.cambio_ficha = true
             this.cambia_datos = structuredClone(this.selectedEvent)
-
         },
         async eliminar_ficha(event) {
             //console.log(this.selectedEvent.fichas.id_ficha);
@@ -925,16 +907,17 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
                 url: `/${process.env.MIX_CARPETA}/dar_ficha/` + this.selectedEvent.fichas.id_ficha,
                 data:
                     this.selectedEvent.fichas,
-                //equipo: this.selectequipo.equipo
-
             }).then(
                 (response) => {
-
+                    console.log('**********')
+                    console.log(response)
                     this.pedir_datos()
                     this.selectedOpen = false
+                    this.cerrarDialogo()
                 }
             ).catch(err => {
                 console.log(err)
+                console.log(err.response)
 
             });
         },
@@ -966,7 +949,7 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
 
         },
         getcolor(ficha) {
-            return (!ficha.id_persona) ? 'white' : (!ficha.id_designado) ? 'blue' : 'green'
+            return (!ficha.id) ? 'white' : (!ficha.id_designado) ? 'blue' : 'green'
         },
         getvalores(objecto, x) {
             console.log('---------------s-s--s-s');
@@ -1227,13 +1210,14 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             //this.events.push(events)
         },
         get_datos_ficha(X) {
-            console.log('....');
-            if (typeof X.fichas == 'undefined') {
+            console.log('....venta de opciones');
+            console.log(X);
+
+            if (typeof X.fichas.ci == 'undefined') {
                 return null
             }
-            //console.log(X.fichas.id_persona);
 
-            return X.fichas.id_persona
+            return X.fichas.ci
         },
         open_agenda() {
             this.selectedOpen = false
@@ -1273,8 +1257,8 @@ return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             console.log(this.cal.updateTimes());
             setInterval(() => this.cal.updateTimes(), 60 * 2000)
         },
-        close_atencion(){
-            this.dialog_equipo =  false
+        close_atencion() {
+            this.dialog_equipo = false
             this.pedir_datos();
         }
     }

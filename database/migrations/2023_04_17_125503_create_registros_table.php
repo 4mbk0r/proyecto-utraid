@@ -16,7 +16,7 @@ class CreateRegistrosTable extends Migration
     {
         
         DB::statement("SET datestyle = 'ISO, DMY'");
-        Schema::create('registros', function (Blueprint $table) {
+        Schema::create('evaluacions', function (Blueprint $table) {
             $table->date('fecha_registro');
             $table->date('fecha_vigencia');
             $table->string('diagnostico')->nullable();
@@ -29,7 +29,7 @@ class CreateRegistrosTable extends Migration
             $table->unique(['fecha_registro', 'id_persona']);
         });
         DB::statement(
-            "ALTER TABLE registros ADD FOREIGN KEY (id_persona) REFERENCES personas(id)"
+            "ALTER TABLE evaluacions ADD FOREIGN KEY (id_persona) REFERENCES personas(id)"
         );
         
     }   
@@ -41,6 +41,6 @@ class CreateRegistrosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('registros');
+        Schema::dropIfExists('evaluacions');
     }
 }

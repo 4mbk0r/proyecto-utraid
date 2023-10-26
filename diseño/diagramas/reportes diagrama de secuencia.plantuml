@@ -1,0 +1,29 @@
+@startuml
+actor Usuario
+boundary Registro
+control ApiREST
+database BaseDatos
+alt#Gold #LightBlue caso Reportes (existo)
+Usuario -> Registro: Seleccion de datos
+activate Registro
+
+Registro --> ApiREST: Enviar datos seleccionados\n url: "/api/reportes"\n methods: GET 
+Activate ApiREST
+
+ApiREST -> BaseDatos: Consulta: Reportes seleccionados\n Table: Boleta
+Activate BaseDatos
+BaseDatos --> ApiREST: Resultado: Devolver del reporte\n
+deactivate BaseDatos
+ApiREST --> Registro: Devuelve el archivo Excel
+Registro --> Usuario: Descarha el archivo Excel
+
+else #Pink Error Reportes
+
+ApiREST --> Registro: Devuelvve el error 
+deactivate ApiREST
+
+Registro --> Usuario: Muestra el mensaje error
+'destroy ApiREST
+
+deactivate Registro
+end

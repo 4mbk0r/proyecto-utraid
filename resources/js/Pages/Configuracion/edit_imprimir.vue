@@ -45,7 +45,7 @@
                     <p class="pa-0 ma-0"> Codigo: {{ cita.id }}</p>
                 </v-col>
 
-                <v-col cols="4" class="pa-0 ma-0" align="center" justify="center" style="font-size: 10px !important;">
+                <v-col cols="4" class="pa-0 ma-0 " align="center" justify="center" style="font-size: 8px !important;">
                     <p class="pa-0 ma-0">PROGRAMACION PARA EVALUACION DE DISCAPACIDAD</p>
                 </v-col>
 

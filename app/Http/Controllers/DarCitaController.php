@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\dar_cita;
 use App\Http\Controllers\Controller;
 use App\Models\Ficha;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use OwenIt\Auditing\Audit;
+use OwenIt\Auditing\Facades\Auditor;
 
 class DarCitaController extends Controller
 {
@@ -57,6 +60,7 @@ class DarCitaController extends Controller
     public function store(Request $request)
     {
         //
+        //return $request;
         $fecha = $request['fecha'];
         $cita =  $request['cita'];
         //return $cita;
@@ -194,12 +198,14 @@ class DarCitaController extends Controller
         foreach ($validar as $key => $value) {
             # code...
             $horario = DB::table('fichas')
-                ->select('*')
+                ->select('*', 'evaluacions.id_persona as id_persona ')
                 ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
                 ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_sala')
                 ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
                 ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
                 ->leftJoin('personas', 'personas.id', '=', 'dar_citas.id_persona')
+                ->leftJoin('evaluacions', 'personas.id', '=', 'evaluacions.id_persona')
+
                 ->where('fecha', '=', $fecha)
                 ->where('fichas.id_sala', '=', $value->id_sala)
                 //->groupBy('id_sala', 'salas.descripcion')
@@ -240,10 +246,54 @@ class DarCitaController extends Controller
      */
     public function destroy(int $dar_cita)
     {
-        //
-        DB::table('dar_citas')
+        //  
+
+        // Obtén el registro que vas a eliminar (opcional, pero útil para auditoría)
+        $registroAEliminar = DB::table('dar_citas')
             ->where('id_ficha', '=', $dar_cita)
-            ->delete();
+            ->first(); // Puedes usar ->get() si esperas varios registros
+        //return 'casasasa'.$registroAEliminar->id_ficha;
+        if ($registroAEliminar) {
+            // Realiza la eliminación
+            try {
+
+                //$arregloAsociativo = json_decode($registroAEliminar, true);
+
+                // Convertir el arreglo asociativo nuevamente a una cadena de texto
+                $textoConvertido = json_encode($registroAEliminar);
+                $textoConvertido = (string)$textoConvertido;
+                $eventoAuditoria = [
+                    'user_id' => auth()->user() ? auth()->user()->id : null,
+                    'user_type' => auth()->user() ? get_class(auth()->user()) : null,
+                    'event' => 'delete impresion',
+                    'auditable_id' => $registroAEliminar ? $registroAEliminar->id_ficha : null,
+                    'auditable_type' => $registroAEliminar ? get_class($registroAEliminar) : null,
+                    'tags' => 'se eliminó una ficha de la base de datos',
+                    'new_values' => $textoConvertido, // Agregar la fecha y hora actual
+                    'updated_at' => now()->toDateTimeString(), 
+                    // Otros detalles del evento de auditoría, si es necesario
+                ];
+                
+
+                DB::table('audits')->insert($eventoAuditoria);
+                //Auditor::audit()->audit($eventoAuditoria);
+                DB::table('dar_citas')
+                    ->where('id_ficha', '=', $dar_cita)
+                    ->delete();
+            } catch (QueryException $e) {
+                return $e;
+                // Maneja la excepción aquí, por ejemplo, puedes registrarla o mostrar un mensaje de error.
+                // Ten en cuenta que las excepciones pueden ocurrir debido a problemas de la base de datos, como restricciones de clave externa, por lo que es importante manejarlas adecuadamente.
+                // También puedes revertir la transacción si es relevante para tu aplicación.
+            }
+            // Registra la eliminación en Laravel Audit
+            // Esto registra la eliminación
+
+            // Opcionalmente, también puedes registrar manualmente el evento de eliminación
+            // Auditor::audit()->log('Eliminación de registro', 'destroy', $registroAEliminar);
+        } else {
+            // El registro no existe, maneja este caso según tus necesidades
+        }
     }
     public static function cambiar_cita(Request $request)
     {
@@ -286,12 +336,15 @@ class DarCitaController extends Controller
 
         try {
             $citas = DB::table("dar_citas")
-                ->select(['*', 'personas.id as id', 'fichas.id  as id_ficha'])
+                ->select(['*', 'evaluacions.id_persona as id_persona', 'personas.id as id', 'fichas.id  as id_ficha'])
                 ->leftJoin("fichas", function ($join) {
                     $join->on("fichas.id", "=", "dar_citas.id_ficha");
                 })
                 ->leftJoin("personas", function ($join) use ($paciente) {
                     $join->on("personas.id", "=", "dar_citas.id_persona");
+                })
+                ->leftJoin("evaluacions", function ($join) use ($paciente) {
+                    $join->on("personas.id", "=", "evaluacions.id_persona");
                 })
 
                 ->leftJoin("atenders", function ($join) use ($paciente) {
@@ -315,12 +368,12 @@ class DarCitaController extends Controller
                 ->leftJoin("institucions", function ($join) use ($paciente) {
                     $join->on("institucions.codigo", "=", "calendarios.codigo");
                 })
-                
+
                 /*
                     left join viajes ON viajes.id_sala = salas.id
                     left join municipios ON municipios.id = viajes.id_municipio
                  */
-                
+
                 /*
                 left join salas ON salas.id = fichas.id_sala
 left join horarios ON horarios.id = fichas.id_horario
@@ -332,11 +385,11 @@ left join horarios ON horarios.id = fichas.id_horario
                 ->get();
 
 
-            $registro = DB::table("registros")
+            $registro = DB::table("evaluacions")
                 ->leftJoin("personas", function ($join) {
-                    $join->on("personas.id", "=", 'registros.id_persona');
+                    $join->on("personas.id", "=", 'evaluacions.id_persona');
                 })
-                ->where("registros.id_persona", "=", $paciente['id'])
+                ->where("evaluacions.id_persona", "=", $paciente['id'])
                 ->get();
 
             return [

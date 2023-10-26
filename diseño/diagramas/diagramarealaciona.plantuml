@@ -1,0 +1,127 @@
+@startuml
+
+!define TABLE(name, desc) class name as "desc" << (T,#FFAAAA) >>
+!define PK() <color:blue><b><u>
+!define FK() <color:green><b><u>
+
+hide methods
+hide stereotypes
+
+entity "Institucion" as institucion {
+    + PK() codigo_Institucion : int
+    --
+    Nombre : string
+    direccion : string
+}
+
+entity "Personal" as personal {
+    + PK() codigo_Personal : int
+    --
+    Nombre : string
+    ap_peterno : string
+    ap_materno : string
+    ci: string
+    pasword: string
+}
+
+entity "Equipo" as equipo {
+    + PK() codigo_equipo : int
+    --
+    nombre_equipo : string
+}
+
+entity "Asignacion" as asignacion {
+    + FK() codigo_personal : int
+    + FK() codigo_equipo : int
+    --
+    designacion : string
+}
+
+entity "Calentario" as calendario {
+    + PK() fecha : date
+}
+
+entity "CalentarioDetalle" as calendarioDetalle {
+    + PK() codigo_detalle : int
+    --
+    recordatorio : string
+    Descripción : string
+    + FK() fecha : date
+}
+
+entity "Configuracion" as configuracion {
+    + PK() codigo_conf : int
+    --
+    descripcion : string
+}
+
+entity "Horario" as horario {
+    + PK() codigo_horario : int
+    --
+    hora_inicio : time
+    hora_final : time
+}
+
+entity "ConfiguracionHorario" as configuracionHorario {
+    + FK() codigo_conf : int
+    + FK() codigo_horario : int
+    --
+    atencion : string
+}
+
+entity "Consultorio" as consultorio {
+    + PK() codigo_conf : int
+    --
+    consultorio : string
+    estado : string
+}
+
+entity "Designa" as designa {
+}
+
+entity "Ficha" as ficha {
+    + PK() codigo_ficha : int
+    --
+    descripcion : string
+}
+
+entity "Agenda" as agenda {
+    + PK() codigo_ficha : int
+    --
+    observacion : string
+}
+
+entity "Paciente" as paciente {
+    + PK() codigo_paciente : string
+    --
+    Nombre : string
+    ap_peterno : string
+    ap_materno : string
+    ci: string
+    sexo: string
+    fecha_nacimiento: date
+}
+
+entity "Evaluacion" as evaluacion {
+    + PK() codigo_evaluacion : int
+    --
+    grado_discacidad: string
+    tipo_discacidad: string
+    diagnostico: string
+}
+
+ficha "1..*" -- "0..*" agenda : asigna1
+personal "1..*" -- "0..*" asignacion : designa1
+evaluacion "1..*" -- "0..*" equipo : realiza
+paciente "1..*" -- "0..*" agenda
+agenda "1..*" -- "0..*" evaluacion
+calendario "1" -- "0..*" calendarioDetalle
+configuracion "1..*" -- "0..*" configuracionHorario
+horario "1..*" -- "0..*" configuracionHorario
+consultorio "1..*" -- "0..*" designa
+consultorio "0..*" -- "0..*" horario : asigna
+calendario "0..*" -- "0..*" ficha : agenda
+consultorio "1..*" -- "0..*" ficha : asigna
+horario "1..*" -- "0..*" ficha : asigna
+
+@enduml

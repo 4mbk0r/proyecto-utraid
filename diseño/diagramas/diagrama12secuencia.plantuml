@@ -1,0 +1,48 @@
+@startuml
+actor Usuario
+boundary Configuracion
+control ApiREST
+database BaseDatos
+alt#Gold #LightBlue caso Creacion de Configuracion (existo)
+Usuario -> Configuracion: Ingresar Fecha
+activate Configuracion
+
+Configuracion --> ApiREST: \n url: "/api/validar_fecha"\n methods: GET 
+Activate ApiREST
+
+ApiREST -> BaseDatos: Consulta: Validar fecha\n Table: Calendarios
+Activate BaseDatos
+BaseDatos --> ApiREST: Resultado: Devolver fecha\n
+deactivate BaseDatos
+ApiREST --> Configuracion: Devuelve mensaje de no encontrado
+Configuracion --> Usuario: Muestra el mensaje de no encontrado
+
+Usuario -> Configuracion: Creacion de Sala
+Configuracion --> ApiREST: \n url: "/api/validar_sala"\n methods: GET
+ApiREST -> BaseDatos: Consulta: Validar sala\n Table: Salas
+ApiREST --> Configuracion: Devuelve mensaje de no encontrado
+Configuracion --> Usuario: Muestra el mensaje de no encontrado
+
+
+Usuario -> Configuracion: Creacion de Equipo
+Configuracion --> ApiREST: \n url: "/api/validar_equipo"\n methods: GET
+ApiREST -> BaseDatos: Consulta: Validar equipo\n Table: Equipos
+ApiREST --> Configuracion: Devuelve mensaje de no encontrado
+Configuracion --> Usuario: Muestra el mensaje de no encontrado
+
+
+
+
+
+
+
+else #Pink Configuracion Erronea
+
+ApiREST --> Configuracion: Devuelve los datos encontrado
+deactivate ApiREST
+
+Configuracion --> Usuario: Error al crear a Configuracion
+'destroy ApiREST
+
+deactivate Configuracion
+end

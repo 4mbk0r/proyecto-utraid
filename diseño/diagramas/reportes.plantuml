@@ -1,0 +1,18 @@
+
+
+@startuml
+left to right direction
+actor Administrador as g
+
+package Administracion {
+  usecase "Reportes Mensuales" as UC1
+  usecase "Reportes Diarios" as L1
+  usecase "Reportes de Personal" as UC2
+  usecase "Reportes de Pacientes" as UC4
+
+}
+(UC1) .down.> (L1) : <<include>>
+g --> UC1
+g --> UC2
+g --> UC4
+@enduml

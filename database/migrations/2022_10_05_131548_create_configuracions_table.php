@@ -28,14 +28,9 @@ class CreateConfiguracionsTable extends Migration
             //$table->integer('historial')->nullable();
             //$table->unique(['descripcion', 'institucion']);
             $table->foreign('institucion')->references('codigo')->on('institucions')->onDelete('cascade')->onUpdate('cascade');
-
-
-
             //$table->primary('id');
         });
         $datos = [
-
-
             'descripcion' => 'Configuracion de inicio',
             'institucion' => '01',
             'atencion' => 'true',
@@ -46,8 +41,6 @@ class CreateConfiguracionsTable extends Migration
         ];
         DB::table('configuracions')->insert($datos);
         $datos = [
-
-
             'descripcion' => 'Ferirados',
             'institucion' => '01',
             'atencion' => 'false',
