@@ -54,7 +54,6 @@ class CitaTieneConfiguracionController extends Controller
      */
     public function show(string $fecha)
     {
-
         /*$query = DB::table("calendarios")
         ->select(DB::raw("case when to_char (fecha, 'day') = 'saturday' then date (fecha::date + interval '1 days') when trim (to_char(fecha, 'day')) = 'sunday' then date (fecha::date + interval '2 days') else fecha end as fecha"))
         ->where("atencion", "=", 'feriado')
@@ -81,16 +80,19 @@ where atencion = 'feriado' and TRIM(to_char(fecha, 'yyyy')) = TRIM(to_char('" . 
         where fecha = '14-02-2023';
         */
         $list_config = DB::table('fichas')
-            ->select(['fichas.id_sala', 'salas.descripcion', 'designar_equipos.id_equipo', 'equipos.nombre_equipo'])
+            ->select(['fichas.id_sala', 'salas.descripcion'])
             ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
-            ->leftJoin('designar_equipos', 'designar_equipos.id_sala', '=', 'salas.id')
-            ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipos.id')
             ->where('fichas.fecha', '=', $fecha)
-            ->where('designar_equipos.fecha', '=', $fecha)
-            ->groupBy('fichas.id_sala', 'salas.descripcion', 'designar_equipos.id_equipo', 'equipos.nombre_equipo')
+            ->groupBy('fichas.id_sala', 'salas.descripcion',)
             ->orderBy('salas.descripcion', 'asc')
             ->get();
-        $r_equipo = [];
+        $r_equipo = DB::table('fichas')
+        ->select(['fichas.id_sala', 'salas.descripcion'])
+        ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+        ->where('fichas.fecha', '=', $fecha)
+        ->groupBy('fichas.id_sala', 'salas.descripcion',)
+        ->orderBy('salas.descripcion', 'asc')
+        ->get();;
         //return sizeof($list_config) ;
         //return $list_config;
         // si el dia x no tiene confuracion craamos una configuracion 
@@ -100,32 +102,6 @@ where atencion = 'feriado' and TRIM(to_char(fecha, 'yyyy')) = TRIM(to_char('" . 
             where fecha_inicio <= '2023-02-22' and
             fecha_final >= '2023-02-22';
             */
-            $list_config2 = DB::table('calendariolineals')
-                ->select('*')
-                ->where('fecha_inicio', '<=', $fecha)
-                ->where('fecha_final', '>=', $fecha)
-                //->where('tipo', '=', 'permanente')
-                ->get();
-            $equipos = DB::table('equipos')
-                ->select('*')
-                ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_equipo', '=', 'equipos.id')
-                ->where('designar_equipo_lineals.id_conf', '=', $list_config2[0]->id_configuracion)
-                ->get();
-            $r_equipo = [];
-            foreach ($equipos as $key => $value) {
-                $lista_equipos = DB::table('equipos')
-                    ->select('*')
-                    ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
-                    ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
-                    ->where('equipos.id', '=', $value->id)
-                    ->get();
-                $a =  [
-                    'equipo' => $value,
-                    'lista' => $lista_equipos
-                ];
-                array_push($r_equipo, $a);
-            }
-
             $list_config = DB::table('calendariolineals')
                 ->select('*')
                 ->where('fecha_inicio', '<=', $fecha)
@@ -135,13 +111,10 @@ where atencion = 'feriado' and TRIM(to_char(fecha, 'yyyy')) = TRIM(to_char('" . 
             if (sizeof($list_config) > 0) {
                 try {
                     $salas = DB::table('asignar_config_salas')
-                        ->select(['asignar_config_salas.*', 'salas.descripcion', 'equipos.nombre_equipo'])
+                        ->select(['*', 'salas.descripcion as descripcion'])
                         ->leftJoin('salas', 'salas.id', '=', 'asignar_config_salas.id_sala')
-                        ->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
-                        ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipo_lineals.id_equipo')
+                        ->leftJoin('configuracions', 'configuracions.id',  '=', 'asignar_config_salas.id_conf')
                         ->where('asignar_config_salas.id_conf', '=', $list_config[0]->id_configuracion)
-                        ->where('designar_equipo_lineals.id_conf', '=', $list_config[0]->id_configuracion)
-                        
                         ->get();
                     $horario = [];
                     foreach ($salas as $key => $value) {
@@ -152,13 +125,12 @@ where atencion = 'feriado' and TRIM(to_char(fecha, 'yyyy')) = TRIM(to_char('" . 
                             DB::table("salas")
                             //->select(['*', 'fichas.id_ficha as id_fichas'])
                             //->leftJoin('designar_equipo_lineals', 'designar_equipo_lineals.id_sala', '=', 'salas.id')
-
-                            ->leftJoin("asignar_salas", function ($join) use ($value) {
-                                $join->on("asignar_salas.id_sala", "=", "salas.id");
-                                $join->where("asignar_salas.id_sala", "=",  $value->id_sala);
+                            ->leftJoin("asignar_config_salas", function ($join) use ($value) {
+                                $join->on("asignar_config_salas.id_sala", "=", "salas.id");
+                                $join->where("asignar_config_salas.id_sala", "=",  $value->id_sala);
                             })
                             ->leftJoin("conf_salas", function ($join)  use ($value) {
-                                $join->on("conf_salas.id", "=", "asignar_salas.id_conf_sala");
+                                $join->on("conf_salas.id", "=", "asignar_config_salas.id_conf_sala");
                                 $join->where("conf_salas.id", "=", $value->id_conf_sala);
                             })
                             ->leftJoin("asignar_horarios", function ($join) {
@@ -176,70 +148,20 @@ where atencion = 'feriado' and TRIM(to_char(fecha, 'yyyy')) = TRIM(to_char('" . 
                             ->whereNotNull('conf_salas.id')
                             //->where('conf_salas.id','=',$value->id_conf)
                             ->where('salas.id', '=', $value->id_sala)
+                            ->where("asignar_config_salas.id_conf", "=", $value->id_conf)
+                            
                             ->orderBy('salas.descripcion', 'asc')
                             //->leftJoin('asignar_config_salas',  "asignar_config_salas.id_sala", "=", "salas.id" )
                             //->where("salas.id", "=", $value->id_sala)
-                            //->where("conf_salas.id", "=", $value->id_conf_sala)
                             //->where('asignar_config_salas.id_conf', '=', $list_config[0]->id_configuracion)
                             ->get();
                         array_push($horario, $h);
                     }
-                    /*
-
-select Object { data: {…}, status: 200, statusText: "OK", headers: {…}, config: {…}, request: XMLHttpRequest }
-​
-config: Object { url: "/main/lista_configuracion/2023-03-16", method: "get", timeout: 0, … }
-​
-data: Object { salas: (4) […], salas_diponibles: (4) […], equipo: (2) […] }
-​​
-equipo: Array [ {…}, {…} ]
-​​
-salas: Array(4) [ {…}, {…}, {…}, … ]
-​​
-salas_diponibles: Array(4) [ 'select * from "salas" left join "designar_equipo_lineals" on "designar_equipo_lineals"."id_sala" = "salas"."id" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = ? left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = ? left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null order by "salas"."descripcion" asc', 'select * from "salas" left join "designar_equipo_lineals" on "designar_equipo_lineals"."id_sala" = "salas"."id" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = ? left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = ? left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null order by "salas"."descripcion" asc', 'select * from "salas" left join "designar_equipo_lineals" on "designar_equipo_lineals"."id_sala" = "salas"."id" left join "asignar_salas" on "asignar_salas"."id_sala" = "salas"."id" and "asignar_salas"."id_sala" = ? left join "conf_salas" on "conf_salas"."id" = "asignar_salas"."id_conf_sala" and "conf_salas"."id" = ? left join "asignar_horarios" on "asignar_horarios"."id_conf_sala" = "conf_salas"."id" left join "horarios" on "horarios"."id" = "asignar_horarios"."id_horario" where "conf_salas"."id" is not null order by "salas"."descripcion" asc', … ]
-​​
-<prototype>: Object { … }
-​
-headers: Object { "cache-control": "no-cache, private", connection: "Keep-Alive", "content-type": "application/json", … }
-​
-request: XMLHttpRequest { readyState: 4, timeout: 0, withCredentials: false, … }
-​
-status: 200
-10.0.25.13
-Admintrador
-utraid-2023
-Utraid2023
-​
-statusText: "OK"
-​
-<prototype>: Object { … }
-Agenda2.vue:442
-
-                    
-                        *          
-                        */
-                    //$salas_disponibles =[];
-
-                    /*
-                        $salas_disponibles = DB::table('salas')
-                            //->select('salas.sala, salas.descripcion')
-                            ->join('horarios', "horarios.sala", '=', "salas.sala")
-                            ->leftJoin("agendas", function ($join) use ($fecha) {
-                                $join->on("agendas.horario", "=", "horarios.id_horario");
-                                $join->where('agendas.fecha', '=', $fecha);
-                            })
-                            ->whereNull('agendas.horario')
-                            ->where('salas.id', '=', $list_config[0]->id)
-                            ->groupBy('salas.sala', 'salas.descripcion')
-                            ->select('salas.sala', 'salas.descripcion')
-                            ->orderBy('salas.descripcion')
-                            ->get();
-                            */
                     $resp = [
                         'salas' => $salas,
                         'salas_diponibles' => $horario,
-                        'equipo' => $r_equipo,
-                        'respues' => '-+-+-+-+-+-+'
+                        'equipo' => $horario,
+                        'respues' => '-+-+-0000+-+-+-+'
                         //'lista_conf' => $list_config,
                         //'casa0' => $list_config[0]->id_configuracion
                     ];
@@ -250,30 +172,20 @@ Agenda2.vue:442
             }
         } else {
             //
-            $salas =
-                DB::table("calendarios")
-                ->select(['designar_equipos.*', 'viajes.id_municipio','municipios.*', 'salas.descripcion', 'equipos.nombre_equipo'])
-
-                ->leftJoin("designar_equipos", function ($join) {
-                    $join->on("designar_equipos.fecha", "=", "calendarios.fecha");
-                })
-                ->leftJoin("equipos", function ($join) {
-                    $join->on("equipos.id", "=", "designar_equipos.id_equipo");
-                })
-                ->leftJoin("salas", function ($join) {
-                    $join->on("salas.id", "=", "designar_equipos.id_sala");
-                })
-                ->leftJoin("viajes", function ($join)  {
-                    $join->on("viajes.id_sala", "=", "salas.id");
-                    $join->on("viajes.fecha", "=", "calendarios.fecha");
-                })
-                ->leftJoin("municipios", function ($join)  {
-                    $join->on("municipios.id", "=", "viajes.id_municipio");
-                })
-                ->where('calendarios.fecha', '=', $fecha)
-                
-                ->get();
-
+            $salas = DB::table('calendarios')
+            ->select(['salas.*', 'salas.id as id_sala'])
+            ->leftJoin('fichas', 'fichas.fecha', '=', 'calendarios.fecha')
+            ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+            /*->leftJoin('viajes', function ($join) {
+                $join->on('viajes.id_sala', '=', 'salas.id')
+                     ->on('viajes.fha', '=', 'calendarios.fecha');
+            })
+            ->leftJoin('municipios', 'municipios.id', '=', 'viajes.id_municipio')
+            */
+            ->where('fichas.fecha', '=', $fecha)
+            ->groupBy('salas.id')
+            ->get();
+        
 
 
             $horarios =  [];
@@ -283,8 +195,9 @@ Agenda2.vue:442
                 /*
                 
                 */
+
                 $horario = DB::table('fichas')
-                    ->select(['fichas.*', 'viajes.id_municipio','municipios.*', 'horarios.*', 'dar_citas.*', 'personas.*', 'designar_equipos.id_equipo', 'designar_equipos.id_sala as id_sala_asig', 'equipos.nombre_equipo', 'salas.descripcion', 'atenders.id_designado', 'fichas.id as id_ficha', 'institucions.*', 'personas.id as id', 'evaluacions.id_persona as id_persona'])
+                    ->select(['fichas.*', 'viajes.id_municipio','municipios.*', 'horarios.*', 'dar_citas.*', 'personas.*',   'salas.descripcion', 'atenders.id_designado', 'fichas.id as id_ficha', 'institucions.*', 'personas.id as id', 'evaluacions.id_persona as id_persona'])
                     ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
                     ->leftJoin("viajes", function ($join)  {
                         $join->on("viajes.id_sala", "=", "salas.id");
@@ -293,8 +206,6 @@ Agenda2.vue:442
                     ->leftJoin("municipios", function ($join)  {
                         $join->on("municipios.id", "=", "viajes.id_municipio");
                     })
-                    ->leftJoin('designar_equipos', 'designar_equipos.id_sala', '=', 'salas.id')
-                    ->leftJoin('equipos', 'equipos.id', '=', 'designar_equipos.id_equipo')
                     ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_conf_sala')
                     ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
                     ->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
@@ -311,7 +222,7 @@ Agenda2.vue:442
                     //->leftJoin('atenders', 'fichas.id', '=', 'atenders.id_ficha')
                     ->where('fichas.fecha', '=', $fecha)
                     ->where('fichas.id_sala', '=', $value->id_sala)
-                    ->where('designar_equipos.fecha', '=', $fecha)
+                 //   ->where('fichas.id_conf_sala', '=', $value->id_conf_sala)
                     ->orderBy('salas.descripcion', 'asc')
 
                     //->groupBy('id_sala', 'salas.descripcion')
@@ -324,7 +235,7 @@ Agenda2.vue:442
                 'salas_diponibles' => $horarios,
                 'equipo' => $r_equipo,
 
-
+                'respues'=> 'ssssssss',
             ];
             return $resp;
         }
@@ -374,31 +285,6 @@ Agenda2.vue:442
     }
     public static function verificar_fecha(String $fecha)
     {
-        /*
-        select cita_tiene_configuracions.fecha, 
-        SUM(CASE WHEN  not agendas.consultorio IS NULL  THEN 1 ELSE 0 END) as uso, 
-        SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END) AS disponibles, 
-        count(salas.id) as total
-        --, horarios.id_horario, horarios.hora_inicio, horarios.sala, agendas.codigo_cita 
-        from cita_tiene_configuracions
-        left join salas on salas.id = cita_tiene_configuracions.id
-        left join horarios on horarios.sala = salas.sala
-        LEFT join agendas on  agendas.fecha = cita_tiene_configuracions.fecha and agendas.consultorio = salas.sala and agendas.horario = horarios.id_horario
-        --where not salas.id is null and 
-        --where cita_tiene_configuracions.fecha >= '2022-11-29'
-        GROUP by cita_tiene_configuracions.fecha
-        --having SUM(CASE WHEN agendas.consultorio IS NULL and not salas.id is null  THEN 1 ELSE 0 END)> 0
-        order by cita_tiene_configuracions.fecha
-
-        select *
-        --cita_tiene_configuracions.fecha, 
-        from cita_tiene_configuracions
-        left join configuracions ON configuracions.id = cita_tiene_configuracions.id
-        where atencion != true
-        
-        
-        
-        */
         $list_config = DB::table('cita_tiene_configuracions')
             ->select('*')
             ->leftJoin('configuracions', 'configuracions.id', '=', 'cita_tiene_configuracions.id')

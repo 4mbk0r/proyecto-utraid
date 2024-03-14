@@ -19,10 +19,10 @@ class CreateDarCitasTable extends Migration
             $table->string('id_persona');
         });
         DB::statement(
-            "ALTER TABLE dar_citas ADD FOREIGN KEY (id_ficha) REFERENCES fichas(id)"
+            "ALTER TABLE dar_citas ADD FOREIGN KEY (id_ficha) REFERENCES fichas(id) ON DELETE CASCADE ON UPDATE CASCADE"
         );
         DB::statement(
-            "ALTER TABLE dar_citas ADD FOREIGN KEY (id_persona) REFERENCES personas(id)"
+            "ALTER TABLE dar_citas ADD FOREIGN KEY (id_persona) REFERENCES personas(id) ON DELETE CASCADE ON UPDATE CASCADE"
         );
     }
 

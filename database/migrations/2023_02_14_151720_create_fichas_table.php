@@ -27,7 +27,7 @@ class CreateFichasTable extends Migration
             //$table->timestamps();
         });
         DB::statement(
-            "ALTER TABLE fichas ADD FOREIGN KEY (id_sala) REFERENCES salas(id)"
+            "ALTER TABLE fichas ADD FOREIGN KEY (id_sala) REFERENCES salas(id) "
         );
         DB::statement(
             "ALTER TABLE fichas ADD FOREIGN KEY (id_conf_sala) REFERENCES conf_salas(id)"

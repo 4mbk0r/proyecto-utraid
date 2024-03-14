@@ -2,6 +2,8 @@
 <template>
     <v-card>
         <v-form ref="municipio">
+            
+
             <v-row no-gutters>
                 <v-col>
                     <v-select v-model="selectMunicipio" persistent-placeholder placeholder="No se tiene datos"
@@ -81,6 +83,15 @@ export default {
             },
 
         ],
+        horario: [],
+        hhorario: [
+
+            { text: 'Asignado', value: 'id_ficha' },
+
+            { text: 'Hora Inicio', value: 'hora_inicio' },
+            { text: 'Hora Final', value: 'hora_final' },
+            // Agrega más encabezados según tus campos
+        ]
 
 
     }),
@@ -117,6 +128,7 @@ export default {
                     console.log(response.data);
                     this.viaje = response.data['municipios']
                     this.selectMunicipio = response.data['municipio']
+                    this.horario = response.data['horarios']
                     /*this.integrantes = response.data
                     
                     tjh
@@ -164,8 +176,8 @@ export default {
             this.datos.fecha = this.fecha
             var res = await axios({
                 method: 'delete',
-                url: `/${process.env.MIX_CARPETA}/viaje/`+JSON.stringify(this.selectMunicipio),
-                
+                url: `/${process.env.MIX_CARPETA}/viaje/` + JSON.stringify(this.selectMunicipio),
+
             }).then(
                 (response) => {
                     console.log(response)

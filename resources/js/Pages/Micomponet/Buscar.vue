@@ -1,60 +1,61 @@
 <template>
-    <v-app id="inspire">
-        <v-card flat>
-            <v-toolbar class="mt-2">
-                <v-container class="mt-1 pt-6">
-
-                    <v-row>
-                        <v-col md="3">
-                            <v-text-field v-model="dato_busqueda" hide-details label="Buscar"
-                                placeholder="Escriba el dato a buscar">
-                            </v-text-field>
-                        </v-col>
-                        <v-col md="3">
-                            <v-select :items="opciones_busqueda" v-model="busqueda" dense outlined></v-select>
-                        </v-col>
-                        <v-col md="auto" sm="auto" xs="auto">
-                            <v-btn icon @click="buscar_datos">
-                                <v-icon>mdi-magnify</v-icon>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-
-                </v-container>
-
-            </v-toolbar>
-            <v-card-title v-if="segunda_busqueda">
-                <v-text-field v-model="search" append-icon="mdi-magnify" label="Seguda Busqueda" single-line
-                    hide-details>
+    <v-card class="mt-2">
+        <v-row class="mt-2">
+            <v-col md="4" cols="12">
+                <v-text-field v-model="dato_busqueda" label="Buscar" placeholder="Escriba el dato a buscar"
+                    @keyup.enter="buscar_datos">
                 </v-text-field>
-            </v-card-title>
+            </v-col>
+            <v-col md="4" cols="12">
+                <v-btn icon @click="buscar_datos">
+                    <v-icon>mdi-magnify</v-icon>
+                </v-btn>
+            </v-col>
+            <v-divider></v-divider>
+            <v-col md="4" cols="12">
+                Buscar por:
+                <v-select :items="opciones_busqueda" v-model="busqueda" item-value="value" dense outlined></v-select>
+            </v-col>
+        </v-row>
+        <v-card-title v-if="segunda_busqueda">
+            <v-text-field v-model="search" append-icon="mdi-magnify" label="Seguda Busqueda" single-line hide-details>
+            </v-text-field>
+        </v-card-title>
+        <v-card-text>
             <v-data-table :headers="headers" :items="desserts" item-key="ci" hide-action :search="search">
-
                 <template v-slot:item.actions="{ item }">
                     <v-btn small class="mr-2" @click="saludo(item)">
                         Editar
                     </v-btn>
                 </template>
             </v-data-table>
-        </v-card>
-    </v-app>
-
-
-
+        </v-card-text>
+        <datos v-if="dialog_persona" @pedir='actualizador' ref="dato">
+        </datos>
+    </v-card>
+    
 </template>
 
 <script>
 import axios from 'axios'
+import datos from '@/Pages/Micomponet/Datospersonales'
+
 import moment from 'moment'
 const day1 = new Date().getFullYear() + '-' + ("0" + (new Date().getMonth() + 1)).slice(-2) + '-' + ("0" + new Date().getDate()).slice(-2)
 
 export default {
+    components: {
+        datos
+    },
     data: () => ({
 
         buscar: false,
         dato_busqueda: '',
-        busqueda: 'Nombre',
-        opciones_busqueda: ['Nombre', 'ci'],
+        busqueda: 1,
+        opciones_busqueda: [
+            { text: 'Nombre Completo', value: 1 },
+            { text: 'Cedula de Identidad', value: 2 }
+        ],
         segunda_busqueda: false,
         search: '',
         headers: [{
@@ -80,16 +81,37 @@ export default {
             value: 'celular'
         },
         {
-            text: 'Actions',
+            text: 'Tareas',
             value: 'actions',
             sortable: false
         },
         ],
         desserts: [
-
+            {}
         ],
+        dialog_persona:true,
     }),
     methods: {
+        
+        empty(variable) {
+            if (
+                variable === null ||
+                variable === undefined ||
+                (typeof variable === 'number' && isNaN(variable)) ||
+                (typeof variable === 'string' && variable.trim() === '') ||
+                (Array.isArray(variable) && variable.length === 0)
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        actualizador(fecha) {
+            console.log('.+.+.+.+')
+            //this.fecha_calendario =
+            console.log(this.fecha_calendario)
+            //this.pedir_datos(this.fecha_calendario)
+        },
         async buscar_datos() {
             this.segunda_busqueda = false
             var res = await axios({
@@ -110,10 +132,26 @@ export default {
             alert('You clicked ' + item.ci);
         },
         saludo(item) {
-            this.$emit('actulizar_ci',item)
-            this.$emit('actulizar_av_buscar',false)
-            
-        }
+            console.log(item);
+            this.open_agenda(item)
+        },
+        open_agenda(x) {
+            //this.selectedOpen = false
+            //this.dialog_persona = true
+            setTimeout(() => {
+                this.$refs.dato.op1 = 1;
+                this.$refs.dato.fecha_cita = this.fecha_calendario
+                this.$refs.dato.cita_nueva = x//this.selectedEvent.fichas
+                this.$refs.dato.open()
+                if (!this.empty(x.ci)) {
+                    this.$refs.dato.mostrarDatos(x)
+                    this.$refs.dato.op1 = 2;
+                    this.$refs.dato.actualizadorLugar()
+                }
+            }, 1);
+        },
+
+
     },
 }
 </script>

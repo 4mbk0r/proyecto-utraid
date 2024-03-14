@@ -5,6 +5,7 @@ use App\Events\MensajeEntrada;
 use App\Events\PrivateMessage;
 use App\Events\PublicMessage;
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\ConfigGeneralController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InstitucionController;
 use App\Http\Controllers\SalaController;
@@ -17,11 +18,14 @@ use App\Http\Controllers\DarCitaController;
 use App\Http\Controllers\CalendariolinealController;
 
 use App\Http\Controllers\Administracion\Registro;
+use App\Http\Controllers\AgendaBoletaController;
 use App\Http\Controllers\AtenderController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BasededatosController;
 use App\Http\Controllers\BoletaController;
 use App\Http\Controllers\CargoController;
+use App\Http\Controllers\CChorarioController;
+use App\Http\Controllers\TablaAgenda;
 use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\MunicipioController;
@@ -145,7 +149,6 @@ Route::get('/configura', function () {
 
 Route::resource('/configurageneral', Controllgeneral::class);
 
-
 /**Permisos */
 Route::resource('/permiso', PermisoController::class);
 
@@ -164,6 +167,8 @@ Route::resource('/horario', HorarioController::class);
 
 Route::resource('/lista_configuracion', CitaTieneConfiguracionController::class)->middleware(['auth:sanctum', 'verified']);;
 
+Route::resource('/lista_tabla', TablaAgenda::class)->middleware(['auth:sanctum', 'verified']);;
+
 
 Route::resource('/lista_agenda', AgendaController::class)->middleware(['auth:sanctum', 'verified']);;
 
@@ -179,7 +184,7 @@ Route::resource('/calendariolineal', CalendariolinealController::class); //->mid
 Route::get('/equipos', function () {
     return Inertia::render('Configuracion/Equipo');
 })->name('equipos');
-
+    
 Route::get('/salaespera', function () {
     return Inertia::render('Micomponet/SalaEspera');
 })->name('salaespera');
@@ -265,6 +270,9 @@ Route::resource('/backup_', BackupController::class);
 
 Route::resource('/establecimiento', EstablecimientoController::class);
 
+Route::resource('/boleta_datos', AgendaBoletaController::class);
+
+
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/backup', function () {
     return Inertia::render('Backup/Backup');
@@ -314,4 +322,31 @@ Route::get('/private', function () {
     return auth()->user();
 });
 
+
+Route::resource('/cambiarhorario', CChorarioController::class);
+
+
+//configuraciongeneral
+
+Route::resource('/configuraciongeneral', ConfigGeneralController::class);
+
+Route::post('/crear_sala', function (Request $request) {
+    return ConfigGeneralController::crear_sala($request);
+});
+
+Route::post('/horario_sala', function (Request $request) {
+    return CChorarioController::horario_sala($request);
+});
+
+Route::post('/cambiar_horario', function (Request $request) {
+    return CChorarioController::cambiar_horario($request);
+});
+
+Route::post('/nueva_sala', function (Request $request) {
+    return CChorarioController::nueva_sala($request);
+});
+
+Route::post('/eliminar_sala2', function (Request $request) {
+    return CChorarioController::eliminar_sala($request);
+});
 //Route::get('broadcasting/auth', [BroadcastAuthController::class, 'authenticate']);

@@ -2,7 +2,7 @@
     <app-layout>
         <!--<welcome />-->
         <v-card>
-            <v-tabs v-model="tab" align-with-title>
+            <!--<v-tabs v-model="tab" align-with-title>
                 <v-tabs-slider color="yellow"></v-tabs-slider>
                 <v-tab v-for="item in items" :key="item">
                     {{ item }}
@@ -13,15 +13,15 @@
             <v-tabs-items v-model="tab" touchless>
                 <v-tab-item>
                     <agenda ref='agendar' />
-
                 </v-tab-item>
                 <v-tab-item>
-                    {{ $store.getters.gethoy }}
-                    {{ $store.getters.getfechas }}
-                    {{ $store.getters.getfecha }}
-                    {{ $store.getters.getConfig}}
+                    <tabla ref='tabla' />
                 </v-tab-item>
-            </v-tabs-items>
+            </v-tabs-items>-->
+            <v-card-text>
+                <tabla ref='tabla'  />
+            </v-card-text>
+            
         </v-card>
         <!--:datos_cita="fechas"-->
         <!--<barrasu/>-->
@@ -31,6 +31,7 @@
 <script>
 import AppLayout from '@/Layouts/AppLayout'
 import Agenda from '@/Pages/Micomponet/Agenda2'
+import Tabla from '@/Pages/Micomponet/Tabla'
 
 
 export default {
@@ -38,7 +39,8 @@ export default {
         return {
             tab: null,
             items: [
-                'agendar'
+                'agendar',
+                'tabla'
             ],
             text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
             dark: true,
@@ -50,6 +52,7 @@ export default {
     components: {
         AppLayout,
         Agenda,
+        Tabla
     },
     methods: {
         menuItems() {

@@ -52,7 +52,6 @@
                 </span>
                 <span v-if="item.estado === 'inactivo'">
                   <v-btn color="primary" @click="mostrarDialogo(item)">Activar Funcionario</v-btn>
-
                 </span>
               </template>
             </v-data-table>
@@ -127,36 +126,6 @@ export default {
     search: '',
     dialog: false,
     dialogDelete: false,
-    /*headers: [{
-      text: 'Nombre',
-      align: 'start',
-      //sortable: false,
-      value: 'nombre',
-    },
-    {
-      text: 'Apellido Paterno',
-      value: 'ap_paterno'
-    },
-    {
-      text: 'Apellido Materno',
-      value: 'ap_materno'
-    },
-    {
-      text: 'Cedula de Identidad',
-      value: 'ci'
-    },
-    {
-      text: 'Cargo',
-      value: 'cargo',
-      filter: this.cargoFilter
-    },
-    {
-      text: 'Tarea',
-      value: 'actions',
-      sortable: false
-    },
-    ],
-    */
     desserts: [],
     editedIndex: -1,
     editedItem: {
@@ -243,6 +212,7 @@ export default {
 
   },
   methods: {
+    
     mostrarDialogo(item) {
       this.editedItem = structuredClone(item)
       this.mostrarConfirmacion = true; // Mostrar el diálogo de confirmación

@@ -83,6 +83,18 @@ class MunicipioController extends Controller
             ->where('atencion', '=', 'atencion')
             ->get();
         if (count($is_calendar)) {
+
+            $horario = DB::table('fichas')->select('*')
+            ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
+            ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+            ->leftJoin('asignar_salas', 'asignar_salas.id_sala', '=', 'salas.id')
+            ->leftJoin('conf_salas', 'conf_salas.id', '=', 'asignar_salas.id_conf_sala')
+            ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
+            ->where('fichas.fecha', $datos->fecha)
+            ->where('fichas.id_sala', $datos->id_sala)
+            ->orderBy('horarios.hora_inicio')
+            ->get();
+            
             $query = DB::table('viajes')
                 ->leftJoin('municipios', 'municipios.id','=','viajes.id_municipio')
                 ->where('viajes.id_sala', '=', $datos->id_sala)
@@ -95,51 +107,18 @@ class MunicipioController extends Controller
                     ->get();
                 return [
                     'municipio' =>  '',
-                    'municipios' => $municipios
+                    'municipios' => $municipios,
+                    'horarios' => $horario
                 ];
             }
             if ($numero == 1) {
                 return [
                     'municipio' => $query[0],
-                    'municipios' => $query
+                    'municipios' => $query,
+                    'horarios' => $horario
                 ];
             }
         }
-        /*if (count($is_calendar) == 0) {
-            
-            $municipios =   DB::table('municipios')
-                ->select('*')
-                ->get();
-            return [
-                'municipio' =>  '',
-                'municipios' => $municipios
-            ];
-            $municipio = DB::table('viajes')
-                ->leftJoin('municipios', 'municipios.id', '=', 'viajes.id_municipio')
-                ->where('fecha', '=', $datos->fecha)
-                ->where('id_sala', '=',  $datos->id_sala)
-                //->where('atencion', '=', 'atencion')
-                ->get();
-            $municipios = [];
-            if (count($municipio) == 0) {
-                $municipios =   DB::table('municipios')
-                    ->select('*')
-                    ->get();
-            } else {
-                array_push($municipios, $municipio);
-            }
-
-            return [
-                'municipio' =>  $municipio[0]->municipio,
-                'municipios' => $municipios
-            ];
-        } else {
-            
-        }
-        return $is_calendar;
-
-
-        return $municipio;*/
     }
 
     /**

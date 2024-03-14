@@ -73,7 +73,7 @@ class PersonaCitaController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-     
+
     public function edit(Persona_atencion $persona_cita)
     {
         //dd(request('persona_cita'));
@@ -110,19 +110,37 @@ class PersonaCitaController extends Controller
     }
     public static function buscar_persona(Request $request)
     {
+
         $dato = $request['dato'];
-        $data = DB::table('personas')
-            ->select('*')
-            ->whereRaw("unaccent(nombres) ilike unaccent('%" . $dato . "%')")
-            ->orWhereRaw("unaccent(ap_materno) ilike unaccent('%" . $dato . "%')")
-            ->orWhereRaw("unaccent(ap_paterno) ilike unaccent('%" . $dato . "%')")
-            ->get();
-        
+        $tipobusqueda = $request['busqueda'];
+        if ($tipobusqueda === 1) {
+
+            $data = DB::table('personas')
+                ->select('*')
+                ->where(function ($query) use ($dato) {
+                    $query->where(DB::raw("lower(unaccent(nombres))"), 'ilike', DB::raw("lower(unaccent('" . $dato . "%'))"))
+                        ->orWhere(DB::raw("lower(unaccent(ap_materno))"), 'ilike', DB::raw("lower(unaccent('" . $dato . "%'))"))
+                        ->orWhere(DB::raw("lower(unaccent(ap_paterno))"), 'ilike', DB::raw("lower(unaccent('" . $dato . "%'))"))
+                        // Incluir la letra "Ñ" sin aplicar unaccent
+                        ->orWhere(DB::raw("lower(nombres)"), 'ilike', DB::raw("lower('" . $dato . "%')"))
+                        ->orWhere(DB::raw("lower(ap_materno)"), 'ilike', DB::raw("lower('" . $dato . "%')"))
+                        ->orWhere(DB::raw("lower(ap_paterno)"), 'ilike', DB::raw("lower('" . $dato . "%')"));
+                })
+                ->get();
+        }
+        if ($tipobusqueda === 2) {
+            $data = DB::table('personas')
+                ->select('*')
+                ->whereRaw("ci like unaccent('" . $dato . "%')")
+                ->get();
+        }
+
         //return ['persona' => $, 'citas' => []];
         return $data;
     }
     public static function buscar_persona_ci(String $ci)
     {
+
         //Buscar persona por cedula de identidad
         $persona = DB::table('personas')
             ->select('*')
@@ -141,20 +159,20 @@ class PersonaCitaController extends Controller
         if ($opcion == 1) {
             try {
                 //write your codes here
-                
-                $codigo  =  !empty($nuevo['ap_paterno']) ?  $nuevo['ap_paterno'][0]: '';
-                $codigo  .=  !empty($nuevo['ap_materno']) ?  $nuevo['ap_materno'][0]: '';
-                $codigo  .= !empty($nuevo['nombres']) ?  $nuevo['nombres'][0]: '';
+
+                $codigo  =  !empty($nuevo['ap_paterno']) ?  $nuevo['ap_paterno'][0] : '';
+                $codigo  .=  !empty($nuevo['ap_materno']) ?  $nuevo['ap_materno'][0] : '';
+                $codigo  .= !empty($nuevo['nombres']) ?  $nuevo['nombres'][0] : '';
                 $len = strlen($codigo);
-                if( $len == 2){
+                if ($len == 2) {
                     $codigo .= '__';
-                }else {
+                } else {
 
                     if ($len == 3) {
                         $codigo .= '_';
                     }
                 }
-                $nuevo['id'] = DB::raw("generate_auto_increment('".$codigo."')");
+                $nuevo['id'] = DB::raw("generate_auto_increment('" . $codigo . "')");
                 DB::table('personas')->insert($nuevo);
             } catch (Exception $e) {
                 $error = explode(' ', $e->getMessage())[0];
@@ -169,7 +187,7 @@ class PersonaCitaController extends Controller
                 $respuesta = [
                     'mensaje' => $error,
                 ];
-                return Response::json(['mensaje' => $e->getMessage(),500], 500);
+                return Response::json(['mensaje' => $e->getMessage(), 500], 500);
             }
             $persona = DB::table('personas')->where('ci', $nuevo['ci'])->get();
             /*$lsita_citas = 
@@ -182,9 +200,9 @@ class PersonaCitaController extends Controller
             })
             ->where("current_date", "<=", "fichas.fecha")
             ->get();*/
-            
-            
-            
+
+
+
             return ['persona' => $persona[0], 'mensaje' => 'ok'];
         }
         if ($opcion == 2) {
@@ -222,10 +240,10 @@ class PersonaCitaController extends Controller
     {
         $persona = DB::table('personas')
             ->select('*')
-            ->leftJoin('dar_citas', 'dar_citas.id_persona','=', 'personas.id' )
+            ->leftJoin('dar_citas', 'dar_citas.id_persona', '=', 'personas.id')
             ->where('dar_citas.id_persona', '=', $ci)
             ->get();
-        
+
         return $persona;
     }
 }

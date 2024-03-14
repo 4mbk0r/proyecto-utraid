@@ -7,9 +7,10 @@
 */
 @import "vuetify/dist/vuetify.min.css";
 
-:root{
+:root {
   font-size: 18px;
 }
+
 .v-current-time {
   height: 2px;
   background-color: #ea4335;
@@ -17,6 +18,7 @@
   left: -1px;
   right: 0;
   pointer-events: none;
+
   &.first::before {
     content: '';
     position: absolute;
@@ -28,26 +30,110 @@
     margin-left: -6.5px;
   }
 }
+
 .v-event__title {
   font-size: 16px;
   font-weight: bold;
 }
 
 
+.tamano-letra {
+  font-size: 9px !important;
+  /* O el tamaño que desees */
+}
+
+.tamano-codigo {
+  font-size: 20px !important;
+  /* O el tamaño que desees */
+}
+
+.text-center-select .v-input__control {
+  text-align: center;
+}
+
+.centered-select {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.centered-select .v-select__selection {
+  width: auto;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 @media print {
+  body {
+    /*visibility: hidden;*/
+    /*max-width: 8.5in;
+    /*width: 6in; /* Ajusta el ancho según sea necesario */
+    /*height: 9in; /* Ajusta la altura según sea necesario */
+    margin: 0; /* Ajusta los márgenes según sea necesario */
+  }
   body * {
+    overflow: hidden;
     visibility: hidden;
   }
+  @page {
+    /*size: portrait;
+    margin: 2;*/
+  }
+  #app {
+    display: none;
+    /* Oculta el v-app completo para la impresión */
+  }
 
+  #dialog {
+    display: none;
+    /* Oculta el v-dialog para la impresión */
+  }
+
+  .imprimir-visible {
+    /*display: block !important;
+    position: static !important;*/
+  }
   #section-to-print,
   #section-to-print * {
+    
     visibility: visible;
   }
 
   #section-to-print {
+    
+    
     position: fixed;
+    page-break-before: always; 
     left: 0;
     top: 0;
+    overflow: hidden;
+  }
+
+  .tamano-letra {
+    font-size: 9px !important;
+    /* O el tamaño que desees */
+  }
+
+  .tamano-codigo {
+    font-size: 20px !important;
+    /* O el tamaño que desees */
+  }
+
+  .text-center-select .v-input__control {
+    text-align: center;
+  }
+
+  .centered-select {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .centered-select .v-select__selection {
+    width: auto;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }
 

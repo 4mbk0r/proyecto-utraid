@@ -21,6 +21,7 @@ use App\Http\Controllers\HorarioController;
 
 
 use App\Http\Controllers\AtenderController;
+use App\Http\Controllers\ConfigGeneralController;
 use App\Http\Controllers\DarCitaController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\PersonalController;
@@ -63,6 +64,10 @@ Route::post('/validar_configuracion', function (Request $request) {
 /* horario */
 Route::post('/horario_sala', function (Request $request) {
     return HorarioController::lista_horario($request);
+});
+
+Route::post('/crear_horario', function (Request $request) {
+    return HorarioController::crear_horario_individual($request);
 });
 /* horario */
 
@@ -224,6 +229,8 @@ Route::post('/equipos_sala', function (Request $request) {
     return AtenderController::sala_equipos($request);
 });
 
+
+
 Route::get('/fechas_vigentes', function () {
 
     return CalendarioController::fechas_vigentes();
@@ -310,4 +317,19 @@ Route::get('/descargarPantilla', function () {
 
 Route::post('/lista_personal', function (Request $request) {
     return PersonalController::activar_personal($request); 
+});
+Route::post('/ver_configuracion', function (Request $request) {
+
+    return ConfigGeneralController::configuracion($request);
+});
+
+
+Route::post('/cambiarhorariogeneral', function (Request $request) {
+
+    return ConfigGeneralController::cambiarhorariogeneral($request);
+});
+
+Route::post('/eliminarhorariogeneral', function (Request $request) {
+
+    return ConfigGeneralController::eliminarhorariogeneral($request);
 });

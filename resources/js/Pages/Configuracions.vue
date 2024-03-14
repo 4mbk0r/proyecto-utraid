@@ -6,11 +6,13 @@
       </div>
       <v-card>
         <v-card-title>
-          Configuracion el linea
+          Configuracion General
           <v-spacer></v-spacer>
+          <!--
           <v-btn @click="opennuevaconfig">
             Fecha proximas
           </v-btn>
+          -->
           <v-btn @click="openferiado">
             Feriados
           </v-btn>
@@ -49,12 +51,10 @@
                   <v-checkbox v-model="item.atencion" label="Atencion" value center disabled></v-checkbox>
                 </v-col>
                 <v-col align="center" cols="12" sm="6">
-
                   <v-tooltip v-if="item.principal" bottom>
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn class="ma-2" small :color="item.color" @click="openeditconfig(i)" v-bind="attrs" v-on="on"
                         dark>
-
                         <v-icon dark>
                           mdi-timer-cog
                         </v-icon>
@@ -62,10 +62,25 @@
                     </template>
                     <span>Crear nueva linea de tiempo</span>
                   </v-tooltip>
-                  <v-tooltip bottom>
+                  <v-tooltip v-if="item.principal" bottom>
+
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn class="ma-2" small :color="item.color" @click="opendeleteconfig(i)" v-bind="attrs" v-on="on"
+                      <v-btn class="ma-2" small :color="item.color" @click="openactulidad(i)" v-bind="attrs" v-on="on"
                         dark>
+                        <v-icon dark>
+                          mdi-clipboard-text-clock-outline
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Configuracion Actual</span>
+                  </v-tooltip>
+
+
+                  <v-tooltip bottom>
+
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn class="ma-2" small :color="item.color" @click="opendeleteconfig(i)" v-bind="attrs"
+                        v-on="on" dark>
                         <v-icon dark>
                           mdi-delete
                         </v-icon>
@@ -73,24 +88,20 @@
                     </template>
                     <span>Eliminar</span>
                   </v-tooltip>
-
                 </v-col>
-
               </v-row>
-
             </v-card>
             <v-row>
 
               <!--{{ item }}-->
               <v-col>
                 <v-data-table :headers="headers" :footer-props="{
-                  itemsPerPageText: 'Fechas con configuracion',
-                  'items-per-page-options': [15, 30, 50, 100, -1], 'items-per-page-all-text': 'Todos'
-                }" :items="fechas"
-                  item-key="ci" :header-props='{
-                    sortByText: "Ordenar por"
-                  }' 
-                  class="elevation-1">
+          itemsPerPageText: 'Fechas con configuracion',
+          'items-per-page-options': [15, 30, 50, 100, -1], 'items-per-page-all-text': 'Todos'
+        }" :items="fechas" item-key="ci" :header-props='{
+          sortByText: "Ordenar por"
+        }' class="elevation-1">
+
                   <template v-slot:no-results>
                     <span>No existen datos</span>
                   </template>
@@ -123,17 +134,53 @@
         </v-expansion-panel>
       </v-expansion-panels>
       <editconfig v-if='editarConfig' :dialog="editarConfig" :item="edit" @cerrar="closeeditconfig"></editconfig>
-      <nuevaconfig v-if='nuevaConfig' :dialog="nuevaConfig"  @cerrar="closenuevaconfig" ></nuevaconfig>
-      <feriado v-if='feriadoconf' :dialog="feriadoconf"  @cerrar="closeferiadoconfig" ></feriado>
-      
+      <nuevaconfig v-if='nuevaConfig' :dialog="nuevaConfig" @cerrar="closenuevaconfig"></nuevaconfig>
+      <feriado v-if='feriadoconf' :dialog="feriadoconf" @cerrar="closeferiadoconfig"></feriado>
+
       <deleteconfig v-if='deleteConfig' :dialog="deleteConfig" :datos="edit" :mensaje="mensaje"
         @respuesta="deleteconfig_respuesta">
       </deleteconfig>
+      <v-dialog v-model="dialog_actulizar" scroll fullscreen hide-overlay persistent :scrim="false"
+        transition="dialog-bottom-transition">
+        <v-card>
+          <v-toolbar dark color="black">
+            <v-btn icon dark @click="dialog_actulizar = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+            <v-toolbar-title>Crear Nueva Sala</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <!--
+                        <v-btn variant="text" @click="dialog_equipo = false">
+                            Guardar
+                        </v-btn>
+                        -->
+            </v-toolbar-items>
+          </v-toolbar>
+          <!--
+          <v-calendar ref="calendar" v-model="fecha_calendario" color="error" type="category" category-show-all="true"
+            :categories="categories" :events="events" :event-color="getEventColor" :weekday-format="getDay"
+            @click:event="showEvent" :interval-minutes=60 :first-interval=7 :interval-count=14>
+            
+                    <templ
+                    ate #day-body="{ date, category }">
+                        <div class="v-current-time" :class="{ first: true }" :style="{ top: nowY }">
+                        </div>
+                    </template>
+                    
+          </v-calendar>
+          -->
+
+          <configurar v-if="dialog_actulizar" :datos_configuracion="datos_conf">
+          </configurar>
+
+        </v-card>
+      </v-dialog>
     </div>
 
   </app-layout>
 </template>
-    
+
 <script>
 import AppLayout from '@/Layouts/AppLayout'
 import Welcome from '@/Jetstream/Welcome'
@@ -141,6 +188,7 @@ import Editconfig from '@/Pages/Micomponet/AdicionConfiguracion'
 import nuevaconfig from '@/Pages/Micomponet/nuevaConfiguracion'
 import deleteconfig from '@/Pages/Micomponet/eleminarConfiguracion'
 import feriado from '@/Pages/Micomponet/feriadoConfiguracion'
+import configurar from '@/Pages/Micomponet/ConfiguracionGeneral'
 
 import moment from 'moment'
 export default {
@@ -149,7 +197,8 @@ export default {
     deleteconfig,
     AppLayout,
     nuevaconfig,
-    feriado
+    feriado,
+    configurar
   },
   props: {
 
@@ -165,6 +214,7 @@ export default {
   },
   data() {
     return {
+      dialog_actulizar: false,
       panel: [],
       items: 5,
       editarConfig: false,
@@ -203,7 +253,7 @@ export default {
           align: 'left',
           //sortable: false,
           value: 'fecha',
-          
+
           //filter: this.nombreFilter,
           //filter: this.nombre_,
           //filter: this.nameFilter,
@@ -213,6 +263,124 @@ export default {
 
   },
   methods: {
+    async pedir_datos(date) {
+
+      console.log(this.fecha_calendario);
+
+      var res = await axios({
+        method: 'post',
+        url: `/${process.env.MIX_CARPETA}/configuraciongeneral`,
+        data: this.datos_configuracion
+      }).then(
+        (response) => {
+
+
+          console.log(response);
+          //return
+          let salas = response.data['salas'];
+          //this.equipos = response.data['equipo'];
+          /*console.log('_equipo----');
+          console.log(this.equipos);
+          console.log(salas_disponibles);
+          */
+          //console.log('__'+salas)
+          //alert('ssss')
+          this.salas = salas
+          this.categories = [];
+          //let events = [];
+          this.events = [];
+          let start2 = new Date(this.fecha_calendario + 'T01:01:00-04:00')
+          let end = new Date(this.fecha_calendario + 'T21:50:00-04:00')
+          let fecha_server = moment(this.$store.getters.getfecha_server + 'T00:00:00-04:00')
+          this.fecha_min = fecha_server.format('YYYY-MM-DD')
+          for (const key in salas) {
+            //console.log(start);
+            //console.log(end);
+            /*console.log('----')
+            console.log(salas)
+            console.log(salas_disponibles)
+            */
+            console.log('-000000---');
+            console.log(salas);
+            this.categories.push(salas[key]['descripcion'])
+            this.events.push({
+              name: 'Configuracion',//this.empty(salas[key]['id_municipio']) ? salas[key]['nombre_equipo'] : salas[key]['nombre_equipo'] + " " + salas[key]['municipio'],
+              start: start2,
+              end: end,
+              color: 'black',
+              timed: 0,
+              category: this.categories[key],
+              consultorio: salas[key],
+              equipo: true
+            })
+            //}
+
+
+            /*this.events.push({
+                name: 'Cita',
+                start: new Date(this.fecha_calendario + 'T08:01:00-04:00'),
+                end: new Date(this.fecha_calendario + 'T09:01:00-04:00'),
+                color: 'blue',
+                timed: 1,
+                category: this.categories[key],
+            })*/
+          }
+          console.log(response.data['salas_disponibles']);
+          let salas_disponibles = response.data['salas_disponibles'];
+
+          console.log('--------------');
+          console.log(salas_disponibles)
+          for (const key in salas_disponibles) {
+            let fichas = salas_disponibles[key];
+
+            for (const x in fichas) {
+              let ficha = fichas[x];
+              /*console.log(ficha.nombres);
+              console.log(ficha.id);
+              console.log(ficha.id_equipo);
+              console.log(ficha.id_sala);
+              console.log(this.fecha_calendario);*/
+              console.log(ficha)
+              console.log(this.categories[key]);
+              this.events.push({
+
+                name: 'Sin asignar',
+                //paciente.nombres + " " + paciente.ap_paterno + " " + paciente.ap_materno,
+                start: new Date(this.fecha_calendario + 'T' + ficha.hora_inicio + '-04:00'),
+                end: new Date(this.fecha_calendario + 'T' + ficha.hora_final + '-04:00'),
+                color: '#595959',
+                timed: 1,
+                category: this.categories[key],
+                fichas: fichas[x],
+                //atencion: fichas[atencion]
+                //paciente: structuredClone(paciente)
+              })
+
+            }
+            //console.log(paciente.fecha + 'T'+paciente.hora_inicio+'-04:00')//new Date(),);
+
+            /*if (Object.hasOwnProperty.call(object, key)) {
+                const element = object[key];
+                
+            }**/
+          }
+          //alert()
+          //console.log(this.type);
+
+          //this.fetchEvents()
+          //console.log(this.events)
+        }
+      ).catch(err => {
+        console.log(err)
+        console.log("err->", err.response.data)
+        //return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
+      });
+
+    },
+    async openactulidad(i) {
+      this.datos_conf = this.calendario[i]
+      this.dialog_actulizar = true
+    },
     async mostrar($c) {
       console.log($c);
       var res = await axios({
@@ -331,7 +499,7 @@ export default {
       this.nuevaConfig = value
       this.pedir_calendarioslineal()
     },
-    
+
     delete_config() {
       this.deletcConfig = true
     },
@@ -397,4 +565,3 @@ export default {
   },
 }
 </script>
-    

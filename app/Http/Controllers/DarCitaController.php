@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use OwenIt\Auditing\Audit;
 use OwenIt\Auditing\Facades\Auditor;
 
+use function PHPUnit\Framework\isEmpty;
+
 class DarCitaController extends Controller
 {
     /**
@@ -61,8 +63,9 @@ class DarCitaController extends Controller
     {
         //
         //return $request;
-        $fecha = $request['fecha'];
+
         $cita =  $request['cita'];
+        $fecha = $cita['fecha'];
         //return $cita;
         $persona =  $request['paciente'];
 
@@ -127,22 +130,43 @@ class DarCitaController extends Controller
                 DB::table('designar_equipos')->insert($nuevo);
             }
         }
-        $validar =  DB::table('fichas')
-            ->where('id_sala', '=', $cita['id_sala'])
 
-            ->where('id_horario', '=', $cita['id_horario'])
-            ->where('id_conf_sala', '=', $cita['id_conf_sala'])
-            ->where('fecha', '=', $fecha)
-            ->where('institucion', '=',  $cita['institucion'])
-            ->where('fecha', '=', $fecha)
-            ->first();
+        
+        $validar = DB::table('fichas')
+            ->select('*')
+            ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
+            ->where('fichas.fecha', '=',  $fecha)
+            ->where('fichas.institucion', '=', $cita['institucion'])
+            ->where('fichas.id_horario', '=', $cita['id_horario'])
+            ->whereNull('dar_citas.id_ficha')
+            ->orderBy('id_sala')
+            ->get();
 
-        try {
-
-            $respuesta = DB::table('dar_citas')->insert(['id_ficha' => $validar->id, 'id_persona' => $persona['id']]);
-        } catch (\Throwable $th) {
-            return new Response(['message' => $th], 400);
+        if (count($validar) === 0) {
+            return new Response(['message' => 'No es lo mismo'], 400);
+            //return 
         }
+        $resultado = null;
+        //return $validar;
+        if (array_key_exists('id_sala', $cita)) {
+            foreach ($validar as $key => $item) {
+                # code...
+                if ($cita['id_sala'] === $item->id_sala ) {
+                    $resultado = $item;
+                    break;
+                }
+            }
+        }
+        //return $resultado;
+        if ($resultado === null) {
+            $validar = $validar[0];
+        } else {
+            $validar = $resultado;
+        }
+        $respuesta = DB::table('dar_citas')->insert(['id_ficha' => $validar->id, 'id_persona' => $persona['id']]);
+        /*} catch (\Throwable $th) {
+            return new Response(['message' => $th], 400);
+        }*/
 
 
         return $validar;
@@ -270,10 +294,10 @@ class DarCitaController extends Controller
                     'auditable_type' => $registroAEliminar ? get_class($registroAEliminar) : null,
                     'tags' => 'se eliminó una ficha de la base de datos',
                     'new_values' => $textoConvertido, // Agregar la fecha y hora actual
-                    'updated_at' => now()->toDateTimeString(), 
+                    'updated_at' => now()->toDateTimeString(),
                     // Otros detalles del evento de auditoría, si es necesario
                 ];
-                
+
 
                 DB::table('audits')->insert($eventoAuditoria);
                 //Auditor::audit()->audit($eventoAuditoria);
@@ -299,34 +323,26 @@ class DarCitaController extends Controller
     {
         //
         //return $request;
-
-
-
         $ficha1 =  $request['ficha1'];
         $ficha2 =  $request['ficha2'];
-
         DB::table('dar_citas')
             ->where('id_ficha', '=', $ficha2['id_ficha'])
             ->delete();
-
-
         //return $request;   
-        if (isset($ficha1['id_persona'])) {
+        if (isset($ficha1['id'])) {
             DB::table('dar_citas')
                 ->where('id_ficha', '=', $ficha1['id_ficha'])
                 ->delete();
             DB::table('dar_citas')
-                ->updateOrInsert(['id_ficha' => $ficha2['id_ficha'], 'id_persona' => $ficha1['id_persona']]);
+                ->updateOrInsert(['id_ficha' => $ficha2['id_ficha'], 'id_persona' => $ficha1['id']]);
         }
-        if (isset($ficha2['id_persona'])) {
+        if (isset($ficha2['id'])) {
+
             DB::table('dar_citas')
-                ->updateOrInsert(['id_ficha' => $ficha1['id_ficha'], 'id_persona' => $ficha2['id_persona']]);
+                ->updateOrInsert(['id_ficha' => $ficha1['id_ficha'], 'id_persona' => $ficha2['id']]);
         }
 
         return $request;
-
-
-        return $ficha1;
     }
     public static function get_cita(Request $request)
     {
@@ -368,19 +384,6 @@ class DarCitaController extends Controller
                 ->leftJoin("institucions", function ($join) use ($paciente) {
                     $join->on("institucions.codigo", "=", "calendarios.codigo");
                 })
-
-                /*
-                    left join viajes ON viajes.id_sala = salas.id
-                    left join municipios ON municipios.id = viajes.id_municipio
-                 */
-
-                /*
-                left join salas ON salas.id = fichas.id_sala
-left join horarios ON horarios.id = fichas.id_horario
-                
-                */
-                //->where("fichas.fecha", "<", DB::raw("current_date"))
-                //->where("fichas.fecha", "<=", DB::raw("current_date"))
                 ->where("dar_citas.id_persona", "=", $paciente['id'])
                 ->get();
 

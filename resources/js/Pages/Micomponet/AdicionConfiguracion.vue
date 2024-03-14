@@ -342,7 +342,7 @@ export default {
         async verifcar_equipo(){
             console.log("---LISTA COMPPLTERA---");
             console.log(this.lista_completa.length, '==', this.salas.length);
-            if (this.lista_completa.length == this.salas.length) {
+            if (true) {
                 var e = []
                 var res = await axios({
                     method: "post",
@@ -479,7 +479,8 @@ export default {
                     configuracion: this.configuracion,
                     configuracion_antigua: this.item,
                     salas: this.salas,
-                    equipo: this.lista_equipo
+                    //equipo: this.lista_equipo
+                    equipo: []
                 },
             }).then(
                 (response) => {

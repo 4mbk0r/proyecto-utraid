@@ -1,12 +1,13 @@
 <template>
-    <v-app>
+    <v-conteiner>
 
-        <v-row class="fill-height">
+        <v-row>
             <v-col>
+
                 <v-sheet height="64">
                     <v-toolbar flat>
                         <v-btn outlined class="mr-4" color="grey darken-2" @click="setToday">
-                            Hoy2
+                            Hoy
                         </v-btn>
                         <v-btn fab text small color="grey darken-2" @click="prev">
                             <v-icon small>
@@ -21,6 +22,15 @@
                         <v-toolbar-title v-if="$refs.calendar">
                             {{ $refs.calendar.title }}
                         </v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-menu offset-y>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-autocomplete v-model="cita_nueva.lugar" :items="lugar" @change="mostrar_datos"
+                                    no-data-text="No se encontraron resultados" item-text='direccion' item-value="codigo">
+                                </v-autocomplete>
+                            </template>
+
+                        </v-menu>
                         <v-spacer></v-spacer>
                         <v-menu bottom right>
                             <template v-slot:activator="{ on, attrs }">
@@ -47,13 +57,11 @@
                         </v-menu>
                     </v-toolbar>
                 </v-sheet>
-
                 <v-sheet>
-                    <v-calendar class="custom-calendar" v-if="estado == 'calendario'" ref="calendar"
-                        v-model="fecha_calendario" :type="type" color="error" :events="events" :categories="categories"
-                        :event-color="getEventColor" event-overlap-mode="stack" @click:event="showEvent"
-                        @click:more="viewDay" @click:date="viewDay" @change="updateRange" :max-days=5
-                        weekdays="1, 2, 3, 4, 5" :weekday-format="getDay" :first-interval=7 :interval-minutes=60
+                    <v-calendar v-if="estado == 'calendario'" ref="calendar" v-model="fecha_calendario" :type="type"
+                        color="error" :events="events" :categories="categories" :event-color="getEventColor"
+                        @click:event="showEvent" @click:more="viewDay" @click:date="viewDay" @change="updateRange"
+                        :max-days=5 weekdays="1, 2, 3, 4, 5" :weekday-format="getDay" :first-interval=7 :interval-minutes=60
                         :interval-count=12>
                         <template #day-body="{ date, category }">
                             <div class="v-current-time" :class="{ first: true }" :style="{ top: nowY }">
@@ -61,22 +69,23 @@
                         </template>
                     </v-calendar>
                     <v-calendar v-if="estado == 'cita'" ref="calendar" v-model="fecha_calendario" color="error"
-                        event-overlap-mode="stack" type="category" category-show-all :categories="categories"
-                        :events="events" :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent"
-                        :interval-minutes=60 :first-interval=7 :interval-count=14>
+                        type="category" category-show-all :categories="categories" :events="events"
+                        :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent" :interval-minutes=60
+                        :first-interval=7 :interval-count=14>
                         <template #day-body="{ date, category }">
                             <div class="v-current-time" :class="{ first: true }" :style="{ top: nowY }">
                             </div>
                         </template>
                     </v-calendar>
+
                     <v-calendar v-if="estado == 'atencion'" ref="calendar" v-model="fecha_calendario" color="error"
                         type="category" category-show-all :categories="categories" :events="events"
-                        event-overlap-mode="stack" :event-color="getEventColor" :weekday-format="getDay"
-                        @click:event="showEvent" :interval-minutes=60 :first-interval=7 :interval-count=14>
-                    </v-calendar>
+                        :event-color="getEventColor" :weekday-format="getDay" @click:event="showEvent" :interval-minutes=60
+                        :first-interval=7 :interval-count=14></v-calendar>
+
                     <v-menu v-if="selectedOpen" v-model="selectedOpen" :close-on-content-click="false"
                         :activator="selectedElement" offset-x>
-                        <v-card min-width="350px" flat>
+                        <v-card class="my-card xs12 sm6" flat>
                             <v-toolbar :color="selectedEvent.color">
 
                                 <v-toolbar-title v-html="selectedEvent.name" class="white--text"></v-toolbar-title>
@@ -142,62 +151,57 @@
                                         {{ valores(selectedEvent.fichas, 'fecha') }}
                                     </v-col>
                                 </v-row>
+                                <v-row v-if="today == $store.getters.getfecha_server" ref="seleccion_equipo">
+                                    <v-col>
+                                        <v-select v-model="selectequipo" placeholder="No se tiene datos" :items="equipos"
+                                            :item-text="item => (item.nombres + ' ' + item.ap_paterno + ' ' + item.ap_materno)"
+                                            :item-value="item => item" :rules="selecionRules"
+                                            label="Seleccione equipo que atendera" required>
+                                        </v-select>
+                                    </v-col>
+                                    <v-col>
+                                        <v-autocomplete v-model="selectequipo" :items="equipos"
+                                            :item-text="item => (item.nombres + ' ' + item.ap_paterno + ' ' + item.ap_materno)"
+                                            :item-value="item => item" :rules="selecionRules" :search-input.sync="search"
+                                            cache-items flat hide-no-data hide-details label="What state are you from?"
+                                            solo-inverted>
+                                        </v-autocomplete>
 
-                                <v-form v-if="today == $store.getters.getfecha_server" ref="seleccion_equipo">
-                                    <v-row no-gutters>
-                                        <v-col>
-                                            <v-select v-model="selectequipo" persistent-placeholder
-                                                placeholder="No se tiene datos" :items="equipos"
-                                                :item-text="item => get_nombre_equipo(item)"
-                                                :item-value="item => select_nombre_equipo(item)" :rules="selecionRules"
-                                                label="Seleccione equipo que atendera" required>
-                                            </v-select>
-                                            <v-btn color="success" v-if="!getvalores(selectedEvent.fichas, 'id_designado')"
-                                                @click="save_atender">
-                                                Guardar
-                                            </v-btn>
+                                    </v-col>
+                                    <v-col>
+                                        <v-btn color="" v-if="!getvalores(selectedEvent.fichas, 'id_designado')"
+                                            @click="save_atender">
+                                            GuardarXXX
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-row v-else ref="seleccion_equipo">
+                                    <v-col>
+                                        <v-row align="center" justify="center">
+                                            <!-- Primer componente en una fila -->
+                                            <v-col cols="12">
+                                                <v-autocomplete v-model="selectequipo" :items="equipos"
+                                                    :item-text="item => (item.nombres + ' ' + item.ap_paterno + ' ' + item.ap_materno)"
+                                                    :item-value="item => item" :rules="selecionRules" cache-items
+                                                    class="mx-4" flat hide-no-data hide-details
+                                                    label="Escriba el nombre del medico"></v-autocomplete>
+                                            </v-col>
+                                        </v-row>
 
-                                        </v-col>
 
-                                    </v-row>
-                                    <V-row>
-                                        <v-col>
-                                            <v-data-table :headers="encabezado" :items="selectequipo.lista"
-                                                hide-default-footer disable-pagination>
-                                                <template v-slot:no-results>
-                                                    <span>No existen datos</span>
-                                                </template>
-                                            </v-data-table>
-                                        </v-col>
-                                    </V-row>
-                                </v-form>
-                                <v-form v-el se ref="seleccion_equipo">
-                                    <v-row v-if="equipos.length > 0" no-gutters>
-                                        <v-col>
-                                            <v-select v-model="selectequipo" persistent-placeholder
-                                                placeholder="No se tiene datos" :items="equipos"
-                                                :item-text="item => get_nombre_equipo(item)"
-                                                :item-value="item => select_nombre_equipo(item)" :rules="selecionRules"
-                                                label="Seleccione equipo que atendera" required>
-                                            </v-select>
-                                            <v-btn color="success" v-if="!getvalores(selectedEvent.fichas, 'id_designado')"
-                                                @click="save_atender">
-                                                Guardar
-                                            </v-btn>
+                                        <v-row align="center" justify="center">
+                                            <!-- Tercer componente en una fila -->
+                                            <v-col align="center" justify="center">
+                                                <v-btn color="success"
+                                                    v-if="!getvalores(selectedEvent.fichas, 'id_designado')"
+                                                    @click="save_atender">
+                                                    Guardarssss
+                                                </v-btn>
+                                            </v-col>
+                                        </v-row>
+                                    </v-col>
+                                </v-row>
 
-                                        </v-col>
-                                    </v-row>
-                                    <v-row>
-                                        <v-col>
-                                            <v-data-table :headers="encabezado" :items="selectequipo.lista"
-                                                hide-default-footer disable-pagination>
-                                                <template v-slot:no-results>
-                                                    <span>No existen datos</span>
-                                                </template>
-                                            </v-data-table>
-                                        </v-col>
-                                    </v-row>
-                                </v-form>
                             </v-card-text>
                             <v-card-text v-else>
 
@@ -224,14 +228,15 @@
         </v-row>
 
         <!-- Cuadro de diálogo superpuesto -->
-        <v-dialog v-model="dialogVisible" fullscreen hide-overlay>
+        <v-dialog v-model="dialogVisible" fullscreen hide-overlay persistent color="blue"
+            transition="dialog-bottom-transition">
             <!-- Contenido del cuadro de diálogo -->
             <v-card>
                 <v-toolbar dark color="primary">
                     <v-btn icon @click="cerrar_imprimir()">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
-                    <v-toolbar-title>Boleta de Cita</v-toolbar-title>
+                    <v-toolbar-title>BoletaS de Cita</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-items>
                         <!--<v-btn dark text @click="dialog = false">
@@ -253,8 +258,9 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
-        <v-dialog v-model="dialog_equipo" fullscreen :scrim="false" transition="dialog-bottom-transition">
 
+        <v-dialog v-model="dialog_equipo" fullscreen hide-overlay persistent :scrim="false"
+            transition="dialog-bottom-transition">
             <v-card>
                 <v-toolbar dark color="black">
                     <v-btn icon dark @click="close_atencion()">
@@ -268,63 +274,89 @@
                         </v-btn>
                     </v-toolbar-items>
                 </v-toolbar>
-                <v-list three-line subheader>
-                    <v-subheader>Configuracon Sala</v-subheader>
-                    <v-list-item>
-                        <v-list-item-content>
-                            <v-list-item-title>{{ selectedEvent.category }}</v-list-item-title>
-                            <!--<v-list-item-subtitle>{{ selectedEvent }}</v-list-item-subtitle>-->
-                        </v-list-item-content>
-                    </v-list-item>
-                    <v-subheader>Equipo
-                        <v-icon aria-hidden="false" @click="ver_equipo = !ver_equipo">
-                            mdi-eye-outline
-                        </v-icon>
+                <v-card>
+                    <v-tabs vertical>
+                        <v-tab>
+                            <v-icon left>
+                                mdi-account
+                            </v-icon>
+                            Horario Sala
+                        </v-tab>
+                        <v-tab>
+                            <v-icon left>
+                                mdi-lock
+                            </v-icon>
+                            Option 2
+                        </v-tab>
+                        <v-tab>
+                            <v-icon left>
+                                mdi-access-point
+                            </v-icon>
+                            Option 3
+                        </v-tab>
+
+                        <v-tab-item>
+                            <v-card flat>
+                                <v-card-text>
+
+                                    <mequipo v-if="dialog_equipo" :fecha="fecha_calendario"
+                                        :datos="selectedEvent.consultorio">
+                                    </mequipo>
+                                </v-card-text>
+                                <v-card-text>
+                                    <div>
+                                        {{ selectedEvent.consultorio }}
+
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </v-tab-item>
+                        <v-tab-item>
+                            <v-card flat>
+                                <v-card-text>
+                                    <v-subheader>Viaje</v-subheader>
+                                    <viaje v-if="dialog_equipo" :fecha="fecha_calendario"
+                                        :datos="selectedEvent.consultorio"></viaje>
+                                </v-card-text>
+                            </v-card>
+                        </v-tab-item>
+                        <v-tab-item>
+                            <v-card flat>
+                                <v-card-text>
+
+                                </v-card-text>
+                            </v-card>
+                        </v-tab-item>
+                    </v-tabs>
+                </v-card>
 
 
-                    </v-subheader>
 
-                    <v-list-item v-if="ver_equipo">
-                        <v-list-item-content>
-                            <v-list-item-subtitle>Integrantes:</v-list-item-subtitle>
-                            <mequipo v-if="dialog_equipo" :fecha="fecha_calendario" :datos="selectedEvent.consultorio">
-                            </mequipo>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-list>
-                <v-divider></v-divider>
-                <v-list>
-                    <v-subheader>Viaje</v-subheader>
-                    <viaje v-if="dialog_equipo" :fecha="fecha_calendario" :datos="selectedEvent.consultorio"></viaje>
-                </v-list>
-                <v-list>
-                    <v-subheader>Configuracion de Horarios</v-subheader>
-                    <confihorario :editedIndex="editedIndex" :originalItem="editedItem"></confihorario>
-                </v-list>
             </v-card>
         </v-dialog>
-        <v-dialog v-model="dialog_imprimir" fullscreen :scrim="false" transition="dialog-bottom-transition">
+        <v-dialog v-model="dialog_imprimir" persistent max-width="500px" hide-overlay color="blue"
+            transition="dialog-bottom-transition">
 
-            <v-card>
-                <v-toolbar dark color="black">
-                    <v-btn icon dark @click="dialog_imprimir = false">
-                        <v-icon>mdi-close</v-icon>
+
+            <v-toolbar dark color="black">
+                <v-btn icon dark @click="dialog_imprimir = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-toolbar-title>Imprimir</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-toolbar-items>
+                    <v-btn variant="text" @click="dialog_equipo = false">
+                        Guardar
                     </v-btn>
-                    <v-toolbar-title>Imprimir</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-toolbar-items>
-                        <v-btn variant="text" @click="dialog_equipo = false">
-                            Guardar
-                        </v-btn>
-                    </v-toolbar-items>
-                </v-toolbar>
-                <!--<v-list three-line subheader>
+                </v-toolbar-items>
+            </v-toolbar>
+            <!--<v-list three-line subheader>
                     <v-subheader>Imprimir</v-subheader>
                     <v-list-item>
                         <v-list-item-content>
                             <v-list-item-title>{{ selectedEvent.category }}</v-list-item-title>
                             <!--<v-list-item-subtitle>{{ selectedEvent }}</v-list-item-subtitle>-->
-                <!--</v-list-item-content>
+            <!--</v-list-item-content>
                     </v-list-item>
                     <v-subheader>Equipo
                         <v-icon aria-hidden="false" @click="ver_equipo = !ver_equipo">
@@ -342,12 +374,12 @@
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>-->
-                <v-divider></v-divider>
-                <!--<v-list>
+            <v-divider></v-divider>
+            <!--<v-list>
                     <v-subheader>Viaje</v-subheader>
                     <viaje v-if="dialog_equipo" :fecha="fecha_calendario" :datos="selectedEvent.consultorio"></viaje>
                     {{ selectedEvent }}-->
-                <!--<v-list-item>
+            <!--<v-list-item>
                         <v-list-item-action>
                             <v-checkbox v-model="notifications"></v-checkbox>
                         </v-list-item-action>
@@ -378,12 +410,11 @@
                     </v-list-item>
                
                 </v-list> -->
-            </v-card>
+
         </v-dialog>
         <datos v-if="dialog_persona" @pedir='actualizador' ref="dato">
         </datos>
-        <atencion v-if="estado == 'atencion'" ref="atender" @pedir='actualizador' 
-        :equipo="lista_equipo"></atencion>
+        <atencion v-if="estado == 'atencion'" ref="atender" @pedir='actualizador' :equipo="lista_equipo"></atencion>
         <!-- Diálogo de confirmación -->
         <v-dialog v-model="dialogDeletecita" max-width="400">
             <v-card>
@@ -400,10 +431,32 @@
             </v-card>
         </v-dialog>
 
-    </v-app>
+    </v-conteiner>
 </template>
 
 <style scoped>
+.divider-container {
+    margin: 8px 0;
+    /* Margen vertical alrededor del divisor */
+    padding: 8px;
+    /* Relleno interno del contenedor */
+}
+
+.my-divider {
+    height: 4px;
+    /* Establece el grosor que desees */
+}
+
+.my-card {
+    min-width: 350px;
+    /* Tamaño mínimo para escritorio u otros dispositivos grandes */
+
+    @media (max-width: 600px) {
+        min-width: 250px;
+        /* Tamaño menor para dispositivos móviles (ancho máximo de 600px) */
+    }
+}
+
 .custom-calendar {
     font-size: 20px !important;
 
@@ -424,15 +477,15 @@ import confihorario from '@/Pages/Micomponet/SalaEspera'
 import viaje from '@/Pages/Configuracion/viaje'
 export default {
     components: {
-    buscar,
-    datos,
-    atencion,
-    mequipo,
-    viaje,
-    imprimir,
-    confihorario,
-    //config
-},
+        buscar,
+        datos,
+        atencion,
+        mequipo,
+        viaje,
+        imprimir,
+        confihorario,
+        //config
+    },
     data: () => ({
         dialogDeletecita: false, // Controla la visibilidad del diálogo
         dialogVisible: false,
@@ -506,8 +559,8 @@ export default {
     },
     mounted() {
 
-        this.$refs.calendar.checkChange()
-        console.log(this.$root.$refs);
+        /*this.$refs.calendar.checkChange()
+        console.log(this.$root.$refs);*/
 
         //console.log();
     },
@@ -518,6 +571,7 @@ export default {
         nowY() {
             console.log('sss');
             console.log(this.cal.times.now);
+
             return this.cal ? this.cal.timeToY(this.cal.times.now) + 'px' : '-10px'
         }
     },
@@ -547,6 +601,7 @@ export default {
             this.dialogVisible = false
         },
         imprimir_datos() {
+            this.selectedOpen = false
             console.log('/*/*/*/*/*/*/')
             console.log(this.selectedEvent.fichas)
             this.$store.dispatch('guardar_imprimir', this.selectedEvent.fichas);
@@ -584,6 +639,7 @@ export default {
             });
 
             //console.log(this.selectedEvent);
+
         },
         actualizador(fecha) {
             console.log('.+.+.+.+')
@@ -592,6 +648,8 @@ export default {
             this.pedir_datos(this.fecha_calendario)
         },
         async changeType(nombre) {
+            console.log('                      sssssssssssssssssssssssss sssssssss')
+            console.log(nombre);
             this.ready = false
             if (nombre == 'category2') {
                 this.estado = 'atencion'
@@ -603,7 +661,7 @@ export default {
             }
             if (nombre == 'category') {
                 this.estado = 'cita'
-                console.log(this.$refs)
+                console.log(this.$refs.calendar)
 
                 this.type = nombre
                 //this.categories = ['Salas 1', 'Doctor 2']
@@ -723,13 +781,13 @@ export default {
                     console.log(response);
                     let salas = response.data['salas'];
                     let salas_disponibles = response.data['salas_diponibles'];
-                    this.equipos = response.data['equipo'];
+                    //this.equipos = response.data['equipo'];
                     /*console.log('_equipo----');
                     console.log(this.equipos);
                     console.log(salas_disponibles);
                     */
                     //console.log('__'+salas)
-
+                    //alert('ssss')
                     this.salas = salas
                     this.categories = [];
                     //let events = [];
@@ -818,7 +876,7 @@ export default {
                     this.ready = true
                     this.scrollToTime()
                     this.updateTime()
-
+                    //alert()
                     //console.log(this.type);
 
                     //this.fetchEvents()
@@ -867,17 +925,19 @@ export default {
             }*/
         },
         async save_atender() {
-            if (this.$refs.seleccion_equipo.validate()) {
+            /*verificar que no existe equipo designado */
+            //this.$refs.seleccion_equipo.validate()
+            if (Object.keys(this.selectequipo).length > 0) {
                 var res = await axios({
                     method: 'post',
                     url: `/${process.env.MIX_CARPETA}/atender`,
                     data: {
                         ficha: this.selectedEvent.fichas,
-                        equipo: this.selectequipo.equipo
+                        equipo: this.selectequipo
                     }
                 }).then(
                     (response) => {
-                        //console.log("---_:.-.-.-.-.-.-.::::::::----");
+                        console.log("atender");
                         console.log(response);
                         this.selectedEvent.fichas = structuredClone(response.data);
                         //this.selectedEvent.color = 'yellow'
@@ -922,6 +982,8 @@ export default {
             });
         },
         async atencion_equipos() {
+            console.log('tess');
+            console.log(`/${process.env.MIX_CARPETA}/api/equipos_elegidos`);
             var res = await axios({
                 method: 'post',
                 url: `/${process.env.MIX_CARPETA}/api/equipos_elegidos`,
@@ -932,9 +994,13 @@ export default {
             }).then(
                 (response) => {
                     var r = response.data.seleccion
+                    console.log('equipos/**//*/*/*/*');
                     console.log(response.data);
+                    console.log('------------00000-');
+
                     this.selectedOpen = true
                     this.equipos = response.data.equipo
+
                     if (r) {
                         this.selectequipo = response.data.equipo[0]
                     }
@@ -1081,8 +1147,9 @@ export default {
                 this.cambio_ficha = false;
                 return;
             }
-
+            console.log('se selecciono el evento');
             console.log(event);
+            console.log('este se selecciono');
             if (event.equipo == true) {
                 this.selectedEvent = structuredClone(event)
                 this.dialog_equipo = true;
@@ -1093,7 +1160,7 @@ export default {
                 //this.dialog = true
                 //this.selectedEvent = event
 
-                console.log('datos');
+                console.log('atencion quien atendera al equipo');
                 console.log(event.integrantes)
                 this.lista_equipo = event.integrantes
                 //this.$refs.atender.op1 = 1;
@@ -1107,8 +1174,8 @@ export default {
             if (event.name == 'Agendar') {
                 //this.dialog = true
                 //this.selectedEvent = event
-
-                console.log('datos');
+                console.log('-----*-*--*-*-*-*-');
+                console.log('quien agendara los datos');
                 console.log(event.consultorio)
 
                 console.log(this.fecha_calendario);
@@ -1225,7 +1292,9 @@ export default {
             setTimeout(() => {
                 this.$refs.dato.op1 = 1;
                 this.$refs.dato.fecha_cita = this.fecha_calendario
-                this.$refs.dato.cita_nueva = this.selectedEvent.fichas
+                this.$refs.dato.ciuta_nueva = this.selectedEvent.fichas
+                this.$refs.dato.cita_nueva.fecha = this.fecha_calendario
+                this.$refs.dato.actfecha()
                 //console.log();
                 this.$refs.dato.open()
             }, 1);

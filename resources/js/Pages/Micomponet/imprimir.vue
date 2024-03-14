@@ -1,9 +1,9 @@
 <template>
     <v-card>
-        <v-container class="teal lighten-3" align="center" justify="center" id="section-to-print">
+        <v-container class="teal lighten-3 imprimir-visible" align="center" justify="center" id="section-to-print">
             <v-row class="pa-0 ma-0">
                 <v-col class="pa-0 ma-0 d-flex align-center justify-center" outlined tile cols="2">
-                    <img height="80" width="100" contain src="assets/logo-sedes-lapaz.png" />
+                    <img height="80" width="100" @click="handleCardClick" ref="seccionprint" contain src="assets/logo-sedes-lapaz.png" />
                 </v-col>
                 <v-col class="pa-0 ma-0 tamano-letra" align="center" cols="8" style="font-size: 10px !important;">
                     <v-card>
@@ -20,7 +20,7 @@
             </v-row>
             <v-row class="pa-0 ma-0">
                 <v-col class="pa-1 ma-0 " cols="4" align="center" justify="center">
-                    <p class="pa-1 ma-0 tamano-codigo"> Codigo: {{ cita.id }}</p>
+                    <p class="pa-1 ma-0 tamano-codigo">  </p>
                 </v-col>
 
                 <v-col class="pa-1 ma-0" cols="4" align="center" justify="center">
@@ -72,7 +72,8 @@
             <v-row class="pa-2 ma-0">
                 <v-col class="pa-2 ma-0" align="center" justify="center">
 
-                    <v-textarea class="pa-0 ma-0" label="Observaciones" auto-grow outlined hide-details rows="1">
+                    <v-textarea class="pa-0 ma-0" ref="textpri" label="Observaciones" auto-grow outlined hide-details
+                        rows="1">
                     </v-textarea>
                 </v-col>
             </v-row>
@@ -93,7 +94,7 @@
         <v-container>
             <v-row>
                 <v-col class="pa-2" outlined tile align="center" justify="center" colo>
-                    <v-btn @click='print' align="center" justify="center" color="primary">IMPRIMIR 
+                    <v-btn @click='print' align="center" justify="center" color="primary">IMPRIMIR
                         <v-icon>mdi-printer</v-icon>
                     </v-btn>
                 </v-col>
@@ -102,31 +103,18 @@
     </v-card>
 </template>
 <style scoped>
-.tamano-letra {
-    font-size: 9px !important;
-    /* O el tamaño que desees */
+.tamano-carta {
+    width: 100% !important;
+
+    /* Ajusta según sea necesario */
 }
 
-.tamano-codigo {
-    font-size: 20px !important;
-    /* O el tamaño que desees */
-}
-
-.text-center-select .v-input__control {
-    text-align: center;
-}
-
-.centered-select {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.centered-select .v-select__selection {
-    width: auto;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+.fill-height {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
 }
 </style>
 <script>
@@ -162,11 +150,11 @@ export default {
     created() {
         //this.cita = JSON.parse(localStorage.getItem('cita'))
         //this.$store.dispatch('')
-        
+
         const usuarioString = localStorage.getItem("usuario");
         this.cita = JSON.parse(usuarioString);
         console.log('console sss');
-        
+
         console.log(this.cita);
         console.log(this.cita.id_persona);
         console.log(this.isEmpty(this.cita.id_persona));
@@ -183,19 +171,33 @@ export default {
         localStorage.removeItem('usuario');
     },
     mounted() {
+
         // agregar evento beforeunload al objeto window
         window.addEventListener('beforeunload', () => {
             // eliminar el componente de la instancia de Vue
             this.$destroy();
         });
+        this.$refs.seccionprint.click();
+        this.$nextTick(() => {
+            // Simular enfoque en la secciónprint
+            this.$refs.seccionprint.focus();
+            this.$refs.textpri.focus();
+            // También puedes simular un enfoque en un input dentro de la secciónprint si es necesario
+            // this.$refs.seccionprint.querySelector('input').focus();
+        });
+        //this.$refs.seccionprint.focus();
+        //this.$refs.textpri.focus();
     },
     components: {
 
     },
     methods:
     {
+        handleCardClick() {
+            console.log('Clic en la tarjeta');
+        },
         isEmpty(variable) {
-            if (variable === null || variable === undefined || 
+            if (variable === null || variable === undefined ||
                 variable === '' || (Array.isArray(variable) && variable.length === 0)) {
                 return true;
             } else {
@@ -244,7 +246,35 @@ export default {
 
         print() {
 
-            print()
+
+
+            var anchoDePantalla = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            var altoDePantalla = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            console.log('imprimirt');
+            var anchoDePagina = document.body.clientWidth;
+
+            //
+
+            // Imprime el ancho de la página en la consola
+            console.log("Ancho de la página: " + anchoDePagina + "px");
+            const printJob = window.print();
+
+            // Establece el tamaño de la página
+
+
+            // Establece la orientación de la página
+            printJob.setOrientation("portrait");
+
+            // Establece los márgenes
+            printJob.setMargins({
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+            });
+
+            // Imprime la página
+            printJob.print();
         },
         fechaTexto(x) {
             moment.locale('es');

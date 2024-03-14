@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Horario;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -105,34 +106,30 @@ class AtenderController extends Controller
      */
     public function store(Request $request)
     {
-        
         $mensaje = "Alguien ha accedido a la ruta 'mandarmensaje'";
 
         // Actualizar el mensaje en el caché
-        Cache::put('mensaje_actualizado', $mensaje);
+        //Cache::put('mensaje_actualizado', $mensaje);
         //$DB::table('atenders')->insert()
         //return $request;
-        $equipo = $request['equipo'];
-        $ficha = $request['ficha'];
         //return $ficha['fecha'];
         //return $request;
+        $ficha = $request['ficha'];
         $id_ficha = $ficha['id_ficha'];
-        $id_sala =  $ficha['id_sala'];
-        $id_equipo = $ficha['id_equipo'];
-        $r = DB::table('atenders')->where('id_ficha', '=', $id_ficha)->get();
 
+        $r = DB::table('atenders')->where('id_ficha', '=', $id_ficha)->get();
         if (count($r) == 0) {
             try {
                 $ficha = $request['ficha'];
-
-                $id_antiguo = $equipo['id_ficha'];
-                $id_nuevo = $ficha['id_ficha'];
+                $equipo = $request['equipo'];
 
                 $id_ficha = $ficha['id_ficha'];
                 //$id_sala =  $ficha['id_sala'];
-                $id_equipo = $equipo['id_equipo'];
+                $id_medico = $equipo;
 
+                DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_medico]);
 
+                /* 
                 $antiguo = (array) DB::table('dar_citas')->where('id_ficha', '=', $id_nuevo)->first(); //->update(['id_ficha'=>$nuevo] );
 
                 //if id equipó. 
@@ -159,7 +156,7 @@ class AtenderController extends Controller
                 // left join asignar_equipos ON asignar_equipos.id_usuario = users.id
                 // where id_equipo = '4'
                 
-
+                
                 $usuarios = User::select('users.*')
                     ->leftJoin('asignar_equipos', 'asignar_equipos.id_usuario', '=', 'users.id')
                     ->where('asignar_equipos.id_equipo', '=', $id_equipo)
@@ -179,7 +176,7 @@ class AtenderController extends Controller
                 //DB::table('atenders')->insert(['id_ficha' => $id_ficha, 'id_designado' => $id_equipo]);
 
                 //$s = DB::table('atender_salas')->select('*')->where('id_sala', '=', $id_sala)->get();
-
+                */
             } catch (\Throwable $th) {
                 //throw $th;
                 return $th;
@@ -218,7 +215,8 @@ class AtenderController extends Controller
             DB::table('atenders')->where('id_ficha', '=', $id_nuevo)->delete();
             DB::table('atenders')->where('id_ficha', '=', $id_antiguo)->delete();
             DB::table('dar_citas')->insert(['id_persona' => $antiguo['id_persona'], 'id_ficha' => $id_antiguo]);
-            DB::table('atenders')->insert(['id_ficha' => $id_antiguo, 'id_designado' => $id_equipo]);*/
+            DB::table('atenders')->insert(['id_ficha' => $id_antiguo, 'id_designado' => $id_equipo]);
+            */
         }
         return 'error';
     }
@@ -322,13 +320,13 @@ class AtenderController extends Controller
         //Cache::put('mensaje_actualizado', $mensaje);
 
         $selecion = DB::table('atenders')
-        ->leftJoin('fichas', 'fichas.id', '=', 'atenders.id_ficha')
-        ->where('id_ficha', '=', $id_ficha)
-        ->first();
-        
+            ->leftJoin('fichas', 'fichas.id', '=', 'atenders.id_ficha')
+            ->where('id_ficha', '=', $id_ficha)
+            ->first();
+
         DB::table('atenders')->where('id_ficha', '=', $id_ficha)->delete();
-       
-        
+
+
         $usuarios = User::select('users.*')
             ->leftJoin('asignar_equipos', 'asignar_equipos.id_usuario', '=', 'users.id')
             ->where('asignar_equipos.id_equipo', '=', $selecion->id_designado)
@@ -346,6 +344,8 @@ class AtenderController extends Controller
     }
     public static function ver_equipos(Request $request)
     {
+
+
         $today = date("Y-m-d");
 
 
@@ -354,31 +354,25 @@ class AtenderController extends Controller
 
         if ($request['id_designado'] != null) {
 
-            $equipos = DB::table('fichas')
-                ->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
-                ->leftJoin('equipos', 'equipos.id', '=', 'atenders.id_designado')
 
+            $medico = DB::table('users')
+                ->leftJoin('atenders', 'atenders.id_designado', '=', 'users.id')
+                ->where('atenders.id_ficha', '=', $request['id_ficha'])
+                ->select('users.*')
+                ->get();
+
+
+            /*DB::table('fichas')
+                ->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
+                ->leftJoin('users', 'users.id', '=', 'atenders.id_designado')
                 ->where('atenders.id_designado', '=', $request['id_designado'])
                 ->where('atenders.id_ficha', '=', $request['id_ficha'])
-                ->get();
+                ->get();*/
             //return $equipos;
-            $r_equipo = [];
-            foreach ($equipos as $key => $value) {
-                $lista_equipos = DB::table('equipos')
-                    ->select('*')
-                    ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
-                    ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
-                    ->where('equipos.id', '=', $value->id)
-                    ->get();
-                $a =  [
-                    'equipo' => $value,
-                    'lista' => $lista_equipos
-                ];
-                array_push($r_equipo, $a);
-            }
+            //array_push($r_equipo, $medico);
             $r = [
                 'seleccion' => true,
-                'equipo' => $r_equipo
+                'equipo' => $medico
             ];
             return $r;
         }
@@ -390,64 +384,35 @@ class AtenderController extends Controller
                 'equipo' => []
             ];
         }
-        $equipos = DB::table('fichas')
-            ->leftJoin('horarios', function ($join) {
-                $join->on('horarios.id', '=', 'fichas.id_horario');
-            })
-            ->leftJoin('designar_equipos', function ($join) {
-                $join->on('designar_equipos.fecha', '=', 'fichas.fecha');
-                $join->on('designar_equipos.id_sala', '=', 'fichas.id_sala');
+        try {
+            $cargo = 'MEDICO GENERAL';
+            $fecha = $request['fecha'];
+            $horaInicio = $request['hora_inicio'];
+            $horaFinal = $request['hora_final'];
 
-                //DB::raw("(designar_equipos.fecha = fichas.fecha and designar_equipos.id_sala = 'fichas'.id_sala)"));
-            })
-            ->leftJoin('atenders', 'atenders.id_ficha', '=', 'fichas.id')
-            ->leftJoin('equipos', function ($join) {
-                $join->on('equipos.id', '=', 'designar_equipos.id_equipo');
-            })
-            ->select(['*', 'fichas.id as id_ficha'])
-            ->whereNull('id_designado')
-            ->where('fichas.fecha', '=', $request['fecha'])
-            ->where(
-                function ($query) use ($request) {
-                    return $query
-                        ->where(
-                            function ($query) use ($request) {
-                                return $query
-                                    ->where('horarios.hora_inicio', '>=', $request['hora_inicio'])
-                                    ->where('horarios.hora_inicio', '<', $request['hora_final']);
-                            }
-                        )
-                        ->orwhere(
-                            function ($query) use ($request) {
-                                return $query
-                                    ->where('horarios.hora_final', '>', $request['hora_inicio'])
-                                    ->where('horarios.hora_final', '<', $request['hora_final']);
-                            }
-                        );
-
-                    //->where('that_too', '=', 1);
-                }
-            )
-            ->get();
-
-        $seleccion = false;
-        $r_equipo = [];
-        foreach ($equipos as $key => $value) {
-            $lista_equipos = DB::table('equipos')
-                ->select('*')
-                ->leftJoin('asignar_equipos', 'asignar_equipos.id_equipo', '=', 'equipos.id')
-                ->leftJoin('users', 'users.id', '=', 'asignar_equipos.id_usuario')
-                ->where('equipos.id', '=', $value->id_equipo)
+            $medicosSinAtender = DB::table('users')
+                ->where('cargo', $cargo)
+                ->whereRaw("NOT EXISTS (
+                SELECT 1
+                FROM cargos
+                LEFT JOIN atenders ON atenders.id_designado = users.id
+                LEFT JOIN fichas ON fichas.id = atenders.id_ficha AND fichas.fecha = '$fecha'
+                LEFT JOIN horarios ON horarios.id = fichas.id_horario
+                WHERE cargo = users.cargo
+                AND atenders.id_designado IS NOT NULL
+                AND horarios.hora_inicio >= '$horaInicio'
+                AND horarios.hora_final <= '$horaFinal'
+                AND cargos.servicio = true
+            )")
                 ->get();
-            $a =  [
-                'equipo' => $value,
-                'lista' => $lista_equipos
-            ];
-            array_push($r_equipo, $a);
+        } catch (Exception $e) {
+            return $e;
         }
+
+
         $r = [
-            'seleccion' => $seleccion,
-            'equipo' => $r_equipo
+            'seleccion' => false,
+            'equipo' => $medicosSinAtender
         ];
         return $r;
         /*$equipo = $request['equipo'];
@@ -603,59 +568,69 @@ class AtenderController extends Controller
     }
     public static function sala_equipos(Request $request)
     {
+
+        //return $request;
         $datos =  $request;
+        $horario = DB::table('fichas')->select('*')
+            ->leftJoin('dar_citas', 'dar_citas.id_ficha', '=', 'fichas.id')
+            ->leftJoin('salas', 'salas.id', '=', 'fichas.id_sala')
+            ->leftJoin('conf_salas', 'conf_salas.id', '=', 'fichas.id_conf_sala')
+            ->leftJoin('horarios', 'horarios.id', '=', 'fichas.id_horario')
+            ->where('fichas.fecha', $datos['fecha'])
+            ->where('fichas.id_sala', $datos['id_sala'])
+            ->orderBy('horarios.hora_inicio')
+            ->get();
+        //return $horario;
         //return $datos['fecha'];
-        $is_calendar =  $equipos = DB::table('calendarios')
+        /*$is_calendar =  $equipos = DB::table('calendarios')
             ->where('fecha', '=', $datos['fecha'])
             ->where('atencion', '=', 'atencion')
-            ->get();
-        if (count($is_calendar) == 0) {
-
-
-            $query = DB::table("calendariolineals")
-                ->leftJoin("configuracions", function ($join) {
-                    $join->on("configuracions.id", "=", "calendariolineals.id_configuracion");
+            ->get();*/
+        if (count($horario) == 0) {
+            try {
+                $query = 
+                DB::table('configuracions')
+                ->select('*')
+                ->leftJoin('calendariolineals', function ($join) {
+                    $join->on('calendariolineals.id_configuracion', '=', 'configuracions.id');
                 })
-                ->leftJoin("designar_equipo_lineals", function ($join) {
-                    $join->on("designar_equipo_lineals.id_conf", "=", "configuracions.id");
+                ->leftJoin('asignar_config_salas', function ($join) {
+                    $join->on('asignar_config_salas.id_conf', '=', 'configuracions.id');
                 })
-                ->leftJoin("equipos", function ($join) {
-                    $join->on("equipos.id", "=", "designar_equipo_lineals.id_equipo");
+                ->leftJoin('conf_salas', function ($join) {
+                    $join->on('conf_salas.id', '=', 'asignar_config_salas.id_conf_sala');
                 })
-                ->leftJoin("asignar_equipos", function ($join) {
-                    $join->on("asignar_equipos.id_equipo", "=", "equipos.id");
+                ->leftJoin('salas', function ($join) {
+                    $join->on('salas.id', '=', 'asignar_config_salas.id_sala');
                 })
-                ->leftJoin("users", function ($join) {
-                    $join->on("users.id", "=", "asignar_equipos.id_usuario");
-                })
-                ->where("calendariolineals.fecha_inicio", "<=", $datos['fecha'])
-                ->where("calendariolineals.fecha_final", ">=", $datos['fecha'])
-                ->where("designar_equipo_lineals.id_sala", "=", 1)
+                ->where('configuracions.id', $request['id_conf'])
+                ->where('salas.id', $request['id_sala'])
+                ->where('conf_salas.id', $request['id_conf_sala'])
+                ->where('calendariolineals.fecha_inicio', '<=', $request['fecha'])
+                ->where('calendariolineals.fecha_final', '>=', $request['fecha'])
                 ->get();
-
+    
+                
+            } catch (\Throwable $th) {
+                return $th;
+            }
+            
             return $query;
         } else {
-
-            $equipo =
-
-                DB::table("designar_equipos")
-                ->leftJoin("equipos", function ($join) {
-                    $join->on("equipos.id", "=", "designar_equipos.id_equipo");
+            $results = DB::table('fichas')
+                ->select('*')
+                ->leftJoin('salas', function ($join) {
+                    $join->on('salas.id', '=', 'fichas.id_sala');
                 })
-                ->leftJoin("asignar_equipos", function ($join) {
-                    $join->on("asignar_equipos.id_equipo", "=", "equipos.id");
+                ->leftJoin('conf_salas', function ($join) {
+                    $join->on('conf_salas.id', '=', 'fichas.id_conf_sala');
                 })
-                ->leftJoin("users", function ($join) {
-                    $join->on("users.id", "=", "asignar_equipos.id_usuario");
-                })
-                ->select(["equipos.nombre_equipo", 'users.*'])
-                ->where("designar_equipos.fecha", "=", $datos['fecha'])
-                ->where("designar_equipos.id_equipo", "=", $datos['id_equipo'])
-                ->where("designar_equipos.id_sala", "=", $datos['id_sala'])
+                ->where('fichas.fecha', '=', $request['fecha'])
+                ->where('fichas.institucion', '=', $request['institucion'])
+                ->where('fichas.id_sala', '=', $request['id'])
                 ->get();
-
-            return $equipo;
+            return $results;
         }
-        return $is_calendar;
+        //return $is_calendar;
     }
 }

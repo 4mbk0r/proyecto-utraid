@@ -26,7 +26,7 @@ class CreateCalendariosTable extends Migration
             //$table->unique(['fecha', 'codigo']);
         });
         DB::statement(
-            "ALTER TABLE calendarios ADD FOREIGN KEY (codigo) REFERENCES institucions(codigo) ON DELETE CASCADE"
+            "ALTER TABLE calendarios ADD FOREIGN KEY (codigo) REFERENCES institucions(codigo) ON DELETE CASCADE ON UPDATE CASCADE"
         );
         
     }

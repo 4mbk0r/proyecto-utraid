@@ -13,7 +13,7 @@ require('dotenv').config();
  */
 
 
-mix.setResourceRoot('/casa/public')
+mix.setResourceRoot('/minuevo/public')
 
 mix.js('resources/js/app.js', 'public/js').vue().sourceMaps()
     .postCss('resources/css/app.css', 'public/css', [

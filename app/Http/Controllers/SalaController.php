@@ -64,8 +64,8 @@ class SalaController extends Controller
             }
         } catch (\Throwable $th) {
 
-            
-            return $th;
+            return new Response(['message' => $th], 400);
+            //return $th;
         }
         //return $sala;
         try {
@@ -77,12 +77,21 @@ class SalaController extends Controller
             }
 
             $busqueda_configuracion =  DB::table('conf_salas')
+                ->leftJoin('asignar_horarios', 'asignar_horarios.id_conf_sala', '=', 'conf_salas.id')
+                ->leftJoin('horarios', 'horarios.id', '=', 'asignar_horarios.id_horario')
+
                 ->where('tiempo_apertura', '=', $sala['tiempo_apertura'],)
                 ->where('tiempo_cierre', '=', $sala['tiempo_cierre'])
-                ->where('tiempo_descanso', '=', isset($sala['tiempo_descanso']) ? $sala['tiempo_descanso'] : null)
-                ->where('min_promedio_atencion', '=', $sala['min_promedio_atencion'])
-                ->get();
-
+                
+                ;
+            if (isset($sala['tiempo_descanso'])) {
+                $busqueda_configuracion = $busqueda_configuracion->where('tiempo_descanso',  '=',  $sala['tiempo_descanso']);
+            } else {
+                $busqueda_configuracion = $busqueda_configuracion->whereNull('tiempo_descanso');
+            }
+            $busqueda_configuracion = $busqueda_configuracion->where('min_promedio_atencion', '=', $sala['min_promedio_atencion'])
+            ->whereNotNull('asignar_horarios.id_conf_sala')    
+            ->get();
             if (count($busqueda_configuracion) == 0) {
                 $datos = [
                     'tiempo_apertura' => $sala['tiempo_apertura'],
@@ -115,16 +124,9 @@ class SalaController extends Controller
                         'id_horario' => $id_horario,
                         'id_conf_sala' => $id_conf
                     ];
-                    $f = DB::table('asignar_horarios')
-                    ->where('id_horario','=', $id_horario)
-                    ->where('id_conf_sala', '=', $id_conf)
-                    ->get();
-                    if(count($f) == 0){
-                        DB::table('asignar_horarios')->insert($hora);    
-                    } 
-                    
+                    DB::table('asignar_horarios')->insert($hora);
                 }
-            } elseif (count($busqueda_configuracion) >= 1) {
+            } elseif (count($busqueda_configuracion) == 1) {
                 $b =  (array) $busqueda_configuracion[0];
                 //return $busqueda_configuracion[0];
                 $id_conf = $b['id'];
@@ -137,13 +139,12 @@ class SalaController extends Controller
                 'id_conf_sala' => $id_conf,
                 'id_sala' => $sala['id_sala']
             ];
-            $t =DB::table('asignar_salas')
-            ->where('id_conf_sala', '=', $id_conf) 
-            ->where('id_sala', '=', $sala['id_sala'])
-            ->get();
-            if(count($t)==0){
+            $t = DB::table('asignar_salas')
+                ->where('id_conf_sala', '=', $id_conf)
+                ->where('id_sala', '=', $sala['id_sala'])
+                ->get();
+            if (count($t) == 0) {
                 DB::table('asignar_salas')->insert($configuracion);
-            
             }
             $sala['id_conf_sala'] = $id_conf;
         } catch (\Throwable $th) {

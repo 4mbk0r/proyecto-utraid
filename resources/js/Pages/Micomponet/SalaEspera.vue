@@ -1,6 +1,4 @@
 <template>
-  <v-app>
-
     <v-card>
       <v-card-title>
         <v-row>
@@ -76,7 +74,6 @@
       </v-card-actions>
       -->
     </v-card>
-  </v-app>
 </template>
 <script>
 import moment from 'moment'
