@@ -183,7 +183,8 @@ export default{
         // agregar evento beforeunload al objeto window
         window.addEventListener('beforeunload', () => {
             // eliminar el componente de la instancia de Vue
-            this.$destroy();
+            this.$
+            destroy();
         });
     },
     components: {
