@@ -9,6 +9,7 @@
         "azuyalabs/yasumi": "^2.5",
         "barryvdh/laravel-dompdf": "^1.0",
         "beyondcode/laravel-websockets": "^1.14.1",
+        "box/spout": "^3.3",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "inertiajs/inertia-laravel": "^0.3.5",

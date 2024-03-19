@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
+use Box\Spout\Reader\Common\Creator\ReaderFactory;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -96,36 +99,88 @@ class ExcelPaciente extends Controller
     }
     public static function get_sheet(Request $request)
     {
-        //return $request;
-        $disk = Storage::disk('local');
-        if ($request->hasFile('file')) {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xlsm,xltx,xltm,xls,csv',
+        ]);
 
-            $file = $request->file('file');
-            //$nombreArchivo = $file->getClientOriginalName();
-            $extensionArchivo = $file->getClientOriginalExtension();
-            //$nombreArchivoUnico = uniqid() . '_' . $nombreArchivo;
-            //$nombreArchivoUnico = uniqid() . '_' . $file->getClientOriginalName();
+        $file = $request->file('file');
+        $originalName = $file->getClientOriginalName();
+        $reader = ReaderEntityFactory::createReaderFromFile($originalName); // BoxSpout 3.3
 
-            // Guardar el archivo en el almacenamiento local de Laravel (Storage)
-            Storage::put('open'.$extensionArchivo, file_get_contents($file));
+        $reader->open($file);
+        // Get the sheets from the file
+        $sheets = $reader->getSheetIterator();
+        $sheet_array = [];
+        // Process each sheet
+        foreach ($sheets as $sheet) {
+            // Get the sheet name
+            $sheetName = $sheet->getName();
+            array_push($sheet_array,$sheetName);
+            // Read the rows from the sheet
+            $rows = $sheet->getRowIterator();
 
-            //Cache::put($nombreArchivoUnico . '.' . $extensionArchivo, file_get_contents($file));
+            // Process each row
+            foreach ($rows as $row) {
+                // Get the cells from the row
+                $cells = $row->getCells();
 
-            $objPHPExcel = IOFactory::load($file);
-            //$disk->put('openexcel.xlsx', $objPHPExcel->save('php://output'));
-            //$disk->put('nombre_de_archivo.xlsx', fwrite($objPHPExcel->getActiveSheet()->getStream(), ""));
-            //  Cache::put('open', $file);
+                // Process each cell
+                foreach ($cells as $cell) {
+                    // Get the cell value
+                    $value = $cell->getValue();
 
-            $hojas = $objPHPExcel->getSheetCount();
-            $resp = [];
-            for ($i = 0; $i < $hojas; $i++) {
-                $nombre_hoja = $objPHPExcel->getSheet($i)->getTitle();
-                array_push($resp, ['id' => $i, 'nombre_sheet' => $nombre_hoja]);
+                    // Process the value as needed
+                    // ...
+                }
             }
-            return $resp;
+        }
+
+        // Close the reader
+        $reader->close();
+
+        // Return a response
+        return response()->json([
+            'success' => true,
+            'message' => 'Las hojas del archivo Excel se han procesado correctamente.',
+            'datos' => $sheet_array
+        ]);
+        return $file;
+
+        $disk = Storage::disk('local');
+        /*if ($request->hasFile('file')) {
+            try {
+
+                $file = $request->file('file');
+                //$nombreArchivo = $file->getClientOriginalName();
+                $extensionArchivo = $file->getClientOriginalExtension();
+                //$nombreArchivoUnico = uniqid() . '_' . $nombreArchivo;
+                //$nombreArchivoUnico = uniqid() . '_' . $file->getClientOriginalName();
+
+                // Guardar el archivo en el almacenamiento local de Laravel (Storage)
+                Storage::put('open' . $extensionArchivo, file_get_contents($file));
+
+                //Cache::put($nombreArchivoUnico . '.' . $extensionArchivo, file_get_contents($file));
+
+                $objPHPExcel = IOFactory::load($file);
+                //$disk->put('openexcel.xlsx', $objPHPExcel->save('php://output'));
+                //$disk->put('nombre_de_archivo.xlsx', fwrite($objPHPExcel->getActiveSheet()->getStream(), ""));
+                //  Cache::put('open', $file);
+
+                $hojas = $objPHPExcel->getSheetCount();
+                $resp = [];
+                for ($i = 0; $i < $hojas; $i++) {
+                    $nombre_hoja = $objPHPExcel->getSheet($i)->getTitle();
+                    array_push($resp, ['id' => $i, 'nombre_sheet' => $nombre_hoja]);
+                }
+                return $resp;
+                //code...
+            } catch (Exception $th) {
+                //throw $th;
+                return response()->json(['message' => $th], 400);
+            }
         } else {
             return response()->json(['message' => 'No se encontró ningún archivo'], 400);
-        }
+        }*/
     }
     public static function validate_date(Request $request)
     {
@@ -146,15 +201,15 @@ class ExcelPaciente extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $extensionArchivo = $file->getClientOriginalExtension();
-            
-            $excelContent = Storage::get('open'.$extensionArchivo);
+
+            $excelContent = Storage::get('open' . $extensionArchivo);
             //$reader = PHPExcel_IOFactory::createReaderForFile($excelContent);
             //$reader->setReadDataOnly(true);
             // Cargar el contenido del archivo Excel en una variable
             //$reader = IOFactory::createReader('Xlsx');
             //$excel = IOFactory::loadFromArray($excelContent);
             //$excel = $reader->loadFromstring($excelContent);
-            $objPHPExcel = IOFactory::load(storage_path('app/'.'open'.$extensionArchivo));
+            $objPHPExcel = IOFactory::load(storage_path('app/' . 'open' . $extensionArchivo));
             //$excel = IOFactory::loadFromByteArray($excelContent);
 
             //$hojas = $objPHPExcel->getSheetCount();
@@ -196,12 +251,12 @@ class ExcelPaciente extends Controller
                     $rules = [
                         'nombres' => 'required',
                         'ci' => 'required',
-                        'expedido' => 'required'
+                        //'expedido' => 'required'
                     ];
                     $validator = Validator::make($persona, $rules);
                     $validator2 = db::table('personas')
                         ->where('ci', '=', $persona['ci'])
-                        ->where('expedido', '=', $persona['expedido'])
+                        //->where('expedido', '=', $persona['expedido'])
                         ->exists();
 
                     if (!$validator->fails() && !$validator2) {

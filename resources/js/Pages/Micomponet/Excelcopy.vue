@@ -293,13 +293,13 @@ export default {
                 },
                 url: `/${process.env.MIX_CARPETA}/api/get_sheet_excel`,
                 data: formData,
+                timeout: 1200000 
 
             }).then(
                 (response) => {
                     console.log(response);
                     this.sheetList = response['data']; //Array of sheet names.
                     //console.log(this.sheetList[0]);
-
 
 
                     this.selectedSheet = this.sheetList[0];
@@ -316,7 +316,7 @@ export default {
                 }
                 console.log(err)
                 console.log("err->", err.response.data)
-                this.$alert('Se fallo en cambio.').then(res => this.$err("Cambiar contraseña!"));
+                this.$alert('Hubo un error en el archivo ').then(res => this.$err("Cambiar contraseña!"));
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             });
             /*var input = this.$refs.excelFile

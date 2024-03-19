@@ -519,9 +519,9 @@ class CChorarioController extends Controller
 
         $salas2 =  DB::table('salas')
             ->select('salas.*')
-            ->leftJoin('fichas', function ($join) {
+            ->leftJoin('fichas', function ($join) use ($fecha) {
                 $join->on('salas.id', '=', 'fichas.id_sala')
-                    ->where('fichas.fecha', '=', '2024-03-14');
+                    ->where('fichas.fecha', '=', $fecha);
             })
             ->whereNull('fichas.id_sala')
             ->where('salas.descripcion', 'like', 'salaauxiliar%')
@@ -537,7 +537,8 @@ class CChorarioController extends Controller
             ]);
             $salas2 = DB::table('salas')
                 ->where('id', '=', $id)
-                ->get();
+                ->first();
+            $salas2->id_sala = $id;
         }
 
         $conf_opcion = DB::table('conf_salas')

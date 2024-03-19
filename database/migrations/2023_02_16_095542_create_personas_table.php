@@ -35,6 +35,7 @@ class CreatePersonasTable extends Migration
             $table->text('celular', 100)->nullable();
             $table->text('correo', 100)->nullable();
             $table->text('expedido', 100)->nullable();
+            $table->text('complemento', 100)->nullable();
             $table->date('fecha_nacimiento')->nullable();
             $table->text('direccion', 100)->nullable();
             $table->text('sexo', 50)->nullable();
@@ -42,7 +43,7 @@ class CreatePersonasTable extends Migration
             $table->text('nom_departamento', 50)->nullable();
             $table->boolean('register')->default(True);
             $table->string('registro')->nullable()->default(null);
-            $table->unique(['ci', 'expedido']);
+            $table->unique(['ci','expedido', 'complemento']);
 
             //});
             /*$datos = [

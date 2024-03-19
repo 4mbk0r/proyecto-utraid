@@ -47,19 +47,154 @@
                   <v-col class="pa-1 ma-0 " cols="4" align="center" justify="center">
 
                     <v-row class="pa-0 ma-0">
-                      <v-col cols="12" sm="8" class="pa-0 ma-0">
+                      <v-col >
                         <v-text-field v-model="paciente.ci" :rules="ciRules" :disabled="op1 === 2"
-                          label="Cedula de Identidad" @keydown.enter="buscadorporvalor()" @input="(v) => {
-                            paciente.ci = v.toUpperCase().trim();
-                          }" required dense solo>
+                          label="Cedula de Identidad" @keydown.enter="buscadorporvalor()"
+                          @input="(v) => { paciente.ci = v.toUpperCase().trim(); }" required dense solo>
                         </v-text-field>
                       </v-col>
-                      <v-col class="pa-0 ma-0" cols="12" sm="4">
-                        <v-select v-model="paciente.expedido" :rules="nombreRules" persistent-placeholder
-                          :disabled="op1 === 2" placeholder="No se tiene datos" :items="departamentos" label="Expedido"
+                      <!---
+                      <v-col >
+                        <v-menu transition="scale-transition"
+                        :close-on-content-click="false">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                          </v-btn>
+                        </template>
+                        <v-card>
+                          <v-list>
+                            <v-list-item>
+                              <v-list-item-avatar>
+                                <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John">
+                              </v-list-item-avatar>
+
+                              <v-list-item-content>
+                                <v-list-item-title>John Leider</v-list-item-title>
+                                <v-list-item-subtitle>Founder of Vuetify</v-list-item-subtitle>
+                              </v-list-item-content>
+
+                              <v-list-item-action>
+                                <v-btn :class="fav ? 'red--text' : ''" icon @click="fav = !fav">
+                                  <v-icon>mdi-heart</v-icon>
+                                </v-btn>
+                              </v-list-item-action>
+                            </v-list-item>
+                          </v-list>
+
+                          <v-divider></v-divider>
+
+                          <v-list>
+                            <v-list-item>
+                              <v-list-item-action>
+                                <v-switch v-model="message" color="purple"></v-switch>
+                              </v-list-item-action>
+                              <v-list-item-title>Enable messages</v-list-item-title>
+                            </v-list-item>
+
+                            <v-list-item>
+                              <v-list-item-action>
+                                <v-switch v-model="hints" color="purple"></v-switch>
+                              </v-list-item-action>
+                              <v-list-item-title>Enable hints</v-list-item-title>
+                            </v-list-item>
+                          </v-list>
+
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+
+                            <v-btn text @click="menu = false">
+                              Cancel
+                            </v-btn>
+                            <v-btn color="primary" text @click="menu = false">
+                              Save
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-menu>
+  
+                      </v-col>
+                      -->
+                      
+                      <!--<v-menu
+      v-model="menu"
+      :close-on-content-click="false"
+      location="end"
+    >
+      <template v-slot:activator="{ props }">
+        <v-btn
+          color="indigo"
+          v-bind="props"
+        >
+          Menu as Popover
+        </v-btn>
+      </template>
+
+      <v-card min-width="300">
+        <v-list>
+          <v-list-item
+            prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg"
+            subtitle="Founder of Vuetify"
+            title="John Leider"
+          >
+            <template v-slot:append>
+              <v-btn
+                :class="fav ? 'text-red' : ''"
+                icon="mdi-heart"
+                variant="text"
+                @click="fav = !fav"
+              ></v-btn>
+            </template>
+          </v-list-item>
+        </v-list>
+
+        <v-divider></v-divider>
+
+        <v-list>
+          <v-list-item>
+            <v-switch
+              v-model="message"
+              color="purple"
+              label="Enable messages"
+              hide-details
+            ></v-switch>
+          </v-list-item>
+
+          <v-list-item>
+            <v-switch
+              v-model="hints"
+              color="purple"
+              label="Enable hints"
+              hide-details
+            ></v-switch>
+          </v-list-item>
+        </v-list>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            variant="text"
+            @click="menu = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            color="primary"
+            variant="text"
+            @click="menu = false"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-menu>-->
+
+                      <!--<v-col class="pa-0 ma-0" cols="12" sm="4">
+                        <v-select v-model="paciente.expedido" persistent-placeholder :disabled="op1 === 2"
+                          placeholder="No se tiene datos" :items="departamentos" label="Expedido"
                           @change="buscadorporci()" dense solo>
                         </v-select>
-                      </v-col>
+                      </v-col>-->
                     </v-row>
 
                   </v-col>
@@ -71,7 +206,7 @@
                   <v-col class="pa-1 ma-0 " cols="4" align="center" justify="center">
                     <div class="centered-select">
                       <v-select v-model="antiguedadpaciente" :items="options" label="Selecciona una opción"
-                      class="text-center-select text-h6   " :menu-props="{ auto: true }" hide-details dense
+                        class="text-center-select text-h6   " :menu-props="{ auto: true }" hide-details dense
                         solo></v-select>
                     </div>
                     <!--<p class="pa-1 ma-0 tamano-codigo"> NUEVO </p>-->
@@ -83,24 +218,24 @@
                       <v-row>
                         <v-col cols="12" sm="4" md="4">
                           <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombres" @input="(v) => {
-                            paciente.nombres = v.toUpperCase().trim();
-                          }" @change="buscadorporvalor()" required>
+    paciente.nombres = v.toUpperCase().trim();
+  }" @change="buscadorporvalor()" required>
                           </v-text-field>
                         </v-col>
                         <v-col cols="12" sm="4" md="4">
                           <v-text-field v-model="paciente.ap_paterno" @input="(v) => {
-                            paciente.ap_paterno = v.toUpperCase().trim();
-                            validar_apellido(v)
-                          }" :error-messages="errorpaterno" @keydown.enter="buscadaorporvalor()"
-                            @change="buscadorporvalor()" label="Apellido Paterno" required>
+    paciente.ap_paterno = v.toUpperCase().trim();
+    validar_apellido(v)
+  }" :error-messages="errorpaterno" @keydown.enter="buscadaorporvalor()" @change="buscadorporvalor()"
+                            label="Apellido Paterno" required>
                           </v-text-field>
                         </v-col>
                         <v-col cols="12" sm="4" md="4">
                           <v-text-field v-model="paciente.ap_materno" @input="(v) => {
-                            paciente.ap_materno = v.toUpperCase().trim();
-                            validar_apellido(v)
-                          }" :error-messages="errormaterno" @keydown.enter="buscadorporvalor()"
-                            @change="buscadorporvalor()" label="Apellido Materno" required>
+    paciente.ap_materno = v.toUpperCase().trim();
+    validar_apellido(v)
+  }" :error-messages="errormaterno" @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()"
+                            label="Apellido Materno" required>
                           </v-text-field>
                         </v-col>
 
@@ -114,11 +249,10 @@
                         </v-col>
                         <v-col v-show="ver_apellido_casada" cols="12" sm="4" md="4">
                           <v-text-field v-model="paciente.ap_casada" @input="(v) => {
-                            paciente.ap_casada
-                              = v.toUpperCase();
-                          }
-                            " @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()" label="Apellido Casado"
-                            required>
+    paciente.ap_casada
+      = v.toUpperCase();
+  }
+    " @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()" label="Apellido Casado" required>
                           </v-text-field>
                         </v-col>
                       </v-row>
@@ -183,9 +317,8 @@
                       </v-card>
                       <v-card v-else dense>
 
-                        <input v-model="cita_nueva.fecha" @blur="actualizarCita"
-                        v-on:keypress.enter="actualizarCita" 
-                        type="date" class="pa-2 ma-2">
+                        <input v-model="cita_nueva.fecha" @blur="actualizarCita" v-on:keypress.enter="actualizarCita"
+                          type="date" class="pa-2 ma-2">
 
 
                       </v-card>
@@ -196,10 +329,7 @@
                       </v-card>
                       <v-card v-else dense>
                         <v-select v-model="cita_nueva.id_horario" :items="horarios" class="pa-2 ma-0"
-                        item-text='hora_inicio' item-value="id" 
-                        no-data-text="Cupos llenos"
-                        
-                        >
+                          item-text='hora_inicio' item-value="id" no-data-text="Cupos llenos">
                         </v-select>
                       </v-card>
                     </v-col>
@@ -236,10 +366,10 @@
             <v-col cols="5">
               <v-row v-if="op1 == 1">
                 <v-data-table v-if="persona.length > 0" :headers="headers" :footer-props="{
-                  itemsPerPageText: 'Pacientes',
-                  'items-per-page-options': [15, 30, 50, 100, -1],
-                  'items-per-page-all-text': 'Todos'
-                }" :items="persona" item-key="ci" :search="search" :header-props='{ sortByText: "Ordenar por" }'
+    'itemsPerPageText': 'Pacientes',
+    'items-per-page-options': [15, 30, 50, 100, -1],
+    'items-per-page-all-text': 'Todos'
+  }" :items="persona" item-key="ci" :search="search" :header-props='{ sortByText: "Ordenar por" }'
                   @click:row="seleccion_paciente($event)" class="elevation-1">
                   <template v-slot:no-results>
                     <span>No existen datos</span>
@@ -267,11 +397,11 @@
                     </v-col>
                   </v-row>
                   <v-data-table v-if="citas.length > 0" item-key="fecha" :headers="headers_cita" :footer-props="{
-                    itemsPerPageText: 'Citas',
-                    'items-per-page-options': [15, 30, 50, 100, -1],
-                    'items-per-page-all-text': 'Todas las citas'
-                  }" :item-class="getRowClass" :items="citas" :header-props='{ sortByText: "Ordenar por" }'
-                    @click:row="" sort-by="fecha" :sort-desc="true" class="elevation-1">
+    'itemsPerPageText': 'Citas',
+    'items-per-page-options': [15, 30, 50, 100, -1],
+    'items-per-page-all-text': 'Todas las citas'
+  }" :item-class="getRowClass" :items="citas" :header-props='{ sortByText: "Ordenar por" }' @click:row=""
+                    sort-by="fecha" :sort-desc="true" class="elevation-1">
                     <template v-slot:no-results>
                       <span>No existen datos</span>
                     </template>
@@ -303,10 +433,10 @@
                     </v-col>
                   </v-row>
                   <v-data-table v-if="registro.length > 0" :headers="headers_registro" :footer-props="{
-                    itemsPerPageText: 'Registro',
-                    'items-per-page-options': [15, 30, 50, 100, -1],
-                    'items-per-page-all-text': 'Todas los registros'
-                  }" :items="registro" item-key="fecha" :header-props='{ sortByText: "Ordenar por" }'
+    'itemsPerPageText': 'Registro',
+    'items-per-page-options': [15, 30, 50, 100, -1],
+    'items-per-page-all-text': 'Todas los registros'
+  }" :items="registro" item-key="fecha" :header-props='{ sortByText: "Ordenar por" }'
                     @click:row="show_registro($event)" class="elevation-1">
                     <template v-slot:item.fecha="{ item }">
                       <v-icon>{{ fecha_mayor(item.fecha) ? 'mdi-check' : 'mdi-close' }}</v-icon>
@@ -369,14 +499,15 @@
             <v-container>
               <v-row no-gutters>
                 <v-col cols="12" sm="4" md="4">
-                  <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
-                    offset-y min-width="auto">
+                  <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40"
+                    transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <!--<v-text-field v-model="date" label="Picker without buttons"
                                                                     prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
                                                                 </v-text-field>-->
-                      <v-text-field v-model="cita_nueva.fecha" :rules="nombreRules" placeholder="Selecione fecha de cita"
-                        required prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
+                      <v-text-field v-model="cita_nueva.fecha" :rules="nombreRules"
+                        placeholder="Selecione fecha de cita" required prepend-icon="mdi-calendar" readonly
+                        v-bind="attrs" v-on="on">
                       </v-text-field>
                     </template>
                     <v-date-picker v-model="cita_nueva.fecha" :allowed-dates="allowedDates" @input="menu2 = false"
@@ -385,7 +516,7 @@
                   </v-menu>
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
-                  
+
                   <v-select v-model="cita_nueva.consultorio" item-text="descripcion" item-value="sala"
                     :items="consultorios" :rules="[validar_seleccion]" persistent-placeholder
                     placeholder="Selecione el Consultorio" color="purple darken-3" @change="buscar_horario"
@@ -393,16 +524,17 @@
                   </v-select>
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
-                  <v-select v-model="cita_nueva.horario" :item-text="(item) => ver_horario(item)" item-value="id_horario"
-                    :items="horario" :rules="nombreRules" persistent-placeholder placeholder="Selecione hora de cita"
-                    color="purple darken-3" label="Hora de inicio" required>
+                  <v-select v-model="cita_nueva.horario" :item-text="(item) => ver_horario(item)"
+                    item-value="id_horario" :items="horario" :rules="nombreRules" persistent-placeholder
+                    placeholder="Selecione hora de cita" color="purple darken-3" label="Hora de inicio" required>
                   </v-select>
                 </v-col>
               </v-row>
               <v-row no-gutters>
                 <v-col cols="12" sm="4" md="6">
                   <v-select v-model="cita_nueva.tipo_cita" :items="tipo_cita" color="purple darken-3"
-                    persistent-placeholder :rules="nombreRules" placeholder="Selecione tipo de cita" label="Tipo de cita">
+                    persistent-placeholder :rules="nombreRules" placeholder="Selecione tipo de cita"
+                    label="Tipo de cita">
                   </v-select>
                 </v-col>
                 <v-col cols="12" sm="4" md="6">
@@ -617,6 +749,16 @@ export default {
     return strx;
   },
   data: () => ({
+    items2: [
+      { title: 'Click Me' },
+      { title: 'Click Me' },
+      { title: 'Click Me' },
+      { title: 'Click Me 2' },
+    ],
+    fav: true,
+    menu: false,
+    message: false,
+    hints: true,
     horarios: [],
     cita: {},
     antiguedadpaciente: '',
@@ -866,27 +1008,27 @@ export default {
     //'cita.lugar': 'actualizarCita'   // Observar cambios en cita.lugar
   },
   methods: {
-    async actualizadorLugar(){
+    async actualizadorLugar() {
       var res = await axios({
-          method: "get",
-          url: `/${process.env.MIX_CARPETA}/boleta_datos`,
-          data: {
-            //: this.paciente_edit,
-            //cita: this.cita
-          },
-        }).then(
-          (response) => {
+        method: "get",
+        url: `/${process.env.MIX_CARPETA}/boleta_datos`,
+        data: {
+          //: this.paciente_edit,
+          //cita: this.cita
+        },
+      }).then(
+        (response) => {
 
-            this.lugares = response.data.lugares
-             
-          },
-          (error) => {
-            console.log(error);
-          }
-        )
+          this.lugares = response.data.lugares
+
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
     },
-    actfecha(){
-      this.cita_nueva.fecha = this.fecha_cita 
+    actfecha() {
+      this.cita_nueva.fecha = this.fecha_cita
     },
     async actualizarCita() {
       // Tu lógica aquí
@@ -910,17 +1052,17 @@ export default {
             //console.log(this.paciente_edit);
             this.cita.horario = null
             console.log(response.data);
-            if(response.data.correcto){
-              this.horarios =  response.data.horarios
+            if (response.data.correcto) {
+              this.horarios = response.data.horarios
               this.lugares = response.data.lugares
               //alert(this.cita_nueva.hora_inicio)
-              if(!this.isEmpty(this.cita_nueva.id_horario)){
+              if (!this.isEmpty(this.cita_nueva.id_horario)) {
                 this.cita.horario = this.cita_nueva.id_horario
-  
-              }else{
+
+              } else {
                 this.cita.horario = this.horarios[0]
               }
-            }else{
+            } else {
               this.cita.horario = undefined
               this.horarios = null
             }
@@ -1483,7 +1625,7 @@ export default {
       console.log('----------------');
       console.log(x);
       this.paciente_edit = structuredClone(x)
-      
+
       this.pedir_citas()
       this.actualizarCita()
       //this.pedir_datos()
@@ -1712,7 +1854,7 @@ export default {
     },
     async dar_cita() {
       console.log(this.cita_nueva);
-      
+
       var res = await axios({
         method: "post",
         url: `/${process.env.MIX_CARPETA}/dar_ficha`,
