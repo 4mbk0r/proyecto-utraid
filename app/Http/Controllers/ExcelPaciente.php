@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Box\Spout\Reader\Common\Creator\ReaderFactory;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -104,6 +105,7 @@ class ExcelPaciente extends Controller
         ]);
 
         $file = $request->file('file');
+        $temporaryPath = $file->store('uploads');
         $originalName = $file->getClientOriginalName();
         $reader = ReaderEntityFactory::createReaderFromFile($originalName); // BoxSpout 3.3
 
@@ -112,27 +114,38 @@ class ExcelPaciente extends Controller
         $sheets = $reader->getSheetIterator();
         $sheet_array = [];
         // Process each sheet
+        $i = 0;
+        $dato_final = [];
         foreach ($sheets as $sheet) {
             // Get the sheet name
             $sheetName = $sheet->getName();
-            array_push($sheet_array,$sheetName);
-            // Read the rows from the sheet
+            array_push($sheet_array, ['id' => $i, 'nombre_sheet' => $sheetName]);
+            $i++;
             $rows = $sheet->getRowIterator();
-
+            $datos = [];
             // Process each row
+            $j = 0;
             foreach ($rows as $row) {
                 // Get the cells from the row
                 $cells = $row->getCells();
+                $valores = [];
 
                 // Process each cell
                 foreach ($cells as $cell) {
                     // Get the cell value
                     $value = $cell->getValue();
-
+                    $value = self::convertExcelDate($value);
+                    array_push($valores, $value);
                     // Process the value as needed
                     // ...
                 }
+                if ($j == 10) {
+                    break;
+                }
+                $j++;
+                array_push($datos, $valores);
             }
+            array_push($dato_final, $datos);
         }
 
         // Close the reader
@@ -142,49 +155,66 @@ class ExcelPaciente extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Las hojas del archivo Excel se han procesado correctamente.',
-            'datos' => $sheet_array
+            'datos' => $sheet_array,
+            'valores' => $dato_final
         ]);
-        return $file;
-
-        $disk = Storage::disk('local');
-        /*if ($request->hasFile('file')) {
-            try {
-
-                $file = $request->file('file');
-                //$nombreArchivo = $file->getClientOriginalName();
-                $extensionArchivo = $file->getClientOriginalExtension();
-                //$nombreArchivoUnico = uniqid() . '_' . $nombreArchivo;
-                //$nombreArchivoUnico = uniqid() . '_' . $file->getClientOriginalName();
-
-                // Guardar el archivo en el almacenamiento local de Laravel (Storage)
-                Storage::put('open' . $extensionArchivo, file_get_contents($file));
-
-                //Cache::put($nombreArchivoUnico . '.' . $extensionArchivo, file_get_contents($file));
-
-                $objPHPExcel = IOFactory::load($file);
-                //$disk->put('openexcel.xlsx', $objPHPExcel->save('php://output'));
-                //$disk->put('nombre_de_archivo.xlsx', fwrite($objPHPExcel->getActiveSheet()->getStream(), ""));
-                //  Cache::put('open', $file);
-
-                $hojas = $objPHPExcel->getSheetCount();
-                $resp = [];
-                for ($i = 0; $i < $hojas; $i++) {
-                    $nombre_hoja = $objPHPExcel->getSheet($i)->getTitle();
-                    array_push($resp, ['id' => $i, 'nombre_sheet' => $nombre_hoja]);
-                }
-                return $resp;
-                //code...
-            } catch (Exception $th) {
-                //throw $th;
-                return response()->json(['message' => $th], 400);
-            }
-        } else {
-            return response()->json(['message' => 'No se encontró ningún archivo'], 400);
-        }*/
     }
+    public static function convertExcelDate($value)
+    {
+        // Excel/LibreOffice Calc fecha base del 1 de enero de 1900
+        // Verificar si el valor es numérico y podría ser una fecha serial de Excel
+        if (is_object($value)) {
+            //return $value->format('Y');
+            if (get_class($value) === 'DateTime') {
+                return $value->format('d-m-Y');;
+            }
+        }
+
+        return $value;
+    }
+    /*
+    return $file;
+
+    $disk = Storage::disk('local');
+    /*if ($request->hasFile('file')) {
+        try {
+
+            $file = $request->file('file');
+            //$nombreArchivo = $file->getClientOriginalName();
+            $extensionArchivo = $file->getClientOriginalExtension();
+            //$nombreArchivoUnico = uniqid() . '_' . $nombreArchivo;
+            //$nombreArchivoUnico = uniqid() . '_' . $file->getClientOriginalName();
+
+            // Guardar el archivo en el almacenamiento local de Laravel (Storage)
+            Storage::put('open' . $extensionArchivo, file_get_contents($file));
+
+            //Cache::put($nombreArchivoUnico . '.' . $extensionArchivo, file_get_contents($file));
+
+            $objPHPExcel = IOFactory::load($file);
+            //$disk->put('openexcel.xlsx', $objPHPExcel->save('php://output'));
+            //$disk->put('nombre_de_archivo.xlsx', fwrite($objPHPExcel->getActiveSheet()->getStream(), ""));
+            //  Cache::put('open', $file);
+
+            $hojas = $objPHPExcel->getSheetCount();
+            $resp = [];
+            for ($i = 0; $i < $hojas; $i++) {
+                $nombre_hoja = $objPHPExcel->getSheet($i)->getTitle();
+                array_push($resp, ['id' => $i, 'nombre_sheet' => $nombre_hoja]);
+            }
+            return $resp;
+            //code...
+        } catch (Exception $th) {
+            //throw $th;
+            return response()->json(['message' => $th], 400);
+        }
+    } else {
+        return response()->json(['message' => 'No se encontró ningún archivo'], 400);
+    }*/
     public static function validate_date(Request $request)
     {
 
+        $id_sheet = json_decode($request['sheet'], true)['id'];
+        //return $id_sheet;
         $table = 'personas';
         $hearder =
             DB::table("information_schema.columns")
@@ -199,6 +229,168 @@ class ExcelPaciente extends Controller
             ->where("table_name", "=", "evaluacions")
             ->pluck('nombre')->toArray();
         if ($request->hasFile('file')) {
+
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xlsm,xltx,xltm,xls,csv',
+            ]);
+
+            $file = $request->file('file');
+            //$temporaryPath = $file->store('uploads');
+            $originalName = $file->getClientOriginalName();
+            $reader = ReaderEntityFactory::createReaderFromFile($originalName); // BoxSpout 3.3
+
+            $reader->open($file);
+            // Get the sheets from the file
+            $sheets = $reader->getSheetIterator();
+            $sheet_array = [];
+            // Process each sheet
+            $i = 0;
+            $dato_final = [];
+            foreach ($sheets as $sheet) {
+                // Get the sheet name
+                if ($i === $id_sheet) {
+                    //$sheetName = $sheet->getName();
+                    //array_push($sheet_array, ['id' => $i, 'nombre_sheet' => $sheetName]);
+
+                    $rows = $sheet->getRowIterator();
+                    $datos = [];
+                    // Process each row
+                    $j = 0;
+                    $hearder_sheet = [];
+                    foreach ($rows as $row) {
+                        // Get the cells from the row
+                        $cells = $row->getCells();
+                        $valores = [];
+                        // Process each cell
+                        $fila = [];
+                        $h = 0;
+                        foreach ($cells as $cell) {
+                            // Get the cell value
+                            $value = $cell->getValue();
+                            $value = self::convertExcelDate($value);
+                            if ($j == 0) {
+                                //$valor_buscar = $cell->getValue();
+                                array_push($hearder_sheet,  trim($value));
+                            } else {
+                                $key = $hearder_sheet[$h];
+                                $fila[$key] = trim($value);
+                          }
+                            $h++;
+                        }
+                        /*if ($j == 10) {
+                            break;
+                        }*/
+                        if ($j > 0) {
+                            //array_push($datos, $fila);
+                            /* $fila = array_map(function ($fila) use ($hearder) {
+                                return ;
+                            }, $fila);*/
+                            //$cam = array_flip($fila);
+                            //$clavesAsociativas = array_flip($fila);                           
+                            $persona = array_intersect_key($fila, array_flip($hearder));
+                            $persona_v = db::table('personas')
+                                ->where('ci', '=', $persona['ci'])
+                                ->get();
+                            if (count($persona_v) == 0) {
+
+                                $tabla_reemplazo = array(
+                                    'Á' => 'A',
+                                    'É' => 'E',
+                                    'Í' => 'I',
+                                    'Ó' => 'O',
+                                    'Ú' => 'U',
+                                    "\xc3\x42" => "\xC3\x91"
+                                );
+                                $codigo = '';
+                                $paterno = strtr(strtoupper($persona['ap_paterno']), $tabla_reemplazo);
+                                if (!empty($paterno)) {
+                                    if (substr($paterno, 0, 2) == 'CH') {
+                                        $codigo .= substr($paterno, 0, 2);
+                                    } else {
+                                        $codigo .= $paterno[0];
+                                    }
+                                }
+                                $codigo .= !empty($persona['ap_materno']) ? strtr(strtoupper($persona['ap_materno']), $tabla_reemplazo)[0] : '';
+                                $codigo .= !empty($persona['nombres']) ?  strtr(strtoupper($persona['nombres']), $tabla_reemplazo)[0] : '';
+                                $len = strlen($codigo);
+                                if ($len == 2) {
+                                    $codigo .= '__';
+                                } else {
+
+                                    if ($len == 3) {
+                                        $codigo .= '_';
+                                    }
+                                }
+                                $codigo = mb_convert_encoding($codigo, 'UTF-8', 'ISO-8859-1');
+                                $codigo = strtr($codigo, $tabla_reemplazo);
+                                //$codigo = DB::connection()->getPdo()->quote($codigo);
+                                $resultado = DB::select("SELECT generate_auto_increment(?) as codigo", [$codigo]);
+                                $persona['id'] = $resultado[0]->codigo;
+                                $date_format = 'd-m-Y';
+                                $date = date_create_from_format($persona['fecha_nacimiento'], $date_format);
+                                if ($date === false && is_numeric($persona['fecha_nacimiento'])) {
+                                    // La fecha no está en el formato "dd-mm-yyyy"
+                                    try {
+                                        //code...
+                                        $persona['fecha_nacimiento'] = date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($persona['fecha_nacimiento']));
+                                    } catch (\Throwable $th) {
+                                        ///$persona['fecha_nacimiento'] = date('Y-m-d', $persona['fecha_nacimiento']);
+                                    }
+                                }
+
+                                db::table('personas')->insertGetId($persona);
+                                $persona_v = db::table('personas')
+                                    ->where('ci', '=', $persona['ci'])
+                                    ->get();
+                            }
+                            
+                            $registro = array_intersect_key($fila, array_flip($hregistro));
+                            if (count($persona_v) == 1) {
+                                $persona_x = $persona_v[0];
+                                $valor = db::table('evaluacions')
+                                    ->where('id_persona', '=', $persona_x->id)
+                                    ->where('fecha_registro', '=', $registro['fecha_registro'])
+                                    ->where('fecha_vigencia', '=', $registro['fecha_vigencia'])
+                                    ->get();
+                                if(count($valor) === 0){
+                                    $reg = $registro;
+                                    $reg['id_persona'] = $persona_x->id;
+                                    db::table('evaluacions')->insert($reg);
+                                }
+                                
+                            }
+
+
+
+
+
+                            array_push($datos, $registro);
+                        }
+                        $j++;
+                    }
+
+                    array_push($dato_final, $datos);
+                }
+                $i++;
+                // Close the reader
+
+
+
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Las hojas del archivo Excel se han procesado correctamente.',
+                'datos' => $sheet_array,
+                'valores' => $dato_final
+            ]);
+            $reader->close();
+
+            // Return a response
+            return $request;
+        }
+
+        //return $j;
+        /*
             $file = $request->file('file');
             $extensionArchivo = $file->getClientOriginalExtension();
 
@@ -228,9 +420,7 @@ class ExcelPaciente extends Controller
                     if ($i == 0) {
                         //$valor_buscar = $cell->getValue();
                         array_push($hearder_sheet,  trim($cell->getValue()));
-                        /*if ($valor_buscar == '') {
-                            return  throw new HttpException(500, 'Los encabezados del excel son blancos. Este es error.');
-                        }*/
+                        
                     } else {
                         $key = $hearder_sheet[$j];
                         $f->$key = trim($cell->getValue()); ///), 'UTF-8', 'auto');;
@@ -341,10 +531,7 @@ class ExcelPaciente extends Controller
                     }
                     //return ['sppp'=>$f,  'sss' => $persona, 'ssss' => $registro ];
                 }
-                $i++;
-            }
-        }
-        return $j;
+                $i++;*/
     }
 
 

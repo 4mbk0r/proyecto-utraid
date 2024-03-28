@@ -2,7 +2,7 @@
     <v-app>
         <v-card>
             <v-row>
-
+            
                 <v-col>
                     <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
@@ -1742,7 +1742,7 @@ export default {
                     this.$refs.dato.mostrarDatos(x)
                     this.$refs.dato.op1 = 2;
                 }
-            }, 1);
+            }, 5);
 
 
         },

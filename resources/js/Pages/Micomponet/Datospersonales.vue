@@ -47,10 +47,14 @@
                   <v-col class="pa-1 ma-0 " cols="4" align="center" justify="center">
 
                     <v-row class="pa-0 ma-0">
-                      <v-col >
+                      <v-col>
                         <v-text-field v-model="paciente.ci" :rules="ciRules" :disabled="op1 === 2"
                           label="Cedula de Identidad" @keydown.enter="buscadorporvalor()"
-                          @input="(v) => { paciente.ci = v.toUpperCase().trim(); }" required dense solo>
+                          @keydown.tab="siguienteElemento()" @input="(v) => { paciente.ci = v.toUpperCase().trim(); }"
+                          required dense solo single-line clearable @click:clear="limpiarCampoci('ci')" tabindex="1">
+                          <template v-slot:append>
+                            <v-icon @click="buscadorporvalor()">mdi-magnify</v-icon>
+                          </template>
                         </v-text-field>
                       </v-col>
                       <!---
@@ -114,7 +118,7 @@
   
                       </v-col>
                       -->
-                      
+
                       <!--<v-menu
       v-model="menu"
       :close-on-content-click="false"
@@ -217,25 +221,32 @@
                     <v-card class="subtitle-1">
                       <v-row>
                         <v-col cols="12" sm="4" md="4">
-                          <v-text-field v-model="paciente.nombres" :rules="nombreRules" label="Nombres" @input="(v) => {
-    paciente.nombres = v.toUpperCase().trim();
-  }" @change="buscadorporvalor()" required>
+                          <v-text-field tabindex="2" v-model="paciente.nombres" :rules="nombreRules" label="Nombres"
+                            @input="Mayuscula('nombres', false)" @keydown.enter="buscadorporvalor()" single-line
+                            @click:clear="limpiarCampoNombres()" clearable>
+                            <template v-slot:append>
+                              <v-icon @click="buscadorporvalor()">mdi-magnify</v-icon>
+                            </template>
                           </v-text-field>
                         </v-col>
                         <v-col cols="12" sm="4" md="4">
-                          <v-text-field v-model="paciente.ap_paterno" @input="(v) => {
-    paciente.ap_paterno = v.toUpperCase().trim();
-    validar_apellido(v)
-  }" :error-messages="errorpaterno" @keydown.enter="buscadaorporvalor()" @change="buscadorporvalor()"
-                            label="Apellido Paterno" required>
+                          <v-text-field tabindex="3" v-model="paciente.ap_paterno"
+                            @input="Mayuscula('ap_paterno', true)" :error-messages="errorpaterno"
+                            @keydown.enter="buscadorporvalor()" label="Apellido Paterno" required single-line
+                            @click:clear="limpiarCampoAp_paterno()" clearable>
+                            <template v-slot:append>
+                              <v-icon @click="buscadorporvalor()">mdi-magnify</v-icon>
+                            </template>
                           </v-text-field>
                         </v-col>
                         <v-col cols="12" sm="4" md="4">
-                          <v-text-field v-model="paciente.ap_materno" @input="(v) => {
-    paciente.ap_materno = v.toUpperCase().trim();
-    validar_apellido(v)
-  }" :error-messages="errormaterno" @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()"
-                            label="Apellido Materno" required>
+                          <v-text-field tabindex="4" v-model="paciente.ap_materno"
+                            @input="Mayuscula('ap_materno', true)" :error-messages="errormaterno"
+                            @keydown.enter="buscadorporvalor()" label="Apellido Materno" requiredingle-line
+                            @click:clear="limpiarCampoAp_materno()" clearable>
+                            <template v-slot:append>
+                              <v-icon @click="buscadorporvalor()">mdi-magnify</v-icon>
+                            </template>
                           </v-text-field>
                         </v-col>
 
@@ -248,32 +259,29 @@
 
                         </v-col>
                         <v-col v-show="ver_apellido_casada" cols="12" sm="4" md="4">
-                          <v-text-field v-model="paciente.ap_casada" @input="(v) => {
-    paciente.ap_casada
-      = v.toUpperCase();
-  }
-    " @keydown.enter="buscadorporvalor()" @change="buscadorporvalor()" label="Apellido Casado" required>
+                          <v-text-field v-model="paciente.ap_casada" @input="Mayuscula(paciente.ap_casada)"
+                            @keydown.enter="buscadorporvalor()" label="Apellido Casado" required>
                           </v-text-field>
                         </v-col>
                       </v-row>
                       <v-row no-gutters>
                         <v-col cols="12" sm="4" md="4">
-                          <v-text-field v-model="paciente.correo" label="Correo">
+                          <v-text-field tabindex="5" v-model="paciente.correo" label="Correo">
                           </v-text-field>
                         </v-col>
                         <v-col cols="12" sm="4" md="4">
-                          <v-text-field v-model="paciente.celular" label="Numero Celular">
+                          <v-text-field tabindex="6" v-model="paciente.celular" label="Numero Celular">
                           </v-text-field>
                         </v-col>
                         <v-col cols="12" sm="4" md="4">
-                          <v-text-field v-model="paciente.direccion" label="Direccion">
+                          <v-text-field tabindex="7" v-model="paciente.direccion" label="Direccion">
                           </v-text-field>
                         </v-col>
                       </v-row>
                       <v-row no-gutters>
                         <v-col cols="12" sm="6">
-                          <v-text-field v-model="paciente.fecha_nacimiento" :min="minFechaNac" :max="maxFechaNac"
-                            type="date" label="Fecha de nacimiento">
+                          <v-text-field tabindex="8" v-model="paciente.fecha_nacimiento" :min="minFechaNac"
+                            :max="maxFechaNac" type="date" label="Fecha de nacimiento">
                           </v-text-field>
                         </v-col>
                         <v-col cols="12" class="d-flex justify-center" sm="6">
@@ -282,8 +290,8 @@
                     </v-select>-->
 
                           <v-radio-group v-model="paciente.sexo" row>
-                            <v-radio label="MASCULINO" value="MASCULINO"></v-radio>
-                            <v-radio label="FEMENINO" value="FEMENINO"></v-radio>
+                            <v-radio tabindex="9" label="MASCULINO" value="MASCULINO"></v-radio>
+                            <v-radio tabindex="10" label="FEMENINO" value="FEMENINO"></v-radio>
                           </v-radio-group>
                         </v-col>
 
@@ -298,7 +306,7 @@
 
                   <v-row class="pa-2 ma-0">
 
-                    <v-col class="pa-0 ma-0" cols="12" outlined tile align="center" justify="center">
+                    <v-col class="pa-0 ma-0" cols="11" outlined tile align="center" justify="center">
                       <v-card v-if="!con_cita">
                         Lugar: {{ getlugar(cita_nueva.lugar) }}
                       </v-card>
@@ -369,14 +377,15 @@
     'itemsPerPageText': 'Pacientes',
     'items-per-page-options': [15, 30, 50, 100, -1],
     'items-per-page-all-text': 'Todos'
-  }" :items="persona" item-key="ci" :search="search" :header-props='{ sortByText: "Ordenar por" }'
+  }" :items="persona" item-key="ci" 
+  :search="search" :header-props='{ sortByText: "Ordenar por" }'
                   @click:row="seleccion_paciente($event)" class="elevation-1">
                   <template v-slot:no-results>
                     <span>No existen datos</span>
                   </template>
 
                 </v-data-table>
-                <v-alert v-else :value="true" type="info">
+                <v-alert v-else :value="true" type="warning" style="margin-top: 16px; font-size: 24px;">
                   No se encontraron datos del Paciente.
                 </v-alert>
               </v-row>
@@ -396,12 +405,15 @@
                       Historial de Citas
                     </v-col>
                   </v-row>
-                  <v-data-table v-if="citas.length > 0" item-key="fecha" :headers="headers_cita" :footer-props="{
+                  <v-data-table v-if="citas.length > 0" 
+                    :item-class="getRowClass"
+                    item-key="fecha" :key="updateKey" :items="citas"
+                    :headers="headers_cita" :footer-props="{
     'itemsPerPageText': 'Citas',
     'items-per-page-options': [15, 30, 50, 100, -1],
     'items-per-page-all-text': 'Todas las citas'
-  }" :item-class="getRowClass" :items="citas" :header-props='{ sortByText: "Ordenar por" }' @click:row=""
-                    sort-by="fecha" :sort-desc="true" class="elevation-1">
+  }" :header-props='{ sortByText: "Ordenar por" }'
+                    @click:row="" sort-by="fecha" :sort-desc="true" class="elevation-1">
                     <template v-slot:no-results>
                       <span>No existen datos</span>
                     </template>
@@ -422,6 +434,7 @@
                       </v-btn>
                     </template>
                   </v-data-table>
+
                   <v-alert v-else :value="true" type="warning">
                     No se encontraron datos de anteriores fichas de usuario.
                   </v-alert>
@@ -432,11 +445,18 @@
                       <span class="headline font-weight-bold"></span>Registro de Fichas medicas
                     </v-col>
                   </v-row>
-                  <v-data-table v-if="registro.length > 0" :headers="headers_registro" :footer-props="{
-    'itemsPerPageText': 'Registro',
+                  <v-data-table v-if="registro.length > 0"
+                  item-key="fecha_registro"  
+                  :key="updateKey2"
+                  :item-class="getRowRegister"
+                  :headers="headers_registro" 
+                  :items="registro"
+                  :footer-props="{
+                'itemsPerPageText': 'Registro',
     'items-per-page-options': [15, 30, 50, 100, -1],
     'items-per-page-all-text': 'Todas los registros'
-  }" :items="registro" item-key="fecha" :header-props='{ sortByText: "Ordenar por" }'
+  }"   
+  :header-props='{ sortByText: "Ordenar por" }'
                     @click:row="show_registro($event)" class="elevation-1">
                     <template v-slot:item.fecha="{ item }">
                       <v-icon>{{ fecha_mayor(item.fecha) ? 'mdi-check' : 'mdi-close' }}</v-icon>
@@ -733,6 +753,7 @@ const day1 =
   ("0" + new Date().getDate()).slice(-2);
 
 export default {
+
   components: {
 
     imprimir
@@ -749,6 +770,9 @@ export default {
     return strx;
   },
   data: () => ({
+    updateKey: 0,
+    updateKey2: 0,
+    
     items2: [
       { title: 'Click Me' },
       { title: 'Click Me' },
@@ -926,6 +950,7 @@ export default {
     this.items = []
     this.con_cita = true
 
+    this.$refs.formDatopersonales.reset()
   },
   created() {
     //this.paciente_edit = structuredClone(this.paciente);
@@ -1003,11 +1028,56 @@ export default {
   },
   watch: {
     //'cita.fecha': 'actualizarCita',  // Observar cambios en cita.fecha
-    'cita_nueva.institucion': 'actualizarCita'
-    //'cita': 'actualizarCita',  // Observar cambios en cita.fecha
+    'cita_nueva.institucion': 'actualizarCita',
+
+    'cita': 'getRowClass',  // Observar cambios en cita.fecha
     //'cita.lugar': 'actualizarCita'   // Observar cambios en cita.lugar
   },
   methods: {
+    mostrarKey(){
+      this.updateKey++;
+      return this.updateKey;
+      
+    },
+    forzarActualizacion() {
+      this.updateKey++;
+      this.updateKey2++;
+    },
+    Mayuscula(campo, v_apellido) {
+
+      console.log()
+      if (!this.isEmpty(this.paciente[campo])) {
+        this.paciente[campo] = this.paciente[campo].toUpperCase().trim();
+        if (v_apellido) {
+          this.validar_apellido(this.paciente[campo])
+
+        }
+        return this.paciente[campo]
+      } else {
+        if (v_apellido) {
+          this.validar_apellido(this.paciente[campo])
+
+        }
+        return '';
+      }
+
+    },
+    limpiarCampoci() {
+      this.paciente.ci = ''
+      this.buscadorporvalor()
+    },
+    limpiarCampoNombres() {
+      this.paciente.nombres = ''
+      this.buscadorporvalor()
+    },
+    limpiarCampoAp_paterno() {
+      this.paciente.ap_paterno = ''
+      this.buscadorporvalor()
+    },
+    limpiarCampoAp_materno() {
+      this.paciente.ap_materno = ''
+      this.buscadorporvalor()
+    },
     async actualizadorLugar() {
       var res = await axios({
         method: "get",
@@ -1193,31 +1263,40 @@ export default {
       this.msm_existe = true
     },
     ciFilter(value) {
+      //console.log('preguntar value');
+      //console.log(this.paciente.ci + ' = ' + value)
+
       //console.log(this.paciente.nombres);
-      if (typeof this.paciente.ci == 'undefined') return true
-      if (this.paciente.ci == '') return true
+      if (this.isEmpty(this.paciente.ci)) return true
+
+      //if (typeof this.paciente.ci === 'undefined') return true
+      //if (this.paciente.ci === '') return true
       if (value.includes(this.paciente.ci)) return true;
       return false;
     },
 
     nombreFilter(value) {
+      //console.log('preguntar nombre');
+      //console.log(this.paciente.nombres + ' = ' + value)
+
       //console.log(this.paciente.nombres);
-      if (typeof this.paciente.nombres == 'undefined') return true
-      if (this.paciente.nombres == '') return true
+      if (this.isEmpty(this.paciente.nombres)) return true
+
+      //if (typeof this.paciente.nombres == 'undefined') return true
+      //if (this.paciente.nombres == '') return true
       if (value.includes(this.paciente.nombres)) return true;
       return false;
     },
     paternoFilter(value) {
       //console.log(this.paciente.ap_paterno);
-      if (typeof this.paciente.ap_paterno == 'undefined') return true
-      if (this.paciente.ap_paterno == '') return true
+      if (this.isEmpty(this.paciente.ap_paterno)) return true
       if (value.includes(this.paciente.ap_paterno)) return true;
       return false;
     },
     maternoFilter(value) {
-      console.log(this.paciente.ap_materno);
-      if (typeof this.paciente.ap_materno == 'undefined') return true
-      if (this.paciente.ap_materno == '') return true
+      //console.log(this.paciente.ap_materno);
+      if (this.isEmpty(this.paciente.ap_materno)) return true
+
       if (value.includes(this.paciente.ap_materno)) return true;
       return false;
     },
@@ -1415,7 +1494,7 @@ export default {
       }
     },
     async buscadorporvalor(valor) {
-      console.log('--------');
+      console.log('--------este es un paciente ');
       console.log(this.paciente);
       if (this.op1 == 1) {
         console.log(this.paciente.ci);
@@ -1503,6 +1582,7 @@ export default {
           console.log(this.paciente_edit);
           console.log(response.data);
           this.con_cita = true
+          this.citas = null;
           this.citas = response['data']['cita']
           this.registro = response['data']['registro']
           if (this.registro.length === 0) {
@@ -1511,6 +1591,10 @@ export default {
             this.antiguedadpaciente = 'Recalificado'
           }
           this.paciente = this.paciente_edit
+          setTimeout(() => {
+              
+          }, 2);
+          this.forzarActualizacion();
           //this.horario =  response.data['horario']
         },
         (error) => {
@@ -1535,6 +1619,20 @@ export default {
         } else if (item.id_designado) {
           return 'green lighten-3';
         }
+      }
+
+    },
+    getRowRegister(item) {
+      const fecha1 = new Date(item.fecha_vigencia);
+      const fecha2 = new Date(this.$store.getters.getfecha_server);
+
+      console.log('+-+-+-+-+-+-+-+');
+      console.log(fecha1 + '<=' + fecha2);
+      // Comparar las fechas
+      if (fecha2 <= fecha1) {
+        return 'red lighten-4';
+      } else {
+        return 'green lighten-4';
       }
 
     },
@@ -1583,6 +1681,9 @@ export default {
       this.cita = {}
       this.datos_informacion = "";
       this.antiguedadpaciente = "";
+      this.$refs.formDatopersonales.reset()
+      this.errorpaterno = []
+      this.errormaterno = []
     },
     close_v_agendar() {
       this.v_agendar = false;

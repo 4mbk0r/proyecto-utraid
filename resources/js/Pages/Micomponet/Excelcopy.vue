@@ -1,13 +1,43 @@
 <!-- Use preprocessors via the lang attribute! e.g. <template lang="pug"> -->
 <template>
     <AppLayout>
-        <v-card dense>
-            <v-row>
+        <v-card>
+            <v-row class="px-2 py-2">
                 <v-col>
-                    <h1>Importar Pacientes</h1>
+                    <v-row>
+                        <v-col cols="12" class="text-center">
+                            <h1>Importar Pacientes</h1>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="6">
+                            
+                            <label  class="block mb-4"> Selecciona un archivo de Excel (.xlsx)
+                            </label>
+                            <form method="POST" enctype="multipart/form-data">
+                                <input type="file" ref="fileInput" @change="excelExport"
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                    class="px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+
+                            </form>
+                        </v-col>
+                        <v-col v-if="selectedSheet != null" cols="6">
+                            
+                            <label class="block mb-4"> Se le solicita cargar el archivo de Excel con la hoja {{ selectedSheet.nombre_sheet }}
+                            </label> <br>
+                            <v-btn tile color="success" @click="save">
+                                <v-icon left>
+                                    mdi-content-save-settings
+                                </v-icon>
+                                Subir Datos
+                            </v-btn>
+                        </v-col>
+
+
+                    </v-row>
                 </v-col>
-                <v-col>
-                    <v-btn tile color="info" @click="descargarbase()">
+                <v-col class="text-center">
+                    <v-btn tile color="info" class=" px-4 py-2 d-flex justify-center" @click="descargarbase()">
                         <v-icon left>
                             mdi-content-save-settings
                         </v-icon>
@@ -15,29 +45,19 @@
                     </v-btn>
                 </v-col>
             </v-row>
-            <v-row>
-                <v-col>
-                    <form method="POST" enctype="multipart/form-data">
-                        <!--@change="excelExport"-->
-                        <input type="file" ref="fileInput" @change="excelExport"
-                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
-                        <!--<v-btn @click="excelExport">Enviar</v-btn>-->
-                    </form>
+
+            <v-row dense>
+                <v-col dense>
+                    <v-select dense v-if="fileInput !== null" class=" px-1 py-1" v-model="selectedSheet"
+                        :items="sheetList" item-text="nombre_sheet" item-value="id" return-object label="Selecione Hoja"
+                        @change="onchangeSheet" outlined></v-select>
+                    <!--{{ selecion_sheet }}-->
 
                 </v-col>
-
-                <!--<form @submit.prevent="uploadFile">
-                    <input type="file" ref="fileInput">
-                    <button type="submit">Enviar archivo</button>
-                                                                                                                                                                                                                                                                        </form>-->
             </v-row>
-
-            <v-row>
-                <v-col>
-                    <v-select v-model="selectedSheet" :items="sheetList" item-text="nombre_sheet" item-value="id"
-                        return-object label="Selecione Hoja" @change="onchangeSheet" outlined></v-select>
-                </v-col>
-            </v-row>
+            <div class="wrapper-dgxl px-4 py-2">
+                <div ref="dgxl" class="grid"></div>
+            </div>
             <!--{{ mostrar(this.excelData) }}-->
 
             <!--</div>-->
@@ -47,7 +67,7 @@
             <!--<input type="button" value="Add new row" @click="dgxlObj.insertEmptyRows()" />
                                                                                                                                                             <input type="button" value="Download data as CSV" @click="dgxlObj.downloadDataAsCSV()" /><br />
                                                                                                                                                                                                                                                                                                                         s                                                                                                                                                -->
-            <v-row v-if="selectedSheet != null">
+            <!--<v-row v-if="selectedSheet != null">
                 <v-col>
                     <v-btn tile color="success" @click="save">
                         <v-icon left>
@@ -56,6 +76,7 @@
                         Subir Datos
                     </v-btn>
                 </v-col>
+
                 <v-col>
                     <v-btn tile color="info" @click="save2">
                         <v-icon left>
@@ -69,7 +90,7 @@
                     <v-btn @click="descargarDatos">Descargar datos</v-btn>
                 </v-col>
             </v-row>
-
+            -->
 
         </v-card>
     </AppLayout>
@@ -133,6 +154,8 @@ export default {
                 ['María', 'García', 30],
                 ['Pedro', 'Martínez', 40]
             ],
+            datos_sheets: [],
+            selecion_sheet: []
         };
     },
     components: {
@@ -180,6 +203,7 @@ export default {
         this.rowObj = null
         this.wb = null
         this.rowObj = null
+
         //location.reload(true)
     },
     methods: {
@@ -293,16 +317,25 @@ export default {
                 },
                 url: `/${process.env.MIX_CARPETA}/api/get_sheet_excel`,
                 data: formData,
-                timeout: 1200000 
+                timeout: 1200000
 
             }).then(
                 (response) => {
                     console.log(response);
-                    this.sheetList = response['data']; //Array of sheet names.
+                    this.sheetList = response['data']['datos']; //Array of sheet names.
                     //console.log(this.sheetList[0]);
-
+                    console.log(this.sheetList);
+                    this.datos_sheets = response['data']['valores'];
 
                     this.selectedSheet = this.sheetList[0];
+
+                    this.selecion_sheet = this.datos_sheets[this.selectedSheet.id];
+
+                    this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
+                        data: this.selecion_sheet,
+                        locale: this.dgxl_nl_NL,
+
+                    });
                     //this.$alert('Se a cambiado la contraseña correctamente.').then(res => this.$inform("Cambiar contraseña!"));
                 }
             ).catch(err => {
@@ -316,7 +349,8 @@ export default {
                 }
                 console.log(err)
                 console.log("err->", err.response.data)
-                this.$alert('Hubo un error en el archivo ').then(res => this.$err("Cambiar contraseña!"));
+                this.$alert("Error al procesar el archivo. Selecciona otro archivo o verifica que esté correcto.").then(res => this.$err("Cambiar contraseña!"));
+                this.$refs.fileInput.value = null;
                 return res.status(500).send({ ret_code: ReturnCodes.SOMETHING_WENT_WRONG });
             });
             /*var input = this.$refs.excelFile
@@ -465,6 +499,15 @@ export default {
 
         },
         onchangeSheet(event) {
+            console.log('..............');
+            console.log(event);
+            console.log(event.id);
+            this.selecion_sheet = this.datos_sheets[event.id]
+            this.DataGridXL = new DataGridXL(this.$refs.dgxl, {
+                data: this.selecion_sheet,
+                locale: this.dgxl_nl_NL,
+
+            });
             //location.reload(true)
             /*delete (this.Workerbook)
             //this.limpiar()
